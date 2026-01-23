@@ -3,7 +3,7 @@ api_platform:
     version: 1.0.0
     formats:
       json: ["application/json"]
-      jsonld: ["application/json+ld"]
+      jsonld: ["application/ld+json"]
     defaults:
         stateless: true
         cache_headers:
