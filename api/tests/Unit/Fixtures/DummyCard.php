@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Fixtures;
+namespace App\Tests\Unit\Fixtures;
 
 use App\Game\AbstractCard;
 use App\Game\GameContext;

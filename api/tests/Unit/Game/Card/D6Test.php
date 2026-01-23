@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Game\Card;
+namespace App\Tests\Unit\Game\Card;
 
 use App\Game\Card\D6Card;
 use App\Game\GameContext;
 use App\Game\Player;
-use App\Tests\Fixtures\DummyCard;
+use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class D6Test extends CardTestCase

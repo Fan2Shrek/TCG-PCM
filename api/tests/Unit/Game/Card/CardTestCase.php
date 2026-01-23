@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Game\Card;
+namespace App\Tests\Unit\Game\Card;
 
 use App\Game\AbstractCard;
 use App\Game\Dice;

@@ -21,6 +21,9 @@ dbReset:
 	$(CONSOLE) doctrine:migrations:migrate -n
 	$(MAKE) fixtures
 
+tests:
+	$(PHP) bin/phpunit
+
 format:
 	$(PHP) vendor/bin/mago format
 
