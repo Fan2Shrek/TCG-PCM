@@ -10,10 +10,16 @@ endif
 CONSOLE=$(PHP) php bin/console
 
 jwt:
-	$(CONSOLE) lexik:jwt:generate-keypair --overwrite
+	$(CONSOLE) lexik:jwt:generate-keypair --overwrite -n
 
 fixtures:
 	$(CONSOLE) doctrine:fixtures:load -n
+
+dbReset:
+	$(CONSOLE) doctrine:database:drop --force -n
+	$(CONSOLE) doctrine:database:create -n
+	$(CONSOLE) doctrine:migrations:migrate -n
+	$(MAKE) fixtures
 
 format:
 	$(PHP) vendor/bin/mago format

@@ -9,6 +9,15 @@ services:
     volumes:
       - ./api:/app
 
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - "8090:80"
+    depends_on:
+      - db
+
   db:
     image: mariadb:11.8
     environment:
