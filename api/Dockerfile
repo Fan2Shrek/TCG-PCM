@@ -7,6 +7,7 @@ RUN install-php-extensions pdo_mysql intl opcache
 
 RUN apk add --no-cache \
     nginx \
+    git \
     multirun
 
 COPY ./nginx.conf /etc/nginx/http.d/default.conf

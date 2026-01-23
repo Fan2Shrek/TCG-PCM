@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 parameters:
 
 services:
@@ -12,5 +13,5 @@ when@test:
     services:
         App\Tests\Resources\DoctrineCollector:
             autowire: true
-            public: true
             autoconfigure: true
+            public: true
