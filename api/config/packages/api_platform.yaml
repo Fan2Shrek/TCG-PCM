@@ -1,6 +1,9 @@
 api_platform:
-    title: Hello API Platform
+    title: TCG API
     version: 1.0.0
+    formats:
+      json: ["application/json"]
+      jsonld: ["application/json+ld"]
     defaults:
         stateless: true
         cache_headers:
