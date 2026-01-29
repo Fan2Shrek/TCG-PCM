@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use App\Domain\Command\Room\CreateRoomCommand;
+use App\Domain\Command\Room\JoinRoomCommand;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -18,6 +19,11 @@ use Symfony\Component\Uid\Uuid;
             messenger: 'input',
             input: CreateRoomCommand::class,
             status: 201,
+        ),
+        new Post(
+            uriTemplate: '/rooms/{id}/join',
+            messenger: 'input',
+            input: JoinRoomCommand::class,
         ),
     ],
 )]
