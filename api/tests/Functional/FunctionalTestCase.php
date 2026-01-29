@@ -13,6 +13,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 abstract class FunctionalTestCase extends ApiTestCase
 {
+    use JsonAssertionTrait;
+
     protected static ?bool $alwaysBootKernel = false;
     protected static bool $requestsWithAuthentication = true;
     protected Client $client;
@@ -48,10 +50,12 @@ abstract class FunctionalTestCase extends ApiTestCase
         return static::getContainer()->get('doctrine.orm.default_entity_manager');
     }
 
-    protected function createUser(): User
+    protected function createUser(?string $username = null, ?string $password = null): User
     {
-        $user = new User('test');
-        $user->setPassword('testpassword');
+        $user = new User($username ?? 'test');
+        $user->setPassword(self::getContainer()->get('security.password_hasher')
+            ->hashPassword($user, $password ?? 'password'))
+        ;
         $this->getEm()->persist($user);
         $this->getEm()->flush();
 
