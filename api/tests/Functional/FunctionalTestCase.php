@@ -7,6 +7,7 @@ namespace App\Tests\Functional;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Entity\User;
+use App\Tests\Resources\Fixtures\ThereIs;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -27,6 +28,8 @@ abstract class FunctionalTestCase extends ApiTestCase
                 'Accept-Language' => 'fr',
             ],
         ]);
+
+        ThereIs::setContainer(static::getContainer());
 
         static::getContainer()->get(Connection::class)->beginTransaction();
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Api;
 
 use App\Entity\Room;
-use App\Entity\User;
 use App\Tests\Functional\EntityAssertionTrait;
 use App\Tests\Functional\FunctionalTestCase;
+use App\Tests\Resources\Fixtures\ThereIs;
 
 final class RoomApiTest extends FunctionalTestCase
 {
@@ -36,12 +36,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testJoinRoomSuccess()
     {
-        $owner = new User('owner');
-        $owner->setPassword('blabla');
-        $room = new Room($owner);
-        self::getEM()->persist($owner);
-        self::getEM()->persist($room);
-        self::getEM()->flush();
+        $room = ThereIs::aRoom()->build();
 
         $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
 
@@ -50,12 +45,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testJoinRoom()
     {
-        $owner = new User('owner');
-        $owner->setPassword('blabla');
-        $room = new Room($owner);
-        self::getEM()->persist($owner);
-        self::getEM()->persist($room);
-        self::getEM()->flush();
+        $room = ThereIs::aRoom()->build();
 
         $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
 
@@ -64,9 +54,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testOwnerCannotJoinRoom()
     {
-        $room = new Room($this->currentUser);
-        self::getEM()->persist($room);
-        self::getEM()->flush();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
         $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
 
