@@ -74,4 +74,14 @@ abstract class FunctionalTestCase extends ApiTestCase
             'json' => $json,
         ]);
     }
+
+    protected function getUri(string $uriTemplate, array $variables = []): string
+    {
+        $uri = $uriTemplate;
+        foreach ($variables as $key => $value) {
+            $uri = str_replace('{' . $key . '}', (string) $value, $uri);
+        }
+
+        return $uri;
+    }
 }

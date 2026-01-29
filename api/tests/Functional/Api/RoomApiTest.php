@@ -38,7 +38,7 @@ final class RoomApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aRoom()->build();
 
-        $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
+        $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseIsSuccessful();
     }
@@ -47,7 +47,7 @@ final class RoomApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aRoom()->build();
 
-        $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
+        $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
 
         self::assertSame($this->currentUser, $room->getOpponent());
     }
@@ -56,7 +56,7 @@ final class RoomApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
-        $this->post(str_replace('{id}', (string) $room->getId(), self::JOIN_URI));
+        $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseStatusCodeSame(400);
     }
