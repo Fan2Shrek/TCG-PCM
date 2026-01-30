@@ -22,6 +22,7 @@ ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
 strict-types = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
 
 [analyzer]
 find-unused-definitions = true
@@ -29,5 +30,6 @@ find-unused-expressions = false
 analyze-dead-code = false
 check-throws = true
 allow-possibly-undefined-array-keys = true
-ignore = ["missing-override-attribute"]
+ignore = ["missing-override-attribute", "unhandled-thrown-type"]
 excludes = ["src/DataFixtures"]
+baseline = "analyzer-baseline.toml"

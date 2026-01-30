@@ -12,21 +12,10 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
-#[ApiResource(
-    operations: [
-        new Post(
-            uriTemplate: '/rooms/create',
-            messenger: 'input',
-            input: CreateRoomCommand::class,
-            status: 201,
-        ),
-        new Post(
-            uriTemplate: '/rooms/{id}/join',
-            messenger: 'input',
-            input: JoinRoomCommand::class,
-        ),
-    ],
-)]
+#[ApiResource(operations: [
+    new Post(uriTemplate: '/rooms/create', messenger: 'input', input: CreateRoomCommand::class, status: 201),
+    new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
+])]
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
 class Room
 {

@@ -7,6 +7,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends AbstractFixtures
 {
+    // @mago-ignore lint:no-literal-password
     private const string USER_PASSWORD = 'aaa';
 
     public function __construct(

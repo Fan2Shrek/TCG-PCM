@@ -35,5 +35,11 @@ tests:
 format:
 	$(PHP) vendor/bin/mago format
 
+lint:
+	$(PHP) vendor/bin/mago lint
+
+lint-fix:
+	$(PHP) vendor/bin/mago lint --fix --unsafe
+
 stan:
 	$(PHP) vendor/bin/mago analyze

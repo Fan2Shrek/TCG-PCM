@@ -27,9 +27,11 @@ abstract class AbstractFixtures extends Fixture
             }
 
             foreach ($constructor->getParameters() as $parameter) {
-                if (isset($data[$parameter->getName()])) {
-                    $args[$parameter->getName()] = $data[$parameter->getName()];
+                if (!(isset($data[$parameter->getName()]))) {
+                    continue;
                 }
+
+                $args[$parameter->getName()] = $data[$parameter->getName()];
             }
 
             $entity = $r->newInstanceArgs($args);

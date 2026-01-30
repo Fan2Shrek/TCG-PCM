@@ -8,8 +8,8 @@ use App\Api\Serializer\CurrentResourceAwareInterface;
 use App\Entity\Room;
 
 /**
-* @implements CurrentResourceAwareInterface<Room>
-*/
+ * @implements CurrentResourceAwareInterface<Room>
+ */
 final class JoinRoomCommand implements CurrentResourceAwareInterface
 {
     private Room $room;
@@ -19,8 +19,8 @@ final class JoinRoomCommand implements CurrentResourceAwareInterface
         return $this->room;
     }
 
-    public function setCurrentResource(object $room): void
+    public function setCurrentResource(object $resource): void
     {
-        $this->room = $room;
+        $this->room = $resource;
     }
 }

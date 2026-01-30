@@ -20,7 +20,7 @@ final class Player
     public function drawCard(int $count = 1): void
     {
         for ($i = 0; $i < $count; $i++) {
-            if (empty($this->deck)) {
+            if ([] === $this->deck) {
                 break;
             }
 

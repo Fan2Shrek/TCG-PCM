@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Room;
-use App\Repository\Trait\SaveTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,11 +11,17 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RoomRepository extends ServiceEntityRepository
 {
-    /* @use SaveTrait<Room> */
-    use SaveTrait;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Room::class);
+    }
+
+    public function save(Room $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

@@ -41,9 +41,7 @@ abstract class Dice
     private static function roll(int $sides): int
     {
         if (self::$generator === null) {
-            self::$generator = function (int $sides): int {
-                return random_int(1, $sides);
-            };
+            self::$generator = static fn (int $sides): int => random_int(1, $sides);
         }
 
         return (int) (self::$generator)($sides);

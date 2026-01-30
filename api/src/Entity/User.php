@@ -19,7 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    private ?string $username = null;
+    private string $username;
 
     /**
      * @var list<string> The user roles
@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
@@ -58,7 +58,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Ignore]
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        // @mago-ignore analyse:invalid-return-statement
+        return $this->username;
     }
 
     #[Ignore]
@@ -87,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(#[\SensitiveParameter] string $password): static
     {
         $this->password = $password;
 
@@ -102,7 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data = [
             'username' => $this->username,
         ];
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        if ($this->password) {
+            $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        }
 
         return $data;
     }

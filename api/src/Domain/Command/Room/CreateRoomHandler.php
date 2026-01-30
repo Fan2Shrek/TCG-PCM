@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Entity\Room;
+use App\Entity\User;
 use App\Repository\RoomRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -15,12 +16,15 @@ final class CreateRoomHandler
     public function __construct(
         private Security $security,
         private RoomRepository $roomRepository,
-    ) {
-    }
+    ) {}
 
     public function __invoke(CreateRoomCommand $command): Room
     {
         $user = $this->security->getUser();
+
+        if (!$user instanceof User) {
+            throw new \RuntimeException('User not found');
+        }
 
         $room = new Room($user);
 
