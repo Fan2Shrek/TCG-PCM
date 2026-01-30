@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 parameters:
+    app.resources_dir: "%kernel.project_dir%/resources"
+    app.cards_list: "%app.resources_dir%/cards_list.php"
 
 services:
     _defaults:
@@ -8,6 +10,10 @@ services:
 
     App\:
         resource: '../src/'
+
+    App\Service\BoosterGenerator:
+        arguments:
+            $cardsListPath: '%app.cards_list%'
 
 when@test:
     services:

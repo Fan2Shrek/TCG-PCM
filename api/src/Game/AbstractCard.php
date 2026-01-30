@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use App\Enum\CardRarityEnum;
+
 abstract class AbstractCard
 {
+    public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
+
     abstract public function getName(): string;
 
     abstract public function getDescription(): string;
