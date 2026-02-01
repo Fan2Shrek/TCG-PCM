@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Booster;
 
-final class OpenBoosterCommand
-{
-}
+final class OpenBoosterCommand {}

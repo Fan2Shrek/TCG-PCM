@@ -9,18 +9,13 @@ use ApiPlatform\Metadata\Post;
 use App\Domain\Command\Booster\OpenBoosterCommand;
 
 #[ApiResource(operations: [
-    new Post(
-        uriTemplate: '/boosters/open',
-        messenger: 'input',
-        input: OpenBoosterCommand::class,
-    )
+    new Post(uriTemplate: '/boosters/open', messenger: 'input', input: OpenBoosterCommand::class, status: 200),
 ])]
 final class Booster
 {
     public function __construct(
         private array $cards,
-    ) {
-    }
+    ) {}
 
     public function getCards(): array
     {

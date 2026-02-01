@@ -9,18 +9,13 @@ use App\Game\AbstractCard;
 use App\Service\BoosterGenerator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-// @todo add tests
 #[AsMessageHandler]
 final class OpenBoosterHandler
 {
     public function __construct(
         private BoosterGenerator $boosterGenerator,
-    ) {
-    }
+    ) {}
 
-    /**
-    * @return AbstractCard[]
-    */
     public function __invoke(OpenBoosterCommand $command): Booster
     {
         //@todo dispatch event here ?

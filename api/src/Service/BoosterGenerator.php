@@ -8,12 +8,14 @@ use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
 
-// @todo add tests
-final class BoosterGenerator
+class BoosterGenerator
 {
-    // @todo change when there is engough cards
-    private const BOOSTER_SIZE = 1;
-    private const RARITY_PROBABILITIES = [
+    protected const BOOSTER_SIZE = 1;
+
+    /**
+     * @var array<string, float>
+     */
+    protected const RARITY_PROBABILITIES = [
         CardRarityEnum::COMMON->value => 0.7,
         CardRarityEnum::UNCOMMON->value => 0.2,
         CardRarityEnum::RARE->value => 0.08,
@@ -35,9 +37,12 @@ final class BoosterGenerator
 
         $boosterCards = [];
 
-        for ($i = 0; $i < self::BOOSTER_SIZE; $i++) {
+        for ($i = 0; $i < static::BOOSTER_SIZE; $i++) {
             $rarity = $this->getRandomRarity();
-            $availableCards = array_filter($this->cards, fn(string $card) => $card::$rarity === $rarity);
+            $availableCards = array_filter(
+                $this->cards,
+                fn(string $card) => $card::$rarity === $rarity && !\in_array($card, $boosterCards, true)
+            );
 
             if (empty($availableCards)) {
                 $i--;
@@ -45,18 +50,18 @@ final class BoosterGenerator
             }
 
             $randomCard = $availableCards[array_rand($availableCards)];
-            $boosterCards[] = new $randomCard();
+            $boosterCards[] = $randomCard;
         }
 
-        return new Booster($boosterCards);
+        return new Booster(array_map(fn (string $cardClass) => new $cardClass(), $boosterCards));
     }
 
-    private function getRandomRarity(): CardRarityEnum
+    protected function getRandomRarity(): CardRarityEnum
     {
         $rand = mt_rand() / mt_getrandmax();
         $cumulativeProbability = 0.0;
 
-        foreach (self::RARITY_PROBABILITIES as $rarity => $probability) {
+        foreach (static::RARITY_PROBABILITIES as $rarity => $probability) {
             $cumulativeProbability += $probability;
             if ($rand <= $cumulativeProbability) {
                 return CardRarityEnum::from($rarity);
@@ -66,12 +71,20 @@ final class BoosterGenerator
         return CardRarityEnum::COMMON;
     }
 
+    /**
+    * @return class-string<AbstractCard>[]
+    */
+    protected function getCardsList(): array
+    {
+        return require $this->cardsListPath;
+    }
+
     private function loadCards(): void
     {
         if (!empty($this->cards)) {
             return;
         }
 
-        $this->cards = require $this->cardsListPath;
+        $this->cards = $this->getCardsList();
     }
 }
