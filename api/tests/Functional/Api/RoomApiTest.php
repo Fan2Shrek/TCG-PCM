@@ -15,6 +15,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     protected const CREATE_URI = '/api/rooms/create';
     protected const JOIN_URI = '/api/rooms/{id}/join';
+    protected const START_URI = '/api/rooms/{id}/start';
 
     public function testCreateRoomSuccess()
     {
@@ -57,6 +58,43 @@ final class RoomApiTest extends FunctionalTestCase
         $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
         $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testStartRoomSuccess()
+    {
+        $room = ThereIs::aRoom()
+            ->withOwner($this->currentUser)
+            ->withOpponent()
+            ->build();
+
+        $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
+
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testStartRoomFailedIfNotOwner()
+    {
+        $user = ThereIs::anUser()->build();
+        $room = ThereIs::aRoom()
+            ->withOwner($user)
+            ->withOpponent()
+            ->build()
+        ;
+
+        $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testStartRoomFailedIfNoOpponent()
+    {
+        $room = ThereIs::aRoom()
+            ->withOwner($this->currentUser)
+            ->build();
+
+        $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseStatusCodeSame(400);
     }
