@@ -43,7 +43,7 @@ class BoosterGenerator
                 static fn(string $card) => $card::$rarity === $rarity && !\in_array($card, $boosterCards, true),
             );
 
-            if (empty($availableCards)) {
+            if ([] === $availableCards) {
                 $i--;
                 continue;
             }
@@ -80,7 +80,7 @@ class BoosterGenerator
 
     private function loadCards(): void
     {
-        if (!empty($this->cards)) {
+        if ([] !== $this->cards) {
             return;
         }
 

@@ -10,7 +10,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 final class SecurityCurrentUserProvider implements CurrentUserProviderInterface
 {
     public function __construct(
-        private Security $security
+        private Security $security,
     ) {}
 
     public function getCurrentUser(): User
