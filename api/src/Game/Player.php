@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use Symfony\Component\Serializer\Attribute\Ignore;
+
 final class Player
 {
     /**
@@ -11,8 +13,8 @@ final class Player
      * @param AbstractCard[] $deck
      */
     public function __construct(
-        private readonly string $name,
-        private readonly int $score,
+        public readonly string $name,
+        public readonly int $healthPoints,
         private array $hand = [],
         private array $deck = [],
     ) {}
@@ -29,6 +31,7 @@ final class Player
         }
     }
 
+    #[Ignore]
     public function getHandSize(): int
     {
         return count($this->hand);

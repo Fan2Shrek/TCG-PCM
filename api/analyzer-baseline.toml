@@ -13,6 +13,36 @@ message = 'Could not infer a precise return type for function `app\repository\us
 count = 1
 
 [[issues]]
+file = "src/Serializer/GameContextNormalizer.php"
+code = "incompatible-parameter-type"
+message = '''Parameter `$data` of `App\Serializer\GameContextNormalizer::denormalize()` expects type `array{'currentTurn': string, 'players': array<array-key, array{'healthPoints': int, 'name': string}>}` but parent `Symfony\Component\Serializer\Normalizer\DenormalizerInterface::denormalize()` expects type `mixed`'''
+count = 1
+
+[[issues]]
+file = "src/Serializer/GameContextNormalizer.php"
+code = "incompatible-parameter-type"
+message = 'Parameter `$data` of `App\Serializer\GameContextNormalizer::normalize()` expects type `App\Game\GameContext` but parent `Symfony\Component\Serializer\Normalizer\NormalizerInterface::normalize()` expects type `mixed`'
+count = 1
+
+[[issues]]
+file = "src/Serializer/GameContextNormalizer.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `app\game\gamecontext::__construct`: expected `App\Game\Player`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Serializer/GameContextNormalizer.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #2 of `app\game\gamecontext::__construct`: expected `App\Game\Player`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Serializer/GameContextNormalizer.php"
+code = "mixed-property-access"
+message = "Attempting to access a property on a non-object type (`mixed`)."
+count = 1
+
+[[issues]]
 file = "src/Service/BoosterGenerator.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\service\boostergenerator::getcardslist`. Saw type `mixed`.'

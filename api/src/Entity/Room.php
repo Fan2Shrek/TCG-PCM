@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Post;
 use App\Domain\Command\Room\CreateRoomCommand;
 use App\Domain\Command\Room\JoinRoomCommand;
 use App\Domain\Command\Room\StartRoomCommand;
+use App\Enum\RoomStatusEnum;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -34,9 +35,13 @@ class Room
     #[ORM\ManyToOne]
     private ?User $opponent = null;
 
+    #[ORM\Column(enumType: RoomStatusEnum::class)]
+    private RoomStatusEnum $status;
+
     public function __construct(User $owner)
     {
         $this->owner = $owner;
+        $this->status = RoomStatusEnum::WAITING;
     }
 
     public function getId(): Uuid
@@ -57,6 +62,18 @@ class Room
     public function setOpponent(?User $opponent): static
     {
         $this->opponent = $opponent;
+
+        return $this;
+    }
+
+    public function getStatus(): RoomStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(RoomStatusEnum $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
