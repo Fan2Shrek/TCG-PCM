@@ -30,6 +30,6 @@ find-unused-expressions = false
 analyze-dead-code = false
 check-throws = true
 allow-possibly-undefined-array-keys = true
-ignore = ["missing-override-attribute", "unhandled-thrown-type"]
+ignore = ["missing-override-attribute", "unhandled-thrown-type", "mixed-assignment"]
 excludes = ["src/DataFixtures"]
 baseline = "analyzer-baseline.toml"

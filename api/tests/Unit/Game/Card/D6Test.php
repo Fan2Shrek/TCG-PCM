@@ -36,7 +36,7 @@ final class D6Test extends CardTestCase
                 new DummyCard(),
             ],
         );
-        $ctx = new GameContext([
+        $ctx = new GameContext(
             $player,
             new Player(
                 '2',
@@ -44,7 +44,7 @@ final class D6Test extends CardTestCase
                 [],
                 [],
             ),
-        ]);
+        );
 
         $card->play($ctx);
 

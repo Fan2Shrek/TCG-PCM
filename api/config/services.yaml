@@ -23,9 +23,18 @@ services:
         arguments:
             $badgeHandlers: !tagged_iterator 'app.badge_handler'
 
+    App\Service\Redis\RedisConnection:
+        arguments:
+            $redisDsn: '%env(string:REDIS_DSN)%'
+
 when@test:
     services:
         App\Tests\Resources\DoctrineCollector:
             autowire: true
             autoconfigure: true
             public: true
+
+        App\Tests\Resources\InMemoryGameContextRepository:
+            autowire: true
+
+        App\Service\Game\GameContextRepositoryInterface: '@App\Tests\Resources\InMemoryGameContextRepository'

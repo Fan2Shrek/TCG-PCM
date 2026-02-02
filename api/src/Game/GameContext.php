@@ -6,18 +6,12 @@ namespace App\Game;
 
 class GameContext
 {
-    private int $currentIndex = 0;
+    private bool $isPlayer1Turn = true;
 
-    /** @var Player[] */
-    private array $players;
-
-    /**
-     * @param Player[] $players
-     */
-    public function __construct(array $players)
-    {
-        $this->players = $players;
-    }
+    public function __construct(
+        private Player $player1,
+        private Player $player2,
+    ) {}
 
     public function makePlayerDrawCards(int $count): void
     {
@@ -27,11 +21,16 @@ class GameContext
 
     public function getCurrentPlayer(): Player
     {
-        return $this->players[$this->currentIndex];
+        return $this->isPlayer1Turn ? $this->player1 : $this->player2;
     }
 
     public function nextPlayer(): void
     {
-        $this->currentIndex = ($this->currentIndex + 1) % count($this->players);
+        $this->isPlayer1Turn = !$this->isPlayer1Turn;
+    }
+
+    public function getPlayers(): array
+    {
+        return [$this->player1, $this->player2];
     }
 }
