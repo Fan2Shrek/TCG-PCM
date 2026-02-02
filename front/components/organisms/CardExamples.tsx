@@ -49,7 +49,7 @@ export default function CardExamples() {
           <Card card={{ ...baseCardGuppy, id: "md" }} size="md" onHover={handleHover} onClick={handleClick} />
         </div>
 
-        {/* LG - non-interactive, shows back */}
+        {/* LG - non-interactive */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">LG (non-interactive, back)</span>
           <Card card={{ ...baseCardGuppy, id: "lg" }} size="lg" interactive={false} onClick={handleClick} />
