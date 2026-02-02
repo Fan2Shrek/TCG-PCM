@@ -6,7 +6,7 @@ export default function CardExamples() {
   const baseCardGuppy = {
     id: "guppy",
     frontLayers: [{ src: "/fsp2-guppy.png", depth: 0 }],
-    backImage: "/charactercardback.png",
+    backImage: "/default_card_back.png",
   };
 
   const baseCardIsaac = {
@@ -17,7 +17,7 @@ export default function CardExamples() {
       { src: "/isaac_card_layer_3.png", depth: 0 },
       { src: "/isaac_card_layer_4.gif", depth: 20 },
     ],
-    backImage: "/charactercardback.png",
+    backImage: "/default_card_back.png",
   }
 
   const handleHover = (id: string) => {
