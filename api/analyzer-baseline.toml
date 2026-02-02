@@ -7,6 +7,12 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
+file = "src/Repository/UserBadgeRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\userbadgerepository::findbyuserandbadge`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Service/BoosterGenerator.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\service\boostergenerator::getcardslist`. Saw type `mixed`.'

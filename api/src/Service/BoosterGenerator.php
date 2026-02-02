@@ -28,8 +28,7 @@ class BoosterGenerator
 
     public function __construct(
         private string $cardsListPath,
-    ) {
-    }
+    ) {}
 
     public function generateBooster(): Booster
     {
@@ -41,7 +40,7 @@ class BoosterGenerator
             $rarity = $this->getRandomRarity();
             $availableCards = array_filter(
                 $this->cards,
-                fn(string $card) => $card::$rarity === $rarity && !\in_array($card, $boosterCards, true)
+                static fn(string $card) => $card::$rarity === $rarity && !\in_array($card, $boosterCards, true),
             );
 
             if (empty($availableCards)) {
@@ -53,7 +52,7 @@ class BoosterGenerator
             $boosterCards[] = $randomCard;
         }
 
-        return new Booster(array_map(fn (string $cardClass) => new $cardClass(), $boosterCards));
+        return new Booster(array_map(static fn(string $cardClass) => new $cardClass(), $boosterCards));
     }
 
     protected function getRandomRarity(): CardRarityEnum
@@ -72,8 +71,8 @@ class BoosterGenerator
     }
 
     /**
-    * @return class-string<AbstractCard>[]
-    */
+     * @return class-string<AbstractCard>[]
+     */
     protected function getCardsList(): array
     {
         return require $this->cardsListPath;
