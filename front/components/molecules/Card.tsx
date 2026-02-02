@@ -1,183 +1,136 @@
 "use client";
 
-import React, { useRef, useCallback, useEffect } from "react";
-import Image from "@/components/atoms/image";
-import { CardModel, CardSize, CardSizeClass } from "@/components/types/card";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import CardFront from "../atoms/CardFront";
+import CardBack from "../atoms/CardBack";
+import CardGlare from "../atoms/CardGlare";
+import { CardModel, CardSizeClass, CardSize, CardLayer } from "../types/card";
+import {
+  clamp,
+  DEFAULT_TILT,
+  DEFAULT_GLARE,
+  NORMALIZED_CENTER,
+  HALF_ROTATION,
+  FLIP_DEG,
+  NORMAL_ANIMATION_DURATION_MS,
+  SNAPBACK_ANIMATION_DURATION_MS,
+  SNAPBACK_DELAY_MS,
+  calculateTilt,
+  calculateGlare,
+} from "../utils/cardUtils";
 
 export type CardViewProps = {
   card: CardModel;
-  isFlipped?: boolean;
   size?: CardSize;
-  className?: string;
   interactive?: boolean;
-  onHover?: (pos: { x: number; y: number }, cardId: string) => void;
-  onClick?: (pos: { x: number; y: number }, cardId: string) => void;
+  onHover?: (cardId: string) => void;
+  onClick?: (cardId: string) => void;
 };
 
-const clamp = (v: number) => Math.max(0, Math.min(1, v));
+const Card = ({ card, size = "md", interactive = true, onHover, onClick }: CardViewProps) => {
+  const [isHovering, setIsHovering] = useState(false);
+  const [tilt, setTilt] = useState(DEFAULT_TILT);
+  const [glare, setGlare] = useState(DEFAULT_GLARE);
 
-const Card = ({
-  card,
-  size = "md",
-  className = "",
-  interactive = true,
-  onHover,
-  onClick,
-}: CardViewProps) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-
   const tiltBackTimeoutRef = useRef<number | null>(null);
   const restoreTransitionTimeoutRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, []);
-
-  const layers = card.frontLayers ?? [];
-
   const sizeClass = CardSizeClass[size];
+  const cartFrontLayers = card.frontLayers ?? [];
 
-  // get the position of the cusor over card
-  const getNormalizedPosition = (rootElement: HTMLDivElement | null, clientX: number, clientY: number) => {
-    if (!rootElement) return { x: 0.5, y: 0.5 };
-    const bounds = rootElement.getBoundingClientRect();
-    return {
-      x: clamp((clientX - bounds.left) / bounds.width),
-      y: clamp((clientY - bounds.top) / bounds.height),
-    };
+  const clearTimeouts = () => {
+    if (tiltBackTimeoutRef.current) {
+      clearTimeout(tiltBackTimeoutRef.current);
+      tiltBackTimeoutRef.current = null;
+    }
+    if (restoreTransitionTimeoutRef.current) {
+      clearTimeout(restoreTransitionTimeoutRef.current);
+      restoreTransitionTimeoutRef.current = null;
+    }
   };
 
-  // apply tilt & glare based on cursor position
-  const applyTilt = (rootElement: HTMLDivElement, x: number, y: number) => {
-    const maxXTilt = 30;
-    const maxYTilt = 45;
-    const flip = 180;
-    const halfRotation = 90;
-    const normalizedCenter = 0.5;
-
-    const currentRy = parseFloat(rootElement.style.getPropertyValue("--ry") || "0");
-
-    const rotateXDeg = (y -normalizedCenter) * maxYTilt;
-    const rotateYDeg = (normalizedCenter - x) * maxXTilt + (currentRy > halfRotation ? flip : 0);
-
-    const glareX = (currentRy > halfRotation) ? (1 - x) * 100 : x * 100;
-    const glareY = y*100;
-
-    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    animationFrameRef.current = requestAnimationFrame(() => {
-
-      rootElement.style.setProperty("--rx", `${rotateXDeg}deg`);
-      rootElement.style.setProperty("--ry", `${rotateYDeg}deg`);
-
-      rootElement.style.setProperty("--glare-x", `${glareX}%`);
-      rootElement.style.setProperty("--glare-y", `${glareY}%`);
-    });
-  };
-
-  // logic for flipping card, gotta recalculate glare position to avoid jarring effect
-  const applyFlip = (rootElement: HTMLDivElement) => {
-    const currentRy = parseFloat(rootElement.style.getPropertyValue("--ry") || "0");
-    const newRy = currentRy > 90 ? currentRy - 180 : currentRy + 180;
-    rootElement.style.setProperty("--ry", `${newRy}deg`);
-
-    const currentGlareX = parseFloat(rootElement.style.getPropertyValue("--glare-x") || "50") || 50;
-    const mirroredGlareX = 100 - currentGlareX;
-    rootElement.style.setProperty("--glare-x", `${mirroredGlareX}%`);
-  }
+  useEffect(() => {
+    return () => clearTimeouts();
+  }, []);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
+      console.log(1);
       if (!interactive) return;
 
       const rootElement = rootRef.current;
       if (!rootElement) return;
 
-      const normalAnimationDuration = 300;
-      rootElement.style.transition = `transform ${normalAnimationDuration}ms cubic-bezier(.2,.9,.2,1)`;
+      setIsHovering((prev) => (prev ? prev : true));
 
-      if (tiltBackTimeoutRef.current) {
-        clearTimeout(tiltBackTimeoutRef.current);
-        tiltBackTimeoutRef.current = null;
-      }
+      rootElement.style.transition = `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`;
 
-      if (restoreTransitionTimeoutRef.current) {
-        clearTimeout(restoreTransitionTimeoutRef.current);
-        restoreTransitionTimeoutRef.current = null;
-      }
+      clearTimeouts();
 
-      const { x, y } = getNormalizedPosition(rootElement, e.clientX, e.clientY);
-      applyTilt(rootElement, x, y);
+      const bounds = rootElement.getBoundingClientRect();
+      const x = clamp((e.clientX - bounds.left) / bounds.width);
+      const y = clamp((e.clientY - bounds.top) / bounds.height);
 
-      onHover?.({ x, y }, card.id);
+      const newTilt = calculateTilt(x, y, tilt.y);
+      const newGlare = calculateGlare(x, y, tilt.y);
+
+      setTilt(newTilt);
+      setGlare(newGlare);
+
+      onHover?.(card.id);
     },
-    [interactive, onHover, card.id]
+    [interactive, onHover, card.id, tilt.y]
   );
 
   const handlePointerLeave = useCallback(() => {
+    if (!interactive) return;
+
     const rootElement = rootRef.current;
     if (!rootElement) return;
 
-    const delay = 150;
-    const snapbackAnimationDuration = 1000;
-    const normalAnimationDuration = 300;
+    setIsHovering(false);
 
-    if (tiltBackTimeoutRef.current) clearTimeout(tiltBackTimeoutRef.current);
-      if (restoreTransitionTimeoutRef.current) clearTimeout(restoreTransitionTimeoutRef.current);
+    clearTimeouts();
 
-      tiltBackTimeoutRef.current = window.setTimeout(() => {
-        rootElement.style.transition = `transform ${snapbackAnimationDuration}ms cubic-bezier(.2,.9,.2,1)`;
-        applyTilt(rootElement, 0.5, 0.5);
+    tiltBackTimeoutRef.current = window.setTimeout(() => {
+      rootElement.style.transition = `transform ${SNAPBACK_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`;
 
-        restoreTransitionTimeoutRef.current = window.setTimeout(() => {
-          rootElement.style.transition = `transform ${normalAnimationDuration}ms cubic-bezier(.2,.9,.2,1)`;
-        }, snapbackAnimationDuration);
+      const newTilt = calculateTilt(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
+      const newGlare = calculateGlare(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
 
-      }, delay);
+      setTilt(newTilt);
+      setGlare(newGlare);
 
-  }, []);
+      restoreTransitionTimeoutRef.current = window.setTimeout(() => {
+        rootElement.style.transition = `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`;
+      }, SNAPBACK_ANIMATION_DURATION_MS);
+    }, SNAPBACK_DELAY_MS);
+  }, [interactive, tilt.y]);
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!interactive) return;
+  const handleClick = useCallback(() => {
+    const newRotationY = tilt.y > HALF_ROTATION ? tilt.y - FLIP_DEG : tilt.y + FLIP_DEG;
 
-      const rootElement = rootRef.current;
-      if (!rootElement) return;
+    setGlare((prev) => ({ x: 100 - prev.x, y: prev.y }));
+    setTilt((prev) => ({ ...prev, y: newRotationY }));
 
-      const { x, y } = getNormalizedPosition(rootElement, e.clientX, e.clientY);
-
-      applyFlip(rootElement);
-
-      onClick?.({ x, y }, card.id);
-    },
-    [interactive, onClick, card.id]
-  );
+    onClick?.(card.id);
+  }, [onClick, card.id, tilt.y]);
 
   return (
     <div
       ref={rootRef}
-      className={`card-3d relative rounded-xl aspect-5/7 ${sizeClass} ${className} transform-3d will-change-transform transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)] cursor-pointer`}
-      aria-label={`Card ${card.id}`}
+      className={`relative rounded-xl aspect-5/7 ${sizeClass} transform-3d will-change-transform transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)] cursor-pointer`}
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
+      } as React.CSSProperties}
       onPointerMove={interactive ? handlePointerMove : undefined}
       onPointerLeave={interactive ? handlePointerLeave : undefined}
       onClick={handleClick}
     >
-      <div className="absolute inset-0 backface-hidden">
-        {layers.map((layer, i) => (
-          <Image key={i} src={layer.src} alt={layer.alt ?? `layer-${i}`} fill className={`object-cover z-[${layer.depth}]`}/>
-        ))}
-      </div>
-
-      <div className="absolute inset-0 rotate-y-180 backface-hidden">
-        <Image src={card.backImage ?? "/defaultCardBack.png"} alt={`${card.id} back`} fill className="object-cover" />
-      </div>
-
-        {/* glare effect */}
-        <div className="absolute inset-0 pointer-events-none glare-effect"></div>
-
-
+      <CardFront layers={cartFrontLayers as CardLayer[]} />
+      <CardBack backImage={card.backImage} id={card.id} />
+      <CardGlare glare={glare} isHovering={isHovering} />
     </div>
   );
 };

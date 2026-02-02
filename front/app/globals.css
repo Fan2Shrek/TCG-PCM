@@ -28,23 +28,15 @@
 }
 
 @layer components {
-  .card-3d {
-    transform-style: preserve-3d;
-    transition: transform 300ms cubic-bezier(.2,.9,.2,1);
-    will-change: transform;
-    --rx: 0deg;
-    --ry: 0deg;
-    --glare-x: 50%;
-    --glare-y: 50%;
-    transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
-  }
-
   .rotate-y-180 {
     transform: rotateY(90deg);
   }
 
-  .glare-effect {
-    background: radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,0.35), transparent 40%);
-    mix-blend-mode: screen;
+  .bg-glare-effect {
+    background: radial-gradient(
+      circle,
+      rgba(255,255,255,0.35),
+      transparent 40%
+    );
   }
 }
