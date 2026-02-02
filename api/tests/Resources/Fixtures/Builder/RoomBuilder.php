@@ -14,17 +14,29 @@ use App\Tests\Resources\Fixtures\ThereIs;
 final class RoomBuilder extends AbstractBuilder
 {
     private User $owner;
+    private User $opponent;
 
     protected function doBuild(): void
     {
         $owner = $this->owner ?? ThereIs::anUser()->build();
 
         $this->entity = new Room($owner);
+
+        if (isset($this->opponent)) {
+            $this->entity->setOpponent($this->opponent);
+        }
     }
 
     public function withOwner($owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function withOpponent(?User $opponent = null): self
+    {
+        $this->opponent = $opponent ?? ThereIs::anUser()->build();
 
         return $this;
     }

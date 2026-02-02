@@ -128,6 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, UserBadge>
      */
+    #[Ignore]
     public function getUserBadges(): Collection
     {
         return $this->userBadges;
