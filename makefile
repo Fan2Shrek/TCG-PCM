@@ -8,7 +8,7 @@ endif
 ifeq ($(WITH_DOCKER), 1)
 	PHP=$(COMPOSE) exec php
 else
-	PHP=
+	PHP=cd api &&
 endif
 
 CONSOLE=$(PHP) php bin/console --env=$(env)
@@ -27,6 +27,7 @@ dbReset:
 	$(MAKE) fixtures
 
 setup-tests:
+	$(MAKE) jwt
 	$(MAKE) dbReset env=test
 
 tests:
@@ -35,11 +36,17 @@ tests:
 format:
 	$(PHP) vendor/bin/mago format
 
+format-dry-run:
+	$(PHP) vendor/bin/mago format
+
 lint:
 	$(PHP) vendor/bin/mago lint
 
 lint-fix:
 	$(PHP) vendor/bin/mago lint --fix --unsafe
+
+symfony-lint:
+	$(CONSOLE) lint:container
 
 stan:
 	$(PHP) vendor/bin/mago analyze

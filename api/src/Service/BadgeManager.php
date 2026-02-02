@@ -17,7 +17,7 @@ final class BadgeManager
      * @param BadgeHandlerInterface[] $badgeHandlers
      */
     public function __construct(
-        private iterable $badgeHandlers = [],
+        private iterable $badgeHandlers,
         private UserBadgeRepository $userBadgeRepository,
         private CurrentUserProviderInterface $currentUserProvider,
     ) {}
