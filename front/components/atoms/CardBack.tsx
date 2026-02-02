@@ -6,7 +6,7 @@ export type CardBackProps = {
 };
 
 const CardBack = ({ backImage, id }: CardBackProps) => (
-  <div className="absolute inset-0 backface-hidden rotate-y-180">
+  <div className="absolute inset-0 backface-hidden rotate-y-180 pointer-events-none select-none">
     <Image
       src={backImage ?? "/defaultCardBack.png"}
       alt={`${id} back`}

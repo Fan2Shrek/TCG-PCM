@@ -5,16 +5,17 @@ import Card from "@/components/molecules/Card";
 export default function CardExamples() {
   const baseCardGuppy = {
     id: "guppy",
-    frontLayers: [{ src: "/fsp2-guppy.png", depth: 1 }],
+    frontLayers: [{ src: "/fsp2-guppy.png", depth: 0 }],
     backImage: "/charactercardback.png",
   };
 
   const baseCardIsaac = {
     id: "isaac",
     frontLayers: [
-      { src: "/isaac_card_face_layer_1.png", depth: 1 },
-      { src: "/isaac_card_face_layer_2.webp", depth: 10 },
-      { src: "/isaac_card_face_layer_3.gif", depth: 30 },
+      { src: "/isaac_card_layer_1.png", depth: -20 },
+      { src: "/isaac_card_layer_2.webp", depth: -10 },
+      { src: "/isaac_card_layer_3.png", depth: 0 },
+      { src: "/isaac_card_layer_4.gif", depth: 20 },
     ],
     backImage: "/charactercardback.png",
   }
@@ -60,14 +61,12 @@ export default function CardExamples() {
           <Card card={{ ...baseCardGuppy, id: "xl" }} size="xl" onHover={handleHover} onClick={handleClick} />
         </div>
 
-        {/* LG - card with multiple layers */}
+        {/* card with multiple layers */}
         <div className="flex flex-col items-center gap-2">
-          <span className="text-sm text-zinc-600">LG (Isaac, multiple layers)</span>
-          <Card card={{ ...baseCardIsaac, id: "lg-isaac" }} size="lg" onHover={handleHover} onClick={handleClick} />
+          <span className="text-sm text-zinc-600">XL (multiple layers)</span>
+          <Card card={{ ...baseCardIsaac, id: "xl-isaac" }} size="xl" onHover={handleHover} onClick={handleClick} />
         </div>
       </div>
-
-      <p className="text-sm text-zinc-500">Open the console to see hover/click position events for interactive examples.</p>
     </>
   );
 }
