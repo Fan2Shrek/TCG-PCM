@@ -8,12 +8,20 @@ services:
         autowire: true
         autoconfigure: true
 
+    _instanceof:
+        App\Game\Badge\Handler\BadgeHandlerInterface:
+            tags: ['app.badge_handler']
+
     App\:
         resource: '../src/'
 
     App\Service\BoosterGenerator:
         arguments:
             $cardsListPath: '%app.cards_list%'
+
+    App\Service\BadgeManager:
+        arguments:
+            $badgeHandlers: !tagged_iterator 'app.badge_handler'
 
 when@test:
     services:

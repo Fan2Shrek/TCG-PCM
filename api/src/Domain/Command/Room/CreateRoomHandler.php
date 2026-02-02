@@ -5,27 +5,21 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Entity\Room;
-use App\Entity\User;
 use App\Repository\RoomRepository;
-use Symfony\Bundle\SecurityBundle\Security;
+use App\Service\Auth\CurrentUserProviderInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final class CreateRoomHandler
 {
     public function __construct(
-        private Security $security,
+        private CurrentUserProviderInterface $currentUserProvider,
         private RoomRepository $roomRepository,
     ) {}
 
     public function __invoke(CreateRoomCommand $command): Room
     {
-        $user = $this->security->getUser();
-
-        if (!$user instanceof User) {
-            throw new \RuntimeException('User not found');
-        }
-
+        $user = $this->currentUserProvider->getCurrentUser();
         $room = new Room($user);
 
         $this->roomRepository->save($room);
