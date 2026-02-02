@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
-use App\Game\AbstractCard;
 use App\Game\Dice;
 use App\Game\GameContext;
 
-final class D6Card extends AbstractCard
+final class D6Card extends AbstractPlayableCard
 {
     public function getImage(): string
     {
