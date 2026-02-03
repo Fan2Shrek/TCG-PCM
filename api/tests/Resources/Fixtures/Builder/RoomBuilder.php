@@ -25,6 +25,7 @@ final class RoomBuilder extends AbstractBuilder
 
         if (isset($this->opponent)) {
             $this->entity->setOpponent($this->opponent);
+            $this->entity->setOpponentDeck(ThereIs::aDeck()->ownedBy($this->opponent)->build());
         }
     }
 

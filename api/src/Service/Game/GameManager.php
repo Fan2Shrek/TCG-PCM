@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\Game;
 
+use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\RoomStatusEnum;
 use App\Game\AbstractCard;
+use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\GameContext;
 use App\Game\Player;
 
@@ -15,6 +17,7 @@ final class GameManager
 {
     public function __construct(
         private GameContextRepositoryInterface $gameContextRepository,
+        private CardManager $cardsManager,
     ) {}
 
     public function startGame(Room $room): void
@@ -26,8 +29,8 @@ final class GameManager
         }
 
         $gameContext = new GameContext(
-            $this->createPlayerFromUser($room->getOwner()),
-            $this->createPlayerFromUser($opponent),
+            $this->createPlayerFromUser($room->getOwner(), $room->getOwnerDeck()),
+            $this->createPlayerFromUser($opponent, $room->getOpponentDeck()),
         );
 
         $this->gameContextRepository->save($gameContext, $room);
@@ -38,11 +41,19 @@ final class GameManager
         $gameContext = $this->gameContextRepository->get($room);
     }
 
-    private function createPlayerFromUser(User $user): Player
+    private function createPlayerFromUser(User $user, Deck $deck): Player
     {
+        $characterCard = $this->cardsManager->initiateCard($deck->getCharacterCard());
+
+        if (!$characterCard instanceof AbstractCharacterCard) {
+            throw new \RuntimeException('Deck character card is not a character card');
+        }
+
         // @todo deck
         // @todo draw cards
-        // @todo get health point from character card
-        return new Player($user->getUsername(), 30);
+        return new Player(
+            $user->getUsername(),
+            $characterCard->getHealthPoints(),
+        );
     }
 }
