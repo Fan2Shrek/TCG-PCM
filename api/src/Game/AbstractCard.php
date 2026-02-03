@@ -8,6 +8,9 @@ use App\Enum\CardRarityEnum;
 
 abstract class AbstractCard
 {
+    // @final to prevent child classes from having constructors with different signatures
+    final public function __construct() {}
+
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
     abstract public function getName(): string;

@@ -53,3 +53,9 @@ file = "src/Service/BoosterGenerator.php"
 code = "unknown-class-instantiation"
 message = "Cannot determine the concrete class for instantiation."
 count = 1
+
+[[issues]]
+file = "src/Service/Game/CardManager.php"
+code = "invalid-return-statement"
+message = '''Invalid return type for function `app\service\game\cardmanager::initiatecard`: expected `('T.app\service\game\cardmanager::initiatecard() extends App\Game\AbstractCard)`, but found `App\Game\AbstractCard`.'''
+count = 1
