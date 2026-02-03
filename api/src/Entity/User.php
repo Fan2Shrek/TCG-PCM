@@ -41,10 +41,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: UserBadge::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $userBadges;
 
+    /**
+     * @var Collection<int, Deck>
+     */
+    #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $decks;
+
     public function __construct(string $username)
     {
         $this->username = $username;
         $this->userBadges = new ArrayCollection();
+        $this->decks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -151,6 +158,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($userBadge->getUser() === $this) {
                 $userBadge->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Deck>
+     */
+    #[Ignore]
+    public function getDecks(): Collection
+    {
+        return $this->decks;
+    }
+
+    public function addDeck(Deck $deck): static
+    {
+        if (!$this->decks->contains($deck)) {
+            $this->decks->add($deck);
+        }
+
+        return $this;
+    }
+
+    public function removeDeck(Deck $deck): static
+    {
+        if ($this->decks->removeElement($deck)) {
         }
 
         return $this;

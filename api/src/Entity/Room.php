@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
+use App\Domain\Command\Room\ChangeDeckCommand;
 use App\Domain\Command\Room\CreateRoomCommand;
 use App\Domain\Command\Room\JoinRoomCommand;
 use App\Domain\Command\Room\StartRoomCommand;
@@ -12,12 +13,14 @@ use App\Repository\RoomRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
     new Post(uriTemplate: '/rooms/create', messenger: 'input', input: CreateRoomCommand::class, status: 201),
     new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
     new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 200),
+    new Post(uriTemplate: '/rooms/{id}/change_deck', messenger: 'input', input: ChangeDeckCommand::class, status: 204),
 ])]
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
 class Room
@@ -37,6 +40,14 @@ class Room
 
     #[ORM\Column(enumType: RoomStatusEnum::class)]
     private RoomStatusEnum $status;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Deck $ownerDeck;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Deck $opponentDeck = null;
 
     public function __construct(User $owner)
     {
@@ -74,6 +85,32 @@ class Room
     public function setStatus(RoomStatusEnum $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    #[Ignore]
+    public function getOwnerDeck(): Deck
+    {
+        return $this->ownerDeck;
+    }
+
+    public function setOwnerDeck(Deck $ownerDeck): static
+    {
+        $this->ownerDeck = $ownerDeck;
+
+        return $this;
+    }
+
+    #[Ignore]
+    public function getOpponentDeck(): ?Deck
+    {
+        return $this->opponentDeck;
+    }
+
+    public function setOpponentDeck(Deck $opponentDeck): static
+    {
+        $this->opponentDeck = $opponentDeck;
 
         return $this;
     }

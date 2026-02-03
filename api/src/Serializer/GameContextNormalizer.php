@@ -25,10 +25,10 @@ final class GameContextNormalizer implements NormalizerInterface, DenormalizerIn
         array $context = [],
     ): array|string|int|float|bool|ArrayObject|null {
         return [
-            'players' => array_map(
-                fn (Player $player) => ['name' => $player->name, 'healthPoints' => $player->healthPoints],
-                $data->getPlayers(),
-            ),
+            'players' => array_map(static fn(Player $player) => [
+                'name' => $player->name,
+                'healthPoints' => $player->healthPoints,
+            ], $data->getPlayers()),
             'currentTurn' => $data->getCurrentPlayer()->name,
         ];
     }

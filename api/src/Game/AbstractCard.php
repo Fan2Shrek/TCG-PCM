@@ -19,8 +19,6 @@ abstract class AbstractCard
         return \sprintf('%s.png', $this->getName());
     }
 
-    abstract public function play(GameContext $context): void;
-
     public function onCardPlayed(self $card, GameContext $context): void
     {
         // Default implementation does nothing
