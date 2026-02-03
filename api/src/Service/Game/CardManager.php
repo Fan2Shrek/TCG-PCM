@@ -9,12 +9,12 @@ use App\Game\AbstractCard;
 final class CardManager
 {
     /**
-    * @template T of AbstractCard
-    *
-    * @param class-string<T> $class
-    *
-    * @return T
-    */
+     * @template T of AbstractCard
+     *
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
     public function initiateCard(string $class): AbstractCard
     {
         return new $class();

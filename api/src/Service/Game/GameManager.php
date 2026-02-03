@@ -24,13 +24,13 @@ final class GameManager
     {
         $room->setStatus(RoomStatusEnum::PLAYING);
 
-        if (!($opponent = $room->getOpponent())) {
+        if (!($opponent = $room->getOpponent()) || !$opponentDeck = $room->getOpponentDeck()) {
             throw new \RuntimeException('Room has no opponent');
         }
 
         $gameContext = new GameContext(
             $this->createPlayerFromUser($room->getOwner(), $room->getOwnerDeck()),
-            $this->createPlayerFromUser($opponent, $room->getOpponentDeck()),
+            $this->createPlayerFromUser($opponent, $opponentDeck),
         );
 
         $this->gameContextRepository->save($gameContext, $room);
