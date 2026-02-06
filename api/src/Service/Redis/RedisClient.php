@@ -6,7 +6,7 @@ namespace App\Service\Redis;
 
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class RedisClient
+class RedisClient
 {
     public function __construct(
         private RedisConnection $connection,
@@ -21,7 +21,7 @@ final class RedisClient
      *
      * @return T
      */
-    public function get(string $key, string $type): object
+    public function get(string $key, string $type): ?object
     {
         $data = $this->connection->get($key);
 

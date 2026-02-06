@@ -15,7 +15,7 @@ final class GameEvent
 {
     #[ORM\Id]
     #[ORM\Column]
-    #[ORM\GeneratedValue()]
+    #[ORM\GeneratedValue]
     private int $id;
 
     #[ORM\Column(enumType: GameEventTypeEnum::class)]
@@ -24,10 +24,8 @@ final class GameEvent
     #[ORM\Column(type: Types::JSON)]
     private array $data = [];
 
-    public function __construct(
-        GameEventTypeEnum $type,
-        array $data,
-    ) {
+    public function __construct(GameEventTypeEnum $type, array $data)
+    {
         $this->type = $type;
         $this->data = $data;
     }

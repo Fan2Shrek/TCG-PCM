@@ -10,6 +10,5 @@ final readonly class GameState
         public PlayerState $player1,
         public PlayerState $player2,
         public ?int $lastEventid,
-    ) {
-    }
+    ) {}
 }

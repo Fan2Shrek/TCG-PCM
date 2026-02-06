@@ -10,9 +10,9 @@ use App\Game\Player;
 readonly class PlayerState
 {
     /**
-    * @param AbstractCard[] $hand
-    * @param AbstractCard[] $drawPile
-    */
+     * @param AbstractCard[] $hand
+     * @param AbstractCard[] $drawPile
+     */
     public function __construct(
         public Player $player,
         public array $hand,

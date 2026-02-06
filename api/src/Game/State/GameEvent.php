@@ -14,6 +14,5 @@ final readonly class GameEvent
         public int $id,
         public GameEventTypeEnum $type,
         public array $data,
-    ) {
-    }
+    ) {}
 }

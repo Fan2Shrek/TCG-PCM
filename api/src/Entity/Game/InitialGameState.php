@@ -27,11 +27,8 @@ class InitialGameState
     #[ORM\Column(type: Types::JSON)]
     private PlayerState $player2State;
 
-    public function __construct(
-        string $id,
-        PlayerState $player1State,
-        PlayerState $player2State,
-    ) {
+    public function __construct(string $id, PlayerState $player1State, PlayerState $player2State)
+    {
         $this->id = $id;
 
         $this->createdAt = new \DateTimeImmutable();
@@ -59,17 +56,13 @@ class InitialGameState
         return $this->player2State;
     }
 
-    public static function createFromRoomAndGameState(
-        Room $room,
-        GameState $gameState,
-    ): self
+    public static function createFromRoomAndGameState(Room $room, GameState $gameState): self
     {
-        $initialGameState = new self(
-            $room->getId()->toString(),
-            $gameState->player1,
-            $gameState->player2,
-        );
+        return new self($room->getId()->toString(), $gameState->player1, $gameState->player2);
+    }
 
-        return $initialGameState;
+    public function toGameState(): GameState
+    {
+        return new GameState($this->player1State, $this->player2State, null);
     }
 }

@@ -11,5 +11,5 @@ interface GameStateRepositoryInterface
 {
     public function save(GameState $gameState, Room $room): void;
 
-    public function get(Room $roomId): GameState;
+    public function get(Room $room): ?GameState;
 }

@@ -11,7 +11,7 @@ interface GameEventRepositoryInterface
     public function save(GameEvent $gameEvent): void;
 
     /**
-    * @return GameEvent[]
-    */
-    public function getEventsSince(int $lastEventId, string $roomId): array;
+     * @return GameEvent[]
+     */
+    public function getEventsSince(?int $lastEventId, string $roomId): array;
 }

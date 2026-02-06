@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Api;
 
 use App\Entity\Deck;
+use App\Entity\Game\InitialGameState;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Game\Card\Character\PierrotCard;
@@ -97,6 +98,19 @@ final class RoomApiTest extends FunctionalTestCase
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseIsSuccessful();
+    }
+
+    public function testGameStateInserted()
+    {
+        $room = ThereIs::aRoom()
+            ->withOwner($this->currentUser)
+            ->withOpponent()
+            ->build()
+        ;
+
+        $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
+
+        self::assertEntityCount(1, InitialGameState::class);
     }
 
     public function testStartRoomFailedIfNotOwner()
