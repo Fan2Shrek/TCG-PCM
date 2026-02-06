@@ -128,7 +128,7 @@ const Card = ({ card, size = "md", interactive = true, onHover, onClick }: CardV
       onPointerLeave={interactive ? handlePointerLeave : undefined}
       onClick={handleClick}
     >
-      <CardFront layers={cartFrontLayers as CardLayer[]} tilt={tilt} isHovering={isHovering} />
+      <CardFront layers={cartFrontLayers as CardLayer[]} tilt={tilt} glare={glare} isHovering={isHovering} />
       <CardBack backImage={card.backImage} id={card.id} />
       <CardGlare glare={glare} isHovering={isHovering} />
     </div>

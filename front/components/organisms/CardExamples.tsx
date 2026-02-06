@@ -5,7 +5,13 @@ import Card from "@/components/molecules/Card";
 export default function CardExamples() {
   const baseCardGuppy = {
     id: "guppy",
-    frontLayers: [{ src: "/fsp2-guppy.png", depth: 0 }],
+    frontLayers: [
+      { 
+        src: "/fsp2-guppy.png", 
+        depth: 0,
+        foil: "/foil.webp",
+        mask: "/mask.webp",
+       }],
     backImage: "/default_card_back.png",
   };
 
