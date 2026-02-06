@@ -7,14 +7,18 @@ namespace App\Tests\Unit\Service\Game;
 use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
+use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
-use App\Game\GameContext;
 use App\Game\Player;
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 use App\Service\Game\CardManager;
-use App\Service\Game\GameContextRepositoryInterface;
 use App\Service\Game\GameManager;
-use App\Tests\Resources\InMemoryGameContextRepository;
+use App\Service\Game\State\GameEventRepositoryInterface;
+use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Tests\Resources\InMemoryGameStateRepository;
 use PHPUnit\Framework\TestCase;
 
 final class GameManagerTest extends TestCase
@@ -22,7 +26,8 @@ final class GameManagerTest extends TestCase
     public function testRoomStartStatus()
     {
         $gm = new GameManager(
-            new InMemoryGameContextRepository(),
+            new InMemoryGameStateRepository(),
+            new InmemoryGameEventRepository(),
             new CardManager(),
         );
         $room = $this->createRoom();
@@ -34,23 +39,25 @@ final class GameManagerTest extends TestCase
 
     public function testGameContextIsSavedOnStart()
     {
-        $spyRepo = new SpyGameContextRepository();
+        $spyRepo = new SpyGameStateRepository();
         $gm = new GameManager(
             $spyRepo,
+            new InmemoryGameEventRepository(),
             new CardManager(),
         );
         $room = $this->createRoom();
 
         $gm->startGame($room);
 
-        self::assertNotNull($spyRepo->gameContext);
+        self::assertNotNull($spyRepo->gameState);
     }
 
     public function testGameContextPlayers()
     {
-        $spyRepo = new SpyGameContextRepository();
+        $spyRepo = new SpyGameStateRepository();
         $gm = new GameManager(
             $spyRepo,
+            new InmemoryGameEventRepository(),
             new CardManager(),
         );
         $owner = new User('user', 'email');
@@ -63,20 +70,84 @@ final class GameManagerTest extends TestCase
         $room->setOpponentDeck($opponentDeck);
 
         $gm->startGame($room);
-        $gameContext = $spyRepo->gameContext;
+        $gameState = $spyRepo->gameState;
 
-        $expectedPlayers = [
-            new Player(
-                'user',
-                30,
-            ),
-            new Player(
-                'opponent',
-                40,
-            ),
+        $expectedPlayer1 = new Player('user', 30);
+        $expectedPlayer2 = new Player('opponent', 40);
+
+        self::assertEquals($expectedPlayer1, $gameState->player1->player);
+        self::assertEquals($expectedPlayer2, $gameState->player2->player);
+    }
+
+    public function testPlayFromRoom()
+    {
+        $gameState = new GameState(
+            $this->createStub(PlayerState::class),
+            $this->createStub(PlayerState::class),
+            null,
+        );
+        $gameEvent = new GameEvent(1, GameEventTypeEnum::ATTACK, []);
+        $room = $this->createStub(Room::class);
+        $repository = new InMemoryGameStateRepository();
+        $repository->save($gameState, $room);
+        $gm = new class (
+            $repository,
+            new InmemoryGameEventRepository(),
+            new CardManager(),
+        ) extends GameManager {
+            public bool $hasBeenCalled = false;
+            public GameEvent $receivedEvent;
+            public GameState $receivedGameState;
+
+            public function play(GameEvent $event, GameState $gameState): void
+            {
+                $this->hasBeenCalled = true;
+                $this->receivedEvent = $event;
+                $this->receivedGameState = $gameState;
+            }
+        };
+
+        $gm->playFromRoom($gameEvent, $room);
+
+        self::assertTrue($gm->hasBeenCalled);
+        self::assertSame($gameEvent, $gm->receivedEvent);
+        self::assertSame($gameState, $gm->receivedGameState);
+    }
+
+    public function testGetGameState()
+    {
+        $gameState = new GameState(
+            $this->createStub(PlayerState::class),
+            $this->createStub(PlayerState::class),
+            1,
+        );
+        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, []);
+        $room = $this->createStub(Room::class);
+        $repository = new InMemoryGameStateRepository();
+        $repository->save($gameState, $room);
+        $events = [
+            new GameEvent(2, GameEventTypeEnum::ATTACK, []),
+            new GameEvent(3, GameEventTypeEnum::ATTACK, []),
         ];
+        $gm = new class (
+            $repository,
+            new InMemoryGameEventRepository($events),
+            new CardManager(),
+        ) extends GameManager {
+            public int $callCount = 0;
+            public array $receivedEvent = [];
 
-        self::assertEquals($expectedPlayers, $gameContext->getPlayers());
+            public function play(GameEvent $event, GameState $gameState): void
+            {
+                $this->callCount++;
+                $this->receivedEvent[] = $event;
+            }
+        };
+
+        $gm->playFromRoom($gameEvent, $room);
+
+        self::assertSame(3, $gm->callCount);
+        self::assertSame(array_merge($events, [$gameEvent]), $gm->receivedEvent);
     }
 
     private function createRoom(): Room
@@ -92,19 +163,39 @@ final class GameManagerTest extends TestCase
     }
 }
 
-
-class SpyGameContextRepository implements GameContextRepositoryInterface
+class SpyGameStateRepository implements GameStateRepositoryInterface
 {
-    public ?GameContext $gameContext = null;
-
-    public function save(GameContext $gameContext, Room $room): void
-    {
-        $this->gameContext = $gameContext;
+    public function __construct(
+        public ?GameState $gameState = null,
+    ) {
     }
 
-    public function get(Room $room): GameContext
+    public function save(GameState $gameContext, Room $room): void
     {
-        return $this->gameContext;
+        $this->gameState = $gameContext;
+    }
+
+    public function get(Room $room): GameState
+    {
+        return $this->gameState;
+    }
+}
+
+class InMemoryGameEventRepository implements GameEventRepositoryInterface
+{
+    public function __construct(
+        public array $memory = [],
+    ) {
+    }
+
+    public function save(GameEvent $gameEvent): void
+    {
+        $this->memory[] = $gameEvent;
+    }
+
+    public function getEventsSince(?int $lastEventId, string $roomId): array
+    {
+        return array_filter($this->memory, fn (GameEvent $event) => $event->id > $lastEventId);
     }
 }
 

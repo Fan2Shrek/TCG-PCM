@@ -23,6 +23,11 @@ services:
         arguments:
             $badgeHandlers: !tagged_iterator 'app.badge_handler'
 
+    App\Service\Game\State\GameStateRepositoryInterface: '@App\Service\Game\State\DoctrineGameStateRepository'
+
+    App\Service\Game\State\RedisGameStateRepository:
+        decorates: 'App\Service\Game\State\GameStateRepositoryInterface'
+
     App\Service\Redis\RedisConnection:
         arguments:
             $redisDsn: '%env(string:REDIS_DSN)%'
@@ -37,4 +42,8 @@ when@test:
         App\Tests\Resources\InMemoryGameContextRepository:
             autowire: true
 
+        App\Service\Game\State\RedisGameStateRepository: ~
+
         App\Service\Game\GameContextRepositoryInterface: '@App\Tests\Resources\InMemoryGameContextRepository'
+
+        App\Service\Game\GameStateRepositoryInterface: '@App\Tests\Resources\InMemoryGameStateRepository'

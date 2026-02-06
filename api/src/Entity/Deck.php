@@ -109,4 +109,13 @@ class Deck
 
         return $this;
     }
+
+    public function draw(): ?string
+    {
+        if (empty($this->cards)) {
+            return null;
+        }
+
+        return array_pop($this->cards);
+    }
 }
