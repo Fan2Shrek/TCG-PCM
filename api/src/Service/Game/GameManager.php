@@ -8,9 +8,9 @@ use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\RoomStatusEnum;
-use App\Game\AbstractCard;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\GameContext;
+use App\Game\GameEvent;
 use App\Game\Player;
 
 final class GameManager
@@ -36,7 +36,7 @@ final class GameManager
         $this->gameContextRepository->save($gameContext, $room);
     }
 
-    public function play(AbstractCard $card, Room $room): void
+    public function play(GameEvent $event, Room $room): void
     {
         $gameContext = $this->gameContextRepository->get($room);
     }
