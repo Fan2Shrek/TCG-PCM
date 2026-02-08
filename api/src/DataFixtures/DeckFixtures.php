@@ -19,22 +19,23 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
 
     public function getData(): iterable
     {
+        $cards = [
+            new D6Card()->getId(),
+        ];
+        $pierrotCardId = new PierrotCard()->getId();
+
         yield [
             'user' => $this->getReference('User_1', User::class),
             'name' => 'deck_1',
-            'cards' => [
-                D6Card::class,
-            ],
-            'characterCard' => PierrotCard::class,
+            'cards' => $cards,
+            'characterCard' => $pierrotCardId,
         ];
 
         yield [
             'user' => $this->getReference('User_1', User::class),
             'name' => 'deck_2',
-            'cards' => [
-                D6Card::class,
-            ],
-            'characterCard' => PierrotCard::class,
+            'cards' => $cards,
+            'characterCard' => $pierrotCardId,
         ];
     }
 

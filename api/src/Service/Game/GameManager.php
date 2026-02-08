@@ -17,7 +17,7 @@ use App\Game\State\PlayerState;
 class GameManager
 {
     public function __construct(
-        private CardManager $cardsManager,
+        private CardRegistry $cardsRegistry,
     ) {}
 
     public function startGame(Room $room): GameState
@@ -40,7 +40,7 @@ class GameManager
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
     {
-        $characterCard = $this->cardsManager->initiateCard($deck->getCharacterCard());
+        $characterCard = $this->cardsRegistry->getCardInstanceById($deck->getCharacterCard());
 
         if (!$characterCard instanceof AbstractCharacterCard) {
             throw new \RuntimeException('Deck character card is not a character card');

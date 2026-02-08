@@ -6,6 +6,11 @@ namespace App\Game\Card\Character;
 
 final class PierrotCard extends AbstractCharacterCard
 {
+    public function getId(): string
+    {
+        return 'Pierrot';
+    }
+
     public function getHealthPoints(): int
     {
         return 3300;

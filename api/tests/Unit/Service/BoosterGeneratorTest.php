@@ -8,7 +8,9 @@ use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
 use App\Game\GameContext;
 use App\Service\BoosterGenerator;
+use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 
 final class BoosterGeneratorTest extends TestCase
 {
@@ -69,14 +71,16 @@ class TestableBoosterGenerator extends BoosterGenerator
 
     public function __construct()
     {
-        parent::__construct('');
+        parent::__construct(new MockCardRegistry(
+            $this->getCardsList(),
+        ));
     }
 
     public function getCardsList(): array
     {
         return [
-            CommonCardStub::class,
-            LegendaryCardStub::class,
+            CommonCardStub::class => CommonCardStub::class,
+            LegendaryCardStub::class => LegendaryCardStub::class,
         ];
     }
 }
@@ -84,6 +88,11 @@ class TestableBoosterGenerator extends BoosterGenerator
 class CommonCardStub extends AbstractCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
+
+    public function getId(): string
+    {
+        return '';
+    }
 
     public function getName(): string
     {
@@ -104,6 +113,11 @@ class CommonCardStub extends AbstractCard
 class LegendaryCardStub extends AbstractCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
+
+    public function getId(): string
+    {
+        return '';
+    }
 
     public function getName(): string
     {

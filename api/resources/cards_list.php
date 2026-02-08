@@ -3,5 +3,6 @@
 use App\Game\Card;
 
 return [
-    Card\D6Card::class,
+	'Pierrot' => Card\Character\PierrotCard::class,
+	'D6' => Card\D6Card::class,
 ];

@@ -145,7 +145,7 @@ final class RoomApiTest extends FunctionalTestCase
             ->hashPassword($user, $password ?? 'password'))
         ;
         $deck = new Deck($user, 'test deck', '');
-        $deck->setCharacterCard(PierrotCard::class);
+        $deck->setCharacterCard(new PierrotCard()->getId());
         $user->addDeck($deck);
         $this->getEm()->persist($user);
         $this->getEm()->persist($deck);
