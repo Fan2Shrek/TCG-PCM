@@ -33,17 +33,9 @@ final class CurrentResourceDenormalizer implements DenormalizerInterface, Denorm
     /**
      * @param array<string, mixed> $context
      */
-    public function supportsDenormalization(
-        mixed $data,
-        string $type,
-        ?string $format = null,
-        array $context = [],
-    ): bool {
-        return (
-            is_subclass_of($type, CurrentResourceAwareInterface::class)
-            && false
-            === ($context[self::ALREADY_CALLED] ?? false)
-        );
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return is_subclass_of($type, CurrentResourceAwareInterface::class) && false === ($context[self::ALREADY_CALLED] ?? false);
     }
 
     /**

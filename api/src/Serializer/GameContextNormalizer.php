@@ -19,11 +19,8 @@ final class GameContextNormalizer implements NormalizerInterface, DenormalizerIn
     /**
      * @param GameContext $data
      */
-    public function normalize(
-        mixed $data,
-        ?string $format = null,
-        array $context = [],
-    ): array|string|int|float|bool|ArrayObject|null {
+    public function normalize(mixed $data, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
+    {
         return [
             'players' => array_map(static fn(Player $player) => [
                 'name' => $player->name,
@@ -60,12 +57,8 @@ final class GameContextNormalizer implements NormalizerInterface, DenormalizerIn
         return $gameContext;
     }
 
-    public function supportsDenormalization(
-        mixed $data,
-        string $type,
-        ?string $format = null,
-        array $context = [],
-    ): bool {
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
+    {
         return $type === GameContext::class;
     }
 

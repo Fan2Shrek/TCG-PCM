@@ -40,7 +40,10 @@ format:
 	$(PHP) vendor/bin/mago format
 
 format-dry-run:
-	$(PHP) vendor/bin/mago format
+	$(PHP) vendor/bin/mago format --dry-run
+
+format-check:
+	$(PHP) vendor/bin/mago format --check
 
 lint:
 	$(PHP) vendor/bin/mago lint
