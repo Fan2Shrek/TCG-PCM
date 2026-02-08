@@ -16,6 +16,8 @@ use App\Game\State\PlayerState;
 
 class GameManager
 {
+    private const INITIAL_HAND_SIZE = 5;
+
     public function __construct(
         private CardRegistry $cardsRegistry,
     ) {}
@@ -48,8 +50,9 @@ class GameManager
 
         $player = new Player($user->getUsername(), $characterCard->getHealthPoints());
 
-        // @todo deck
-        // @todo draw cards
-        return new PlayerState($player, [], []);
+        $cards = $deck->getCards();
+        $initialHandCards = array_splice($cards, 0, self::INITIAL_HAND_SIZE);
+
+        return new PlayerState($player, $initialHandCards, $cards);
     }
 }

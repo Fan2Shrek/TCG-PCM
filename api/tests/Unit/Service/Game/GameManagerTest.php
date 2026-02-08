@@ -30,7 +30,7 @@ final class GameManagerTest extends TestCase
         self::assertSame(RoomStatusEnum::PLAYING, $room->getStatus());
     }
 
-    public function testGameContextPlayers()
+    public function testGameStatePlayers()
     {
         $gm = $this->getSut();
         $owner = new User('user', 'email');
@@ -49,6 +49,44 @@ final class GameManagerTest extends TestCase
 
         self::assertEquals($expectedPlayer1, $gameState->player1->player);
         self::assertEquals($expectedPlayer2, $gameState->player2->player);
+    }
+
+    public function testPlayerStateDeck()
+    {
+        $gm = $this->getSut();
+        $owner = new User('user', 'email');
+        $opponent = new User('opponent', 'email2');
+        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
+        $ownerDeck->setCards(['card1', 'card2', 'card3', 'card4', 'card5', 'card6']);
+        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class);
+        $opponentDeck->setCards(['card7', 'card8', 'card9', 'card10', 'card11', 'card12']);
+        $room = new Room($owner);
+        $room->setOpponent($opponent);
+        $room->setOwnerDeck($ownerDeck);
+        $room->setOpponentDeck($opponentDeck);
+
+        $gameState = $gm->startGame($room);
+
+        self::assertSame([
+            'card1',
+            'card2',
+            'card3',
+            'card4',
+            'card5',
+        ], $gameState->player1->hand);
+        self::assertSame([
+            'card6',
+        ], $gameState->player1->drawPile);
+        self::assertSame([
+            'card7',
+            'card8',
+            'card9',
+            'card10',
+            'card11',
+        ], $gameState->player2->hand);
+        self::assertSame([
+            'card12',
+        ], $gameState->player2->drawPile);
     }
 
     private function createRoom(): Room

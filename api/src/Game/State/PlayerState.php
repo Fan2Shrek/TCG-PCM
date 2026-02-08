@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Game\State;
 
-use App\Game\AbstractCard;
 use App\Game\Player;
 
 readonly class PlayerState
 {
     /**
-     * @param AbstractCard[] $hand
-     * @param AbstractCard[] $drawPile
+     * @param string[] $hand
+     * @param string[] $drawPile
      */
     public function __construct(
         public Player $player,

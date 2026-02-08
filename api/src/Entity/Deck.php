@@ -25,9 +25,15 @@ class Deck
     #[ORM\Column(length: 255)]
     private string $characterCard;
 
+    /**
+     * @var string[] $cards
+     */
     #[ORM\Column]
     private array $cards = [];
 
+    /**
+     * @param string[] $cards
+     */
     public function __construct(User $user, string $name, string $characterCard, array $cards = [])
     {
         $this->user = $user;
@@ -70,11 +76,17 @@ class Deck
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getCards(): array
     {
         return $this->cards;
     }
 
+    /**
+     * @param string[] $cards
+     */
     public function setCards(array $cards): static
     {
         $this->cards = $cards;
