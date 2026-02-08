@@ -19,10 +19,8 @@ final class UpdateCardListCommand
 
     private OutputInterface $output;
 
-    public function __invoke(
-        OutputInterface $output,
-        #[Option('Path to the card list file', 'filePath')] string $filePath = 'resources/cards_list.php',
-    ) {
+    public function __invoke(OutputInterface $output, #[Option('Path to the card list file', 'filePath')] string $filePath = 'resources/cards_list.php')
+    {
         $this->output = $output;
 
         if (!file_exists($filePath)) {
@@ -79,28 +77,15 @@ final class UpdateCardListCommand
             $class = $baseNamespace.pathinfo($file, PATHINFO_FILENAME);
 
             if (!class_exists($class)) {
-                $this->output->writeln(\sprintf(
-                    '<error>Class %s does not exist. Skipping file %s.</error>',
-                    $class,
-                    $file,
-                ));
+                $this->output->writeln(\sprintf('<error>Class %s does not exist. Skipping file %s.</error>', $class, $file));
             }
 
             if (!is_a($class, AbstractCard::class, true)) {
-                $this->output->writeln(\sprintf(
-                    '<error>Class %s does not extend %s. Skipping file %s.</error>',
-                    $class,
-                    AbstractCard::class,
-                    $file,
-                ));
+                $this->output->writeln(\sprintf('<error>Class %s does not extend %s. Skipping file %s.</error>', $class, AbstractCard::class, $file));
                 continue;
             }
 
-            if (\in_array(
-                $class,
-                [AbstractCard::class, AbstractPlayableCard::class, AbstractCharacterCard::class],
-                true,
-            )) {
+            if (\in_array($class, [AbstractCard::class, AbstractPlayableCard::class, AbstractCharacterCard::class], true)) {
                 continue;
             }
 

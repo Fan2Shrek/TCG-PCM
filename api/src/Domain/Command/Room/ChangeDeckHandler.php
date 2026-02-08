@@ -24,10 +24,7 @@ final class ChangeDeckHandler
         match (true) {
             $room->getOwner() === $user => $room->setOwnerDeck($command->deck),
             $room->getOpponent() === $user => $room->setOpponentDeck($command->deck),
-            default => throw HttpException::fromStatusCode(
-                Response::HTTP_FORBIDDEN,
-                'You are not a player in this room.',
-            ),
+            default => throw HttpException::fromStatusCode(Response::HTTP_FORBIDDEN, 'You are not a player in this room.'),
         };
     }
 }

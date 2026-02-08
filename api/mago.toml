@@ -8,7 +8,7 @@ includes = ["vendor", "tests"]
 excludes = []
 
 [formatter]
-print-width = 120
+print-width = 160
 tab-width = 4
 use-tabs = false
 null-type-hint = "question"

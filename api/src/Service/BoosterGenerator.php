@@ -33,10 +33,7 @@ class BoosterGenerator
 
         for ($i = 0; $i < static::BOOSTER_SIZE; $i++) {
             $rarity = $this->getRandomRarity();
-            $availableCards = array_filter(
-                $this->cardRegistry->getAllByRarity($rarity),
-                static fn(string $card) => !\in_array($card, $boosterCards, true),
-            );
+            $availableCards = array_filter($this->cardRegistry->getAllByRarity($rarity), static fn(string $card) => !\in_array($card, $boosterCards, true));
 
             if ([] === $availableCards) {
                 $i--;
