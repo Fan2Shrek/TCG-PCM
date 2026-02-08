@@ -6,6 +6,7 @@ namespace App\Domain\Command\Room;
 
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\GameManager;
+use App\Service\Game\State\GameStateRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -15,6 +16,7 @@ final class StartRoomHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private GameStateRepositoryInterface $gameStateRepository,
         private GameManager $gameManager,
     ) {}
 
@@ -31,6 +33,8 @@ final class StartRoomHandler
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'Cannot start a game without an opponent.');
         }
 
-        $this->gameManager->startGame($room);
+        $gameState = $this->gameManager->startGame($room);
+
+        $this->gameStateRepository->save($gameState, $room);
     }
 }

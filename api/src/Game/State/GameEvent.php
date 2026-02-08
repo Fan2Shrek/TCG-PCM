@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Game;
+namespace App\Game\State;
 
 use App\Enum\GameEventTypeEnum;
 
@@ -11,8 +11,8 @@ use App\Enum\GameEventTypeEnum;
 final readonly class GameEvent
 {
     public function __construct(
+        public int $id,
         public GameEventTypeEnum $type,
         public array $data,
-    ) {
-    }
+    ) {}
 }

@@ -9,12 +9,13 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
-use App\Game\GameContext;
 use App\Game\Player;
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
 use App\Service\Game\CardManager;
-use App\Service\Game\GameContextRepositoryInterface;
 use App\Service\Game\GameManager;
-use App\Tests\Resources\InMemoryGameContextRepository;
+use App\Service\Game\State\GameEventRepositoryInterface;
+use App\Service\Game\State\GameStateRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 final class GameManagerTest extends TestCase
@@ -22,7 +23,6 @@ final class GameManagerTest extends TestCase
     public function testRoomStartStatus()
     {
         $gm = new GameManager(
-            new InMemoryGameContextRepository(),
             new CardManager(),
         );
         $room = $this->createRoom();
@@ -32,25 +32,9 @@ final class GameManagerTest extends TestCase
         self::assertSame(RoomStatusEnum::PLAYING, $room->getStatus());
     }
 
-    public function testGameContextIsSavedOnStart()
-    {
-        $spyRepo = new SpyGameContextRepository();
-        $gm = new GameManager(
-            $spyRepo,
-            new CardManager(),
-        );
-        $room = $this->createRoom();
-
-        $gm->startGame($room);
-
-        self::assertNotNull($spyRepo->gameContext);
-    }
-
     public function testGameContextPlayers()
     {
-        $spyRepo = new SpyGameContextRepository();
         $gm = new GameManager(
-            $spyRepo,
             new CardManager(),
         );
         $owner = new User('user', 'email');
@@ -62,21 +46,13 @@ final class GameManagerTest extends TestCase
         $room->setOwnerDeck($ownerDeck);
         $room->setOpponentDeck($opponentDeck);
 
-        $gm->startGame($room);
-        $gameContext = $spyRepo->gameContext;
+        $gameState = $gm->startGame($room);
 
-        $expectedPlayers = [
-            new Player(
-                'user',
-                30,
-            ),
-            new Player(
-                'opponent',
-                40,
-            ),
-        ];
+        $expectedPlayer1 = new Player('user', 30);
+        $expectedPlayer2 = new Player('opponent', 40);
 
-        self::assertEquals($expectedPlayers, $gameContext->getPlayers());
+        self::assertEquals($expectedPlayer1, $gameState->player1->player);
+        self::assertEquals($expectedPlayer2, $gameState->player2->player);
     }
 
     private function createRoom(): Room
@@ -92,19 +68,39 @@ final class GameManagerTest extends TestCase
     }
 }
 
-
-class SpyGameContextRepository implements GameContextRepositoryInterface
+class SpyGameStateRepository implements GameStateRepositoryInterface
 {
-    public ?GameContext $gameContext = null;
-
-    public function save(GameContext $gameContext, Room $room): void
-    {
-        $this->gameContext = $gameContext;
+    public function __construct(
+        public ?GameState $gameState = null,
+    ) {
     }
 
-    public function get(Room $room): GameContext
+    public function save(GameState $gameContext, Room $room): void
     {
-        return $this->gameContext;
+        $this->gameState = $gameContext;
+    }
+
+    public function get(Room $room): GameState
+    {
+        return $this->gameState;
+    }
+}
+
+class InMemoryGameEventRepository implements GameEventRepositoryInterface
+{
+    public function __construct(
+        public array $memory = [],
+    ) {
+    }
+
+    public function save(GameEvent $gameEvent): void
+    {
+        $this->memory[] = $gameEvent;
+    }
+
+    public function getEventsSince(?int $lastEventId, string $roomId): array
+    {
+        return array_filter($this->memory, fn (GameEvent $event) => $event->id > $lastEventId);
     }
 }
 

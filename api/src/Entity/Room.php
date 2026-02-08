@@ -19,7 +19,7 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Post(uriTemplate: '/rooms/create', messenger: 'input', input: CreateRoomCommand::class, status: 201),
     new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
-    new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 200),
+    new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/change_deck', messenger: 'input', input: ChangeDeckCommand::class, status: 204),
 ])]
 #[ORM\Entity(repositoryClass: RoomRepository::class)]

@@ -9,39 +9,36 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
-use App\Game\GameContext;
-use App\Game\GameEvent;
 use App\Game\Player;
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 
-final class GameManager
+class GameManager
 {
     public function __construct(
-        private GameContextRepositoryInterface $gameContextRepository,
         private CardManager $cardsManager,
     ) {}
 
-    public function startGame(Room $room): void
+    public function startGame(Room $room): GameState
     {
         $room->setStatus(RoomStatusEnum::PLAYING);
 
-        if (!($opponent = $room->getOpponent()) || !$opponentDeck = $room->getOpponentDeck()) {
+        if (!($opponent = $room->getOpponent()) || !($opponentDeck = $room->getOpponentDeck())) {
             throw new \RuntimeException('Room has no opponent');
         }
 
-        $gameContext = new GameContext(
-            $this->createPlayerFromUser($room->getOwner(), $room->getOwnerDeck()),
-            $this->createPlayerFromUser($opponent, $opponentDeck),
-        );
+        $player1InitialState = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck());
+        $player2InitialState = $this->createPlayerStateFromUser($opponent, $opponentDeck);
 
-        $this->gameContextRepository->save($gameContext, $room);
+        return new GameState($player1InitialState, $player2InitialState, null);
     }
 
-    public function play(GameEvent $event, Room $room): void
+    public function play(GameEvent $event, GameState $gameState): void
     {
-        $gameContext = $this->gameContextRepository->get($room);
     }
 
-    private function createPlayerFromUser(User $user, Deck $deck): Player
+    private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
     {
         $characterCard = $this->cardsManager->initiateCard($deck->getCharacterCard());
 
@@ -49,11 +46,10 @@ final class GameManager
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
+        $player = new Player($user->getUsername(), $characterCard->getHealthPoints());
+
         // @todo deck
         // @todo draw cards
-        return new Player(
-            $user->getUsername(),
-            $characterCard->getHealthPoints(),
-        );
+        return new PlayerState($player, [], []);
     }
 }
