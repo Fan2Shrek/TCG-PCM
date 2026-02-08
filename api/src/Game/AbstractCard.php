@@ -13,6 +13,8 @@ abstract class AbstractCard
 
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
+    abstract public function getId(): string;
+
     abstract public function getName(): string;
 
     abstract public function getDescription(): string;

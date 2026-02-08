@@ -12,19 +12,17 @@ use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Service\Game\CardManager;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\TestCase;
 
 final class GameManagerTest extends TestCase
 {
     public function testRoomStartStatus()
     {
-        $gm = new GameManager(
-            new CardManager(),
-        );
+        $gm = $this->getSut();
         $room = $this->createRoom();
 
         $gm->startGame($room);
@@ -34,9 +32,7 @@ final class GameManagerTest extends TestCase
 
     public function testGameContextPlayers()
     {
-        $gm = new GameManager(
-            new CardManager(),
-        );
+        $gm = $this->getSut();
         $owner = new User('user', 'email');
         $opponent = new User('opponent', 'email2');
         $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
@@ -65,6 +61,18 @@ final class GameManagerTest extends TestCase
         $room->setOpponentDeck($deck);
 
         return $room;
+    }
+
+    private function getSut(): GameManager
+    {
+        return new GameManager(
+            new MockCardRegistry(
+                [
+                    DummyCharacterCard::class => DummyCharacterCard::class,
+                    DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+                ]
+            )
+        );
     }
 }
 
@@ -109,6 +117,11 @@ class DummyCharacterCard extends AbstractCharacterCard
     public function getHealthPoints(): int
     {
         return 30;
+    }
+
+    public function getId(): string
+    {
+        return '';
     }
 
     public function getName(): string

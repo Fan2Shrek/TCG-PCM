@@ -14,6 +14,11 @@ final class DummyCard extends AbstractCard
         return 'DummyCard';
     }
 
+    public function getId(): string
+    {
+        return 'DummyCard';
+    }
+
     public function getDescription(): string
     {
         return 'This is a dummy card for testing purposes.';

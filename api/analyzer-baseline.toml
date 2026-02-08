@@ -1,6 +1,12 @@
 variant = "loose"
 
 [[issues]]
+file = "src/Command/UpdateCardListCommand.php"
+code = "possibly-false-iterator"
+message = "Expression being iterated (type `false|list<non-empty-string>`) might be `false` at runtime."
+count = 1
+
+[[issues]]
 file = "src/Entity/User.php"
 code = "invalid-return-statement"
 message = 'Invalid return type for function `app\entity\user::getuseridentifier`: expected `non-empty-string`, but found `string`.'
@@ -49,19 +55,7 @@ message = "Attempting to access a property on a non-object type (`mixed`)."
 count = 1
 
 [[issues]]
-file = "src/Service/BoosterGenerator.php"
+file = "src/Service/Game/CardRegistry.php"
 code = "mixed-return-statement"
-message = 'Could not infer a precise return type for function `app\service\boostergenerator::getcardslist`. Saw type `mixed`.'
-count = 1
-
-[[issues]]
-file = "src/Service/BoosterGenerator.php"
-code = "unknown-class-instantiation"
-message = "Cannot determine the concrete class for instantiation."
-count = 1
-
-[[issues]]
-file = "src/Service/Game/CardManager.php"
-code = "invalid-return-statement"
-message = '''Invalid return type for function `app\service\game\cardmanager::initiatecard`: expected `('T.app\service\game\cardmanager::initiatecard() extends App\Game\AbstractCard)`, but found `App\Game\AbstractCard`.'''
+message = 'Could not infer a precise return type for function `app\service\game\cardregistry::getcardslist`. Saw type `mixed`.'
 count = 1

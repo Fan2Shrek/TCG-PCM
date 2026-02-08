@@ -15,7 +15,7 @@ services:
     App\:
         resource: '../src/'
 
-    App\Service\BoosterGenerator:
+    App\Service\Game\CardRegistry:
         arguments:
             $cardsListPath: '%app.cards_list%'
 

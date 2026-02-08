@@ -19,7 +19,7 @@ final class DeckBuilder extends AbstractBuilder
     public function doBuild(): void
     {
         $owner = $this->owner ?? ThereIs::anUser()->build();
-        $this->entity = new Deck($owner, 'Default Deck', PierrotCard::class);
+        $this->entity = new Deck($owner, 'Default Deck', new PierrotCard()->getId());
     }
 
     public function ownedBy(User $owner): self

@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
-use App\Game\AbstractCard;
+use App\Service\Game\CardRegistry;
 
 class BoosterGenerator
 {
@@ -23,24 +23,19 @@ class BoosterGenerator
         CardRarityEnum::LEGENDARY->value => 0.005,
     ];
 
-    /** @var class-string<AbstractCard>[] */
-    private array $cards = [];
-
     public function __construct(
-        private string $cardsListPath,
+        private CardRegistry $cardRegistry,
     ) {}
 
     public function generateBooster(): Booster
     {
-        $this->loadCards();
-
         $boosterCards = [];
 
         for ($i = 0; $i < static::BOOSTER_SIZE; $i++) {
             $rarity = $this->getRandomRarity();
             $availableCards = array_filter(
-                $this->cards,
-                static fn(string $card) => $card::$rarity === $rarity && !\in_array($card, $boosterCards, true),
+                $this->cardRegistry->getAllByRarity($rarity),
+                static fn(string $card) => !\in_array($card, $boosterCards, true),
             );
 
             if ([] === $availableCards) {
@@ -52,7 +47,7 @@ class BoosterGenerator
             $boosterCards[] = $randomCard;
         }
 
-        return new Booster(array_map(static fn(string $cardClass) => new $cardClass(), $boosterCards));
+        return new Booster(array_map($this->cardRegistry->getCardInstanceById(...), $boosterCards));
     }
 
     protected function getRandomRarity(): CardRarityEnum
@@ -68,22 +63,5 @@ class BoosterGenerator
         }
 
         return CardRarityEnum::COMMON;
-    }
-
-    /**
-     * @return class-string<AbstractCard>[]
-     */
-    protected function getCardsList(): array
-    {
-        return require $this->cardsListPath;
-    }
-
-    private function loadCards(): void
-    {
-        if ([] !== $this->cards) {
-            return;
-        }
-
-        $this->cards = $this->getCardsList();
     }
 }

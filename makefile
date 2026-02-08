@@ -13,6 +13,9 @@ endif
 
 CONSOLE=$(PHP) php bin/console --env=$(env)
 
+cardList:
+	$(CONSOLE) app:update:card-list
+
 jwt:
 	$(CONSOLE) lexik:jwt:generate-keypair --overwrite -n
 

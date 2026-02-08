@@ -9,7 +9,6 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
-use App\Service\Game\CardManager;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
