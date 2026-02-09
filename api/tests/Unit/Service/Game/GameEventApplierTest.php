@@ -34,6 +34,7 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertCount(1, $newState->player1->hand);
+        self::assertSame('D6', $newState->player1->hand[0]);
     }
 
     public function testApplyCardDrawnWithPlayer2()
@@ -96,6 +97,25 @@ final class GameEventApplierTest extends TestCase
         self::assertNotNull(OtherSpyCard::$otherReceivedContext);
     }
 
+    public function testApplyDamage(): void
+    {
+        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $state = $this->getInitialGameState();
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::DAMAGE,
+            GameEvent::PLAYER_EVENT,
+            [
+                'targetId' => 'player2',
+                'damage' => 15,
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertSame(15, $newState->player2->healthPoints);
+    }
+
     private function getInitialGameState(int $lastEventId = 1): GameState
     {
         return new GameState(
@@ -103,8 +123,8 @@ final class GameEventApplierTest extends TestCase
                 new Player(
                     'player1',
                     'Alice',
-                    30,
                 ),
+                30,
                 [],
                 [
                     'D6',
@@ -114,8 +134,8 @@ final class GameEventApplierTest extends TestCase
                 new Player(
                     'player2',
                     'Bob',
-                    40,
                 ),
+                30,
                 [],
                 [
                     'D6',

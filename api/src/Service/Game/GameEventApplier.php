@@ -9,7 +9,6 @@ use App\Game\Card\AbstractPlayableCard;
 use App\Game\GameContext;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Game\State\PlayerState;
 
 final class GameEventApplier
 {
@@ -22,7 +21,7 @@ final class GameEventApplier
         return match ($event->type) {
             GameEventTypeEnum::CARD_DRAWN => $this->applyCardDrawn($event, $gameState),
             GameEventTypeEnum::CARD_PLAYED => $this->applyCardPlayed($event, $gameState),
-            GameEventTypeEnum::ATTACK => $this->applyAttack($event, $gameState),
+            GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
         };
     }
 
@@ -43,7 +42,7 @@ final class GameEventApplier
     {
         $playerId = $event->data['playerId'] ?? null;
 
-        if ($playerId === null || !\is_string($playerId)) {
+        if (!\is_string($playerId)) {
             throw new \LogicException('CARD_DRAWN requires a playerId');
         }
 
@@ -52,7 +51,7 @@ final class GameEventApplier
         $deck = $player->drawPile;
         $drawn = array_shift($deck);
 
-        $newPlayer = new PlayerState($player->player, [...$player->hand, $drawn], $deck);
+        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $drawn], $deck);
 
         return $state->withUpdatedPlayer($newPlayer);
     }
@@ -62,11 +61,11 @@ final class GameEventApplier
         $cardId = $event->data['cardId'] ?? null;
         $playerId = $event->data['playerId'] ?? null;
 
-        if ($cardId === null || !\is_string($cardId)) {
+        if (!\is_string($cardId)) {
             throw new \LogicException('CARD_PLAYED requires a cardId');
         }
 
-        if ($playerId === null || !\is_string($playerId)) {
+        if (!\is_string($playerId)) {
             throw new \LogicException('CARD_PLAYED requires a playerId');
         }
 
@@ -86,11 +85,22 @@ final class GameEventApplier
         return $gameState;
     }
 
-    private function applyAttack(GameEvent $event, GameState $gameState): GameState
+    private function applyDamage(GameEvent $event, GameState $gameState): GameState
     {
-        // @todo apply attack damage to target player or card
-        // dispatch DamageEvent here
+        $target = $event->data['targetId'] ?? null;
+        $damage = $event->data['damage'] ?? null;
 
-        return $gameState;
+        if (!\is_string($target)) {
+            throw new \LogicException('ATTACK requires a targetId');
+        }
+
+        if (!\is_int($damage)) {
+            throw new \LogicException('ATTACK requires a damage integer');
+        }
+
+        $targetPlayerState = $gameState->getPlayer($target);
+        $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
+
+        return $gameState->withUpdatedPlayer($newPlayerState);
     }
 }

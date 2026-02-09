@@ -60,8 +60,8 @@ class GameManager
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
-        $player = new Player((string) $user->getId(), $user->getUsername(), $characterCard->getHealthPoints());
+        $player = new Player((string) $user->getId(), $user->getUsername());
 
-        return new PlayerState($player, [], $deck->getCards());
+        return new PlayerState($player, $characterCard->getHealthPoints(), [], $deck->getCards());
     }
 }

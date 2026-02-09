@@ -29,6 +29,13 @@ class GameContext
         }
     }
 
+    public function attack(int $damage, ?string $playerId = null): void
+    {
+        $playerId ??= $this->getOpponent();
+
+        $this->pushGameEvent(GameEventTypeEnum::DAMAGE, ['targetId' => $playerId, 'damage' => $damage]);
+    }
+
     /**
      * @return GameEvent[]
      */
@@ -43,5 +50,10 @@ class GameContext
     public function pushGameEvent(GameEventTypeEnum $type, array $payload = []): void
     {
         $this->events[] = GameEvent::game($type, $payload);
+    }
+
+    public function getOpponent(): Player
+    {
+        return $this->state->player1->player->id === $this->playerId ? $this->state->player2->player : $this->state->player1->player;
     }
 }
