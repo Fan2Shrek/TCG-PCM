@@ -24,8 +24,9 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             null,
+            '',
         );
-        $gameEvent = new GameEvent(1, GameEventTypeEnum::ATTACK, []);
+        $gameEvent = new GameEvent(1, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();
         $sut = $this->createSut($testableGameManager, $room, $gameState, [$gameEvent]);
@@ -42,11 +43,12 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             1,
+            '',
         );
-        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, []);
+        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
         $events = [
-            new GameEvent(2, GameEventTypeEnum::ATTACK, []),
-            new GameEvent(3, GameEventTypeEnum::ATTACK, []),
+            new GameEvent(2, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(3, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();
@@ -64,11 +66,12 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             null,
+            '',
         );
-        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, []);
+        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
         $events = [
-            new GameEvent(2, GameEventTypeEnum::ATTACK, []),
-            new GameEvent(3, GameEventTypeEnum::ATTACK, []),
+            new GameEvent(2, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(3, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();
@@ -110,11 +113,13 @@ class TestableGameManager extends GameManager
 
     public function __construct() {}
 
-    public function play(GameEvent $event, GameState $gameState): void
+    public function play(GameEvent $event, GameState $gameState): GameState
     {
         $this->callCount++;
         $this->receivedEvent[] = $event;
         $this->receivedGameState[] = $gameState;
+
+        return $gameState;
     }
 }
 

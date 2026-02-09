@@ -6,13 +6,15 @@ namespace App\Game\State;
 
 use App\Enum\GameEventTypeEnum;
 
-// @reflection this maybe should be an entity
-// Or an detach entity with ::fromGameEvent()
 final readonly class GameEvent
 {
+    public const PLAYER_EVENT = 'player_event';
+    public const GAME_EVENT = 'game_event';
+
     public function __construct(
         public int $id,
         public GameEventTypeEnum $type,
+        public string $eventOrigin,
         public array $data,
     ) {}
 }

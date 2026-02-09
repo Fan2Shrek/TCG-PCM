@@ -7,6 +7,7 @@ namespace App\Service\Game;
 use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
+use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Player;
@@ -20,6 +21,7 @@ class GameManager
 
     public function __construct(
         private CardRegistry $cardsRegistry,
+        private GameEventApplier $gameEventApplier,
     ) {}
 
     public function startGame(Room $room): GameState
@@ -36,8 +38,9 @@ class GameManager
         return new GameState($player1InitialState, $player2InitialState, null);
     }
 
-    public function play(GameEvent $event, GameState $gameState): void
+    public function play(GameEvent $event, GameState $gameState): GameState
     {
+        return $this->gameEventApplier->apply($event, $gameState);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
@@ -48,7 +51,7 @@ class GameManager
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
-        $player = new Player($user->getUsername(), $characterCard->getHealthPoints());
+        $player = new Player((string) $user->getId(), $user->getUsername(), $characterCard->getHealthPoints());
 
         $cards = $deck->getCards();
         $initialHandCards = array_splice($cards, 0, self::INITIAL_HAND_SIZE);

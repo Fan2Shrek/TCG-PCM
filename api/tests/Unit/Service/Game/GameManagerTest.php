@@ -12,6 +12,7 @@ use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -44,8 +45,8 @@ final class GameManagerTest extends TestCase
 
         $gameState = $gm->startGame($room);
 
-        $expectedPlayer1 = new Player('user', 30);
-        $expectedPlayer2 = new Player('opponent', 40);
+        $expectedPlayer1 = new Player((string) $owner->getId(), 'user', 30);
+        $expectedPlayer2 = new Player((string) $opponent->getId(), 'opponent', 40);
 
         self::assertEquals($expectedPlayer1, $gameState->player1->player);
         self::assertEquals($expectedPlayer2, $gameState->player2->player);
@@ -109,7 +110,8 @@ final class GameManagerTest extends TestCase
                     DummyCharacterCard::class => DummyCharacterCard::class,
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
                 ]
-            )
+            ),
+            new GameEventApplier(),
         );
     }
 }
