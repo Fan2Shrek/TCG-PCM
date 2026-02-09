@@ -7,6 +7,7 @@ namespace App\Service\Game;
 use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
+use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Player;
@@ -20,6 +21,7 @@ class GameManager
 
     public function __construct(
         private CardRegistry $cardsRegistry,
+        private GameEventApplier $gameEventApplier,
     ) {}
 
     public function startGame(Room $room): GameState
@@ -33,11 +35,21 @@ class GameManager
         $player1InitialState = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck());
         $player2InitialState = $this->createPlayerStateFromUser($opponent, $opponentDeck);
 
-        return new GameState($player1InitialState, $player2InitialState, null);
+        $initialGameState = new GameState($player1InitialState, $player2InitialState, null);
+
+        $events = [];
+        foreach ($initialGameState->getPlayers() as $player) {
+            for ($i = 0; $i < self::INITIAL_HAND_SIZE; $i++) {
+                $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, ['playerId' => $player->id]);
+            }
+        }
+
+        return $this->gameEventApplier->applyMultiple($events, $initialGameState);
     }
 
-    public function play(GameEvent $event, GameState $gameState): void
+    public function play(GameEvent $event, GameState $gameState): GameState
     {
+        return $this->gameEventApplier->apply($event, $gameState);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
@@ -48,11 +60,8 @@ class GameManager
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
-        $player = new Player($user->getUsername(), $characterCard->getHealthPoints());
+        $player = new Player((string) $user->getId(), $user->getUsername(), $characterCard->getHealthPoints());
 
-        $cards = $deck->getCards();
-        $initialHandCards = array_splice($cards, 0, self::INITIAL_HAND_SIZE);
-
-        return new PlayerState($player, $initialHandCards, $cards);
+        return new PlayerState($player, [], $deck->getCards());
     }
 }

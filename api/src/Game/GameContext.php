@@ -16,7 +16,8 @@ class GameContext
     public function makePlayerDrawCards(int $count): void
     {
         $player = $this->getCurrentPlayer();
-        $player->drawCard($count);
+
+        /* $player->drawCard($count); */
     }
 
     public function getCurrentPlayer(): Player
