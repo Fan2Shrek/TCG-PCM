@@ -11,7 +11,7 @@ use App\Tests\Resources\Fixtures\ThereIs;
 /**
 * @extends AbstractBuilder<Room>
 */
-final class RoomBuilder extends AbstractBuilder
+class RoomBuilder extends AbstractBuilder
 {
     private User $owner;
     private User $opponent;

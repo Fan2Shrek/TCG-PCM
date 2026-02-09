@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Fixtures;
 
-use App\Game\AbstractCard;
+use App\Game\Card\AbstractPlayableCard;
 use App\Game\GameContext;
 
-final class DummyCard extends AbstractCard
+final class DummyCard extends AbstractPlayableCard
 {
     public function getName(): string
     {

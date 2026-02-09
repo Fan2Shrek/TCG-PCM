@@ -64,4 +64,9 @@ final readonly class GameState
     {
         return $this->currentPlayer === $player->id;
     }
+
+    public function isFinished(): bool
+    {
+        return !$this->player1->isAlive() || !$this->player2->isAlive();
+    }
 }

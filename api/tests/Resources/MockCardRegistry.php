@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Resources;
 
 use App\Service\Game\CardRegistry;
+use App\Tests\Unit\Fixtures\DummyCard;
 
 final class MockCardRegistry extends CardRegistry
 {
@@ -13,7 +14,7 @@ final class MockCardRegistry extends CardRegistry
     public function __construct(
         ?array $mockCardsList = null,
     ) {
-        $this->mockCardsList = $mockCardsList ?? require dirname(__DIR__, 2).'/resoources/card_list.php';
+        $this->mockCardsList = $mockCardsList ?? array_merge(require dirname(__DIR__, 2).'/resources/cards_list.php', [DummyCard::class => DummyCard::class]);
     }
 
     protected function getCardsList(): array
