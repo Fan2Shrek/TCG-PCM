@@ -39,6 +39,10 @@ when@test:
             autoconfigure: true
             public: true
 
+        App\Service\Game\CardRegistry: '@App\Tests\Resources\MockCardRegistry'
+
+        App\Tests\Resources\MockCardRegistry: ~
+
         App\Service\Game\State\RedisGameStateRepository: ~
 
         App\Service\Game\GameStateRepositoryInterface: '@App\Tests\Resources\InMemoryGameStateRepository'

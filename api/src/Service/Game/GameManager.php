@@ -10,7 +10,12 @@ use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Exception\CardNotInHandException;
+use App\Game\Exception\GameAlreadyFinishedException;
+use App\Game\Exception\NotYourTurnException;
+use App\Game\Exception\UnknowActionException;
 use App\Game\Player;
+use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
@@ -47,6 +52,26 @@ class GameManager
         return $this->gameEventApplier->applyMultiple($events, $initialGameState);
     }
 
+    /**
+     * @return GameEvent[]
+     */
+    public function handleAction(PlayerAction $action, GameState $state): array
+    {
+        if ($state->getCurrentPlayerState()->player !== $action->author) {
+            throw new NotYourTurnException();
+        }
+
+        if ($state->isFinished()) {
+            throw new GameAlreadyFinishedException();
+        }
+
+        return match ($action->actionId) {
+            PlayerAction::PLAY_CARD => $this->playCard($action, $state),
+            PlayerAction::END_TURN => $this->endTurn($action, $state),
+            default => throw new UnknowActionException(),
+        };
+    }
+
     public function play(GameEvent $event, GameState $gameState): GameState
     {
         return $this->gameEventApplier->apply($event, $gameState);
@@ -60,8 +85,38 @@ class GameManager
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
-        $player = new Player((string) $user->getId(), $user->getUsername());
+        $player = Player::fromUser($user);
 
         return new PlayerState($player, $characterCard->getHealthPoints(), [], $deck->getCards());
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function playCard(PlayerAction $action, GameState $state): array
+    {
+        $card = $action->payload['cardId'] ?? null;
+        if (!\is_string($card)) {
+            throw new \InvalidArgumentException('cardId is required in payload');
+        }
+
+        if (!$state->getCurrentPlayerState()->hasCardInHand($card)) {
+            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $card);
+        }
+
+        return [
+            GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
+                'playerId' => $action->author->id,
+                'cardId' => $card,
+            ]),
+        ];
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function endTurn(PlayerAction $action, GameState $state): array
+    {
+        return [];
     }
 }

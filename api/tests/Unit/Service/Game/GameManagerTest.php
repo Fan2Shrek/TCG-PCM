@@ -9,14 +9,19 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Exception\CardNotInHandException;
+use App\Game\Exception\UnknowActionException;
 use App\Game\Player;
+use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Tests\Resources\MockCardRegistry;
+use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
 
 final class GameManagerTest extends TestCase
@@ -45,8 +50,8 @@ final class GameManagerTest extends TestCase
 
         $gameState = $gm->startGame($room);
 
-        $expectedPlayer1 = new Player((string) $owner->getId(), 'user');
-        $expectedPlayer2 = new Player((string) $opponent->getId(), 'opponent');
+        $expectedPlayer1 = Player::fromUser($owner);
+        $expectedPlayer2 = Player::fromUser($opponent);
 
         self::assertEquals($expectedPlayer1, $gameState->player1->player);
         self::assertEquals($expectedPlayer2, $gameState->player2->player);
@@ -90,6 +95,76 @@ final class GameManagerTest extends TestCase
         ], $gameState->player2->drawPile);
     }
 
+    public function testHandlePlayAction()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::PLAY_CARD,
+            ['cardId' => DummyCard::class],
+        );
+
+        $events = $gm->handleAction($action, $gameState);
+
+        self::assertCount(1, $events);
+    }
+
+    public function testHandlePlayActionWithCardNoInDeck()
+    {
+        $this->expectException(CardNotInHandException::class);
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::PLAY_CARD,
+            ['cardId' => 'other_card'],
+        );
+
+        $gm->handleAction($action, $gameState);
+    }
+
+    public function testHandleActionWithUnexistingAction()
+    {
+        $this->expectException(UnknowActionException::class);
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            'blablabla',
+            ['cardId' => DummyCard::class],
+        );
+
+        $events = $gm->handleAction($action, $gameState);
+    }
+
+    private function createGameState(): GameState
+    {
+        $player1State = new PlayerState(
+            new Player('1', 'Player 1', 67),
+            30,
+            [
+                DummyCard::class,
+            ],
+            [],
+        );
+        $player2State = new PlayerState(
+            new Player('2', 'Player 2', 69),
+            30,
+            [],
+            [],
+        );
+
+        return new GameState(
+            $player1State,
+            $player2State,
+            1,
+        );
+    }
+
     private function createRoom(): Room
     {
         $owner = $this->createStub(User::class);
@@ -107,6 +182,8 @@ final class GameManagerTest extends TestCase
         return new GameManager(
             $mock = new MockCardRegistry(
                 [
+                    DummyCard::class => DummyCard::class,
+                    'other_card' =>  DummyCard::class,
                     DummyCharacterCard::class => DummyCharacterCard::class,
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
                 ]

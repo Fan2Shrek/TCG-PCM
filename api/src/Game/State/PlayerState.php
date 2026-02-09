@@ -37,4 +37,14 @@ readonly class PlayerState
             'drawPile' => $newDeck,
         ]);
     }
+
+    public function isAlive(): bool
+    {
+        return $this->healthPoints > 0;
+    }
+
+    public function hasCardInHand(string $cardId): bool
+    {
+        return \in_array($cardId, $this->hand, true);
+    }
 }
