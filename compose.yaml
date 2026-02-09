@@ -19,7 +19,7 @@ services:
       - db
 
   db:
-    image: mariadb:11.8
+    image: mariadb:11.8.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: app

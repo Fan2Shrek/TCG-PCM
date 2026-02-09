@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine AS main
+FROM php:8.5.2-fpm-alpine AS main
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
