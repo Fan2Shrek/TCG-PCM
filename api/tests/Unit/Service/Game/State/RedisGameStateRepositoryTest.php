@@ -26,7 +26,7 @@ final class RedisGameStateRepositoryTest extends TestCase
             null,
             '',
         );
-        $gameEvent = new GameEvent(1, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
+        $gameEvent = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();
         $sut = $this->createSut($testableGameManager, $room, $gameState, [$gameEvent]);
@@ -45,10 +45,10 @@ final class RedisGameStateRepositoryTest extends TestCase
             1,
             '',
         );
-        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
+        $gameEvent = new GameEvent(4, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
         $events = [
-            new GameEvent(2, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
-            new GameEvent(3, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(2, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(3, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();
@@ -68,10 +68,10 @@ final class RedisGameStateRepositoryTest extends TestCase
             null,
             '',
         );
-        $gameEvent = new GameEvent(4, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []);
+        $gameEvent = new GameEvent(4, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
         $events = [
-            new GameEvent(2, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
-            new GameEvent(3, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(2, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
+            new GameEvent(3, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameManager();

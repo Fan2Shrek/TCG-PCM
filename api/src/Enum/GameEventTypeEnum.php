@@ -8,5 +8,5 @@ enum GameEventTypeEnum: string
 {
     case CARD_PLAYED = 'CARD_PLAYED';
     case CARD_DRAWN = 'CARD_DRAWN';
-    case ATTACK = 'ATTACK';
+    case DAMAGE = 'DAMAGE';
 }

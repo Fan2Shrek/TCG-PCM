@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Card;
 
-use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Dice;
 use App\Game\GameContext;
@@ -45,11 +44,13 @@ abstract class CardTestCase extends TestCase
     {
         $player1State = new PlayerState(
             new Player('1', 'Player 1', 67),
+            30,
             [],
             [],
         );
         $player2State = new PlayerState(
             new Player('2', 'Player 2', 69),
+            30,
             [],
             [],
         );

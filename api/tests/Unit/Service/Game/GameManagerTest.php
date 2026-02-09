@@ -45,8 +45,8 @@ final class GameManagerTest extends TestCase
 
         $gameState = $gm->startGame($room);
 
-        $expectedPlayer1 = new Player((string) $owner->getId(), 'user', 30);
-        $expectedPlayer2 = new Player((string) $opponent->getId(), 'opponent', 40);
+        $expectedPlayer1 = new Player((string) $owner->getId(), 'user');
+        $expectedPlayer2 = new Player((string) $opponent->getId(), 'opponent');
 
         self::assertEquals($expectedPlayer1, $gameState->player1->player);
         self::assertEquals($expectedPlayer2, $gameState->player2->player);
