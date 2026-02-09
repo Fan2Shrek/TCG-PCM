@@ -4,34 +4,44 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use App\Enum\GameEventTypeEnum;
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
+
 class GameContext
 {
-    private bool $isPlayer1Turn = true;
+    /**
+     * @var GameEvent[] $events
+     */
+    private array $events = [];
 
     public function __construct(
-        private Player $player1,
-        private Player $player2,
+        public readonly GameState $state,
+        public readonly string $playerId,
     ) {}
 
-    public function makePlayerDrawCards(int $count): void
+    public function drawCards(int $count, ?string $playerId = null): void
     {
-        $player = $this->getCurrentPlayer();
+        $playerId ??= $this->playerId;
 
-        /* $player->drawCard($count); */
+        for ($i = 0; $i < $count; $i++) {
+            $this->pushGameEvent(GameEventTypeEnum::CARD_DRAWN, ['playerId' => $playerId]);
+        }
     }
 
-    public function getCurrentPlayer(): Player
+    /**
+     * @return GameEvent[]
+     */
+    public function flushEvents(): array
     {
-        return $this->isPlayer1Turn ? $this->player1 : $this->player2;
+        $events = $this->events;
+        $this->events = [];
+
+        return $events;
     }
 
-    public function nextPlayer(): void
+    public function pushGameEvent(GameEventTypeEnum $type, array $payload = []): void
     {
-        $this->isPlayer1Turn = !$this->isPlayer1Turn;
-    }
-
-    public function getPlayers(): array
-    {
-        return [$this->player1, $this->player2];
+        $this->events[] = GameEvent::game($type, $payload);
     }
 }
