@@ -105,13 +105,13 @@ final class GameManagerTest extends TestCase
     private function getSut(): GameManager
     {
         return new GameManager(
-            new MockCardRegistry(
+            $mock = new MockCardRegistry(
                 [
                     DummyCharacterCard::class => DummyCharacterCard::class,
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
                 ]
             ),
-            new GameEventApplier(),
+            new GameEventApplier($mock),
         );
     }
 }

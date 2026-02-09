@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Service\Game;
 
 use App\Enum\GameEventTypeEnum;
+use App\Game\Card\AbstractPlayableCard;
+use App\Game\GameContext;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
 
 final class GameEventApplier
 {
+    public function __construct(
+        private CardRegistry $cardRegistry,
+    ) {}
+
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
         return match ($event->type) {
@@ -53,8 +59,29 @@ final class GameEventApplier
 
     private function applyCardPlayed(GameEvent $event, GameState $gameState): GameState
     {
-        // cars MUST dispatch new events
-        // @todo remove card from player hand and apply card effect
+        $cardId = $event->data['cardId'] ?? null;
+        $playerId = $event->data['playerId'] ?? null;
+
+        if ($cardId === null || !\is_string($cardId)) {
+            throw new \LogicException('CARD_PLAYED requires a cardId');
+        }
+
+        if ($playerId === null || !\is_string($playerId)) {
+            throw new \LogicException('CARD_PLAYED requires a playerId');
+        }
+
+        $card = $this->cardRegistry->getCardInstanceById($cardId);
+
+        if (!$card instanceof AbstractPlayableCard) {
+            throw new \LogicException(\sprintf('Card with id %s is not playable', $cardId));
+        }
+
+        $ctx = new GameContext($gameState, $playerId);
+        $card->play($ctx);
+
+        foreach ($ctx->flushEvents() as $cardEvent) {
+            $gameState = $this->apply($cardEvent, $gameState);
+        }
 
         return $gameState;
     }

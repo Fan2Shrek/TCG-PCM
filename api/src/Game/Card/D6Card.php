@@ -31,6 +31,6 @@ final class D6Card extends AbstractPlayableCard
 
     public function play(GameContext $context): void
     {
-        $context->makePlayerDrawCards(Dice::d6());
+        $context->drawCards(Dice::d6());
     }
 }
