@@ -35,11 +35,16 @@ final readonly class GameState
     public function withUpdatedPlayer(PlayerState $updatedPlayer): GameState
     {
         if ($this->player1->player->id === $updatedPlayer->player->id) {
+            return clone($this, [
+                'player1' => $updatedPlayer,
+            ]);
             return new GameState(player1: $updatedPlayer, player2: $this->player2, lastEventid: $this->lastEventid, currentPlayer: $this->currentPlayer);
         }
 
         if ($this->player2->player->id === $updatedPlayer->player->id) {
-            return new GameState(player1: $this->player1, player2: $updatedPlayer, lastEventid: $this->lastEventid, currentPlayer: $this->currentPlayer);
+            return clone($this, [
+                'player2' => $updatedPlayer,
+            ]);
         }
 
         throw new \LogicException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
