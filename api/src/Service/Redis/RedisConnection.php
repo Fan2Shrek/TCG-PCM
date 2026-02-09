@@ -13,7 +13,7 @@ final class RedisConnection
         $infos = parse_url($redisDsn);
         $this->connection = new \Redis();
 
-        if (!$infos || !isset($infos['host'])) {
+        if (!$infos || !($infos['host'] ?? null)) {
             throw new \InvalidArgumentException('Invalid Redis DSN');
         }
 

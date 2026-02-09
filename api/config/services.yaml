@@ -39,11 +39,6 @@ when@test:
             autoconfigure: true
             public: true
 
-        App\Tests\Resources\InMemoryGameContextRepository:
-            autowire: true
-
         App\Service\Game\State\RedisGameStateRepository: ~
-
-        App\Service\Game\GameContextRepositoryInterface: '@App\Tests\Resources\InMemoryGameContextRepository'
 
         App\Service\Game\GameStateRepositoryInterface: '@App\Tests\Resources\InMemoryGameStateRepository'

@@ -53,6 +53,7 @@ lint-fix:
 
 symfony-lint:
 	$(CONSOLE) lint:container
+	$(CONSOLE) debug:container --deprecations
 
 stan:
 	$(PHP) vendor/bin/mago analyze

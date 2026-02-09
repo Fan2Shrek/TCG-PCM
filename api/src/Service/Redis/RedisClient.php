@@ -19,7 +19,7 @@ class RedisClient
      * @param string $key
      * @param class-string<T> $type
      *
-     * @return T
+     * @return ?T
      */
     public function get(string $key, string $type): ?object
     {

@@ -59,15 +59,13 @@ class CardRegistry
 
     private function createCardInstance(string $cardId): AbstractCard
     {
-        if (!isset($this->cards[$cardId])) {
+        if (!($this->cards[$cardId] ?? null)) {
             $this->loadCards();
         }
 
-        if (!isset($this->cards[$cardId])) {
+        if (!($class = $this->cards[$cardId] ?? null)) {
             throw new \RuntimeException(\sprintf('Card with id "%s" not found', $cardId));
         }
-
-        $class = $this->cards[$cardId];
 
         return new $class();
     }

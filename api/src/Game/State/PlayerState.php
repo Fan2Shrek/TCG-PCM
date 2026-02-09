@@ -21,7 +21,9 @@ readonly class PlayerState
 
     public function withUpdatedHealth(int $newHealth): self
     {
-        return new self(player: $this->player, healthPoints: $newHealth, hand: $this->hand, drawPile: $this->drawPile);
+        return clone($this, [
+            'healthPoints' => $newHealth,
+        ]);
     }
 
     /**
@@ -30,6 +32,9 @@ readonly class PlayerState
      */
     public function withNewHandAndDeck(array $newHand, array $newDeck): self
     {
-        return new self(player: $this->player, healthPoints: $this->healthPoints, hand: $newHand, drawPile: $newDeck);
+        return clone($this, [
+            'hand' => $newHand,
+            'drawPile' => $newDeck,
+        ]);
     }
 }

@@ -23,7 +23,7 @@ final class RoomBuilder extends AbstractBuilder
         $this->entity = new Room($owner);
         $this->entity->setOwnerDeck(ThereIs::aDeck()->ownedBy($owner)->build());
 
-        if (isset($this->opponent)) {
+        if ($this->opponent ?? null) {
             $this->entity->setOpponent($this->opponent);
             $this->entity->setOpponentDeck(ThereIs::aDeck()->ownedBy($this->opponent)->build());
         }

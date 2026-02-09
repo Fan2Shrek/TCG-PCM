@@ -27,7 +27,7 @@ abstract class AbstractFixtures extends Fixture
             }
 
             foreach ($constructor->getParameters() as $parameter) {
-                if (!isset($data[$parameter->getName()])) {
+                if (!($data[$parameter->getName()] ?? null)) {
                     continue;
                 }
 
@@ -56,9 +56,7 @@ abstract class AbstractFixtures extends Fixture
     /**
      * @param T $entity
      */
-    protected function postInstantiate(object $entity): void
-    {
-    }
+    protected function postInstantiate(object $entity): void {}
 
     abstract protected function getData(): iterable;
 }
