@@ -61,13 +61,7 @@ message = 'Could not infer a precise return type for function `app\service\game\
 count = 1
 
 [[issues]]
-file = "src/Service/Game/GameManager.php"
-code = "less-specific-nested-argument-type"
-message = 'Argument type mismatch for argument #2 of `app\game\state\playerstate::__construct`: expected `array<array-key, string>`, but provided type `array<array-key, mixed>` is less specific.'
-count = 1
-
-[[issues]]
-file = "src/Service/Game/GameManager.php"
-code = "less-specific-nested-argument-type"
-message = 'Argument type mismatch for argument #3 of `app\game\state\playerstate::__construct`: expected `array<array-key, string>`, but provided type `array<array-key, mixed>` is less specific.'
+file = "src/Service/Game/GameEventApplier.php"
+code = "possibly-invalid-argument"
+message = 'Possible argument type mismatch for argument #2 of `app\game\state\playerstate::__construct`: expected `array<array-key, string>`, but possibly received `list{null|string, ...<string>}`.'
 count = 1

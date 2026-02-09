@@ -35,7 +35,16 @@ class GameManager
         $player1InitialState = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck());
         $player2InitialState = $this->createPlayerStateFromUser($opponent, $opponentDeck);
 
-        return new GameState($player1InitialState, $player2InitialState, null);
+        $initialGameState = new GameState($player1InitialState, $player2InitialState, null);
+
+        $events = [];
+        foreach ($initialGameState->getPlayers() as $player) {
+            for ($i = 0; $i < self::INITIAL_HAND_SIZE; $i++) {
+                $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, ['playerId' => $player->id]);
+            }
+        }
+
+        return $this->gameEventApplier->applyMultiple($events, $initialGameState);
     }
 
     public function play(GameEvent $event, GameState $gameState): GameState
@@ -53,9 +62,6 @@ class GameManager
 
         $player = new Player((string) $user->getId(), $user->getUsername(), $characterCard->getHealthPoints());
 
-        $cards = $deck->getCards();
-        $initialHandCards = array_splice($cards, 0, self::INITIAL_HAND_SIZE);
-
-        return new PlayerState($player, $initialHandCards, $cards);
+        return new PlayerState($player, [], $deck->getCards());
     }
 }

@@ -24,24 +24,22 @@ final readonly class GameState
         return $this->player1->player->id === $playerId ? $this->player1 : $this->player2;
     }
 
+    /**
+     * @return Player[]
+     */
+    public function getPlayers(): array
+    {
+        return [$this->player1->player, $this->player2->player];
+    }
+
     public function withUpdatedPlayer(PlayerState $updatedPlayer): GameState
     {
         if ($this->player1->player->id === $updatedPlayer->player->id) {
-            return new GameState(
-                player1: $updatedPlayer,
-                player2: $this->player2,
-                lastEventid: $this->lastEventid,
-                currentPlayer: $this->currentPlayer,
-            );
+            return new GameState(player1: $updatedPlayer, player2: $this->player2, lastEventid: $this->lastEventid, currentPlayer: $this->currentPlayer);
         }
 
         if ($this->player2->player->id === $updatedPlayer->player->id) {
-            return new GameState(
-                player1: $this->player1,
-                player2: $updatedPlayer,
-                lastEventid: $this->lastEventid,
-                currentPlayer: $this->currentPlayer,
-            );
+            return new GameState(player1: $this->player1, player2: $updatedPlayer, lastEventid: $this->lastEventid, currentPlayer: $this->currentPlayer);
         }
 
         throw new \LogicException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));

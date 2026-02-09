@@ -55,8 +55,8 @@ final class GameManagerTest extends TestCase
     public function testPlayerStateDeck()
     {
         $gm = $this->getSut();
-        $owner = new User('user', 'email');
-        $opponent = new User('opponent', 'email2');
+        $owner = new TestUser('user', 'email');
+        $opponent = new TestUser('opponent', 'email2');
         $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
         $ownerDeck->setCards(['card1', 'card2', 'card3', 'card4', 'card5', 'card6']);
         $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class);
@@ -180,5 +180,13 @@ class DummyCharacterCardWithMoreHP extends DummyCharacterCard
     public function getHealthPoints(): int
     {
         return 40;
+    }
+}
+
+class TestUser extends User
+{
+    public function getId(): int
+    {
+        return spl_object_id($this);
     }
 }

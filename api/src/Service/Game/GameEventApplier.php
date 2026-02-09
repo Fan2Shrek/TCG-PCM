@@ -20,11 +20,24 @@ final class GameEventApplier
         };
     }
 
+    /**
+     * @param GameEvent[] $events
+     */
+    public function applyMultiple(array $events, GameState $gameState): GameState
+    {
+        foreach ($events as $event) {
+            $gameState = $this->apply($event, $gameState);
+        }
+
+        return $gameState;
+    }
+
+    // @ŧodo voir comportement quand plus de cartes
     private function applyCardDrawn(GameEvent $event, GameState $state): GameState
     {
-        $playerId = $event->payload['playerId'] ?? null;
+        $playerId = $event->data['playerId'] ?? null;
 
-        if ($playerId === null) {
+        if ($playerId === null || !\is_string($playerId)) {
             throw new \LogicException('CARD_DRAWN requires a playerId');
         }
 
@@ -33,11 +46,7 @@ final class GameEventApplier
         $deck = $player->drawPile;
         $drawn = array_shift($deck);
 
-        $newPlayer = new PlayerState(
-            $player->player,
-            $deck,
-            [...$player->hand, $drawn],
-        );
+        $newPlayer = new PlayerState($player->player, [...$player->hand, $drawn], $deck);
 
         return $state->withUpdatedPlayer($newPlayer);
     }

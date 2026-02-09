@@ -30,6 +30,6 @@ final class DoctrineGameEventRepository implements GameEventRepositoryInterface
 
     private function entityToGameEvent(GameEventEntity $gameEvent): GameEvent
     {
-        return new GameEvent($gameEvent->getId(), $gameEvent->getType(), $gameEvent->getData());
+        return new GameEvent($gameEvent->getId(), $gameEvent->getType(), GameEvent::PLAYER_EVENT, $gameEvent->getData());
     }
 }

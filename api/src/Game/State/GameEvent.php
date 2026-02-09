@@ -17,4 +17,14 @@ final readonly class GameEvent
         public string $eventOrigin,
         public array $data,
     ) {}
+
+    public static function game(GameEventTypeEnum $type, array $data): self
+    {
+        return new self(0, $type, self::GAME_EVENT, $data);
+    }
+
+    public static function player(GameEventTypeEnum $type, array $data): self
+    {
+        return new self(0, $type, self::PLAYER_EVENT, $data);
+    }
 }
