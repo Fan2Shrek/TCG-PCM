@@ -1,6 +1,7 @@
 import Image from "./image";
 import { CardLayer } from "../types/card";
 import CardFoil from "./CardFoil";
+import { Fragment } from "react/jsx-runtime";
 
 export type CardFrontProps = {
   layers: CardLayer[];
@@ -15,9 +16,8 @@ const CardFront = ({ layers, tilt, glare, isHovering }: CardFrontProps) => (
       const depthFactor = (layer.depth / 100) * 5;
 
       return (
-        <>
+        <Fragment key={i}>
           <Image
-            key={i}
             src={layer.src}
             alt={layer.alt ?? `layer-${i}`}
             fill
@@ -27,7 +27,7 @@ const CardFront = ({ layers, tilt, glare, isHovering }: CardFrontProps) => (
             }}
           />
           { layer.foil && layer.mask && <CardFoil glare={glare} tilt={tilt} foil={layer.foil} mask={layer.mask} isHovering={isHovering} brightness="0.5" /> }
-        </>
+        </Fragment>
       );
     })}
   </div>
