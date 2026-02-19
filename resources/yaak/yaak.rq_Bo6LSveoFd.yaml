@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_Bo6LSveoFd
+createdAt: 2026-02-19T16:38:57.969577711
+updatedAt: 2026-02-19T16:38:57.969577840
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body:
+  text: '{}'
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Join Room
+sortPriority: 2.0
+url: ${[host]}/api/rooms/${[room_id]}/join
+urlParameters: []

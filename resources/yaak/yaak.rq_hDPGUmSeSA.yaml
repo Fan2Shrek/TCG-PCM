@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_hDPGUmSeSA
+createdAt: 2026-02-19T16:38:57.970239220
+updatedAt: 2026-02-19T16:38:57.970239334
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_JLpCFxuyh2
+authentication: {}
+authenticationType: null
+body:
+  text: '{}'
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Play
+sortPriority: 8.0
+url: ${[host]}/api/game/${[room_id]}/play
+urlParameters: []

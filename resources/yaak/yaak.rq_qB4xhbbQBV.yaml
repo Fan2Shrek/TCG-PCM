@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_qB4xhbbQBV
+createdAt: 2026-02-19T16:38:57.969915326
+updatedAt: 2026-02-19T16:38:57.969915463
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+        "deck": "/api/decks/1"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Change Deck
+sortPriority: 4.0
+url: ${[host]}/api/rooms/${[room_id]}/change_deck
+urlParameters: []

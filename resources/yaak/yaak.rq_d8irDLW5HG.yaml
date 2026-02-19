@@ -1,0 +1,31 @@
+type: http_request
+model: http_request
+id: rq_d8irDLW5HG
+createdAt: 2026-02-19T16:38:57.969759455
+updatedAt: 2026-02-19T16:53:08.251510295
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body:
+  text: '{}'
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Start Room
+sortPriority: 3.0
+url: ${[host]}/api/rooms/${[room_id]}/start
+urlParameters:
+- enabled: false
+  name: ''
+  value: ''
+  id: TyjShNCdXQ
+- enabled: true
+  name: ''
+  value: ''
+  id: udSqSfECyz
