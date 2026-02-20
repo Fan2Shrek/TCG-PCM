@@ -5,19 +5,7 @@ import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
 import { CardModel, CardSizeClass, CardSize, CardLayer } from "../types/card";
-import {
-  clamp,
-  DEFAULT_TILT,
-  DEFAULT_GLARE,
-  NORMALIZED_CENTER,
-  HALF_ROTATION,
-  FLIP_DEG,
-  NORMAL_ANIMATION_DURATION_MS,
-  SNAPBACK_ANIMATION_DURATION_MS,
-  SNAPBACK_DELAY_MS,
-  calculateTilt,
-  calculateGlare,
-} from "../utils/cardUtils";
+import { clamp, DEFAULT_TILT, DEFAULT_GLARE, NORMALIZED_CENTER, HALF_ROTATION, FLIP_DEG, NORMAL_ANIMATION_DURATION_MS, SNAPBACK_ANIMATION_DURATION_MS, SNAPBACK_DELAY_MS, calculateTilt, calculateGlare } from "../utils/cardUtils";
 
 export type CardViewProps = {
   card: CardModel;
@@ -80,7 +68,7 @@ const Card = ({ card, size = "md", interactive = true, onHover, onClick }: CardV
 
       onHover?.(card.id);
     },
-    [interactive, onHover, card.id, tilt.y]
+    [interactive, onHover, card.id, tilt.y],
   );
 
   const handlePointerLeave = useCallback(() => {
@@ -121,9 +109,11 @@ const Card = ({ card, size = "md", interactive = true, onHover, onClick }: CardV
     <div
       ref={rootRef}
       className={`relative rounded-xl aspect-5/7 ${sizeClass} transform-3d will-change-transform transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)] cursor-pointer`}
-      style={{
-        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
-      } as React.CSSProperties}
+      style={
+        {
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        } as React.CSSProperties
+      }
       onPointerMove={interactive ? handlePointerMove : undefined}
       onPointerLeave={interactive ? handlePointerLeave : undefined}
       onClick={handleClick}
