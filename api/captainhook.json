@@ -22,6 +22,19 @@
             },
             {
                 "action": "make lint"
+            },
+            {
+                "action": "make cardList",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": ["php"]
+                    },
+                    {
+                        "exec": "CaptainHook.FileStaged.InDirectory",
+                        "args": ["src/Game/Card"]
+                    }
+                ]
             }
         ]
     },
