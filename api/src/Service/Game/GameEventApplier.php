@@ -25,6 +25,7 @@ final class GameEventApplier
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
+            GameEventTypeEnum::DICE_ROLLED => $this->applyDiceRolled($event, $gameState),
         };
     }
 
@@ -122,6 +123,13 @@ final class GameEventApplier
     private function applyRoundStarted(GameEvent $event, GameState $gameState): GameState
     {
         // @todo appliquer les effets de début de round (buffs, dégâts sur la durée, etc.)
+
+        return $gameState;
+    }
+
+    private function applyDiceRolled(GameEvent $event, GameState $gameState): GameState
+    {
+        // no-op
 
         return $gameState;
     }

@@ -12,4 +12,5 @@ enum GameEventTypeEnum: string
     case TURN_ENDED = 'TURN_ENDED';
     case TURN_STARTED = 'TURN_STARTED';
     case ROUND_STARTED = 'ROUND_STARTED';
+    case DICE_ROLLED = 'DICE_ROLLED';
 }

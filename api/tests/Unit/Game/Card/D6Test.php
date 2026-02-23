@@ -27,7 +27,8 @@ final class D6Test extends CardTestCase
 
         $events = $ctx->flushEvents();
 
-        self::assertCount($roll, $events);
+        // 1 for the dice roll, $roll for the drawn cards
+        self::assertCount($roll + 1, $events);
     }
 
     public function testD6Event(): void
@@ -38,14 +39,24 @@ final class D6Test extends CardTestCase
 
         $card->play($ctx);
 
-        $event = $ctx->flushEvents()[0];
+        [$rollEvent, $drawEvent] = $ctx->flushEvents();
 
+        self::assertEquals(
+            GameEvent::game(
+                GameEventTypeEnum::DICE_ROLLED,
+                [
+                    'faces' => 6,
+                    'result' => 1
+                ],
+            ),
+            $rollEvent,
+        );
         self::assertEquals(
             GameEvent::game(
                 GameEventTypeEnum::CARD_DRAWN,
                 ['playerId' => '1'],
             ),
-            $event,
+            $drawEvent,
         );
     }
 

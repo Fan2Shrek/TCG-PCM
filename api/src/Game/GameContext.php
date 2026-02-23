@@ -56,4 +56,16 @@ class GameContext
     {
         return $this->state->player1->player->id === $this->playerId ? $this->state->player2->player : $this->state->player1->player;
     }
+
+    public function rollDice(int $faces): int
+    {
+        $result = Dice::roll($faces);
+
+        $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
+            'faces' => $faces,
+            'result' => $result,
+        ]);
+
+        return $result;
+    }
 }
