@@ -11,6 +11,7 @@ use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\Before;
@@ -27,7 +28,7 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyCardDrawn()
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
         $event = new GameEvent(1, GameEventTypeEnum::CARD_DRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player1']);
 
@@ -39,7 +40,7 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyCardDrawnWithPlayer2()
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
         $event = new GameEvent(1, GameEventTypeEnum::CARD_DRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player2']);
 
@@ -51,11 +52,12 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyCardPlayed(): void
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry(
+        $eventApplier = $this->getSut(
             [
                 'spy' => SpyCard::class,
-            ]
-        ));
+            ],
+            new GameContextFactory(),
+        );
         $state = $this->getInitialGameState();
         $event = new GameEvent(
             1,
@@ -74,12 +76,12 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyCardPlayedApplyNewEvent(): void
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry(
+        $eventApplier = $this->getSut(
             [
                 'spy' => SpyCard::class,
                 'other-spy' => OtherSpyCard::class,
-            ]
-        ));
+            ],
+        );
         $state = $this->getInitialGameState(2);
         $event = new GameEvent(
             1,
@@ -99,7 +101,7 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyDamage(): void
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
         $event = new GameEvent(
             1,
@@ -118,7 +120,7 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyTurnEneded()
     {
-        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
 
         $event = new GameEvent(
@@ -133,6 +135,14 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertSame('player2', $newState->currentPlayer);
+    }
+
+    private function getSut(array $cards = []): GameEventApplier
+    {
+        return new GameEventApplier(
+            new MockCardRegistry($cards),
+            new GameContextFactory()
+        );
     }
 
     private function getInitialGameState(int $lastEventId = 1): GameState

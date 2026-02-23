@@ -6,14 +6,15 @@ namespace App\Service\Game;
 
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
-use App\Game\GameContext;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Service\Game\Factory\GameContextFactoryInterface;
 
-final class GameEventApplier
+class GameEventApplier
 {
     public function __construct(
         private CardRegistry $cardRegistry,
+        private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
     public function apply(GameEvent $event, GameState $gameState): GameState
@@ -79,7 +80,7 @@ final class GameEventApplier
             throw new \LogicException(\sprintf('Card with id %s is not playable', $cardId));
         }
 
-        $ctx = new GameContext($gameState, $playerId);
+        $ctx = $this->gameContextFactory->createGameContext($gameState, $playerId);
         $card->play($ctx);
 
         foreach ($ctx->flushEvents() as $cardEvent) {
@@ -95,11 +96,11 @@ final class GameEventApplier
         $damage = $event->data['damage'] ?? null;
 
         if (!\is_string($target)) {
-            throw new \LogicException('ATTACK requires a targetId');
+            throw new \LogicException('DAMAGE requires a targetId');
         }
 
         if (!\is_int($damage)) {
-            throw new \LogicException('ATTACK requires a damage integer');
+            throw new \LogicException('DAMAGE requires a damage integer');
         }
 
         $targetPlayerState = $gameState->getPlayer($target);

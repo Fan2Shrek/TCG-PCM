@@ -1,5 +1,4 @@
 name: API code check
-
 on:
   pull_request:
     paths:
@@ -105,3 +104,32 @@ jobs:
 
       - name: Run PHPUnit
         run: make tests
+
+  replay:
+    name: PHP replay test
+    runs-on: ubuntu-latest
+    needs: install-deps
+    env:
+      WITH_DOCKER: 0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.composer/cache
+            api/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.5
+
+      - name: Run Replays
+        run: make tests-replay

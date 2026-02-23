@@ -17,6 +17,7 @@ use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
@@ -270,7 +271,10 @@ final class GameManagerTest extends TestCase
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
                 ]
             ),
-            new GameEventApplier($mock),
+            new GameEventApplier(
+                $mock,
+                new GameContextFactory(),
+            ),
         );
     }
 }

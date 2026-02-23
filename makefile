@@ -36,6 +36,9 @@ setup-tests:
 tests:
 	$(PHP) bin/phpunit
 
+tests-replay:
+	$(PHP) bin/phpunit --group replay
+
 format:
 	$(PHP) vendor/bin/mago format
 
