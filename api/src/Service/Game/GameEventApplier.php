@@ -22,6 +22,9 @@ final class GameEventApplier
             GameEventTypeEnum::CARD_DRAWN => $this->applyCardDrawn($event, $gameState),
             GameEventTypeEnum::CARD_PLAYED => $this->applyCardPlayed($event, $gameState),
             GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
+            GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
+            GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
+            GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
         };
     }
 
@@ -102,5 +105,24 @@ final class GameEventApplier
         $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
 
         return $gameState->withUpdatedPlayer($newPlayerState);
+    }
+
+    private function applyTurnEnded(GameEvent $event, GameState $gameState): GameState
+    {
+        return $gameState->withCurrentPlayer($gameState->getNextPlayer()->id);
+    }
+
+    private function applyTurnStarted(GameEvent $event, GameState $gameState): GameState
+    {
+        // @todo appliquer les effets de début de tour (buffs, dégâts sur la durée, etc.)
+
+        return $gameState;
+    }
+
+    private function applyRoundStarted(GameEvent $event, GameState $gameState): GameState
+    {
+        // @todo appliquer les effets de début de round (buffs, dégâts sur la durée, etc.)
+
+        return $gameState;
     }
 }

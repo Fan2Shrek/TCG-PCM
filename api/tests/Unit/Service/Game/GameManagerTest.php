@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Service\Game;
 use App\Entity\Deck;
 use App\Entity\Room;
 use App\Entity\User;
+use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Exception\CardNotInHandException;
@@ -108,7 +109,19 @@ final class GameManagerTest extends TestCase
 
         $events = $gm->handleAction($action, $gameState);
 
-        self::assertCount(1, $events);
+        $expected = [
+            new GameEvent(
+                0,
+                GameEventTypeEnum::CARD_PLAYED,
+                GameEvent::PLAYER_EVENT,
+                [
+                    'playerId' => $gameState->player1->player->id,
+                    'cardId' => DummyCard::class,
+                ],
+            ),
+        ];
+
+        self::assertEquals($expected, $events);
     }
 
     public function testHandlePlayActionWithCardNoInDeck()
@@ -138,7 +151,76 @@ final class GameManagerTest extends TestCase
             ['cardId' => DummyCard::class],
         );
 
+        $gm->handleAction($action, $gameState);
+    }
+
+    public function testEndTurn()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
         $events = $gm->handleAction($action, $gameState);
+        $expected = [
+            new GameEvent(
+                0,
+                GameEventTypeEnum::TURN_ENDED,
+                GameEvent::PLAYER_EVENT,
+                ['playerId' => $gameState->player1->player->id],
+            ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::TURN_STARTED,
+                GameEvent::GAME_EVENT,
+                ['playerId' => $gameState->player2->player->id],
+            ),
+        ];
+
+        self::assertEquals($expected, $events);
+    }
+
+    public function testEndTurnWithNewRound()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $gameState = $gameState->withCurrentPlayer(
+            $gameState->player2->player->id,
+        );
+        $action = new PlayerAction(
+            $gameState->player2->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
+        $events = $gm->handleAction($action, $gameState);
+        $expected = [
+            new GameEvent(
+                0,
+                GameEventTypeEnum::TURN_ENDED,
+                GameEvent::PLAYER_EVENT,
+                ['playerId' => $gameState->player2->player->id],
+            ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::ROUND_STARTED,
+                GameEvent::GAME_EVENT,
+                [],
+            ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::TURN_STARTED,
+                GameEvent::GAME_EVENT,
+                ['playerId' => $gameState->player1->player->id],
+            ),
+        ];
+
+        self::assertEquals($expected, $events);
     }
 
     private function createGameState(): GameState

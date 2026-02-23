@@ -116,6 +116,25 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(15, $newState->player2->healthPoints);
     }
 
+    public function testApplyTurnEneded()
+    {
+        $eventApplier = new GameEventApplier(new MockCardRegistry([]));
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::TURN_ENDED,
+            GameEvent::PLAYER_EVENT,
+            [
+                'playerId' => 'player2',
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertSame('player2', $newState->currentPlayer);
+    }
+
     private function getInitialGameState(int $lastEventId = 1): GameState
     {
         return new GameState(
