@@ -31,7 +31,7 @@ class GameContext
 
     public function attack(int $damage, ?string $playerId = null): void
     {
-        $playerId ??= $this->getOpponent();
+        $playerId ??= $this->getOpponent()->id;
 
         $this->pushGameEvent(GameEventTypeEnum::DAMAGE, ['targetId' => $playerId, 'damage' => $damage]);
     }
