@@ -5,7 +5,7 @@
             {
                 "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Regex",
                 "options": {
-                  "regex": "/^\\[API\\]/",
+                  "regex": "/^\\[API|front|chore\\]/",
                   "error": "Commit message must start with [API]"
                 }
             }
