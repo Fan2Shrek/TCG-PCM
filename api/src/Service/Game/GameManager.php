@@ -57,7 +57,7 @@ class GameManager
      */
     public function handleAction(PlayerAction $action, GameState $state): array
     {
-        if ($state->getCurrentPlayerState()->player !== $action->author) {
+        if ($state->getCurrentPlayer() !== $action->author) {
             throw new NotYourTurnException();
         }
 
@@ -117,6 +117,25 @@ class GameManager
      */
     private function endTurn(PlayerAction $action, GameState $state): array
     {
-        return [];
+        $events = [];
+
+        $events[] = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
+            'playerId' => $action->author->id,
+        ]);
+
+        if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
+            $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+        }
+
+        $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+            'playerId' => $state->getNextPlayer()->id,
+        ]);
+
+        return $events;
+    }
+
+    private function isNewRound(GameState $state, string $nextPlayerId): bool
+    {
+        return $nextPlayerId === $state->player1->player->id;
     }
 }
