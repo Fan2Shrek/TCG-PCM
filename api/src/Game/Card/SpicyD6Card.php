@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
-use App\Game\Dice;
 use App\Game\GameContext;
 
 final class SpicyD6Card extends AbstractPlayableCard
@@ -31,6 +30,6 @@ final class SpicyD6Card extends AbstractPlayableCard
 
     public function play(GameContext $context): void
     {
-        $context->attack(Dice::d6());
+        $context->attack($context->rollDice(6));
     }
 }
