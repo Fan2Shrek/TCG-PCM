@@ -72,10 +72,7 @@ return [
                 'replay1_player1',
             ),
             29,
-            [
-                'Spicy-D6',
-                'Spicy-D6',
-            ],
+            [],
             [],
         ),
         new PlayerState(
@@ -84,9 +81,7 @@ return [
                 'replay1_player2',
             ),
             0,
-            [
-                'Spicy-D6',
-            ],
+            [],
             [],
         ),
         0,
