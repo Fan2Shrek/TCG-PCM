@@ -63,7 +63,6 @@ final readonly class GameState
             return clone($this, [
                 'player1' => $updatedPlayer,
             ]);
-            return new GameState(player1: $updatedPlayer, player2: $this->player2, lastEventid: $this->lastEventid, currentPlayer: $this->currentPlayer);
         }
 
         if ($this->player2->player->id === $updatedPlayer->player->id) {

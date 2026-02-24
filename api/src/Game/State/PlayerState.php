@@ -47,4 +47,20 @@ readonly class PlayerState
     {
         return \in_array($cardId, $this->hand, true);
     }
+
+    public function removeCardFromHand(string $cardId): self
+    {
+        $hand = $this->hand;
+        $key = array_search($cardId, $hand, true);
+
+        if (false === $key) {
+            throw new \BadMethodCallException(\sprintf('Card %s not found in hand', $cardId));
+        }
+
+        unset($hand[$key]);
+
+        return clone($this, [
+            'hand' => array_values($hand),
+        ]);
+    }
 }

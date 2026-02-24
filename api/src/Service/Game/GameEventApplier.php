@@ -74,6 +74,15 @@ class GameEventApplier
             throw new \LogicException('CARD_PLAYED requires a playerId');
         }
 
+        $player = $gameState->getPlayer($playerId);
+
+        if (!$player->hasCardInHand($cardId)) {
+            throw new \LogicException(\sprintf('Player %s does not have card %s in hand', $playerId, $cardId));
+        }
+
+        $player = $player->removeCardFromHand($cardId);
+        $gameState = $gameState->withUpdatedPlayer($player);
+
         $card = $this->cardRegistry->getCardInstanceById($cardId);
 
         if (!$card instanceof AbstractPlayableCard) {

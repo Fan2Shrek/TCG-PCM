@@ -58,7 +58,7 @@ final class GameEventApplierTest extends TestCase
             ],
             new GameContextFactory(),
         );
-        $state = $this->getInitialGameState();
+        $state = $this->getInitialGameState(player2Hand: ['spy']);
         $event = new GameEvent(
             1,
             GameEventTypeEnum::CARD_PLAYED,
@@ -82,7 +82,7 @@ final class GameEventApplierTest extends TestCase
                 'other-spy' => OtherSpyCard::class,
             ],
         );
-        $state = $this->getInitialGameState(2);
+        $state = $this->getInitialGameState(2, ['spy', 'other-spy']);
         $event = new GameEvent(
             1,
             GameEventTypeEnum::CARD_PLAYED,
@@ -145,7 +145,7 @@ final class GameEventApplierTest extends TestCase
         );
     }
 
-    private function getInitialGameState(int $lastEventId = 1): GameState
+    private function getInitialGameState(int $lastEventId = 1, array $player2Hand = []): GameState
     {
         return new GameState(
             new PlayerState(
@@ -165,7 +165,7 @@ final class GameEventApplierTest extends TestCase
                     'Bob',
                 ),
                 30,
-                [],
+                $player2Hand,
                 [
                     'D6',
                 ],
