@@ -71,11 +71,15 @@ final readonly class GameState
             ]);
         }
 
-        throw new \LogicException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
+        throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
     }
 
     public function withCurrentPlayer(string $currentPlayer): GameState
     {
+        if (!\in_array($currentPlayer, [$this->player1->player->id, $this->player2->player->id], true)) {
+            throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $currentPlayer));
+        }
+
         return clone($this, [
             'currentPlayer' => $currentPlayer,
         ]);

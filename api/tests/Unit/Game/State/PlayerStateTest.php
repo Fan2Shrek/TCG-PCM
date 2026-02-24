@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\State;
+namespace App\Tests\Unit\Game\State;
 
 use App\Game\Player;
 use App\Game\State\PlayerState;
