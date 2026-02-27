@@ -74,7 +74,9 @@ class GameManager
 
     public function play(GameEvent $event, GameState $gameState): GameState
     {
-        return $this->gameEventApplier->apply($event, $gameState);
+        $newState = $this->gameEventApplier->apply($event, $gameState);
+
+        return $newState->withLastEventId($event->id);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState

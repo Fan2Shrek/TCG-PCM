@@ -50,13 +50,15 @@ final class PlayGameHandler
             throw $e;
         }
 
-        foreach ($events as $event) {
-            $this->gameEventRepository->save($event, $room->getId()->toString());
+        foreach ($events as &$event) {
+            $event = $this->gameEventRepository->save($event, $room->getId()->toString());
         }
 
-        foreach ($events as $event) {
-            $state = $this->gameManager->play($event, $state);
+        foreach ($events as $gameEvent) {
+            $state = $this->gameManager->play($gameEvent, $state);
         }
+
+        $this->gameStateRepository->save($state, $room);
 
         // sse $event;
     }

@@ -36,23 +36,25 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
                 return null;
             }
         }
-        $previousEventId = $gameState->lastEventid;
-        $this->buildGameStateFromEvents($gameState, $room);
+        $previousEventId = $gameState->lastEventId;
+        $lastState = $this->buildGameStateFromEvents($gameState, $room);
 
-        if ($previousEventId !== $gameState->lastEventid) {
-            $this->decoratedRepository->save($gameState, $room);
+        if ($previousEventId !== $lastState->lastEventId) {
+            $this->save($lastState, $room);
+        }
+
+        return $lastState;
+    }
+
+    private function buildGameStateFromEvents(GameState $gameState, Room $room): GameState
+    {
+        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room->getId()->toString());
+
+        foreach ($events as $event) {
+            $gameState = $this->gameManager->play($event, $gameState);
         }
 
         return $gameState;
-    }
-
-    private function buildGameStateFromEvents(GameState $gameState, Room $room): void
-    {
-        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventid, $room->getId()->toString());
-
-        foreach ($events as $event) {
-            $this->gameManager->play($event, $gameState);
-        }
     }
 
     private function getRedisKey(Room $room): string

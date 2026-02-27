@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Game;
 
+use App\Doctrine\Type\PlayerStateType;
 use App\Entity\Room;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
@@ -21,10 +22,10 @@ class InitialGameState
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: PlayerStateType::NAME)]
     private PlayerState $player1State;
 
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: PlayerStateType::NAME)]
     private PlayerState $player2State;
 
     public function __construct(string $id, PlayerState $player1State, PlayerState $player2State)

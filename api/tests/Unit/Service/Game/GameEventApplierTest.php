@@ -198,7 +198,7 @@ class SpyCard extends AbstractPlayableCard
     {
         self::$receivedContext = $ctx;
 
-        if (2 === $ctx->state->lastEventid) {
+        if (2 === $ctx->state->lastEventId) {
             $ctx->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, ['playerId' => $ctx->playerId, 'cardId' => 'other-spy']);
         }
     }

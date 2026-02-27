@@ -14,7 +14,7 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
     /**
      * @var GameEvent[] $event
      */
-    private array $event = [];
+    private array $events = [];
 
     public function __construct(
         private GameEventApplierInterface $decorated,
@@ -37,8 +37,6 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
     public function applyMultiple(array $events, GameState $gameState): GameState
     {
         foreach ($events as $event) {
-            $this->addEvent($event);
-
             $gameState = $this->apply($event, $gameState);
         }
 
@@ -47,20 +45,23 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
 
     public function hasEvents(): bool
     {
-        return [] !== $this->event;
+        return [] !== $this->events;
     }
 
+    /**
+     * @return GameEvent[]
+     */
     public function getEvents(): array
     {
-        return $this->event;
+        return $this->events;
     }
 
     private function addEvent(GameEvent $event): void
     {
-        if (\in_array($event, $this->event, true)) {
+        if (\in_array($event, $this->events, true)) {
             return;
         }
 
-        $this->event[] = $event;
+        $this->events[] = $event;
     }
 }

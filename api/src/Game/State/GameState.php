@@ -13,7 +13,7 @@ final readonly class GameState
     public function __construct(
         public PlayerState $player1,
         public PlayerState $player2,
-        public ?int $lastEventid,
+        public ?int $lastEventId,
         ?string $currentPlayer = null,
     ) {
         $this->currentPlayer = $currentPlayer ?? $this->player1->player->id;
@@ -82,6 +82,13 @@ final readonly class GameState
 
         return clone($this, [
             'currentPlayer' => $currentPlayer,
+        ]);
+    }
+
+    public function withLastEventId(int $lastEventId): GameState
+    {
+        return clone($this, [
+            'lastEventId' => $lastEventId,
         ]);
     }
 }

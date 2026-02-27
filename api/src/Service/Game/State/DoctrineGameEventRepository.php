@@ -14,11 +14,13 @@ final class DoctrineGameEventRepository implements GameEventRepositoryInterface
         private GameEventRepository $gameEventRepository,
     ) {}
 
-    public function save(GameEvent $gameEvent, string $roomId): void
+    public function save(GameEvent $gameEvent, string $roomId): GameEvent
     {
-        $gameEvent = GameEventEntity::createFromGameEvent($gameEvent, $roomId);
+        $entity = GameEventEntity::createFromGameEvent($gameEvent, $roomId);
 
-        $this->gameEventRepository->save($gameEvent);
+        $this->gameEventRepository->save($entity);
+
+        return new GameEvent($entity->getId(), $gameEvent->type, $gameEvent->eventOrigin, $gameEvent->data);
     }
 
     public function getEventsSince(?int $lastEventId, string $roomId): array

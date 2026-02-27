@@ -23,10 +23,21 @@
 {% endblock %}
 
 {% block panel %}
-    {% if collector.events|length == 0 %}
+    {% if collector.eventsCount == 0 %}
         <h2>Game</h2>
         <div class="empty empty-panel">
             <p>No game here.</p>
         </div>
     {% endif %}
+    {% for event in collector.events %}
+        <h2>{{ event['type'] }}</h2>
+        <div class="sf-tabs">
+            <div class="tab">
+                <h3 class="tab-title">Data</h3>
+                <div class="tab-content">
+                    {{ profiler_dump(event) }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}

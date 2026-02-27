@@ -8,7 +8,7 @@ use App\Game\State\GameEvent;
 
 interface GameEventRepositoryInterface
 {
-    public function save(GameEvent $gameEvent, string $roomId): void;
+    public function save(GameEvent $gameEvent, string $roomId): GameEvent;
 
     /**
      * @return GameEvent[]
