@@ -26,7 +26,7 @@ class GameManager
 
     public function __construct(
         private CardRegistry $cardsRegistry,
-        private GameEventApplier $gameEventApplier,
+        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function startGame(Room $room): GameState

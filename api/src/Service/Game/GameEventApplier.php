@@ -10,7 +10,7 @@ use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Service\Game\Factory\GameContextFactoryInterface;
 
-class GameEventApplier
+class GameEventApplier implements GameEventApplierInterface
 {
     public function __construct(
         private CardRegistry $cardRegistry,
@@ -30,9 +30,6 @@ class GameEventApplier
         };
     }
 
-    /**
-     * @param GameEvent[] $events
-     */
     public function applyMultiple(array $events, GameState $gameState): GameState
     {
         foreach ($events as $event) {

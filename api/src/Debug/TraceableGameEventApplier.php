@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Debug;
+
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
+use App\Service\Game\GameEventApplierInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
+
+final class TraceableGameEventApplier implements GameEventApplierInterface
+{
+    /**
+     * @var GameEvent[] $event
+     */
+    private array $event = [];
+
+    public function __construct(
+        private GameEventApplierInterface $decorated,
+        private Stopwatch $stopwatch,
+    ) {}
+
+    public function apply(GameEvent $event, GameState $gameState): GameState
+    {
+        $this->addEvent($event);
+
+        $this->stopwatch->start('game_event_apply', 'game_event');
+
+        $result = $this->decorated->apply($event, $gameState);
+
+        $this->stopwatch->stop('game_event_apply');
+
+        return $result;
+    }
+
+    public function applyMultiple(array $events, GameState $gameState): GameState
+    {
+        foreach ($events as $event) {
+            $this->addEvent($event);
+
+            $gameState = $this->apply($event, $gameState);
+        }
+
+        return $gameState;
+    }
+
+    public function hasEvents(): bool
+    {
+        return [] !== $this->event;
+    }
+
+    public function getEvents(): array
+    {
+        return $this->event;
+    }
+
+    private function addEvent(GameEvent $event): void
+    {
+        if (\in_array($event, $this->event, true)) {
+            return;
+        }
+
+        $this->event[] = $event;
+    }
+}
