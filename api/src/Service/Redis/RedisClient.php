@@ -25,7 +25,7 @@ class RedisClient
     {
         $data = $this->connection->get($key);
 
-        return $this->serializer->deserialize($data, $type, 'json');
+        return $data ? $this->serializer->deserialize($data, $type, 'json') : null;
     }
 
     public function set(string $key, object $value): void
