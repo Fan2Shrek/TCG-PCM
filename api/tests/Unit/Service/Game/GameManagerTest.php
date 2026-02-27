@@ -304,7 +304,7 @@ class InMemoryGameEventRepository implements GameEventRepositoryInterface
     ) {
     }
 
-    public function save(GameEvent $gameEvent): void
+    public function save(GameEvent $gameEvent, string $roomId): void
     {
         $this->memory[] = $gameEvent;
     }

@@ -32,7 +32,8 @@ final class PlayGameHandler
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'Invalid action id');
         }
 
-        $state = $this->gameStateRepository->get($command->getCurrentResource());
+        $room = $command->getCurrentResource();
+        $state = $this->gameStateRepository->get($room);
 
         if (!$state) {
             throw HttpException::fromStatusCode(Response::HTTP_NOT_FOUND, 'Game state not found');
@@ -50,7 +51,7 @@ final class PlayGameHandler
         }
 
         foreach ($events as $event) {
-            $this->gameEventRepository->save($event);
+            $this->gameEventRepository->save($event, $room->getId()->toString());
         }
 
         foreach ($events as $event) {

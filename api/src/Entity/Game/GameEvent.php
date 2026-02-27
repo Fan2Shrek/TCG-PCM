@@ -24,10 +24,14 @@ final class GameEvent
     #[ORM\Column(type: Types::JSON)]
     private array $data = [];
 
-    public function __construct(GameEventTypeEnum $type, array $data)
+    #[ORM\Column]
+    private string $roomId;
+
+    public function __construct(GameEventTypeEnum $type, array $data, string $roomId)
     {
         $this->type = $type;
         $this->data = $data;
+        $this->roomId = $roomId;
     }
 
     public function getId(): int
@@ -45,8 +49,13 @@ final class GameEvent
         return $this->data;
     }
 
-    public static function createFromGameEvent(StateGameEvent $gameEvent): self
+    public function getRoomId(): string
     {
-        return new self($gameEvent->type, $gameEvent->data);
+        return $this->roomId;
+    }
+
+    public static function createFromGameEvent(StateGameEvent $gameEvent, string $roomId): self
+    {
+        return new self($gameEvent->type, $gameEvent->data, $roomId);
     }
 }
