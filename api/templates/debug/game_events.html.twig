@@ -22,6 +22,26 @@
     </table>
 {% endmacro %}
 
+{% macro render_cards_table(cards) %}
+    <table>
+        <thead>
+            <tr>
+                <th class="text-right">Id</th>
+                <th>State</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for card in cards %}
+                <tr>
+                    <td class="text-right nowrap">{{ card.id }}</td>
+                    <td class="font-normal">todo</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
 
 {% block menu %}
     <span class="label {{ collector.events ? '' : ' disabled' }} ">
@@ -47,6 +67,17 @@
 
 {% block panel %}
     <h2>Game</h2>
+
+    <div class="metrics">
+        <div class="metric-group">
+            {% for name, count in collector.eventStats %}
+                <div class="metric">
+                    <span class="value">{{ count }}</span>
+                    <span class="label">{{ name }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
     <div class="sf-tabs">
         {% if collector.eventsCount == 0 %}
@@ -75,6 +106,13 @@
                          {{ profiler_dump(gameContext.flushedEvents) }}
                      </div>
                 {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Card <span class="badge">{{ collector.cards|length }}</span></h3>
+            <div class="tab-content">
+                {{ _self.render_cards_table(collector.cards) }}
             </div>
         </div>
     </div>

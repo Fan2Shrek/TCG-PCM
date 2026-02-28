@@ -73,9 +73,6 @@ class GameEventApplier implements GameEventApplierInterface
 
         $player = $gameState->getPlayer($playerId);
 
-        // @dev
-        $player = $player->withNewHandAndDeck(array_merge($player->hand, [$cardId]), $player->drawPile);
-
         if (!$player->hasCardInHand($cardId)) {
             throw new \LogicException(\sprintf('Player %s does not have card %s in hand', $playerId, $cardId));
         }

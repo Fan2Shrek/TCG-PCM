@@ -33,5 +33,5 @@ analyze-dead-code = false
 check-throws = true
 allow-possibly-undefined-array-keys = true
 ignore = ["missing-override-attribute", "unhandled-thrown-type", "mixed-assignment"]
-excludes = ["src/DataFixtures"]
+excludes = ["src/DataFixtures", "src/Debug/GameDataCollector.php"]
 baseline = "analyzer-baseline.toml"

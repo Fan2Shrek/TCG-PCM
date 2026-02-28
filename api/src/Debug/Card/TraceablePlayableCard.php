@@ -11,7 +11,9 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 final class TraceablePlayableCard extends AbstractPlayableCard
 {
-    private parent $card;
+    public const STOPWATCH_CATEGORY = 'app.card';
+
+    private AbstractPlayableCard $card;
     private Stopwatch $stopwatch;
 
     public function getId(): string
@@ -46,10 +48,15 @@ final class TraceablePlayableCard extends AbstractPlayableCard
 
     public function play(GameContext $context): void
     {
+        $id = $this->getId().'.play';
+        $this->stopwatch->start($id, self::STOPWATCH_CATEGORY);
+
         $this->card->play($context);
+
+        $this->stopwatch->stop($id);
     }
 
-    public static function create(parent $card, Stopwatch $stopwatch): static
+    public static function create(AbstractPlayableCard $card, Stopwatch $stopwatch): static
     {
         $traceableCard = new static();
         $traceableCard->card = $card;
