@@ -13,7 +13,7 @@ use App\Service\Game\Factory\GameContextFactoryInterface;
 class GameEventApplier implements GameEventApplierInterface
 {
     public function __construct(
-        private CardRegistry $cardRegistry,
+        private CardRegistryInterface $cardRegistry,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 

@@ -25,7 +25,7 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardRegistry $cardsRegistry,
+        private CardRegistryInterface $cardsRegistry,
         private GameEventApplierInterface $gameEventApplier,
     ) {}
 
