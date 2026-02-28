@@ -17,6 +17,8 @@ services:
 
     App\Service\Game\GameEventApplierInterface: '@App\Service\Game\GameEventApplier'
 
+    App\Service\Game\Factory\GameContextFactoryInterface: '@App\Service\Game\Factory\GameContextFactory'
+
     App\Service\Game\CardRegistry:
         arguments:
             $cardsListPath: '%app.cards_list%'

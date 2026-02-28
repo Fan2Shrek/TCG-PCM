@@ -25,7 +25,7 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
     {
         $this->addEvent($event);
 
-        $this->stopwatch->start('game_event_apply', 'game_event');
+        $this->stopwatch->start('game_event_apply');
 
         $result = $this->decorated->apply($event, $gameState);
 

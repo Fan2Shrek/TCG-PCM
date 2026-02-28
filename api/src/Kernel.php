@@ -2,8 +2,10 @@
 
 namespace App;
 
-use App\Debug\GameEventDataCollector;
+use App\Debug\GameContext\TraceableGameContextFactory;
+use App\Debug\GameDataCollector;
 use App\Debug\TraceableGameEventApplier;
+use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -17,21 +19,32 @@ class Kernel extends BaseKernel implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        $id = GameEventApplier::class;
-        if ('dev' !== $this->getEnvironment() || !$container->hasDefinition($id)) {
+        if ('dev' !== $this->getEnvironment()) {
             return;
         }
 
+        $id = GameEventApplier::class;
         $definition = $container->getDefinition($id);
+        $gameEventDataCollector = $container->getDefinition(GameDataCollector::class);
 
         $container
-            ->register($traceableId = $id.'.traceable', TraceableGameEventApplier::class)
+            ->register($traceableGameEventApplier = $id.'.traceable', TraceableGameEventApplier::class)
             ->setDecoratedService($id)
             ->setArguments([
                 $definition,
                 new Reference('debug.stopwatch'),
             ]);
 
-        $container->getDefinition(GameEventDataCollector::class)->addArgument(new Reference($traceableId));
+        $id = GameContextFactory::class;
+        $definition = $container->getDefinition($id);
+        $container
+            ->register($traceableGameContextFactory = $id.'.traceable', TraceableGameContextFactory::class)
+            ->setDecoratedService($id)
+            ->setArguments($definition->getArguments());
+
+        $gameEventDataCollector->setArguments([
+            new Reference($traceableGameEventApplier),
+            new Reference($traceableGameContextFactory),
+        ]);
     }
 }

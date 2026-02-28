@@ -1,5 +1,28 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
+{% macro render_events_table(events) %}
+    <table>
+        <thead>
+            <tr>
+                <th class="text-right">Type</th>
+                <th>Origin</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td class="text-right nowrap">{{ event.type }}</td>
+                    <td class="font-normal">{{ event.origin }}</td>
+                    <td class="font-normal">{{ profiler_dump(event.data) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+
 {% block menu %}
     <span class="label {{ collector.events ? '' : ' disabled' }} ">
         <span class="icon">{{ include('icons/game.svg') }}</span>
@@ -23,21 +46,36 @@
 {% endblock %}
 
 {% block panel %}
-    {% if collector.eventsCount == 0 %}
-        <h2>Game</h2>
-        <div class="empty empty-panel">
-            <p>No game here.</p>
-        </div>
-    {% endif %}
-    {% for event in collector.events %}
-        <h2>{{ event['type'] }}</h2>
-        <div class="sf-tabs">
-            <div class="tab">
-                <h3 class="tab-title">Data</h3>
-                <div class="tab-content">
-                    {{ profiler_dump(event) }}
-                </div>
+    <h2>Game</h2>
+
+    <div class="sf-tabs">
+        {% if collector.eventsCount == 0 %}
+            <div class="empty empty-panel">
+                <p>No game here.</p>
+            </div>
+        {% endif %}
+        <div class="tab">
+            <h3 class="tab-title">Events <span class="badge">{{ collector.events|length }}</span></h3>
+            <div class="tab-content">
+                {{ _self.render_events_table(collector.events) }}
             </div>
         </div>
-    {% endfor %}
+
+        <div class="tab">
+            <h3 class="tab-title">Game contexts <span class="badge">{{ collector.gameContexts|length }}</span></h3>
+            <div class="tab-content">
+                {% for gameContext in collector.gameContexts %}
+                     <h4>Game context #{{ loop.index }}</h4>
+                     <div>
+                         <h5>State</h5>
+                         {{ profiler_dump(gameContext.state) }}
+                     </div>
+                     <div>
+                         <h5>Flushed events</h5>
+                         {{ profiler_dump(gameContext.flushedEvents) }}
+                     </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
