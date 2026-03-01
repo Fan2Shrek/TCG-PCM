@@ -25,8 +25,8 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardRegistry $cardsRegistry,
-        private GameEventApplier $gameEventApplier,
+        private CardRegistryInterface $cardsRegistry,
+        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function startGame(Room $room): GameState
@@ -74,7 +74,9 @@ class GameManager
 
     public function play(GameEvent $event, GameState $gameState): GameState
     {
-        return $this->gameEventApplier->apply($event, $gameState);
+        $newState = $this->gameEventApplier->apply($event, $gameState);
+
+        return $newState->withLastEventId($event->id);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState

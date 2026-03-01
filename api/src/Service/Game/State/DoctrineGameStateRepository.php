@@ -19,6 +19,11 @@ final class DoctrineGameStateRepository implements GameStateRepositoryInterface
     {
         $gameState = InitialGameState::createFromRoomAndGameState($room, $gameState);
 
+        if ($this->initialGameStateRepository->count(['id' => $room->getId()->toString()])) {
+            // Initial game state already exists for this room, we don't want to override it
+            return;
+        }
+
         $this->initialGameStateRepository->save($gameState);
     }
 

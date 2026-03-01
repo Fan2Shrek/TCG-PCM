@@ -7,7 +7,7 @@ namespace App\Service\Game;
 use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
 
-class CardRegistry
+class CardRegistry implements CardRegistryInterface
 {
     /**
      * @var array<string, class-string<AbstractCard>>

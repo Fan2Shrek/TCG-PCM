@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
-use App\Service\Game\CardRegistry;
+use App\Service\Game\CardRegistryInterface;
 
 class BoosterGenerator
 {
@@ -24,7 +24,7 @@ class BoosterGenerator
     ];
 
     public function __construct(
-        private CardRegistry $cardRegistry,
+        private CardRegistryInterface $cardRegistry,
     ) {}
 
     public function generateBooster(): Booster
