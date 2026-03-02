@@ -23,7 +23,10 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
 
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
-        $this->addEvent($event);
+        $backtrace = debug_backtrace(2);
+        $originIndex = $backtrace[0]['file'] === __FILE__ ? 1 : 0;
+        $origin = \sprintf('%s:%d', $backtrace[$originIndex]['file'], $backtrace[$originIndex]['line']);
+        $this->addEvent(TraceableGameEvent::fromParent($event, $origin));
 
         $this->stopwatch->start('game_event_apply', 'app.event_apply');
 
@@ -56,7 +59,7 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
         return $this->events;
     }
 
-    private function addEvent(GameEvent $event): void
+    private function addEvent(TraceableGameEvent $event): void
     {
         if (\in_array($event, $this->events, true)) {
             return;

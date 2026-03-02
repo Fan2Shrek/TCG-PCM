@@ -6,6 +6,8 @@ namespace App\Debug\Card;
 
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
+use App\Game\Card\EffectCollection;
 use App\Game\GameContext;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -19,6 +21,11 @@ final class TraceablePlayableCard extends AbstractPlayableCard
     public function getId(): string
     {
         return $this->card->getId();
+    }
+
+    public function getInstanceId(): string
+    {
+        return $this->card->getInstanceId();
     }
 
     public function getName(): string
@@ -56,6 +63,11 @@ final class TraceablePlayableCard extends AbstractPlayableCard
         $this->stopwatch->stop($id);
     }
 
+    public function setState(CardState $state): void
+    {
+        $this->card->setState($state);
+    }
+
     public static function create(AbstractPlayableCard $card, Stopwatch $stopwatch): static
     {
         $traceableCard = new static();
@@ -63,5 +75,10 @@ final class TraceablePlayableCard extends AbstractPlayableCard
         $traceableCard->stopwatch = $stopwatch;
 
         return $traceableCard;
+    }
+
+    public function getEffects(): EffectCollection
+    {
+        return $this->card->effects;
     }
 }

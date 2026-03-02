@@ -7,6 +7,24 @@ message = "Expression being iterated (type `false|list<non-empty-string>`) might
 count = 1
 
 [[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #2 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #3 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 3
+
+[[issues]]
 file = "src/Doctrine/Type/PlayerStateType.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `json_decode`: expected `string`, but found `nonnull`."
