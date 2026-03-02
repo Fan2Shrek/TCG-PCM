@@ -6,7 +6,9 @@ namespace App\Command;
 
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\EffectCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
@@ -16,6 +18,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class UpdateCardListCommand
 {
     private const string BASE_NAMESPACE = 'App\\Game\\Card\\';
+
+    private const array CLASSES_TO_IGNORE = [
+        AbstractCard::class,
+        AbstractPlayableCard::class,
+        AbstractCharacterCard::class,
+        CardState::class,
+        EffectCollection::class,
+    ];
+
+    private const array FOLDERS_TO_IGNORE = [
+        'Effect',
+    ];
 
     private OutputInterface $output;
 
@@ -60,6 +74,10 @@ final class UpdateCardListCommand
      */
     private function findCardsInDirectory(string $dir, string $baseNamespace): array
     {
+        if (\in_array(basename($dir), self::FOLDERS_TO_IGNORE, true)) {
+            return [];
+        }
+
         $cards = [];
 
         foreach (scandir($dir) as $file) {
@@ -80,12 +98,12 @@ final class UpdateCardListCommand
                 $this->output->writeln(\sprintf('<error>Class %s does not exist. Skipping file %s.</error>', $class, $file));
             }
 
-            if (!is_a($class, AbstractCard::class, true)) {
-                $this->output->writeln(\sprintf('<error>Class %s does not extend %s. Skipping file %s.</error>', $class, AbstractCard::class, $file));
+            if (\in_array($class, self::CLASSES_TO_IGNORE, true)) {
                 continue;
             }
 
-            if (\in_array($class, [AbstractCard::class, AbstractPlayableCard::class, AbstractCharacterCard::class], true)) {
+            if (!is_a($class, AbstractCard::class, true)) {
+                $this->output->writeln(\sprintf('<error>Class %s does not extend %s. Skipping file %s.</error>', $class, AbstractCard::class, $file));
                 continue;
             }
 

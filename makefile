@@ -13,7 +13,7 @@ endif
 
 CONSOLE=$(PHP) php bin/console --env=$(env)
 
-cardList:
+card-list:
 	$(CONSOLE) app:update:card-list
 
 jwt:
