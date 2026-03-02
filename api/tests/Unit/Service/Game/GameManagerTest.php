@@ -78,26 +78,10 @@ final class GameManagerTest extends TestCase
 
         $gameState = $gm->startGame($room);
 
-        self::assertSame([
-            'card1',
-            'card2',
-            'card3',
-            'card4',
-            'card5',
-        ], $gameState->player1->hand);
-        self::assertSame([
-            'card6',
-        ], array_values($gameState->player1->drawPile));
-        self::assertSame([
-            'card7',
-            'card8',
-            'card9',
-            'card10',
-            'card11',
-        ], $gameState->player2->hand);
-        self::assertSame([
-            'card12',
-        ], array_values($gameState->player2->drawPile));
+        self::assertCount(5, $gameState->player1->hand);
+        self::assertCount(1, $gameState->player1->drawPile);
+        self::assertCount(5, $gameState->player2->hand);
+        self::assertCount(1, $gameState->player1->drawPile);
     }
 
     public function testHandlePlayAction()

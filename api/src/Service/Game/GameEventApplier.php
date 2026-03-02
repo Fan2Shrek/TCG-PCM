@@ -56,7 +56,7 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException(\sprintf('Player %s has no more cards to draw', $playerId));
         }
 
-        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $drawn], $deck);
+        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $instanceId], $deck);
 
         $state = $state->withUpdatedPlayer($newPlayer);
 

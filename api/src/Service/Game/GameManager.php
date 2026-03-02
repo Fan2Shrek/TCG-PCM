@@ -112,7 +112,10 @@ class GameManager
     private function createCardsFromDeck(Deck $deck): array
     {
         $cardsIds = [];
-        foreach ($deck->getCards() as $card) {
+        $cards = $deck->getCards();
+        shuffle($cards);
+
+        foreach ($cards as $card) {
             $cardsIds[$this->createCardId()->toString()] = $card;
         }
 
