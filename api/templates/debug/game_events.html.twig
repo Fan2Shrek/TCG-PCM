@@ -6,6 +6,7 @@
             <tr>
                 <th class="text-right">Type</th>
                 <th>Origin</th>
+                <th>Line</th>
                 <th>Data</th>
             </tr>
         </thead>
@@ -15,6 +16,7 @@
                 <tr>
                     <td class="text-right nowrap">{{ event.type }}</td>
                     <td class="font-normal">{{ event.origin }}</td>
+                    <td class="font-normal">{{ event.line ?? 'unknown' }}</td>
                     <td class="font-normal">{{ profiler_dump(event.data) }}</td>
                 </tr>
             {% endfor %}
@@ -27,7 +29,8 @@
         <thead>
             <tr>
                 <th class="text-right">Id</th>
-                <th>State</th>
+                <th>Instance id</th>
+                <th>Effects</th>
             </tr>
         </thead>
 
@@ -35,7 +38,8 @@
             {% for card in cards %}
                 <tr>
                     <td class="text-right nowrap">{{ card.id }}</td>
-                    <td class="font-normal">todo</td>
+                    <td class="font-normal">{{ card.instanceId }}</td>
+                    <td class="font-normal">{{ profiler_dump(card.effects) }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -76,6 +80,18 @@
                     <span class="label">{{ name }}</span>
                 </div>
             {% endfor %}
+        </div>
+
+        <div class="metric-divider"></div>
+        <div class="metric-group">
+            <div class="metric">
+                <span class="value">{{ collector.mainEvent.type }}</span>
+                <span class="label">Main event</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ collector.subEvents|length }}</span>
+                <span class="label">Sub events</span>
+            </div>
         </div>
     </div>
 

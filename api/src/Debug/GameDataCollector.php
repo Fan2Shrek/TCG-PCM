@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Debug;
 
 use App\Debug\Card\TraceableCardRegistry;
+use App\Debug\Card\TraceablePlayableCard;
 use App\Debug\GameContext\DebugGameContext;
 use App\Debug\GameContext\TraceableGameContextFactory;
 use App\Game\AbstractCard;
+use App\Game\Card\Effect\AbstractCardEffect;
 use App\Game\State\GameEvent;
 use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,14 +31,15 @@ final class GameDataCollector extends AbstractDataCollector
             return;
         }
 
-        $this->data['mainEvent'] = $this->gameEventApplier->getEvents()[0] ?? null;
+        $mainEvent = $this->gameEventApplier->getEvents()[0];
+        $this->data['mainEvent'] = $this->formatEvents([$mainEvent])[0];
         $this->data['subEvents'] = array_reduce(
             $this->gameContextFactory->getGameContexts(),
             static fn(array $acc, DebugGameContext $gameContext) => array_merge($acc, $gameContext->flushedEvents),
             [],
         );
 
-        $events = array_merge($this->gameEventApplier->getEvents(), $this->data['subEvents']);
+        $events = $this->gameEventApplier->getEvents();
 
         $this->data['stats'] = [
             'Player event' => count(array_filter($events, static fn(GameEvent $event) => GameEvent::PLAYER_EVENT === $event->eventOrigin)),
@@ -116,6 +119,7 @@ final class GameDataCollector extends AbstractDataCollector
             'type' => $event->type->value,
             'origin' => $event->eventOrigin,
             'data' => $event->data,
+            'line' => $event instanceof TraceableGameEvent ? $event->origin : 'unknown',
         ], $events);
     }
 
@@ -128,6 +132,11 @@ final class GameDataCollector extends AbstractDataCollector
     {
         return array_map(static fn(AbstractCard $card) => [
             'id' => $card->getId(),
+            'instanceId' => $card->getInstanceId(),
+            'effects' => !$card instanceof TraceablePlayableCard ? null : array_map(static fn(AbstractCardEffect $effect) => [
+                    'type' => $effect::getName()->value,
+                    'properties' => get_object_vars($effect),
+                ], $card->getEffects()->all()),
         ], $cards);
     }
 }

@@ -7,6 +7,7 @@ namespace App\Domain\Command\Game;
 use App\Game\Exception\GameException;
 use App\Game\PlayerAction;
 use App\Service\Auth\CurrentUserProviderInterface;
+use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -19,6 +20,7 @@ final class PlayGameHandler
 {
     public function __construct(
         private GameManager $gameManager,
+        private GameEventApplierInterface $gameEventApplier,
         private GameStateRepositoryInterface $gameStateRepository,
         private GameEventRepositoryInterface $gameEventRepository,
         private CurrentUserProviderInterface $currentUserProvider,
@@ -54,9 +56,7 @@ final class PlayGameHandler
             $event = $this->gameEventRepository->save($event, $room->getId()->toString());
         }
 
-        foreach ($events as $gameEvent) {
-            $state = $this->gameManager->play($gameEvent, $state);
-        }
+        $state = $this->gameEventApplier->applyMultiple($events, $state);
 
         $this->gameStateRepository->save($state, $room);
 

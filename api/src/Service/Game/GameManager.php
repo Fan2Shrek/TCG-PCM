@@ -141,8 +141,6 @@ class GameManager
             'cardId' => $card,
         ]);
 
-        $state = $this->gameEventApplier->apply($event, $state);
-
         return array_merge([$event], $this->doPlayCard($event, $state));
     }
 

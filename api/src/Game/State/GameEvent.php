@@ -6,7 +6,7 @@ namespace App\Game\State;
 
 use App\Enum\GameEventTypeEnum;
 
-final readonly class GameEvent
+readonly class GameEvent
 {
     public const PLAYER_EVENT = 'player_event';
     public const GAME_EVENT = 'game_event';
