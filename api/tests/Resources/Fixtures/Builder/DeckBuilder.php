@@ -8,6 +8,7 @@ use App\Entity\Deck;
 use App\Entity\User;
 use App\Game\Card\Character\PierrotCard;
 use App\Tests\Resources\Fixtures\ThereIs;
+use App\Tests\Unit\Fixtures\DummyCard;
 
 /**
 * @extends AbstractBuilder<Deck>
@@ -19,7 +20,7 @@ final class DeckBuilder extends AbstractBuilder
     public function doBuild(): void
     {
         $owner = $this->owner ?? ThereIs::anUser()->build();
-        $this->entity = new Deck($owner, 'Default Deck', new PierrotCard()->getId());
+        $this->entity = new Deck($owner, 'Default Deck', new PierrotCard()->getId(), array_fill(0, 5, DummyCard::class));
     }
 
     public function ownedBy(User $owner): self

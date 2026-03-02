@@ -24,7 +24,7 @@ final class DummyCard extends AbstractPlayableCard
         return 'This is a dummy card for testing purposes.';
     }
 
-    public function play(GameContext $context): void
+    public function play(GameContext $context, array $data = []): void
     {
         // No operation for dummy card
     }

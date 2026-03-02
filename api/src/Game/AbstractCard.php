@@ -12,15 +12,26 @@ abstract class AbstractCard
 {
     protected EffectCollection $effects;
 
+    private string $instanceId;
+
     // @final to prevent child classes from having constructors with different signatures
-    final public function __construct()
+    final public function __construct(?string $instanceId = null)
     {
         $this->effects = new EffectCollection();
+
+        if ($instanceId) {
+            $this->instanceId = $instanceId;
+        }
     }
 
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
     abstract public function getId(): string;
+
+    public function getInstanceId(): string
+    {
+        return $this->instanceId;
+    }
 
     abstract public function getName(): string;
 

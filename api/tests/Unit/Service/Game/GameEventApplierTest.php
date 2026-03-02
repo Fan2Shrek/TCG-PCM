@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Service\Game;
 use App\Game\State\GameEvent;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
@@ -48,6 +49,18 @@ final class GameEventApplierTest extends TestCase
 
         self::assertCount(0, $newState->player1->hand);
         self::assertCount(1, $newState->player2->hand);
+    }
+
+    public function testApplyCardDrawnUpdateGameState()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_DRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player1']);
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(1, $newState->cards);
+        self::assertEquals(new CardState('id', 'D6', []), $newState->cards['id']);
     }
 
     public function testApplyCardPlayed(): void
@@ -156,7 +169,7 @@ final class GameEventApplierTest extends TestCase
                 30,
                 [],
                 [
-                    'D6',
+                    'id' => 'D6',
                 ],
             ),
             new PlayerState(
@@ -167,7 +180,7 @@ final class GameEventApplierTest extends TestCase
                 30,
                 $player2Hand,
                 [
-                    'D6',
+                    'id' => 'D6',
                 ],
             ),
             $lastEventId,
@@ -194,7 +207,7 @@ class SpyCard extends AbstractPlayableCard
         return $this->getName();
     }
 
-    public function play(GameContext $ctx): void
+    public function play(GameContext $ctx, array $data = []): void
     {
         self::$receivedContext = $ctx;
 
@@ -213,7 +226,7 @@ class OtherSpyCard extends SpyCard
         return 'other-spy';
     }
 
-    public function play(GameContext $ctx): void
+    public function play(GameContext $ctx, array $data = []): void
     {
         self::$otherReceivedContext = $ctx;
     }

@@ -6,6 +6,7 @@ namespace App\Service\Game;
 
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Service\Game\Factory\GameContextFactoryInterface;
@@ -51,11 +52,14 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $state->getPlayer($playerId);
 
         $deck = $player->drawPile;
+        $instanceId = array_key_first($deck);
         $drawn = array_shift($deck);
 
         $newPlayer = $player->withNewHandAndDeck([...$player->hand, $drawn], $deck);
 
-        return $state->withUpdatedPlayer($newPlayer);
+        $state = $state->withUpdatedPlayer($newPlayer);
+
+        return $state->addCard(new CardState($instanceId, $drawn));
     }
 
     private function applyCardPlayed(GameEvent $event, GameState $gameState): GameState

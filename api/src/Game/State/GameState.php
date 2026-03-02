@@ -4,19 +4,27 @@ declare(strict_types=1);
 
 namespace App\Game\State;
 
+use App\Game\Card\CardState;
 use App\Game\Player;
 
 final readonly class GameState
 {
     public string $currentPlayer;
 
+    /**
+     * @var array<string, CardState> $cards
+     */
+    public array $cards;
+
     public function __construct(
         public PlayerState $player1,
         public PlayerState $player2,
         public ?int $lastEventId,
         ?string $currentPlayer = null,
+        array $cards = [],
     ) {
         $this->currentPlayer = $currentPlayer ?? $this->player1->player->id;
+        $this->cards = $cards;
     }
 
     public function getPlayer(string $playerId): PlayerState
@@ -89,6 +97,16 @@ final readonly class GameState
     {
         return clone($this, [
             'lastEventId' => $lastEventId,
+        ]);
+    }
+
+    public function addCard(CardState $card): GameState
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
         ]);
     }
 }

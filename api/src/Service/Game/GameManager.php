@@ -19,6 +19,7 @@ use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use Symfony\Component\Uid\Uuid;
 
 class GameManager
 {
@@ -88,8 +89,19 @@ class GameManager
         }
 
         $player = Player::fromUser($user);
+        $cardsIds = $this->createCardsFromDeck($deck);
 
-        return new PlayerState($player, $characterCard->getHealthPoints(), [], $deck->getCards());
+        return new PlayerState($player, $characterCard->getHealthPoints(), [], $cardsIds);
+    }
+
+    private function createCardsFromDeck(Deck $deck): array
+    {
+        $cardsIds = [];
+        foreach ($deck->getCards() as $card) {
+            $cardsIds[$this->createCardId()->toString()] = $card;
+        }
+
+        return $cardsIds;
     }
 
     /**
@@ -139,5 +151,10 @@ class GameManager
     private function isNewRound(GameState $state, string $nextPlayerId): bool
     {
         return $nextPlayerId === $state->player1->player->id;
+    }
+
+    private function createCardId(): Uuid
+    {
+        return Uuid::v4();
     }
 }

@@ -13,7 +13,7 @@ return [
                 '1',
                 'replay1_player1',
             ),
-            30,
+            300,
             [
                 'Spicy-D6',
                 'Spicy-D6',
@@ -25,7 +25,7 @@ return [
                 '2',
                 'replay1_player2',
             ),
-            10,
+            100,
             [
                 'Spicy-D6',
             ],
@@ -71,7 +71,7 @@ return [
                 '1',
                 'replay1_player1',
             ),
-            29,
+            290,
             [],
             [],
         ),

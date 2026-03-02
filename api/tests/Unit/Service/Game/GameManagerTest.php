@@ -41,10 +41,10 @@ final class GameManagerTest extends TestCase
     public function testGameStatePlayers()
     {
         $gm = $this->getSut();
-        $owner = new User('user', 'email');
-        $opponent = new User('opponent', 'email2');
-        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
-        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class);
+        $owner = new TestUser('user', 'email');
+        $opponent = new TestUser('opponent', 'email2');
+        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 5, DummyCard::class));
+        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class, array_fill(0, 5, DummyCard::class));
         $room = new Room($owner);
         $room->setOpponent($opponent);
         $room->setOwnerDeck($ownerDeck);
@@ -84,7 +84,7 @@ final class GameManagerTest extends TestCase
         ], $gameState->player1->hand);
         self::assertSame([
             'card6',
-        ], $gameState->player1->drawPile);
+        ], array_values($gameState->player1->drawPile));
         self::assertSame([
             'card7',
             'card8',
@@ -94,14 +94,14 @@ final class GameManagerTest extends TestCase
         ], $gameState->player2->hand);
         self::assertSame([
             'card12',
-        ], $gameState->player2->drawPile);
+        ], array_values($gameState->player2->drawPile));
     }
 
     public function testHandlePlayAction()
     {
         $gm = $this->getSut();
 
-        $gameState = $this->createGameState();
+        $gameState =$this->createGameState();
         $action = new PlayerAction(
             $gameState->player1->player,
             PlayerAction::PLAY_CARD,
@@ -251,7 +251,7 @@ final class GameManagerTest extends TestCase
     private function createRoom(): Room
     {
         $owner = $this->createStub(User::class);
-        $deck = new Deck($owner, 'test', DummyCharacterCard::class);
+        $deck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 10, DummyCard::class));
         $room = new Room($owner);
         $room->setOpponent($this->createStub(User::class));
         $room->setOwnerDeck($deck);
