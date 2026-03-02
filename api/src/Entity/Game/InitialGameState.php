@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Game;
 
+use App\Doctrine\Type\CardListType;
 use App\Doctrine\Type\PlayerStateType;
 use App\Entity\Room;
 use App\Game\Card\CardState;
@@ -32,7 +33,7 @@ class InitialGameState
     /**
      * @var array<string, CardState> $cards
      */
-    #[ORM\Column]
+    #[ORM\Column(type: CardListType::NAME)]
     private array $cards = [];
 
     /**
