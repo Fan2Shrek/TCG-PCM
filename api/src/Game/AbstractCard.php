@@ -32,9 +32,9 @@ abstract class AbstractCard
 
     abstract public function getId(): string;
 
-    public function getInstanceId(): string
+    public function getInstanceId(): ?string
     {
-        return $this->instanceId;
+        return $this->instanceId ?? null;
     }
 
     abstract public function getName(): string;

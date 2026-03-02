@@ -23,9 +23,9 @@ final class TraceablePlayableCard extends AbstractPlayableCard
         return $this->card->getId();
     }
 
-    public function getInstanceId(): string
+    public function getInstanceId(): ?string
     {
-        return $this->card->getInstanceId();
+        return $this->card->getInstanceId() ?? null;
     }
 
     public function getName(): string
