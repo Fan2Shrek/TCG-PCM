@@ -21,7 +21,7 @@ abstract class AbstractCardEffect
 
     public static function fromEffectState(EffectState $effectState): static
     {
-        if ($effectState->effect !== self::getName()) {
+        if ($effectState->effect !== static::getName()) {
             throw new \InvalidArgumentException(sprintf('Invalid effect state for %s effect', self::getName()->value));
         }
 

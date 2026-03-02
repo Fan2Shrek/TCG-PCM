@@ -79,7 +79,7 @@ abstract class AbstractCard
     public function setState(CardState $state): void
     {
         if ($this->getId() !== $state->templateId) {
-            throw new \LogicException(\sprintf('Cannot add state for card %s to card %s', $state->templateId, $this->getId()));
+            throw new \InvalidArgumentException(\sprintf('Cannot add state for card %s to card %s', $state->templateId, $this->getId()));
         }
 
         $this->instanceId = $state->instanceId;
