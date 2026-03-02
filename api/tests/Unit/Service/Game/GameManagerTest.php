@@ -9,9 +9,12 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
+use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\UnknowActionException;
+use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
@@ -41,10 +44,10 @@ final class GameManagerTest extends TestCase
     public function testGameStatePlayers()
     {
         $gm = $this->getSut();
-        $owner = new User('user', 'email');
-        $opponent = new User('opponent', 'email2');
-        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
-        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class);
+        $owner = new TestUser('user', 'email');
+        $opponent = new TestUser('opponent', 'email2');
+        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 5, DummyCard::class));
+        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class, array_fill(0, 5, DummyCard::class));
         $room = new Room($owner);
         $room->setOpponent($opponent);
         $room->setOwnerDeck($ownerDeck);
@@ -84,7 +87,7 @@ final class GameManagerTest extends TestCase
         ], $gameState->player1->hand);
         self::assertSame([
             'card6',
-        ], $gameState->player1->drawPile);
+        ], array_values($gameState->player1->drawPile));
         self::assertSame([
             'card7',
             'card8',
@@ -94,7 +97,7 @@ final class GameManagerTest extends TestCase
         ], $gameState->player2->hand);
         self::assertSame([
             'card12',
-        ], $gameState->player2->drawPile);
+        ], array_values($gameState->player2->drawPile));
     }
 
     public function testHandlePlayAction()
@@ -105,7 +108,7 @@ final class GameManagerTest extends TestCase
         $action = new PlayerAction(
             $gameState->player1->player,
             PlayerAction::PLAY_CARD,
-            ['cardId' => DummyCard::class],
+            ['cardId' => 'card1'],
         );
 
         $events = $gm->handleAction($action, $gameState);
@@ -117,7 +120,16 @@ final class GameManagerTest extends TestCase
                 GameEvent::PLAYER_EVENT,
                 [
                     'playerId' => $gameState->player1->player->id,
-                    'cardId' => DummyCard::class,
+                    'cardId' => 'card1',
+                ],
+            ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::CARD_DISCARDED,
+                GameEvent::GAME_EVENT,
+                [
+                    'playerId' => $gameState->player1->player->id,
+                    'cardId' => 'card1',
                 ],
             ),
         ];
@@ -134,10 +146,29 @@ final class GameManagerTest extends TestCase
         $action = new PlayerAction(
             $gameState->player1->player,
             PlayerAction::PLAY_CARD,
-            ['cardId' => 'other_card'],
+            ['cardId' => 'card3'],
         );
 
         $gm->handleAction($action, $gameState);
+    }
+
+    public function testHandlePlayActionCallCard(): void
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::PLAY_CARD,
+            [
+                'cardId' => 'card2',
+            ],
+        );
+
+        $events = $gm->handleAction($action, $gameState);
+
+        self::assertNotNull(SpyCard::$receivedContext);
+        self::assertCount(2, $events);
     }
 
     public function testHandleActionWithUnexistingAction()
@@ -230,7 +261,8 @@ final class GameManagerTest extends TestCase
             new Player('1', 'Player 1', 67),
             30,
             [
-                DummyCard::class,
+                'card1',
+                'card2',
             ],
             [],
         );
@@ -245,13 +277,26 @@ final class GameManagerTest extends TestCase
             $player1State,
             $player2State,
             1,
+            null,
+            [
+                'card1' => new CardState(
+                    'card1',
+                    DummyCard::class,
+                    [],
+                ),
+                'card2' => new CardState(
+                    'card1',
+                    SpyCard::class,
+                    [],
+                ),
+            ]
         );
     }
 
     private function createRoom(): Room
     {
         $owner = $this->createStub(User::class);
-        $deck = new Deck($owner, 'test', DummyCharacterCard::class);
+        $deck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 10, DummyCard::class));
         $room = new Room($owner);
         $room->setOpponent($this->createStub(User::class));
         $room->setOwnerDeck($deck);
@@ -269,12 +314,14 @@ final class GameManagerTest extends TestCase
                     'other_card' =>  DummyCard::class,
                     DummyCharacterCard::class => DummyCharacterCard::class,
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+                    SpyCard::class => SpyCard::class,
                 ]
             ),
             new GameEventApplier(
                 $mock,
                 new GameContextFactory(),
             ),
+            new GameContextFactory(),
         );
     }
 }
@@ -351,5 +398,34 @@ class TestUser extends User
     public function getId(): int
     {
         return spl_object_id($this);
+    }
+}
+
+class SpyCard extends AbstractPlayableCard
+{
+    public static ?GameContext $receivedContext = null;
+
+    public function getId(): string
+    {
+        return self::class;
+    }
+
+    public function getName(): string
+    {
+        return 'Spy';
+    }
+
+    public function getDescription(): string
+    {
+        return $this->getName();
+    }
+
+    public function play(GameContext $ctx, array $data = []): void
+    {
+        self::$receivedContext = $ctx;
+
+        if ($data['other'] ?? false) {
+            $ctx->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, ['playerId' => $ctx->playerId, 'cardId' => 'other-spy']);
+        }
     }
 }

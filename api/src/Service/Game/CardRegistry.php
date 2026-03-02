@@ -23,7 +23,7 @@ class CardRegistry implements CardRegistryInterface
         private string $cardsListPath,
     ) {}
 
-    public function getCardInstanceById(string $cardId): AbstractCard
+    public function getCardTemplateById(string $cardId): AbstractCard
     {
         return $this->get($cardId);
     }

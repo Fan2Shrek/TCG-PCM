@@ -9,5 +9,5 @@ use App\Game\GameContext;
 
 abstract class AbstractPlayableCard extends AbstractCard
 {
-    abstract public function play(GameContext $context): void;
+    abstract public function play(GameContext $context, array $data = []): void;
 }

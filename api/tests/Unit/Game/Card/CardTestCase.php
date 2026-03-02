@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Game\Card;
 
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\Dice;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 
@@ -59,6 +61,14 @@ abstract class CardTestCase extends TestCase
             $player1State,
             $player2State,
             1,
+            null,
+            [
+                'test_card' => new CardState(
+                    'test_card',
+                    DummyCard::class,
+                    [],
+                ),
+            ]
         );
 
         return new GameContext($state, '1');

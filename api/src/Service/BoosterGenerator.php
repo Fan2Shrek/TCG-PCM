@@ -44,7 +44,7 @@ class BoosterGenerator
             $boosterCards[] = $randomCard;
         }
 
-        return new Booster(array_map($this->cardRegistry->getCardInstanceById(...), $boosterCards));
+        return new Booster(array_map($this->cardRegistry->getCardTemplateById(...), $boosterCards));
     }
 
     protected function getRandomRarity(): CardRarityEnum

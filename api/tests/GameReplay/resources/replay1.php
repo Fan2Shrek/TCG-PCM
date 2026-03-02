@@ -1,6 +1,7 @@
 <?php
 
 use App\Enum\GameEventTypeEnum;
+use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -13,10 +14,10 @@ return [
                 '1',
                 'replay1_player1',
             ),
-            30,
+            300,
             [
-                'Spicy-D6',
-                'Spicy-D6',
+                'card1',
+                'card2',
             ],
             [],
         ),
@@ -25,17 +26,35 @@ return [
                 '2',
                 'replay1_player2',
             ),
-            10,
+            100,
             [
-                'Spicy-D6',
+                'card3',
             ],
             [],
         ),
         0,
+        null,
+        [
+            'card1' => new CardState(
+                'card1',
+                'Spicy-D6',
+                [],
+            ),
+            'card2' => new CardState(
+                'card2',
+                'Spicy-D6',
+                [],
+            ),
+            'card3' => new CardState(
+                'card3',
+                'Spicy-D6',
+                [],
+            ),
+        ],
     ),
     'events' => [
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'Spicy-D6',
+            'cardId' => 'card1',
             'playerId' => '1',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -46,7 +65,7 @@ return [
             'playerId' => '1',
         ]),
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'Spicy-D6',
+            'cardId' => 'card3',
             'playerId' => '2',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -57,7 +76,7 @@ return [
             'playerId' => '2',
         ]),
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'Spicy-D6',
+            'cardId' => 'card2',
             'playerId' => '1',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -71,9 +90,13 @@ return [
                 '1',
                 'replay1_player1',
             ),
-            29,
+            290,
             [],
             [],
+            [
+                'card1',
+                'card2',
+            ]
         ),
         new PlayerState(
             new Player(
@@ -83,6 +106,9 @@ return [
             0,
             [],
             [],
+            [
+                'card3',
+            ]
         ),
         0,
     ),

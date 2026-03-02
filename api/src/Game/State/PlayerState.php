@@ -10,13 +10,15 @@ readonly class PlayerState
 {
     /**
      * @param string[] $hand
-     * @param string[] $drawPile
+     * @param array<string, string> $drawPile
+     * @param string[] $discardPile
      */
     public function __construct(
         public Player $player,
         public int $healthPoints,
         public array $hand,
         public array $drawPile,
+        public array $discardPile = [],
     ) {}
 
     public function withUpdatedHealth(int $newHealth): self
@@ -61,6 +63,13 @@ readonly class PlayerState
 
         return clone($this, [
             'hand' => array_values($hand),
+        ]);
+    }
+
+    public function withDiscardedCard(string $cardId): self
+    {
+        return clone($this, [
+            'discardPile' => [...$this->discardPile, $cardId],
         ]);
     }
 }

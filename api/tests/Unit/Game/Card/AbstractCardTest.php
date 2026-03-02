@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Game\Card;
+
+use App\Enum\CardEffectEnum;
+use App\Game\AbstractCard;
+use App\Game\Card\CardState;
+use App\Game\Card\Effect\EffectState;
+use PHPUnit\Framework\TestCase;
+
+final class AbstractCardTest extends TestCase
+{
+    public function testSetState(): void
+    {
+        $state = new CardState(
+            'id',
+            DummyCard::class,
+            [],
+        );
+
+        $card = new DummyCard();
+        $card->setState($state);
+
+        self::assertSame('id', $card->getInstanceId());
+    }
+
+    public function testSetStateWithWrongId(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $state = new CardState(
+            'id',
+            'badId',
+            [],
+        );
+
+        $card = new DummyCard();
+        $card->setState($state);
+    }
+
+    public function testSetStateEffects(): void
+    {
+        $state = new CardState(
+            'id',
+            DummyCard::class,
+            [
+                new EffectState(
+                    CardEffectEnum::HACKED,
+                    [
+                        'value' => 2.0,
+                    ]
+                ),
+            ],
+        );
+
+        $card = new DummyCard();
+        $card->setState($state);
+
+        self::assertCount(1, $card->getEffects());
+    }
+}
+
+class DummyCard extends AbstractCard
+{
+    public function getId(): string
+    {
+        return self::class;
+    }
+
+    public function getName(): string
+    {
+        return 'Dummy Card';
+    }
+
+    public function getDescription(): string
+    {
+        return 'This is a dummy card for testing purposes.';
+    }
+
+    public function getEffects(): array
+    {
+        return $this->effects->all();
+    }
+}

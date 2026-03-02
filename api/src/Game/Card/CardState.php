@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Game\Card;
+
+use App\Enum\CardEffectEnum;
+use App\Game\Card\Effect\EffectState;
+
+final readonly class CardState
+{
+    /**
+     * @param EffectState[] $effects
+     */
+    public function __construct(
+        public string $instanceId,
+        public string $templateId,
+        public array $effects = [],
+    ) {}
+
+    public function addEffect(CardEffectEnum $effect): self
+    {
+        return clone($this, [
+            'effects' => [...$this->effects, $effect],
+        ]);
+    }
+}

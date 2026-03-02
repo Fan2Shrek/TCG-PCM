@@ -35,9 +35,3 @@ file = "src/Service/Game/CardRegistry.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\service\game\cardregistry::getcardslist`. Saw type `mixed`.'
 count = 1
-
-[[issues]]
-file = "src/Service/Game/GameEventApplier.php"
-code = "possibly-invalid-argument"
-message = 'Possible argument type mismatch for argument #1 of `App\Game\State\PlayerState::withnewhandanddeck`: expected `array<array-key, string>`, but possibly received `list{null|string, ...<string>}`.'
-count = 1

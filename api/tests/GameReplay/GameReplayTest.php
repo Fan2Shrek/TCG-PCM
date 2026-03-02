@@ -51,11 +51,9 @@ final class GameReplayTest extends TestCase
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameManager(
-            $cardRegistry = new MockCardRegistry(require $cardsListPath),
-            new GameEventApplier(
-                $cardRegistry,
-                new ReplayableGameContextFactory($rolls),
-            ),
+            new MockCardRegistry(require $cardsListPath),
+            new GameEventApplier(),
+            new ReplayableGameContextFactory($rolls),
         );
     }
 

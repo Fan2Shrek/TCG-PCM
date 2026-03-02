@@ -28,7 +28,7 @@ final class D6Card extends AbstractPlayableCard
         return 'Roll a six-sided dice and draw that many cards.';
     }
 
-    public function play(GameContext $context): void
+    public function play(GameContext $context, array $data = []): void
     {
         $context->drawCards($context->rollDice(6));
     }

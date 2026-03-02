@@ -9,6 +9,9 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
+use App\Game\AbstractCard;
+use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
@@ -19,14 +22,17 @@ use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\Factory\GameContextFactoryInterface;
+use Symfony\Component\Uid\Uuid;
 
 class GameManager
 {
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardRegistryInterface $cardsRegistry,
+        private CardRegistryInterface $cardRegistry,
         private GameEventApplierInterface $gameEventApplier,
+        private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
     public function startGame(Room $room): GameState
@@ -74,22 +80,43 @@ class GameManager
 
     public function play(GameEvent $event, GameState $gameState): GameState
     {
-        $newState = $this->gameEventApplier->apply($event, $gameState);
+        if (GameEventTypeEnum::CARD_PLAYED === $event->type) {
+            $gameState = $this->gameEventApplier->apply($event, $gameState);
+            $events = $this->doPlayCard($event, $gameState);
+        } else { // @mago-ignore lint:no-else-clause
+            $events = [$event];
+        }
+
+        $newState = $this->gameEventApplier->applyMultiple($events, $gameState);
 
         return $newState->withLastEventId($event->id);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
     {
-        $characterCard = $this->cardsRegistry->getCardInstanceById($deck->getCharacterCard());
+        $characterCard = $this->cardRegistry->getCardTemplateById($deck->getCharacterCard());
 
         if (!$characterCard instanceof AbstractCharacterCard) {
             throw new \RuntimeException('Deck character card is not a character card');
         }
 
         $player = Player::fromUser($user);
+        $cardsIds = $this->createCardsFromDeck($deck);
 
-        return new PlayerState($player, $characterCard->getHealthPoints(), [], $deck->getCards());
+        return new PlayerState($player, $characterCard->getHealthPoints(), [], $cardsIds);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function createCardsFromDeck(Deck $deck): array
+    {
+        $cardsIds = [];
+        foreach ($deck->getCards() as $card) {
+            $cardsIds[$this->createCardId()->toString()] = $card;
+        }
+
+        return $cardsIds;
     }
 
     /**
@@ -106,12 +133,14 @@ class GameManager
             throw new CardNotInHandException($state->getCurrentPlayerState()->player, $card);
         }
 
-        return [
-            GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-                'playerId' => $action->author->id,
-                'cardId' => $card,
-            ]),
-        ];
+        $event = GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
+            'playerId' => $action->author->id,
+            'cardId' => $card,
+        ]);
+
+        $state = $this->gameEventApplier->apply($event, $state);
+
+        return array_merge([$event], $this->doPlayCard($event, $state));
     }
 
     /**
@@ -139,5 +168,51 @@ class GameManager
     private function isNewRound(GameState $state, string $nextPlayerId): bool
     {
         return $nextPlayerId === $state->player1->player->id;
+    }
+
+    private function createCardId(): Uuid
+    {
+        return Uuid::v4();
+    }
+
+    private function createCardFromState(CardState $state): AbstractCard
+    {
+        $card = $this->cardRegistry->getCardTemplateById($state->templateId);
+        $card->setState($state);
+
+        return $card;
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function doPlayCard(GameEvent $event, GameState $state): array
+    {
+        if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('cardId is required to play a card');
+        }
+
+        $card = $this->createCardFromState($state->cards[$cardId]);
+
+        if (!$card instanceof AbstractPlayableCard) {
+            throw new \LogicException(\sprintf('Card with id %s is not playable', $card->getId()));
+        }
+
+        if (!\is_string($event->data['playerId'] ?? null)) {
+            throw new \LogicException('playerId is required to play a card');
+        }
+
+        $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
+        $data = $event->data['data'] ?? [];
+        $card->play($ctx, \is_array($data) ? $data : []);
+
+        $events = $ctx->flushEvents();
+
+        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
+            'playerId' => $event->data['playerId'],
+            'cardId' => $event->data['cardId'],
+        ]);
+
+        return $events;
     }
 }
