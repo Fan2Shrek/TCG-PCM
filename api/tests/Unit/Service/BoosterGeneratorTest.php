@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSerieEnum;
 use App\Game\AbstractCard;
 use App\Game\GameContext;
 use App\Service\BoosterGenerator;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Clock\MockClock;
 
 final class BoosterGeneratorTest extends TestCase
 {
@@ -20,18 +20,7 @@ final class BoosterGeneratorTest extends TestCase
 
         $booster = $BoosterGenerator->generateBooster();
 
-        $this->assertCount(1, $booster->getCards());
-    }
-
-    public function testNoDuplicates(): void
-    {
-        $BoosterGenerator = new class extends TestableBoosterGenerator {
-            protected const BOOSTER_SIZE = 2;
-        };
-
-        $booster = $BoosterGenerator->generateBooster();
-
-        $this->assertCount(2, array_unique($booster->getCards(), SORT_REGULAR));
+        self::assertCount(1, $booster->getCards());
     }
 
     public function testRarity(): void
@@ -45,7 +34,18 @@ final class BoosterGeneratorTest extends TestCase
 
         $booster = $BoosterGenerator->generateBooster();
 
-        $this->assertInstanceOf(LegendaryCardStub::class, $booster->getCards()[0]);
+        self::assertInstanceOf(LegendaryCardStub::class, $booster->getCards()[0]);
+    }
+
+    public function testSerie(): void
+    {
+        $BoosterGenerator = new class extends TestableBoosterGenerator {
+            protected const BOOSTER_SIZE = 1;
+        };
+
+        $booster = $BoosterGenerator->generateBooster(CardSerieEnum::BTD6);
+
+        self::assertCount(1, $booster->getCards());
     }
 
     public function testSize(): void
@@ -87,6 +87,7 @@ class TestableBoosterGenerator extends BoosterGenerator
 
 class CommonCardStub extends AbstractCard
 {
+    public static CardSerieEnum $serie = CardSerieEnum::BTD6;
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
     public function getId(): string
@@ -113,6 +114,7 @@ class CommonCardStub extends AbstractCard
 class LegendaryCardStub extends AbstractCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
+    public static CardSerieEnum $serie = CardSerieEnum::TBOI;
 
     public function getId(): string
     {

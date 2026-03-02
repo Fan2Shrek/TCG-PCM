@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Debug\Card;
 
-use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Service\Game\CardRegistryInterface;
@@ -33,9 +32,9 @@ final class TraceableCardRegistry implements CardRegistryInterface
         return $this->cards[] = $card;
     }
 
-    public function getAllByRarity(CardRarityEnum $rarity): array
+    public function getAllBy(array $criteria): array
     {
-        return $this->decorated->getAllByRarity($rarity);
+        return $this->decorated->getAllBy($criteria);
     }
 
     public function hasCards(): bool

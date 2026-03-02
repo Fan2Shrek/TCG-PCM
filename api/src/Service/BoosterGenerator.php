@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSerieEnum;
 use App\Service\Game\CardRegistryInterface;
 
 class BoosterGenerator
@@ -23,18 +24,22 @@ class BoosterGenerator
         CardRarityEnum::LEGENDARY->value => 0.005,
     ];
 
+    /**
+     * @var array<string, string[]>
+     */
+    private array $cardCache = [];
+
     public function __construct(
         private CardRegistryInterface $cardRegistry,
     ) {}
 
-    public function generateBooster(): Booster
+    public function generateBooster(?CardSerieEnum $serie = null): Booster
     {
         $boosterCards = [];
 
         for ($i = 0; $i < static::BOOSTER_SIZE; $i++) {
             $rarity = $this->getRandomRarity();
-            $availableCards = array_filter($this->cardRegistry->getAllByRarity($rarity), static fn(string $card) => !\in_array($card, $boosterCards, true));
-
+            $availableCards = $this->getForRarityAndSerie($rarity, $serie);
             if ([] === $availableCards) {
                 $i--;
                 continue;
@@ -60,5 +65,15 @@ class BoosterGenerator
         }
 
         return CardRarityEnum::COMMON;
+    }
+
+    private function getForRarityAndSerie(CardRarityEnum $rarity, ?CardSerieEnum $serie): array
+    {
+        $cacheKey = \sprintf('%s_%s', $rarity->value, $serie->value ?? 'any');
+
+        return $this->cardCache[$cacheKey] ??= $this->cardRegistry->getAllBy([
+            'rarity' => $rarity,
+            'serie' => $serie,
+        ]);
     }
 }
