@@ -46,7 +46,7 @@ final class TraceablePlayableCard extends AbstractPlayableCard
         $this->card->onCardDrawn($card, $context);
     }
 
-    public function play(GameContext $context): void
+    public function play(GameContext $context, array $data = []): void
     {
         $id = $this->getId().'.play';
         $this->stopwatch->start($id, self::STOPWATCH_CATEGORY);

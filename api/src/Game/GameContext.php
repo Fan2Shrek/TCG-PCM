@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -67,5 +68,13 @@ class GameContext
         ]);
 
         return $result;
+    }
+
+    public function addEffect(CardEffectEnum $effect, string $cardId): void
+    {
+        $this->events[] = GameEvent::game(GameEventTypeEnum::EFFECT_ADDED, [
+            'effect' => $effect->value,
+            'cardId' => $cardId,
+        ]);
     }
 }

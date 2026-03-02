@@ -8,6 +8,8 @@ use App\Game\GameContext;
 
 final class SpicyD6Card extends AbstractPlayableCard
 {
+    private const DAMAGE_MULTIPLIER = 10;
+
     public function getId(): string
     {
         return 'Spicy-D6';
@@ -25,11 +27,11 @@ final class SpicyD6Card extends AbstractPlayableCard
 
     public function getDescription(): string
     {
-        return 'Roll a six-sided dice and does that many damage.';
+        return 'Roll a six-sided dice and does <value>10</value> time that many damage.';
     }
 
-    public function play(GameContext $context): void
+    public function play(GameContext $context, array $data = []): void
     {
-        $context->attack($context->rollDice(6));
+        $context->attack($context->rollDice(6) * $this->getValue(self::DAMAGE_MULTIPLIER, true));
     }
 }
