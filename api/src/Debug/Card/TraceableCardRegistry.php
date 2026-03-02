@@ -22,9 +22,9 @@ final class TraceableCardRegistry implements CardRegistryInterface
         private Stopwatch $stopwatch,
     ) {}
 
-    public function getCardInstanceById(string $cardId): AbstractCard
+    public function getCardTemplateById(string $cardId): AbstractCard
     {
-        $card = $this->decorated->getCardInstanceById($cardId);
+        $card = $this->decorated->getCardTemplateById($cardId);
 
         if ($card instanceof AbstractPlayableCard) {
             $card = TraceablePlayableCard::create($card, $this->stopwatch);

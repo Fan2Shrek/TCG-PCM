@@ -9,7 +9,7 @@ use App\Game\AbstractCard;
 
 interface CardRegistryInterface
 {
-    public function getCardInstanceById(string $cardId): AbstractCard;
+    public function getCardTemplateById(string $cardId): AbstractCard;
 
     /**
      * @return string[]

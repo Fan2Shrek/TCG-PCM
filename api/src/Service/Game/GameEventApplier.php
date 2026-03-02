@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service\Game;
 
+use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
-use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Service\Game\Factory\GameContextFactoryInterface;
 
 class GameEventApplier implements GameEventApplierInterface
 {
-    public function __construct(
-        private CardRegistryInterface $cardRegistry,
-        private GameContextFactoryInterface $gameContextFactory,
-    ) {}
-
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
         return match ($event->type) {
@@ -28,6 +22,8 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
             GameEventTypeEnum::DICE_ROLLED => $this->applyDiceRolled($event, $gameState),
+            GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
+            GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
         };
     }
 
@@ -40,7 +36,6 @@ class GameEventApplier implements GameEventApplierInterface
         return $gameState;
     }
 
-    // @ŧodo voir comportement quand plus de cartes
     private function applyCardDrawn(GameEvent $event, GameState $state): GameState
     {
         $playerId = $event->data['playerId'] ?? null;
@@ -52,8 +47,14 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $state->getPlayer($playerId);
 
         $deck = $player->drawPile;
+
         $instanceId = array_key_first($deck);
         $drawn = array_shift($deck);
+
+        if (!$instanceId || !$drawn) {
+            // @ŧodo voir comportement quand plus de cartes
+            throw new \LogicException(\sprintf('Player %s has no more cards to draw', $playerId));
+        }
 
         $newPlayer = $player->withNewHandAndDeck([...$player->hand, $drawn], $deck);
 
@@ -82,22 +83,8 @@ class GameEventApplier implements GameEventApplierInterface
         }
 
         $player = $player->removeCardFromHand($cardId);
-        $gameState = $gameState->withUpdatedPlayer($player);
 
-        $card = $this->cardRegistry->getCardInstanceById($cardId);
-
-        if (!$card instanceof AbstractPlayableCard) {
-            throw new \LogicException(\sprintf('Card with id %s is not playable', $cardId));
-        }
-
-        $ctx = $this->gameContextFactory->createGameContext($gameState, $playerId);
-        $card->play($ctx);
-
-        foreach ($ctx->flushEvents() as $cardEvent) {
-            $gameState = $this->apply($cardEvent, $gameState);
-        }
-
-        return $gameState;
+        return $gameState->withUpdatedPlayer($player);
     }
 
     private function applyDamage(GameEvent $event, GameState $gameState): GameState
@@ -143,5 +130,44 @@ class GameEventApplier implements GameEventApplierInterface
         // no-op
 
         return $gameState;
+    }
+
+    private function applyEffectAdded(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('EffectAdded requires a cardId');
+        }
+
+        if (null === ($effectId = $event->data['effect'] ?? null)) {
+            throw new \LogicException('EffectAdded requires an effect');
+        }
+
+        if (!($cardState = $gameState->cards[$cardId] ?? null)) {
+            throw new \LogicException('EffectAdded requires a valid cardId');
+        }
+
+        if (!($effect = CardEffectEnum::tryFrom((string) $effectId))) {
+            throw new \LogicException('EffectAdded requires a valid effect');
+        }
+
+        $cardState = $cardState->addEffect($effect);
+
+        return $gameState->withUpdatedCardState($cardState);
+    }
+
+    private function applyCardDiscarded(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('DiscardCard requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('DiscardCard requires a playerId');
+        }
+
+        $player = $gameState->getPlayer($playerId);
+        $player = $player->withDiscardedCard($cardId);
+
+        return $gameState->withUpdatedPlayer($player)->removeCard($cardId);
     }
 }

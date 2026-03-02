@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\State;
 
+use App\Enum\CardEffectEnum;
+use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
@@ -441,5 +443,68 @@ final class GameStateTest extends TestCase
         );
 
         $gameState->withCurrentPlayer('3');
+    }
+
+    public function testAddCard()
+    {
+        $player1 = new PlayerState(
+            new Player('1', 'Player 1'),
+            1,
+            [],
+            [],
+        );
+        $player2 = new PlayerState(
+            new Player('2', 'Player 1'),
+            1,
+            [],
+            [],
+        );
+        $gameState = new GameState(
+            $player1,
+            $player2,
+            0,
+        );
+
+        $newState = $gameState->addCard(new CardState(
+            'card1',
+            'Card 1',
+        ));
+
+        self::assertCount(1, $newState->cards);
+    }
+
+    public function testWithUpdatedCardState()
+    {
+        $player1 = new PlayerState(
+            new Player('1', 'Player 1'),
+            1,
+            [],
+            [],
+        );
+        $player2 = new PlayerState(
+            new Player('2', 'Player 1'),
+            1,
+            [],
+            [],
+        );
+        $gameState = new GameState(
+            $player1,
+            $player2,
+            0,
+        );
+
+        $gameState = $gameState->addCard(new CardState(
+            'card1',
+            'Card 1',
+        ));
+
+        $newState = $gameState->withUpdatedCardState(new CardState(
+            'card1',
+            'Card 1',
+            [CardEffectEnum::HACKED],
+        ));
+
+        self::assertCount(1, $newState->cards['card1']->effects);
+
     }
 }

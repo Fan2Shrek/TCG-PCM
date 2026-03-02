@@ -6,6 +6,7 @@ namespace App\Game;
 
 use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
+use App\Game\Card\CardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 
@@ -76,5 +77,10 @@ class GameContext
             'effect' => $effect->value,
             'cardId' => $cardId,
         ]);
+    }
+
+    public function getCard(string $instanceId): CardState
+    {
+        return $this->state->cards[$instanceId];
     }
 }

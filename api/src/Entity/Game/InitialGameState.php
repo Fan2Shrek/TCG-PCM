@@ -6,6 +6,7 @@ namespace App\Entity\Game;
 
 use App\Doctrine\Type\PlayerStateType;
 use App\Entity\Room;
+use App\Game\Card\CardState;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
 use App\Repository\Game\InitialGameStateRepository;
@@ -28,13 +29,23 @@ class InitialGameState
     #[ORM\Column(type: PlayerStateType::NAME)]
     private PlayerState $player2State;
 
-    public function __construct(string $id, PlayerState $player1State, PlayerState $player2State)
+    /**
+     * @var array<string, CardState> $cards
+     */
+    #[ORM\Column]
+    private array $cards = [];
+
+    /**
+     * @param array<string, CardState> $cards
+     */
+    public function __construct(string $id, PlayerState $player1State, PlayerState $player2State, array $cards = [])
     {
         $this->id = $id;
 
         $this->createdAt = new \DateTimeImmutable();
         $this->player1State = $player1State;
         $this->player2State = $player2State;
+        $this->cards = $cards;
     }
 
     public function getId(): string
@@ -57,13 +68,18 @@ class InitialGameState
         return $this->player2State;
     }
 
+    public function getCards(): array
+    {
+        return $this->cards;
+    }
+
     public static function createFromRoomAndGameState(Room $room, GameState $gameState): self
     {
-        return new self($room->getId()->toString(), $gameState->player1, $gameState->player2);
+        return new self($room->getId()->toString(), $gameState->player1, $gameState->player2, $gameState->cards);
     }
 
     public function toGameState(): GameState
     {
-        return new GameState($this->player1State, $this->player2State, null);
+        return new GameState($this->player1State, $this->player2State, null, null, $this->cards);
     }
 }

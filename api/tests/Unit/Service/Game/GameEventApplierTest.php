@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Game;
 
+use App\Enum\CardEffectEnum;
 use App\Game\State\GameEvent;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
@@ -20,13 +21,6 @@ use PHPUnit\Framework\TestCase;
 
 final class GameEventApplierTest extends TestCase
 {
-    #[Before]
-    public function clearSpies(): void
-    {
-        SpyCard::$receivedContext = null;
-        OtherSpyCard::$otherReceivedContext = null;
-    }
-
     public function testApplyCardDrawn()
     {
         $eventApplier = $this->getSut();
@@ -61,55 +55,6 @@ final class GameEventApplierTest extends TestCase
 
         self::assertCount(1, $newState->cards);
         self::assertEquals(new CardState('id', 'D6', []), $newState->cards['id']);
-    }
-
-    public function testApplyCardPlayed(): void
-    {
-        $eventApplier = $this->getSut(
-            [
-                'spy' => SpyCard::class,
-            ],
-            new GameContextFactory(),
-        );
-        $state = $this->getInitialGameState(player2Hand: ['spy']);
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::CARD_PLAYED,
-            GameEvent::PLAYER_EVENT,
-            [
-                'playerId' => 'player2',
-                'cardId' => 'spy',
-            ]
-        );
-
-        $eventApplier->apply($event, $state);
-
-        self::assertNotNull(SpyCard::$receivedContext);
-    }
-
-    public function testApplyCardPlayedApplyNewEvent(): void
-    {
-        $eventApplier = $this->getSut(
-            [
-                'spy' => SpyCard::class,
-                'other-spy' => OtherSpyCard::class,
-            ],
-        );
-        $state = $this->getInitialGameState(2, ['spy', 'other-spy']);
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::CARD_PLAYED,
-            GameEvent::PLAYER_EVENT,
-            [
-                'playerId' => 'player2',
-                'cardId' => 'spy',
-            ]
-        );
-
-        $eventApplier->apply($event, $state);
-
-        self::assertNotNull(SpyCard::$receivedContext);
-        self::assertNotNull(OtherSpyCard::$otherReceivedContext);
     }
 
     public function testApplyDamage(): void
@@ -150,6 +95,48 @@ final class GameEventApplierTest extends TestCase
         self::assertSame('player2', $newState->currentPlayer);
     }
 
+    public function testEffectAdded()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $state = $state->addCard(new CardState('D6', 'D6', []));
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::EFFECT_ADDED,
+            GameEvent::GAME_EVENT,
+            [
+                'cardId' => 'D6',
+                'effect' => CardEffectEnum::HACKED->value,
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(1, $newState->cards['D6']->effects);
+    }
+
+    public function testCardDiscarded()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::CARD_DISCARDED,
+            GameEvent::GAME_EVENT,
+            [
+                'playerId' => 'player2',
+                'cardId' => 'D6',
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(0, $newState->getPlayer('player2')->hand);
+        self::assertCount(1, $newState->getPlayer('player2')->discardPile);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(
@@ -185,49 +172,5 @@ final class GameEventApplierTest extends TestCase
             ),
             $lastEventId,
         );
-    }
-}
-
-class SpyCard extends AbstractPlayableCard
-{
-    public static ?GameContext $receivedContext = null;
-
-    public function getId(): string
-    {
-        return 'spy';
-    }
-
-    public function getName(): string
-    {
-        return 'Spy';
-    }
-
-    public function getDescription(): string
-    {
-        return $this->getName();
-    }
-
-    public function play(GameContext $ctx, array $data = []): void
-    {
-        self::$receivedContext = $ctx;
-
-        if (2 === $ctx->state->lastEventId) {
-            $ctx->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, ['playerId' => $ctx->playerId, 'cardId' => 'other-spy']);
-        }
-    }
-}
-
-class OtherSpyCard extends SpyCard
-{
-    public static ?GameContext $otherReceivedContext = null;
-
-    public function getId(): string
-    {
-        return 'other-spy';
-    }
-
-    public function play(GameContext $ctx, array $data = []): void
-    {
-        self::$otherReceivedContext = $ctx;
     }
 }

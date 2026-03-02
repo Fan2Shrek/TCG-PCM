@@ -16,6 +16,9 @@ final readonly class GameState
      */
     public array $cards;
 
+    /**
+     * @param array<string, CardState> $cards
+     */
     public function __construct(
         public PlayerState $player1,
         public PlayerState $player2,
@@ -101,6 +104,26 @@ final readonly class GameState
     }
 
     public function addCard(CardState $card): GameState
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    public function removeCard(string $cardId): GameState
+    {
+        $cards = $this->cards;
+        unset($cards[$cardId]);
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    public function withUpdatedCardState(CardState $card): GameState
     {
         $cards = $this->cards;
         $cards[$card->instanceId] = $card;

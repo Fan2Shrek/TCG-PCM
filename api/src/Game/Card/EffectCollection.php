@@ -12,7 +12,7 @@ final class EffectCollection
     /**
      * @var AbstractCardEffect[]
      */
-    protected array $effects = [];
+    private array $effects = [];
 
     public function add(AbstractCardEffect $effect): self
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Resources\Fixtures\Builder;
 
 use App\Entity\Game\InitialGameState;
+use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
@@ -19,14 +20,16 @@ final class GameBuilder extends RoomBuilder
         $this->getEm()->persist($this->entity);
         $this->getEm()->flush();
 
-        $defaultHand = [
-            DummyCard::class,
-        ];
-
         $gameState = new InitialGameState(
             $this->entity->getId()->toString(),
-            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, $defaultHand, []),
-            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, $defaultHand, []),
+            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, ['1'], []),
+            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, ['2'], []),
+            [
+                1 => new CardState(
+                    '1',
+                    DummyCard::class,
+                )
+            ],
         );
 
         $this->getEm()->persist($gameState);

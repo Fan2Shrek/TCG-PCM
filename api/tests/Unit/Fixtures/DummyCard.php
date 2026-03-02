@@ -16,7 +16,7 @@ final class DummyCard extends AbstractPlayableCard
 
     public function getId(): string
     {
-        return 'DummyCard';
+        return self::class;
     }
 
     public function getDescription(): string
