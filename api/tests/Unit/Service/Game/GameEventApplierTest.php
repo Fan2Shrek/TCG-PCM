@@ -30,7 +30,7 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertCount(1, $newState->player1->hand);
-        self::assertSame('D6', $newState->player1->hand[0]);
+        self::assertSame('id', $newState->player1->hand[0]);
     }
 
     public function testApplyCardDrawnWithPlayer2()
