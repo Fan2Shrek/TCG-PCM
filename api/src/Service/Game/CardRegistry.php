@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Game;
 
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSerieEnum;
 use App\Game\AbstractCard;
 
 class CardRegistry implements CardRegistryInterface
@@ -28,13 +29,28 @@ class CardRegistry implements CardRegistryInterface
         return $this->get($cardId);
     }
 
-    public function getAllByRarity(CardRarityEnum $rarity): array
+    public function getAllBy(array $criteria): array
     {
+        $rarity = $criteria['rarity'] ?? null;
+        $serie = $criteria['serie'] ?? null;
+
+        if (null !== $rarity && !$rarity instanceof CardRarityEnum) {
+            throw new \InvalidArgumentException(sprintf('Rarity must be an instance of %s', CardRarityEnum::class));
+        }
+
+        if (null !== $serie && !$serie instanceof CardSerieEnum) {
+            throw new \InvalidArgumentException(sprintf('Serie must be an instance of %s', CardSerieEnum::class));
+        }
+
         $this->loadCards();
 
         $cards = [];
         foreach ($this->cards as $cardId => $cardClass) {
-            if ($cardClass::$rarity !== $rarity) {
+            if ($rarity && $cardClass::$rarity !== $rarity) {
+                continue;
+            }
+
+            if ($serie && $cardClass::$serie !== $serie) {
                 continue;
             }
 
