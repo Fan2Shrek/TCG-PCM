@@ -26,6 +26,7 @@ no-boolean-flag-parameter = { enabled = false }
 single-class-per-file = { enabled = false }
 too-many-methods = { enabled = false }
 cyclomatic-complexity = { enabled = false }
+no-assign-in-condition = { enabled = false }
 
 [analyzer]
 find-unused-definitions = true

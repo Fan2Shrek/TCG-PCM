@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Game\Card\BenjaminCard;
 use App\Game\Card\Character\PierrotCard;
 use App\Game\Card\D6Card;
+use App\Game\Card\GitmanCard;
 use App\Game\Card\SpicyD6Card;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
@@ -29,6 +30,9 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             $id,
             $id,
             $id = new BenjaminCard()->getId(),
+            $id,
+            $id,
+            $id = new GitmanCard()->getId(),
             $id,
             $id,
         ];

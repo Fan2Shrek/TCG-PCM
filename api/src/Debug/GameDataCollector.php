@@ -132,7 +132,7 @@ final class GameDataCollector extends AbstractDataCollector
     {
         return array_map(static fn(AbstractCard $card) => [
             'id' => $card->getId(),
-            'instanceId' => $card->getInstanceId(),
+            'instanceId' => $card->getInstanceId() ?? null,
             'effects' => !$card instanceof TraceablePlayableCard ? null : array_map(static fn(AbstractCardEffect $effect) => [
                     'type' => $effect::getName()->value,
                     'properties' => get_object_vars($effect),
