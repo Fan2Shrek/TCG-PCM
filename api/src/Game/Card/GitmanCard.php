@@ -37,6 +37,7 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
     {
         $damageValue = $this->getValue(self::DAMAGE_MULTIPLIER, true) * $this->getCommitCount();
 
+        $context->runtimeValueEffect($damageValue);
         $context->attack($damageValue);
     }
 

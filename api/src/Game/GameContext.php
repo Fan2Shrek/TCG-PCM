@@ -84,6 +84,11 @@ class GameContext
         return $result;
     }
 
+    public function runtimeValueEffect(mixed $value): void
+    {
+        $this->pushGameEvent(GameEventTypeEnum::CARD_RUNTIME_VALUE, ['value' => $value]);
+    }
+
     public function addEffect(CardEffectEnum $effect, string $cardId): void
     {
         $this->events[] = GameEvent::game(GameEventTypeEnum::EFFECT_ADDED, [
