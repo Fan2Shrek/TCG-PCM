@@ -27,4 +27,16 @@ readonly class GameEvent
     {
         return new self(0, $type, self::PLAYER_EVENT, $data);
     }
+
+    public function shouldBePersisted(): bool
+    {
+        if (self::PLAYER_EVENT === $this->eventOrigin) {
+            return true;
+        }
+
+        return match ($this->type) {
+            GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_RUNTIME_VALUE => true,
+            default => false,
+        };
+    }
 }
