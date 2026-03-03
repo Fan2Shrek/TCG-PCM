@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Game\Card;
+namespace App\Game\Card\Interface;
 
 interface ComputedCardInterface
 {

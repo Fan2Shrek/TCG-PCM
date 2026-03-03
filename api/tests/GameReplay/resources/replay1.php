@@ -38,16 +38,19 @@ return [
             'card1' => new CardState(
                 'card1',
                 'Spicy-D6',
+                '1',
                 [],
             ),
             'card2' => new CardState(
                 'card2',
                 'Spicy-D6',
+                '2',
                 [],
             ),
             'card3' => new CardState(
                 'card3',
                 'Spicy-D6',
+                '1',
                 [],
             ),
         ],

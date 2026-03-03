@@ -15,6 +15,7 @@ final readonly class CardState
     public function __construct(
         public string $instanceId,
         public string $templateId,
+        public string $ownerId,
         public array $effects = [],
     ) {}
 

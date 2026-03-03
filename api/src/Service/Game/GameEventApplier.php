@@ -60,7 +60,7 @@ class GameEventApplier implements GameEventApplierInterface
 
         $state = $state->withUpdatedPlayer($newPlayer);
 
-        return $state->addCard(new CardState($instanceId, $drawn));
+        return $state->addCard(new CardState($instanceId, $drawn, $playerId));
     }
 
     private function applyCardPlayed(GameEvent $event, GameState $gameState): GameState
