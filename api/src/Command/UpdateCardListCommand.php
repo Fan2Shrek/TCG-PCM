@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Game\AbstractCard;
+use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
@@ -23,12 +24,15 @@ final class UpdateCardListCommand
         AbstractCard::class,
         AbstractPlayableCard::class,
         AbstractCharacterCard::class,
+        AbstractPassiveCard::class,
         CardState::class,
         EffectCollection::class,
     ];
 
     private const array FOLDERS_TO_IGNORE = [
         'Effect',
+        'Interface',
+        'Trait',
     ];
 
     private OutputInterface $output;

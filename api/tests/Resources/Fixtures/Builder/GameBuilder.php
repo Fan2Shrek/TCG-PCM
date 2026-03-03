@@ -7,6 +7,7 @@ namespace App\Tests\Resources\Fixtures\Builder;
 use App\Entity\Game\InitialGameState;
 use App\Game\Card\CardState;
 use App\Game\Player;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
 
@@ -22,12 +23,27 @@ final class GameBuilder extends RoomBuilder
 
         $gameState = new InitialGameState(
             $this->entity->getId()->toString(),
-            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, ['1'], []),
-            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, ['2'], []),
+            new PlayerState(
+                Player::fromUser($this->entity->getOwner()),
+                100,
+                100,
+                ['1'],
+                [],
+                new PlayArea(),
+            ),
+            new PlayerState(
+                Player::fromUser($this->entity->getOpponent()),
+                100,
+                100,
+                ['2'],
+                [],
+                new PlayArea(),
+            ),
             [
                 1 => new CardState(
                     '1',
                     DummyCard::class,
+                    'ownerId',
                 )
             ],
         );

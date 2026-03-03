@@ -18,12 +18,14 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_DRAWN => $this->applyCardDrawn($event, $gameState),
             GameEventTypeEnum::CARD_PLAYED => $this->applyCardPlayed($event, $gameState),
             GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
+            GameEventTypeEnum::HEAL => $this->applyHeal($event, $gameState),
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
             GameEventTypeEnum::DICE_ROLLED => $this->applyDiceRolled($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
+            GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
         };
     }
 
@@ -60,7 +62,7 @@ class GameEventApplier implements GameEventApplierInterface
 
         $state = $state->withUpdatedPlayer($newPlayer);
 
-        return $state->addCard(new CardState($instanceId, $drawn));
+        return $state->addCard(new CardState($instanceId, $drawn, $playerId));
     }
 
     private function applyCardPlayed(GameEvent $event, GameState $gameState): GameState
@@ -102,6 +104,31 @@ class GameEventApplier implements GameEventApplierInterface
 
         $targetPlayerState = $gameState->getPlayer($target);
         $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
+
+        return $gameState->withUpdatedPlayer($newPlayerState);
+    }
+
+    public function applyHeal(GameEvent $event, GameState $gameState): GameState
+    {
+        $target = $event->data['targetId'] ?? null;
+        $amount = $event->data['amount'] ?? null;
+
+        if (!\is_string($target)) {
+            throw new \LogicException('HEAL requires a targetId');
+        }
+
+        if (!\is_int($amount)) {
+            throw new \LogicException('HEAL requires a amount integer');
+        }
+
+        $targetPlayerState = $gameState->getPlayer($target);
+        $newHealth = $targetPlayerState->healthPoints + $amount;
+
+        if ($newHealth > $targetPlayerState->maxHealthPoints) {
+            $newHealth = $targetPlayerState->maxHealthPoints;
+        }
+
+        $newPlayerState = $targetPlayerState->withUpdatedHealth($newHealth);
 
         return $gameState->withUpdatedPlayer($newPlayerState);
     }
@@ -169,5 +196,21 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $player->withDiscardedCard($cardId);
 
         return $gameState->withUpdatedPlayer($player)->removeCard($cardId);
+    }
+
+    private function applyCardPlaceInPlayArea(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('DiscardCard requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('DiscardCard requires a playerId');
+        }
+
+        $player = $gameState->getPlayer($playerId);
+        $newArea = $player->playArea->addPassiveCard($cardId);
+
+        return $gameState->withUpdatedPlayer($player->withPlayArea($newArea));
     }
 }

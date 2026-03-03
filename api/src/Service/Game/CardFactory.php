@@ -6,7 +6,7 @@ namespace App\Service\Game;
 
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
-use App\Game\Card\ComputedCardInterface;
+use App\Game\Card\Interface\ComputedCardInterface;
 use Psr\Cache\CacheItemInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 

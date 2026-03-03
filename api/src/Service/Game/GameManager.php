@@ -9,6 +9,7 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
+use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Exception\CardNotInHandException;
@@ -19,6 +20,7 @@ use App\Game\Player;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\Factory\GameContextFactoryInterface;
 use Symfony\Component\Uid\Uuid;
@@ -92,7 +94,7 @@ class GameManager
         $player = Player::fromUser($user);
         $cardsIds = $this->createCardsFromDeck($deck);
 
-        return new PlayerState($player, $characterCard->getHealthPoints(), [], $cardsIds);
+        return new PlayerState($player, $characterCard->getHealthPoints(), $characterCard->getHealthPoints(), [], $cardsIds, new PlayArea());
     }
 
     /**
@@ -178,27 +180,33 @@ class GameManager
             throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
         }
 
-        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
-
-        if (!$card instanceof AbstractPlayableCard) {
-            throw new \LogicException(\sprintf('Card with id %s is not playable', $card->getId()));
-        }
-
         if (!\is_string($event->data['playerId'] ?? null)) {
             throw new \LogicException('playerId is required to play a card');
         }
 
+        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
-        $card->play($ctx, \is_array($data) ? $data : []);
 
-        $events = $ctx->flushEvents();
+        $events = [];
+        if ($card instanceof AbstractPlayableCard) {
+            $card->play($ctx, \is_array($data) ? $data : []);
 
-        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
-            'playerId' => $event->data['playerId'],
-            'cardId' => $event->data['cardId'],
-        ]);
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+            ]);
+        } elseif ($card instanceof AbstractPassiveCard) {
+            $card->onCardPlace($ctx);
 
-        return $events;
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+            ]);
+        } else {
+            throw new \LogicException('Card must be either a playable or passive card');
+        }
+
+        return array_merge($events, $ctx->flushEvents());
     }
 }

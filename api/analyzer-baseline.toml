@@ -37,6 +37,12 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Trait/TurnAwareTrait.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\GameContext::iscurrentplayer`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Repository/Game/GameEventRepository.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\repository\game\gameeventrepository::geteventsince`. Saw type `mixed`.'

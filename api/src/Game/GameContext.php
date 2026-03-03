@@ -9,6 +9,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 
 class GameContext
 {
@@ -38,6 +39,13 @@ class GameContext
         $this->pushGameEvent(GameEventTypeEnum::DAMAGE, ['targetId' => $playerId, 'damage' => $damage]);
     }
 
+    public function heal(int $amount, ?string $playerId = null): void
+    {
+        $playerId ??= $this->playerId;
+
+        $this->pushGameEvent(GameEventTypeEnum::HEAL, ['targetId' => $playerId, 'amount' => $amount]);
+    }
+
     /**
      * @return GameEvent[]
      */
@@ -57,6 +65,11 @@ class GameContext
     public function getOpponent(): Player
     {
         return $this->state->player1->player->id === $this->playerId ? $this->state->player2->player : $this->state->player1->player;
+    }
+
+    public function getCurrentPlayerState(): PlayerState
+    {
+        return $this->state->currentPlayer === $this->state->player1->player->id ? $this->state->player1 : $this->state->player2;
     }
 
     public function rollDice(int $faces): int
@@ -82,5 +95,10 @@ class GameContext
     public function getCard(string $instanceId): CardState
     {
         return $this->state->cards[$instanceId];
+    }
+
+    public function isCurrentPlayer(string $playerId): bool
+    {
+        return $this->state->currentPlayer === $playerId;
     }
 }

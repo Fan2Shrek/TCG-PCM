@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Game\State;
 
 use App\Game\Player;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use PHPUnit\Framework\TestCase;
 
@@ -15,8 +16,10 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         $updatedState = $playerState->withUpdatedHealth(20);
@@ -30,8 +33,10 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A'],
             drawPile: ['Card B'],
+            playArea: new PlayArea(),
         );
 
         $updatedState = $playerState->withNewHandAndDeck(['Card C'], ['Card D']);
@@ -47,8 +52,10 @@ final class PlayerStateTest extends TestCase
         $aliveState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 10,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         self::assertTrue($aliveState->isAlive());
@@ -59,8 +66,10 @@ final class PlayerStateTest extends TestCase
         $deadState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 0,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         self::assertFalse($deadState->isAlive());
@@ -71,8 +80,10 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         self::assertTrue($playerState->hasCardInHand('Card A'));
@@ -85,8 +96,10 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         $updatedState = $playerState->removeCardFromHand('Card A');
@@ -103,8 +116,10 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
+            playArea: new PlayArea(),
         );
 
         $playerState->removeCardFromHand('Card C');

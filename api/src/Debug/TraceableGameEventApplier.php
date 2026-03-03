@@ -16,6 +16,8 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
      */
     private array $events = [];
 
+    private GameState $lastGameState;
+
     public function __construct(
         private GameEventApplierInterface $decorated,
         private Stopwatch $stopwatch,
@@ -34,7 +36,7 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
 
         $this->stopwatch->stop('game_event_apply');
 
-        return $result;
+        return $this->lastGameState = $result;
     }
 
     public function applyMultiple(array $events, GameState $gameState): GameState
@@ -57,6 +59,11 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
     public function getEvents(): array
     {
         return $this->events;
+    }
+
+    public function getLastGameState(): GameState
+    {
+        return $this->lastGameState;
     }
 
     private function addEvent(TraceableGameEvent $event): void

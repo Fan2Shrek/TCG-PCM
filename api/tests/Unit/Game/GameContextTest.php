@@ -10,6 +10,7 @@ use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use PHPUnit\Framework\TestCase;
 
@@ -196,14 +197,18 @@ final class GameContextTest extends TestCase
             new PlayerState(
                 player: new Player('1', 'Player 1'),
                 healthPoints: 30,
+                maxHealthPoints: 30,
                 hand: [],
                 drawPile: [],
+                playArea: new PlayArea(),
             ),
             new PlayerState(
                 player: new Player('2', 'Player 2'),
                 healthPoints: 30,
+                maxHealthPoints: 30,
                 hand: [],
                 drawPile: [],
+                playArea: new PlayArea(),
             ),
             null,
         );

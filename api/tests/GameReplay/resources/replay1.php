@@ -5,6 +5,7 @@ use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 
 return [
@@ -15,11 +16,13 @@ return [
                 'replay1_player1',
             ),
             300,
+            300,
             [
                 'card1',
                 'card2',
             ],
             [],
+            new PlayArea(),
         ),
         new PlayerState(
             new Player(
@@ -27,10 +30,12 @@ return [
                 'replay1_player2',
             ),
             100,
+            100,
             [
                 'card3',
             ],
             [],
+            new PlayArea(),
         ),
         0,
         null,
@@ -38,16 +43,19 @@ return [
             'card1' => new CardState(
                 'card1',
                 'Spicy-D6',
+                '1',
                 [],
             ),
             'card2' => new CardState(
                 'card2',
                 'Spicy-D6',
+                '2',
                 [],
             ),
             'card3' => new CardState(
                 'card3',
                 'Spicy-D6',
+                '1',
                 [],
             ),
         ],
@@ -91,12 +99,14 @@ return [
                 'replay1_player1',
             ),
             290,
+            300,
             [],
             [],
+            new PlayArea(),
             [
                 'card1',
                 'card2',
-            ]
+            ],
         ),
         new PlayerState(
             new Player(
@@ -104,8 +114,10 @@ return [
                 'replay1_player2',
             ),
             0,
+            100,
             [],
             [],
+            new PlayArea(),
             [
                 'card3',
             ]

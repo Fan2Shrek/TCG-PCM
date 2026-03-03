@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Doctrine\Type;
 
 use App\Game\Player;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -37,10 +38,17 @@ final class PlayerStateType extends Type
             return $value;
         }
 
-        /** @var array{player: array{id: string, name: string}, healthPoints: int, hand: string[], drawPile: array<string, string>} $data */
+        /** @var array{player: array{id: string, name: string}, healthPoints: int, maxHealthPoints: int, hand: string[], drawPile: array<string, string>} $data */
         $data = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
-        return new PlayerState(new Player($data['player']['id'], $data['player']['name']), $data['healthPoints'], $data['hand'], $data['drawPile']);
+        return new PlayerState(
+            new Player($data['player']['id'], $data['player']['name']),
+            $data['healthPoints'],
+            $data['maxHealthPoints'],
+            $data['hand'],
+            $data['drawPile'],
+            new PlayArea(),
+        );
     }
 
     public function getName(): string

@@ -3,6 +3,7 @@
 namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
+use App\Game\Card\Interface\ComputedCardInterface;
 use App\Game\GameContext;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;

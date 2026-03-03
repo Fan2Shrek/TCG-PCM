@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Card;
 
-use App\Game\Card\AbstractPlayableCard;
+use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\Dice;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\Attributes\Before;
@@ -25,9 +26,18 @@ abstract class CardTestCase extends TestCase
         Dice::setGenerator(null);
     }
 
-    public function getCard(): AbstractPlayableCard
+    public function getCard(): AbstractCard
     {
-        return new ($this->getCardFQCN())();
+        $card = new ($this->getCardFQCN())();
+
+        $card->setState(new CardState(
+            'test_card',
+            $card->getId(),
+            '1',
+            [],
+        ));
+
+        return $card;
     }
 
     protected function ensureNextDiceRolls(int $result): void
@@ -47,14 +57,18 @@ abstract class CardTestCase extends TestCase
         $player1State = new PlayerState(
             new Player('1', 'Player 1', 67),
             30,
+            30,
             [],
             [],
+            new PlayArea(),
         );
         $player2State = new PlayerState(
             new Player('2', 'Player 2', 69),
             30,
+            30,
             [],
             [],
+            new PlayArea(),
         );
 
         $state = new GameState(
@@ -66,6 +80,7 @@ abstract class CardTestCase extends TestCase
                 'test_card' => new CardState(
                     'test_card',
                     DummyCard::class,
+                    '1',
                     [],
                 ),
             ]

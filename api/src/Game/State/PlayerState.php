@@ -16,8 +16,10 @@ readonly class PlayerState
     public function __construct(
         public Player $player,
         public int $healthPoints,
+        public int $maxHealthPoints,
         public array $hand,
         public array $drawPile,
+        public PlayArea $playArea,
         public array $discardPile = [],
     ) {}
 
@@ -70,6 +72,13 @@ readonly class PlayerState
     {
         return clone($this, [
             'discardPile' => [...$this->discardPile, $cardId],
+        ]);
+    }
+
+    public function withPlayArea(PlayArea $playArea): self
+    {
+        return clone($this, [
+            'playArea' => $playArea,
         ]);
     }
 }

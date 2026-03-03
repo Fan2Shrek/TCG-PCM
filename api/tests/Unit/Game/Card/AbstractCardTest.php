@@ -17,6 +17,7 @@ final class AbstractCardTest extends TestCase
         $state = new CardState(
             'id',
             DummyCard::class,
+            'ownerId',
             [],
         );
 
@@ -24,6 +25,7 @@ final class AbstractCardTest extends TestCase
         $card->setState($state);
 
         self::assertSame('id', $card->getInstanceId());
+        self::assertSame('ownerId', $card->getOwnerId());
     }
 
     public function testSetStateWithWrongId(): void
@@ -32,6 +34,7 @@ final class AbstractCardTest extends TestCase
         $state = new CardState(
             'id',
             'badId',
+            '',
             [],
         );
 
@@ -44,6 +47,7 @@ final class AbstractCardTest extends TestCase
         $state = new CardState(
             'id',
             DummyCard::class,
+            'ownerId',
             [
                 new EffectState(
                     CardEffectEnum::HACKED,

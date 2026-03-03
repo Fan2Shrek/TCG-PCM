@@ -16,14 +16,12 @@ abstract class AbstractCard
 
     private string $instanceId;
 
+    protected string $ownerId;
+
     // @final to prevent child classes from having constructors with different signatures
-    final public function __construct(?string $instanceId = null)
+    final public function __construct()
     {
         $this->effects = new EffectCollection();
-
-        if ($instanceId) {
-            $this->instanceId = $instanceId;
-        }
     }
 
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
@@ -37,6 +35,11 @@ abstract class AbstractCard
         return $this->instanceId ?? null;
     }
 
+    public function getOwnerId(): ?string
+    {
+        return $this->ownerId ?? null;
+    }
+
     abstract public function getName(): string;
 
     abstract public function getDescription(): string;
@@ -44,16 +47,6 @@ abstract class AbstractCard
     public function getImage(): string
     {
         return \sprintf('%s.png', $this->getName());
-    }
-
-    public function onCardPlayed(self $card, GameContext $context): void
-    {
-        // Default implementation does nothing
-    }
-
-    public function onCardDrawn(self $card, GameContext $context): void
-    {
-        // Default implementation does nothing
     }
 
     /**
@@ -86,6 +79,7 @@ abstract class AbstractCard
         }
 
         $this->instanceId = $state->instanceId;
+        $this->ownerId = $state->ownerId;
         foreach ($state->effects as $effectState) {
             $effect = $effectState->effect->getClass()::fromEffectState($effectState);
 

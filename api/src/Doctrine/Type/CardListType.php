@@ -39,12 +39,12 @@ final class CardListType extends Type
             return $value;
         }
 
-        /** @var array<string, array{instanceId: string, templateId: string, effects: string[]}> $data */
+        /** @var array<string, array{instanceId: string, templateId: string, ownerId: string}> $data */
         $data = json_decode((string) $value, true, 512, JSON_THROW_ON_ERROR);
         $cards = [];
 
         foreach ($data as $cardId => $cardData) {
-            $cards[$cardId] = new CardState($cardData['instanceId'], $cardData['templateId']);
+            $cards[$cardId] = new CardState($cardData['instanceId'], $cardData['templateId'], $cardData['ownerId']);
         }
 
         return $cards;
