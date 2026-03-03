@@ -51,7 +51,7 @@ final class GameReplayTest extends TestCase
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            $gea = new GameEventApplier(),
+            new GameEventApplier(),
             new GameManager(
                 new CardFactory(
                     new MockCardRegistry(require $cardsListPath),
@@ -68,7 +68,6 @@ final class GameReplayTest extends TestCase
                     }
                 ),
                 $factory = new ReplayableGameContextFactory($rolls),
-                $gea,
             ),
             $factory,
         );

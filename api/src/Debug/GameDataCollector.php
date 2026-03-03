@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Debug;
 
 use App\Debug\Card\TraceableCardRegistry;
-use App\Debug\GameContext\DebugGameContext;
 use App\Debug\GameContext\TraceableGameContextFactory;
+use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -35,19 +35,16 @@ final class GameDataCollector extends AbstractDataCollector
             return;
         }
 
-        $mainEvent = $this->gameEventApplier->getEvents()[0];
-        $this->data['mainEvent'] = $mainEvent;
-        $this->data['subEvents'] = array_reduce(
-            $this->gameContextFactory->getGameContexts(),
-            static fn(array $acc, DebugGameContext $gameContext) => array_merge($acc, $gameContext->flushedEvents),
-            [],
-        );
+        $events = array_map(DebugGameEvent::fromTraceableGameEvent(...), $this->gameEventApplier->getEvents());
 
-        $events = $this->gameEventApplier->getEvents();
+        $subEvents = array_filter($events, static fn($event) => !$event->isReplayEvent);
+        $this->data['mainEvent'] = array_shift($subEvents);
+        $this->data['subEvents'] = $subEvents;
 
         $this->data['stats'] = [
-            'Player event' => count(array_filter($events, static fn(GameEvent $event) => GameEvent::PLAYER_EVENT === $event->eventOrigin)),
-            'Game event' => count(array_filter($events, static fn(GameEvent $event) => GameEvent::GAME_EVENT === $event->eventOrigin)),
+            'Player event' => count(array_filter($events, static fn(DebugGameEvent $event) => GameEvent::PLAYER_EVENT === $event->eventOrigin)),
+            'Game event' => count(array_filter($events, static fn(DebugGameEvent $event) => GameEvent::GAME_EVENT === $event->eventOrigin)),
+            'Replay event' => count(array_filter($events, static fn(DebugGameEvent $event) => $event->isReplayEvent)),
             'Total' => count($events),
         ];
 
@@ -62,7 +59,7 @@ final class GameDataCollector extends AbstractDataCollector
     /**
      * @return Data|GameEvent[]
      */
-    public function getEvents(): Data|array
+    public function getEvents(): array
     {
         return $this->data['events'] ?? [];
     }
@@ -72,7 +69,7 @@ final class GameDataCollector extends AbstractDataCollector
         return count($this->getEvents());
     }
 
-    public function getEventStats(): Data|array
+    public function getEventStats(): array
     {
         return $this->data['stats'] ?? [];
     }
@@ -85,7 +82,7 @@ final class GameDataCollector extends AbstractDataCollector
         return $this->cloneVar($this->data['gameContexts'] ?? []);
     }
 
-    public function getMainEvent(): Data|GameEvent|null
+    public function getMainEvent(): ?DebugGameEvent
     {
         return $this->data['mainEvent'] ?? null;
     }
@@ -93,7 +90,7 @@ final class GameDataCollector extends AbstractDataCollector
     /**
      * @return Data|GameEvent[]
      */
-    public function getSubEvents(): Data|array
+    public function getSubEvents(): array
     {
         return $this->data['subEvents'] ?? [];
     }
@@ -101,12 +98,12 @@ final class GameDataCollector extends AbstractDataCollector
     /**
      * @return Data|AbstractCard[]
      */
-    public function getCards(): Data|array
+    public function getCards(): array
     {
         return $this->data['cards'] ?? [];
     }
 
-    public function getLastGameState(): Data|GameState|null
+    public function getLastGameState(): ?GameState
     {
         return $this->data['lastGameState'] ?? null;
     }
@@ -126,5 +123,29 @@ final class GameDataCollector extends AbstractDataCollector
     public static function getTemplate(): ?string
     {
         return 'debug/game_events.html.twig';
+    }
+}
+
+readonly class DebugGameEvent
+{
+    public function __construct(
+        public string $origin,
+        public GameEventTypeEnum $type,
+        public string $eventOrigin,
+        public array $data,
+        public bool $shouldBePersisted,
+        public bool $isReplayEvent,
+    ) {}
+
+    public static function fromTraceableGameEvent(TraceableGameEvent $event): self
+    {
+        return new self(
+            $event->origin,
+            $event->type,
+            $event->eventOrigin,
+            $event->data,
+            $event->shouldBePersisted(),
+            str_contains($event->origin, 'Rebuilder'),
+        );
     }
 }
