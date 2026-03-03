@@ -6,8 +6,8 @@ namespace App\Tests\GameReplay;
 
 use App\Enum\GameEventTypeEnum;
 use App\Service\Game\GameEventApplier;
-use App\Service\Game\GameManager;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
+use App\Service\Game\GameStateRebuilder;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -30,11 +30,8 @@ final class GameReplayTest extends TestCase
         $gameState = $data['gameState'];
         $events = $data['events'];
 
-        $gameManager = $this->getGameManager($this->filterRolls($events));
-
-        foreach ($events as $event) {
-            $gameState = $gameManager->play($event, $gameState);
-        }
+        $gameReplayer = $this->getGameStateRebuilder($this->filterRolls($events));
+        $gameState = $gameReplayer->rebuild($gameState, $events);
 
         self::assertEquals($data['finalGameState'], $gameState);
     }
@@ -46,13 +43,13 @@ final class GameReplayTest extends TestCase
         ];
     }
 
-    private function getGameManager(array $rolls): GameManager
+    private function getGameStateRebuilder(array $rolls): GameStateRebuilder
     {
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
-        return new GameManager(
-            new MockCardRegistry(require $cardsListPath),
+        return new GameStateRebuilder(
             new GameEventApplier(),
+            new MockCardRegistry(require $cardsListPath),
             new ReplayableGameContextFactory($rolls),
         );
     }

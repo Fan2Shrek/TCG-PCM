@@ -21,7 +21,6 @@ use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
 use App\Service\Game\Factory\GameContextFactory;
-use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -36,7 +35,7 @@ final class GameManagerTest extends TestCase
         $gm = $this->getSut();
         $room = $this->createRoom();
 
-        $gm->startGame($room);
+        $gm->setupRoom($room);
 
         self::assertSame(RoomStatusEnum::PLAYING, $room->getStatus());
     }
@@ -53,7 +52,7 @@ final class GameManagerTest extends TestCase
         $room->setOwnerDeck($ownerDeck);
         $room->setOpponentDeck($opponentDeck);
 
-        $gameState = $gm->startGame($room);
+        $gameState = $gm->setupRoom($room);
 
         $expectedPlayer1 = Player::fromUser($owner);
         $expectedPlayer2 = Player::fromUser($opponent);
@@ -65,23 +64,32 @@ final class GameManagerTest extends TestCase
     public function testPlayerStateDeck()
     {
         $gm = $this->getSut();
-        $owner = new TestUser('user', 'email');
-        $opponent = new TestUser('opponent', 'email2');
-        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class);
-        $ownerDeck->setCards(['card1', 'card2', 'card3', 'card4', 'card5', 'card6']);
-        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class);
-        $opponentDeck->setCards(['card7', 'card8', 'card9', 'card10', 'card11', 'card12']);
-        $room = new Room($owner);
-        $room->setOpponent($opponent);
-        $room->setOwnerDeck($ownerDeck);
-        $room->setOpponentDeck($opponentDeck);
+        $gameState = new GameState(
+            new PlayerState(
+                new Player('1', 'Player 1'),
+                30,
+                [],
+                ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
+            ),
+            new PlayerState(
+                new Player('2', 'Player 1'),
+                30,
+                [],
+                ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
+            ),
+            0,
+            null,
+            [
 
-        $gameState = $gm->startGame($room);
+            ]
+        );
 
-        self::assertCount(5, $gameState->player1->hand);
-        self::assertCount(1, $gameState->player1->drawPile);
-        self::assertCount(5, $gameState->player2->hand);
-        self::assertCount(1, $gameState->player1->drawPile);
+        $events = $gm->startGame($gameState);
+
+        self::assertCount(10, $events);
+        foreach ($events as $event) {
+            self::assertSame(GameEventTypeEnum::CARD_DRAWN, $event->type);
+        }
     }
 
     public function testHandlePlayAction()
@@ -292,7 +300,7 @@ final class GameManagerTest extends TestCase
     private function getSut(): GameManager
     {
         return new GameManager(
-            $mock = new MockCardRegistry(
+            new MockCardRegistry(
                 [
                     DummyCard::class => DummyCard::class,
                     'other_card' =>  DummyCard::class,
@@ -300,10 +308,6 @@ final class GameManagerTest extends TestCase
                     DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
                     SpyCard::class => SpyCard::class,
                 ]
-            ),
-            new GameEventApplier(
-                $mock,
-                new GameContextFactory(),
             ),
             new GameContextFactory(),
         );

@@ -31,11 +31,10 @@ class GameManager
 
     public function __construct(
         private CardRegistryInterface $cardRegistry,
-        private GameEventApplierInterface $gameEventApplier,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
-    public function startGame(Room $room): GameState
+    public function setupRoom(Room $room): GameState
     {
         $room->setStatus(RoomStatusEnum::PLAYING);
 
@@ -46,8 +45,14 @@ class GameManager
         $player1InitialState = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck());
         $player2InitialState = $this->createPlayerStateFromUser($opponent, $opponentDeck);
 
-        $initialGameState = new GameState($player1InitialState, $player2InitialState, null);
+        return new GameState($player1InitialState, $player2InitialState, null);
+    }
 
+    /**
+     * @return GameEvent[]
+     */
+    public function startGame(GameState $initialGameState): array
+    {
         $events = [];
         foreach ($initialGameState->getPlayers() as $player) {
             for ($i = 0; $i < self::INITIAL_HAND_SIZE; $i++) {
@@ -55,7 +60,7 @@ class GameManager
             }
         }
 
-        return $this->gameEventApplier->applyMultiple($events, $initialGameState);
+        return $events;
     }
 
     /**
@@ -76,20 +81,6 @@ class GameManager
             PlayerAction::END_TURN => $this->endTurn($action, $state),
             default => throw new UnknowActionException(),
         };
-    }
-
-    public function play(GameEvent $event, GameState $gameState): GameState
-    {
-        if (GameEventTypeEnum::CARD_PLAYED === $event->type) {
-            $gameState = $this->gameEventApplier->apply($event, $gameState);
-            $events = $this->doPlayCard($event, $gameState);
-        } else { // @mago-ignore lint:no-else-clause
-            $events = [$event];
-        }
-
-        $newState = $this->gameEventApplier->applyMultiple($events, $gameState);
-
-        return $newState->withLastEventId($event->id);
     }
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState

@@ -6,7 +6,7 @@ namespace App\Service\Game\State;
 
 use App\Entity\Room;
 use App\Game\State\GameState;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameStateRebuilder;
 use App\Service\Redis\RedisClient;
 use Symfony\Component\DependencyInjection\Attribute\WhenNot;
 
@@ -17,7 +17,7 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         private RedisClient $redisClient,
         private GameStateRepositoryInterface $decoratedRepository,
         private GameEventRepositoryInterface $gameEventRepository,
-        private GameManager $gameManager,
+        private GameStateRebuilder $gameStateRebuilder,
     ) {}
 
     public function save(GameState $gameState, Room $room): void
@@ -48,13 +48,7 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
 
     private function buildGameStateFromEvents(GameState $gameState, Room $room): GameState
     {
-        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room->getId()->toString());
-
-        foreach ($events as $event) {
-            $gameState = $this->gameManager->play($event, $gameState);
-        }
-
-        return $gameState;
+        return $this->gameStateRebuilder->rebuild($gameState, $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room->getId()->toString()));
     }
 
     private function getRedisKey(Room $room): string
