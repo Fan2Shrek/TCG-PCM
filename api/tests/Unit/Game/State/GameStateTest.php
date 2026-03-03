@@ -18,11 +18,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -42,11 +44,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -65,11 +69,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -88,11 +94,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -112,11 +120,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -135,11 +145,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -159,11 +171,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -182,11 +196,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -206,11 +222,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -230,11 +248,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -253,11 +273,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             0,
+            0,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -276,11 +298,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            0,
             0,
             [],
             [],
@@ -299,11 +323,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -317,6 +343,7 @@ final class GameStateTest extends TestCase
         $newGameState = $gameState->withUpdatedPlayer(
             new PlayerState(
                 new Player('1', 'Player 1'),
+                0,
                 0,
                 [],
                 [],
@@ -332,11 +359,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -350,6 +379,7 @@ final class GameStateTest extends TestCase
         $newGameState = $gameState->withUpdatedPlayer(
             new PlayerState(
                 new Player('2', 'Player 2'),
+                0,
                 0,
                 [],
                 [],
@@ -368,11 +398,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -387,6 +419,7 @@ final class GameStateTest extends TestCase
             new PlayerState(
                 new Player('3', 'Player 3'),
                 0,
+                0,
                 [],
                 [],
             ),
@@ -398,11 +431,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -427,11 +462,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -450,11 +487,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -468,6 +507,7 @@ final class GameStateTest extends TestCase
         $newState = $gameState->addCard(new CardState(
             'card1',
             'Card 1',
+            'player1',
         ));
 
         self::assertCount(1, $newState->cards);
@@ -478,11 +518,13 @@ final class GameStateTest extends TestCase
         $player1 = new PlayerState(
             new Player('1', 'Player 1'),
             1,
+            1,
             [],
             [],
         );
         $player2 = new PlayerState(
             new Player('2', 'Player 1'),
+            1,
             1,
             [],
             [],
@@ -496,15 +538,16 @@ final class GameStateTest extends TestCase
         $gameState = $gameState->addCard(new CardState(
             'card1',
             'Card 1',
+            'player1',
         ));
 
         $newState = $gameState->withUpdatedCardState(new CardState(
             'card1',
             'Card 1',
+            'player1',
             [CardEffectEnum::HACKED],
         ));
 
         self::assertCount(1, $newState->cards['card1']->effects);
-
     }
 }

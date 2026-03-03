@@ -16,6 +16,7 @@ readonly class PlayerState
     public function __construct(
         public Player $player,
         public int $healthPoints,
+        public int $maxHealthPoints,
         public array $hand,
         public array $drawPile,
         public array $discardPile = [],

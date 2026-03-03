@@ -18,6 +18,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_DRAWN => $this->applyCardDrawn($event, $gameState),
             GameEventTypeEnum::CARD_PLAYED => $this->applyCardPlayed($event, $gameState),
             GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
+            GameEventTypeEnum::HEAL => $this->applyHeal($event, $gameState),
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
@@ -102,6 +103,31 @@ class GameEventApplier implements GameEventApplierInterface
 
         $targetPlayerState = $gameState->getPlayer($target);
         $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
+
+        return $gameState->withUpdatedPlayer($newPlayerState);
+    }
+
+    public function applyHeal(GameEvent $event, GameState $gameState): GameState
+    {
+        $target = $event->data['targetId'] ?? null;
+        $amount = $event->data['amount'] ?? null;
+
+        if (!\is_string($target)) {
+            throw new \LogicException('HEAL requires a targetId');
+        }
+
+        if (!\is_int($amount)) {
+            throw new \LogicException('HEAL requires a amount integer');
+        }
+
+        $targetPlayerState = $gameState->getPlayer($target);
+        $newHealth = $targetPlayerState->healthPoints + $amount;
+
+        if ($newHealth > $targetPlayerState->maxHealthPoints) {
+            $newHealth = $targetPlayerState->maxHealthPoints;
+        }
+
+        $newPlayerState = $targetPlayerState->withUpdatedHealth($newHealth);
 
         return $gameState->withUpdatedPlayer($newPlayerState);
     }

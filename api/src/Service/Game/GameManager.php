@@ -92,7 +92,7 @@ class GameManager
         $player = Player::fromUser($user);
         $cardsIds = $this->createCardsFromDeck($deck);
 
-        return new PlayerState($player, $characterCard->getHealthPoints(), [], $cardsIds);
+        return new PlayerState($player, $characterCard->getHealthPoints(), $characterCard->getHealthPoints(), [], $cardsIds);
     }
 
     /**

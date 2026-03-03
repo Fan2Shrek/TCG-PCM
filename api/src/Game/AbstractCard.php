@@ -19,7 +19,7 @@ abstract class AbstractCard
     protected string $ownerId;
 
     // @final to prevent child classes from having constructors with different signatures
-    final public function __construc()
+    final public function __construct()
     {
         $this->effects = new EffectCollection();
     }
@@ -33,6 +33,11 @@ abstract class AbstractCard
     public function getInstanceId(): ?string
     {
         return $this->instanceId ?? null;
+    }
+
+    public function getOwnerId(): ?string
+    {
+        return $this->ownerId ?? null;
     }
 
     abstract public function getName(): string;

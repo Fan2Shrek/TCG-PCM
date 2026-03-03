@@ -27,6 +27,8 @@ single-class-per-file = { enabled = false }
 too-many-methods = { enabled = false }
 cyclomatic-complexity = { enabled = false }
 no-assign-in-condition = { enabled = false }
+kan-defect = { enabled = false }
+excessive-parameter-list = { threshold = 6 }
 
 [analyzer]
 find-unused-definitions = true

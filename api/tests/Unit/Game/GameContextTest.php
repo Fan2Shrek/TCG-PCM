@@ -196,12 +196,14 @@ final class GameContextTest extends TestCase
             new PlayerState(
                 player: new Player('1', 'Player 1'),
                 healthPoints: 30,
+                maxHealthPoints: 30,
                 hand: [],
                 drawPile: [],
             ),
             new PlayerState(
                 player: new Player('2', 'Player 2'),
                 healthPoints: 30,
+                maxHealthPoints: 30,
                 hand: [],
                 drawPile: [],
             ),

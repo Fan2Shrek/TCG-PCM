@@ -22,12 +22,13 @@ final class GameBuilder extends RoomBuilder
 
         $gameState = new InitialGameState(
             $this->entity->getId()->toString(),
-            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, ['1'], []),
-            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, ['2'], []),
+            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, 100, ['1'], []),
+            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, 100, ['2'], []),
             [
                 1 => new CardState(
                     '1',
                     DummyCard::class,
+                    'ownerId',
                 )
             ],
         );

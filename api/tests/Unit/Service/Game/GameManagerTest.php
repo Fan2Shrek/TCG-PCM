@@ -70,11 +70,13 @@ final class GameManagerTest extends TestCase
             new PlayerState(
                 new Player('1', 'Player 1'),
                 30,
+                30,
                 [],
                 ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
             ),
             new PlayerState(
                 new Player('2', 'Player 1'),
+                30,
                 30,
                 [],
                 ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
@@ -254,6 +256,7 @@ final class GameManagerTest extends TestCase
         $player1State = new PlayerState(
             new Player('1', 'Player 1', 67),
             30,
+            30,
             [
                 'card1',
                 'card2',
@@ -262,6 +265,7 @@ final class GameManagerTest extends TestCase
         );
         $player2State = new PlayerState(
             new Player('2', 'Player 2', 69),
+            30,
             30,
             [],
             [],
@@ -276,11 +280,13 @@ final class GameManagerTest extends TestCase
                 'card1' => new CardState(
                     'card1',
                     DummyCard::class,
+                    '1',
                     [],
                 ),
                 'card2' => new CardState(
-                    'card1',
+                    'card2',
                     SpyCard::class,
+                    '2',
                     [],
                 ),
             ]

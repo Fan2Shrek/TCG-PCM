@@ -15,6 +15,7 @@ return [
                 'replay1_player1',
             ),
             300,
+            300,
             [
                 'card1',
                 'card2',
@@ -26,6 +27,7 @@ return [
                 '2',
                 'replay1_player2',
             ),
+            100,
             100,
             [
                 'card3',
@@ -94,6 +96,7 @@ return [
                 'replay1_player1',
             ),
             290,
+            300,
             [],
             [],
             [
@@ -107,6 +110,7 @@ return [
                 'replay1_player2',
             ),
             0,
+            100,
             [],
             [],
             [

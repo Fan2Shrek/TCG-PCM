@@ -15,6 +15,7 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
         );
@@ -30,6 +31,7 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A'],
             drawPile: ['Card B'],
         );
@@ -47,6 +49,7 @@ final class PlayerStateTest extends TestCase
         $aliveState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 10,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
         );
@@ -59,6 +62,7 @@ final class PlayerStateTest extends TestCase
         $deadState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 0,
+            maxHealthPoints: 30,
             hand: [],
             drawPile: [],
         );
@@ -71,6 +75,7 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
         );
@@ -85,6 +90,7 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
         );
@@ -103,6 +109,7 @@ final class PlayerStateTest extends TestCase
         $playerState = new PlayerState(
             player: new Player('1', 'Player 1'),
             healthPoints: 30,
+            maxHealthPoints: 30,
             hand: ['Card A', 'Card B'],
             drawPile: [],
         );

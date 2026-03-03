@@ -24,7 +24,7 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
 
     public function getId(): string
     {
-        return 'PLacenta';
+        return 'Placenta';
     }
 
     public function getDescription(): string
@@ -32,5 +32,10 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
         return 'At the beginning of each turn, gain <value>5</value> health.';
     }
 
-    public function onTurnStart(GameContext $gameContext): void {}
+    public function onTurnStart(GameContext $gameContext): void
+    {
+        $this->skipIfNotOwnerTurn($gameContext);
+
+        $gameContext->heal($this->getValue(self::HEALTH_GAIN, true), $this->ownerId);
+    }
 }

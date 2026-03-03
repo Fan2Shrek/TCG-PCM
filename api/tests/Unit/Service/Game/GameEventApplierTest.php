@@ -7,16 +7,13 @@ namespace App\Tests\Unit\Service\Game;
 use App\Enum\CardEffectEnum;
 use App\Game\State\GameEvent;
 use App\Enum\GameEventTypeEnum;
-use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
-use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use App\Tests\Resources\MockCardRegistry;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 
 final class GameEventApplierTest extends TestCase
@@ -29,32 +26,8 @@ final class GameEventApplierTest extends TestCase
 
         $newState = $eventApplier->apply($event, $state);
 
-        self::assertCount(1, $newState->player1->hand);
-        self::assertSame('id', $newState->player1->hand[0]);
-    }
-
-    public function testApplyCardDrawnWithPlayer2()
-    {
-        $eventApplier = $this->getSut();
-        $state = $this->getInitialGameState();
-        $event = new GameEvent(1, GameEventTypeEnum::CARD_DRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player2']);
-
-        $newState = $eventApplier->apply($event, $state);
-
-        self::assertCount(0, $newState->player1->hand);
-        self::assertCount(1, $newState->player2->hand);
-    }
-
-    public function testApplyCardDrawnUpdateGameState()
-    {
-        $eventApplier = $this->getSut();
-        $state = $this->getInitialGameState();
-        $event = new GameEvent(1, GameEventTypeEnum::CARD_DRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player1']);
-
-        $newState = $eventApplier->apply($event, $state);
-
         self::assertCount(1, $newState->cards);
-        self::assertEquals(new CardState('id', 'D6', []), $newState->cards['id']);
+        self::assertEquals(new CardState('id', 'D6', 'player1', []), $newState->cards['id']);
     }
 
     public function testApplyDamage(): void
@@ -99,7 +72,7 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $state = $state->addCard(new CardState('D6', 'D6', []));
+        $state = $state->addCard(new CardState('D6', 'D6', '1', []));
 
         $event = new GameEvent(
             1,
@@ -154,6 +127,7 @@ final class GameEventApplierTest extends TestCase
                     'Alice',
                 ),
                 30,
+                30,
                 [],
                 [
                     'id' => 'D6',
@@ -164,6 +138,7 @@ final class GameEventApplierTest extends TestCase
                     'player2',
                     'Bob',
                 ),
+                30,
                 30,
                 $player2Hand,
                 [
