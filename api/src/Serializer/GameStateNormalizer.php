@@ -25,6 +25,7 @@ final class GameStateNormalizer implements NormalizerInterface
             'player2' => $data->player2,
             'lastEventId' => $data->lastEventId,
             'currentPlayer' => $data->currentPlayer,
+            'cards' => $data->cards,
         ];
     }
 

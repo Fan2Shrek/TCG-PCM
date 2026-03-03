@@ -28,7 +28,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
         };
 
-        return $gameState->withLastEventId($event->id);
+        return $event->id ? $gameState->withLastEventId($event->id) : $gameState;
     }
 
     public function applyMultiple(array $events, GameState $gameState): GameState
