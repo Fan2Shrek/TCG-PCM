@@ -27,6 +27,10 @@ final class GameDataCollector extends AbstractDataCollector
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
+        if ($exception) {
+            return;
+        }
+
         if (!$this->gameEventApplier->hasEvents() && !$this->gameContextFactory->hasGameContexts() && !$this->cardRegistry->hasCards()) {
             return;
         }

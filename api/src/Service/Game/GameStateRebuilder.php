@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Game;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
-use App\Game\Card\CardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Service\Game\Factory\GameContextFactoryInterface;
@@ -16,7 +14,7 @@ class GameStateRebuilder
 {
     public function __construct(
         private GameEventApplierInterface $applier,
-        private CardRegistryInterface $cardRegistry,
+        private CardFactory $cardFactory,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
@@ -44,7 +42,8 @@ class GameStateRebuilder
          * @var array{playerId: string, cardId: string, data?: array} $data
          */
         $data = $event->data;
-        $card = $this->createCardFromState($state->cards[$data['cardId']]);
+        $cardState = $state->cards[$data['cardId']];
+        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
 
         if (!$card instanceof AbstractPlayableCard) {
             throw new \RuntimeException(sprintf('Card with id %s is not an instance of AbstractCard', $card->getId()));
@@ -61,13 +60,5 @@ class GameStateRebuilder
         ]);
 
         return $this->applier->applyMultiple($events, $state);
-    }
-
-    private function createCardFromState(CardState $state): AbstractCard
-    {
-        $card = $this->cardRegistry->getCardTemplateById($state->templateId);
-        $card->setState($state);
-
-        return $card;
     }
 }
