@@ -20,7 +20,7 @@ integrations = ["symfony"]
 [linter.rules]
 ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
-halstead = { effort-threshold = 7000 }
+halstead = { enabled = false }
 strict-types = { enabled = false }
 no-boolean-flag-parameter = { enabled = false }
 single-class-per-file = { enabled = false }

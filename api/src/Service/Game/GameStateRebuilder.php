@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Game;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\Card\AbstractPlayableCard;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Service\Game\Factory\GameContextFactoryInterface;
 
 class GameStateRebuilder
 {
     public function __construct(
         private GameEventApplierInterface $applier,
-        private CardFactory $cardFactory,
-        private GameContextFactoryInterface $gameContextFactory,
+        private GameManager $gameManager,
     ) {}
 
     /**
@@ -38,27 +35,8 @@ class GameStateRebuilder
 
     private function replayCard(GameEvent $event, GameState $state): GameState
     {
-        /**
-         * @var array{playerId: string, cardId: string, data?: array} $data
-         */
-        $data = $event->data;
-        $cardState = $state->cards[$data['cardId']];
-        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        $events = $this->gameManager->getEventsForCard($event, $state);
 
-        if (!$card instanceof AbstractPlayableCard) {
-            throw new \RuntimeException(sprintf('Card with id %s is not an instance of AbstractCard', $card->getId()));
-        }
-
-        $ctx = $this->gameContextFactory->createGameContext($state, $data['playerId']);
-        $card->play($ctx, $data);
-
-        $events = array_merge([$event], $ctx->flushEvents(), [
-            GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
-                'playerId' => $data['playerId'],
-                'cardId' => $data['cardId'],
-            ]),
-        ]);
-
-        return $this->applier->applyMultiple($events, $state);
+        return $this->applier->applyMultiple(array_merge([$event], $events), $state);
     }
 }

@@ -3,7 +3,7 @@ model: environment
 id: ev_tvdRpcwX7g
 workspaceId: wk_YWNRaoZjBb
 createdAt: 2026-02-19T16:38:57.970851468
-updatedAt: 2026-02-19T16:54:22.524121269
+updatedAt: 2026-03-03T15:25:34.193646113
 name: Global Variables
 public: true
 base: true
@@ -30,5 +30,9 @@ variables:
   name: room_id
   value: ${[ response.body.path(request='rq_n2Pfsbno8X', behavior='smart', ttl='0', result='first', join=b64'LCA', path=b64'JC5pZA') ]}
   id: QNbtvsPWzj
+- enabled: true
+  name: opponent_token
+  value: ${[ response.body.path(request='rq_6aeVPhyB6r', behavior='smart', ttl='0', result='first', join=b64'LCA', path=b64'JC50b2tlbg') ]}
+  id: kUFpxSg9VD
 color: null
 sortPriority: 0.0

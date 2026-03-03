@@ -16,7 +16,7 @@ final class PlayGameCommand implements CurrentResourceAwareInterface
 
     public function __construct(
         public readonly string $actionId,
-        public readonly array $payload,
+        public readonly array $payload = [],
     ) {}
 
     public function setCurrentResource(object $resource): void

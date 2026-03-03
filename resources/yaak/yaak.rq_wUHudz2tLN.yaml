@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_wUHudz2tLN
+createdAt: 2026-03-03T15:24:26.668775164
+updatedAt: 2026-03-03T15:26:20.433898738
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_XqjkG6pswj
+authentication: {}
+authenticationType: null
+body:
+  text: |+
+    {
+      "actionId": "play_card",
+      "payload": {
+        "cardId": "69d6b382-2131-4416-a395-0e7ea19b8a9f"
+      }
+    }
+
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Play as opponent
+sortPriority: 1000.0
+url: ${[host]}/api/game/${[room_id]}/play
+urlParameters: []

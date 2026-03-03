@@ -1,0 +1,35 @@
+type: http_request
+model: http_request
+id: rq_6aeVPhyB6r
+createdAt: 2026-03-03T15:24:36.153341828
+updatedAt: 2026-03-03T15:26:12.895661893
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_XqjkG6pswj
+authentication: {}
+authenticationType: none
+body:
+  text: |-
+    {
+        "username": "user",
+        "password": "aaa"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Login as opponent
+sortPriority: 0.0
+url: ${[host]}/api/login_check
+urlParameters:
+- enabled: false
+  name: token
+  value: ${[ response.body.path(request='rq_uoYhacDhph', behavior='smart', ttl='0', result='first', join=b64'LCA', path='token') ]}
+  id: NCfB3VtrWE
+- enabled: true
+  name: ''
+  value: ''
+  id: akGyURBaw0

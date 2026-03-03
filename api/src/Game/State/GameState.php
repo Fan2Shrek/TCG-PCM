@@ -103,16 +103,6 @@ final readonly class GameState
         ]);
     }
 
-    public function addCard(CardState $card): GameState
-    {
-        $cards = $this->cards;
-        $cards[$card->instanceId] = $card;
-
-        return clone($this, [
-            'cards' => $cards,
-        ]);
-    }
-
     public function removeCard(string $cardId): GameState
     {
         $cards = $this->cards;
@@ -123,6 +113,21 @@ final readonly class GameState
         ]);
     }
 
+    public function addCard(CardState $card): GameState
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    public function getCardState(string $cardId): ?CardState
+    {
+        return $this->cards[$cardId] ?? null;
+    }
+
     public function withUpdatedCardState(CardState $card): GameState
     {
         $cards = $this->cards;
@@ -131,5 +136,13 @@ final readonly class GameState
         return clone($this, [
             'cards' => $cards,
         ]);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllActiveCards(): array
+    {
+        return array_merge($this->player1->playArea->getAll(), $this->player2->playArea->getAll());
     }
 }
