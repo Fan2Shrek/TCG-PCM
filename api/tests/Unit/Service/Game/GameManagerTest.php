@@ -370,7 +370,6 @@ final class GameManagerTest extends TestCase
                 }
             ),
             new GameContextFactory(),
-            new GameEventApplier(),
         );
     }
 }

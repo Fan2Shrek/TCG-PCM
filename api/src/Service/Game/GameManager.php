@@ -34,7 +34,6 @@ class GameManager
     public function __construct(
         private CardFactory $cardFactory,
         private GameContextFactoryInterface $gameContextFactory,
-        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function setupRoom(Room $room): GameState
@@ -197,7 +196,7 @@ class GameManager
         foreach ($cards as $card) {
             $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
             $card->onTurnEnd($ctx);
-            $state = $this->gameEventApplier->applyMultiple($ctx->flushEvents(), $state);
+            $events = array_merge($events, $ctx->flushEvents());
         }
 
         if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
@@ -207,7 +206,7 @@ class GameManager
         foreach ($cards as $card) {
             $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
             $card->onTurnStart($ctx);
-            $state = $this->gameEventApplier->applyMultiple($ctx->flushEvents(), $state);
+            $events = array_merge($events, $ctx->flushEvents());
         }
 
         $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
