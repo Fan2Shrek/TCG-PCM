@@ -9,11 +9,11 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
-use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Service\Game\State\RedisGameStateRepository;
 use App\Service\Redis\RedisClient;
+use App\Service\Game\GameStateRebuilder;
 use PHPUnit\Framework\TestCase;
 
 final class RedisGameStateRepositoryTest extends TestCase
@@ -28,13 +28,13 @@ final class RedisGameStateRepositoryTest extends TestCase
         );
         $gameEvent = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
         $room = $this->createStub(Room::class);
-        $testableGameManager = new TestableGameManager();
+        $testableGameManager = new TestableGameStateRebuilder();
         $sut = $this->createSut($testableGameManager, $room, $gameState, [$gameEvent]);
         $sut->get($room);
 
-        self::assertNotEmpty($testableGameManager->receivedEvent);
+        self::assertNotEmpty($testableGameManager->receivedEvents);
         self::assertSame([$gameState], $testableGameManager->receivedGameState);
-        self::assertSame([$gameEvent], $testableGameManager->receivedEvent);
+        self::assertSame([$gameEvent], $testableGameManager->receivedEvents);
     }
 
     public function testGetWithMultipleEvents()
@@ -51,13 +51,13 @@ final class RedisGameStateRepositoryTest extends TestCase
             new GameEvent(3, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
-        $testableGameManager = new TestableGameManager();
+        $testableGameManager = new TestableGameStateRebuilder();
         $allEvents = array_merge($events, [$gameEvent]);
         $sut = $this->createSut($testableGameManager, $room, $gameState, $allEvents);
         $sut->get($room);
 
-        self::assertSame(3, $testableGameManager->callCount);
-        self::assertSame(array_merge($events, [$gameEvent]), $testableGameManager->receivedEvent);
+        self::assertSame(1, $testableGameManager->callCount);
+        self::assertSame(array_merge($events, [$gameEvent]), $testableGameManager->receivedEvents);
     }
 
     public function testGetWithExistingGameState()
@@ -74,7 +74,7 @@ final class RedisGameStateRepositoryTest extends TestCase
             new GameEvent(3, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []),
         ];
         $room = $this->createStub(Room::class);
-        $testableGameManager = new TestableGameManager();
+        $testableGameManager = new TestableGameStateRebuilder();
         $allEvents = array_merge($events, [$gameEvent]);
         $sut = $this->createSut($testableGameManager, $room, $gameState, $allEvents, $gameState);
         $sut->get($room);
@@ -82,7 +82,7 @@ final class RedisGameStateRepositoryTest extends TestCase
         self::expectNotToPerformAssertions();
     }
 
-    private function createSut(TestableGameManager $testable, Room $room, GameState $gameState, array $events, ?GameState $initialGameState = null): RedisGameStateRepository
+    private function createSut(TestableGameStateRebuilder $testable, Room $room, GameState $gameState, array $events, ?GameState $initialGameState = null): RedisGameStateRepository
     {
         $repository = new InMemoryGameStateRepository();
 
@@ -105,18 +105,18 @@ final class RedisGameStateRepositoryTest extends TestCase
     }
 }
 
-class TestableGameManager extends GameManager
+class TestableGameStateRebuilder extends GameStateRebuilder
 {
     public int $callCount = 0;
-    public array $receivedEvent = [];
+    public array $receivedEvents = [];
     public array $receivedGameState = [];
 
     public function __construct() {}
 
-    public function play(GameEvent $event, GameState $gameState): GameState
+    public function rebuild(GameState $gameState, array $events): GameState
     {
         $this->callCount++;
-        $this->receivedEvent[] = $event;
+        $this->receivedEvents = $events;
         $this->receivedGameState[] = $gameState;
 
         return $gameState;
