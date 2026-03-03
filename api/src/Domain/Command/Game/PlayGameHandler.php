@@ -53,6 +53,10 @@ final class PlayGameHandler
         }
 
         foreach ($events as &$event) {
+            if (!$event->shouldBePersisted()) {
+                continue;
+            }
+
             $event = $this->gameEventRepository->save($event, $room->getId()->toString());
         }
 

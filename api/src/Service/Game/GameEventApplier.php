@@ -22,7 +22,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
-            GameEventTypeEnum::DICE_ROLLED => $this->applyDiceRolled($event, $gameState),
+            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED => $this->noOp($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
@@ -154,7 +154,7 @@ class GameEventApplier implements GameEventApplierInterface
         return $gameState;
     }
 
-    private function applyDiceRolled(GameEvent $event, GameState $gameState): GameState
+    private function noOp(GameEvent $event, GameState $gameState): GameState
     {
         // no-op
 
