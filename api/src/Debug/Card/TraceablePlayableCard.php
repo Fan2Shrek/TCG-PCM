@@ -7,11 +7,12 @@ namespace App\Debug\Card;
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
+use App\Game\Card\ComputedCardInterface;
 use App\Game\Card\EffectCollection;
 use App\Game\GameContext;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class TraceablePlayableCard extends AbstractPlayableCard
+final class TraceablePlayableCard extends AbstractPlayableCard implements ComputedCardInterface
 {
     public const STOPWATCH_CATEGORY = 'app.card';
 
@@ -80,5 +81,21 @@ final class TraceablePlayableCard extends AbstractPlayableCard
     public function getEffects(): EffectCollection
     {
         return $this->card->effects;
+    }
+
+    public function computeValue(): mixed
+    {
+        if ($this->card instanceof ComputedCardInterface) {
+            return $this->card->computeValue();
+        }
+
+        return null;
+    }
+
+    public function setComputedValue(mixed $value): void
+    {
+        if ($this->card instanceof ComputedCardInterface) {
+            $this->card->setComputedValue($value);
+        }
     }
 }

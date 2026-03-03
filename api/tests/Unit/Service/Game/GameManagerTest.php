@@ -20,6 +20,7 @@ use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\CardFactory;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
@@ -27,6 +28,7 @@ use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class GameManagerTest extends TestCase
 {
@@ -300,14 +302,27 @@ final class GameManagerTest extends TestCase
     private function getSut(): GameManager
     {
         return new GameManager(
-            new MockCardRegistry(
-                [
-                    DummyCard::class => DummyCard::class,
-                    'other_card' =>  DummyCard::class,
-                    DummyCharacterCard::class => DummyCharacterCard::class,
-                    DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-                    SpyCard::class => SpyCard::class,
-                ]
+            new CardFactory(
+                new MockCardRegistry(
+                    [
+                        DummyCard::class => DummyCard::class,
+                        'other_card' =>  DummyCard::class,
+                        DummyCharacterCard::class => DummyCharacterCard::class,
+                        DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+                        SpyCard::class => SpyCard::class,
+                    ]
+                ),
+                new class implements CacheInterface {
+                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                        return $callable();
+                    }
+
+                    public function delete(string $key): bool
+                    {
+                        // no-op
+                        return true;
+                    }
+                }
             ),
             new GameContextFactory(),
         );

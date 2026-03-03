@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\GameReplay;
 
 use App\Enum\GameEventTypeEnum;
+use App\Service\Game\CardFactory;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
 use App\Service\Game\GameStateRebuilder;
@@ -12,6 +13,7 @@ use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Cache\CacheInterface;
 
 #[Group('replay')]
 final class GameReplayTest extends TestCase
@@ -49,7 +51,20 @@ final class GameReplayTest extends TestCase
 
         return new GameStateRebuilder(
             new GameEventApplier(),
-            new MockCardRegistry(require $cardsListPath),
+            new CardFactory(
+                new MockCardRegistry(require $cardsListPath),
+                new class implements CacheInterface {
+                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                        return $callable();
+                    }
+
+                    public function delete(string $key): bool
+                    {
+                        // no-op
+                        return true;
+                    }
+                }
+            ),
             new ReplayableGameContextFactory($rolls),
         );
     }

@@ -9,9 +9,7 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
-use App\Game\AbstractCard;
 use App\Game\Card\AbstractPlayableCard;
-use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
@@ -30,7 +28,7 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardRegistryInterface $cardRegistry,
+        private CardFactory $cardFactory,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
@@ -85,7 +83,7 @@ class GameManager
 
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
     {
-        $characterCard = $this->cardRegistry->getCardTemplateById($deck->getCharacterCard());
+        $characterCard = $this->cardFactory->create($deck->getCharacterCard());
 
         if (!$characterCard instanceof AbstractCharacterCard) {
             throw new \RuntimeException('Deck character card is not a character card');
@@ -167,14 +165,6 @@ class GameManager
         return Uuid::v4();
     }
 
-    private function createCardFromState(CardState $state): AbstractCard
-    {
-        $card = $this->cardRegistry->getCardTemplateById($state->templateId);
-        $card->setState($state);
-
-        return $card;
-    }
-
     /**
      * @return GameEvent[]
      */
@@ -184,7 +174,11 @@ class GameManager
             throw new \LogicException('cardId is required to play a card');
         }
 
-        $card = $this->createCardFromState($state->cards[$cardId]);
+        if (!($cardState = $state->cards[$cardId] ?? null)) {
+            throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
+        }
+
+        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
 
         if (!$card instanceof AbstractPlayableCard) {
             throw new \LogicException(\sprintf('Card with id %s is not playable', $card->getId()));
