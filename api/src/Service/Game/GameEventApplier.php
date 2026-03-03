@@ -25,6 +25,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::DICE_ROLLED => $this->applyDiceRolled($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
+            GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
         };
     }
 
@@ -195,5 +196,21 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $player->withDiscardedCard($cardId);
 
         return $gameState->withUpdatedPlayer($player)->removeCard($cardId);
+    }
+
+    private function applyCardPlaceInPlayArea(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('DiscardCard requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('DiscardCard requires a playerId');
+        }
+
+        $player = $gameState->getPlayer($playerId);
+        $newArea = $player->playArea->addPassiveCard($cardId);
+
+        return $gameState->withUpdatedPlayer($player->withPlayArea($newArea));
     }
 }

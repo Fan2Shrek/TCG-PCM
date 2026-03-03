@@ -16,4 +16,5 @@ enum GameEventTypeEnum: string
     case DICE_ROLLED = 'DICE_ROLLED';
     case CARD_DISCARDED = 'CARD_DISCARDED';
     case EFFECT_ADDED = 'EFFECT_ADDED';
+    case CARD_PLACE_IN_PLAY_AREA = 'CARD_PLACE_IN_PLAY_AREA';
 }

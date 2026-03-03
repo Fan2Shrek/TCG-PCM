@@ -10,6 +10,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
@@ -110,6 +111,27 @@ final class GameEventApplierTest extends TestCase
         self::assertCount(1, $newState->getPlayer('player2')->discardPile);
     }
 
+    public function testCardPlaceInPlayArea()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA,
+            GameEvent::GAME_EVENT,
+            [
+                'playerId' => 'player2',
+                'cardId' => 'D6',
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(1, $newState->getPlayer('player2')->playArea->passiveCards);
+        self::assertCount(0, $newState->getPlayer('player2')->hand);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(
@@ -132,6 +154,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                new PlayArea(),
             ),
             new PlayerState(
                 new Player(
@@ -144,6 +167,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                new PlayArea(),
             ),
             $lastEventId,
         );

@@ -5,6 +5,7 @@ use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 
 return [
@@ -21,6 +22,7 @@ return [
                 'card2',
             ],
             [],
+            new PlayArea(),
         ),
         new PlayerState(
             new Player(
@@ -33,6 +35,7 @@ return [
                 'card3',
             ],
             [],
+            new PlayArea(),
         ),
         0,
         null,
@@ -99,10 +102,11 @@ return [
             300,
             [],
             [],
+            new PlayArea(),
             [
                 'card1',
                 'card2',
-            ]
+            ],
         ),
         new PlayerState(
             new Player(
@@ -113,6 +117,7 @@ return [
             100,
             [],
             [],
+            new PlayArea(),
             [
                 'card3',
             ]

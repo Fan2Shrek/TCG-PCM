@@ -19,6 +19,7 @@ use App\Game\Player;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
 use App\Service\Game\Factory\GameContextFactory;
@@ -73,6 +74,7 @@ final class GameManagerTest extends TestCase
                 30,
                 [],
                 ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
+                new PlayArea(),
             ),
             new PlayerState(
                 new Player('2', 'Player 1'),
@@ -80,6 +82,7 @@ final class GameManagerTest extends TestCase
                 30,
                 [],
                 ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
+                new PlayArea(),
             ),
             0,
             null,
@@ -262,6 +265,7 @@ final class GameManagerTest extends TestCase
                 'card2',
             ],
             [],
+            new PlayArea(),
         );
         $player2State = new PlayerState(
             new Player('2', 'Player 2', 69),
@@ -269,6 +273,7 @@ final class GameManagerTest extends TestCase
             30,
             [],
             [],
+            new PlayArea(),
         );
 
         return new GameState(

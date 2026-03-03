@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_uoYhacDhph
 createdAt: 2026-02-19T16:38:57.970377800
-updatedAt: 2026-02-19T16:45:11.094270523
+updatedAt: 2026-03-03T13:42:25.400820653
 workspaceId: wk_YWNRaoZjBb
 folderId: null
 authentication: {}
@@ -25,11 +25,11 @@ name: Login
 sortPriority: 9.0
 url: ${[host]}/api/login_check
 urlParameters:
-- enabled: true
+- enabled: false
   name: token
   value: ${[ response.body.path(request='rq_uoYhacDhph', behavior='smart', ttl='0', result='first', join=b64'LCA', path='token') ]}
   id: NCfB3VtrWE
 - enabled: true
   name: ''
   value: ''
-  id: JI5GTDTU96
+  id: akGyURBaw0

@@ -10,6 +10,7 @@ use App\Game\Dice;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\Attributes\Before;
@@ -59,6 +60,7 @@ abstract class CardTestCase extends TestCase
             30,
             [],
             [],
+            new PlayArea(),
         );
         $player2State = new PlayerState(
             new Player('2', 'Player 2', 69),
@@ -66,6 +68,7 @@ abstract class CardTestCase extends TestCase
             30,
             [],
             [],
+            new PlayArea(),
         );
 
         $state = new GameState(

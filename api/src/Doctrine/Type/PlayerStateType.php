@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Doctrine\Type;
 
 use App\Game\Player;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -46,6 +47,7 @@ final class PlayerStateType extends Type
             $data['maxHealthPoints'],
             $data['hand'],
             $data['drawPile'],
+            new PlayArea(),
         );
     }
 

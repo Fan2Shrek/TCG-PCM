@@ -8,6 +8,7 @@ use App\Enum\CardEffectEnum;
 use App\Game\Card\CardState;
 use App\Game\Player;
 use App\Game\State\GameState;
+use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use PHPUnit\Framework\TestCase;
 
@@ -15,20 +16,8 @@ final class GameStateTest extends TestCase
 {
     public function testGetPlayer(): void
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -41,20 +30,8 @@ final class GameStateTest extends TestCase
 
     public function testGetPlayers(): void
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -66,20 +43,8 @@ final class GameStateTest extends TestCase
 
     public function testGetCurrentPlayerState()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -91,20 +56,8 @@ final class GameStateTest extends TestCase
 
     public function testGetCurrentPlayerStateWithOtherPlayerTurn()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -117,20 +70,8 @@ final class GameStateTest extends TestCase
 
     public function testGetCurrentPlayer()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -142,20 +83,8 @@ final class GameStateTest extends TestCase
 
     public function testGetCurrentPlayerWithOtherPlayerTurn()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -168,20 +97,8 @@ final class GameStateTest extends TestCase
 
     public function testGetNextPlayer()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -193,20 +110,8 @@ final class GameStateTest extends TestCase
 
     public function testGetNextPlayerWithOtherPlayerTurn()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -219,20 +124,9 @@ final class GameStateTest extends TestCase
 
     public function testIsCurrentPlayer()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
+
         $gameState = new GameState(
             $player1,
             $player2,
@@ -245,23 +139,9 @@ final class GameStateTest extends TestCase
 
     public function testIsFinishedReturnFalse()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -270,23 +150,9 @@ final class GameStateTest extends TestCase
 
     public function testIsFinishedReturnTrueWithPlayerOneDead()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 0),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -295,23 +161,9 @@ final class GameStateTest extends TestCase
 
     public function testIsFinishedReturnTrueWithPlayerTwoDead()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            0,
-            0,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 0),
             0,
         );
 
@@ -320,20 +172,8 @@ final class GameStateTest extends TestCase
 
     public function testWithUpdatedPlayerUpdatePlayer1()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -347,6 +187,7 @@ final class GameStateTest extends TestCase
                 0,
                 [],
                 [],
+                new PlayArea(),
             ),
         );
 
@@ -356,20 +197,8 @@ final class GameStateTest extends TestCase
 
     public function testWithUpdatedPlayerUpdatePlayer2()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -383,6 +212,7 @@ final class GameStateTest extends TestCase
                 0,
                 [],
                 [],
+                new PlayArea(),
             ),
         );
 
@@ -395,23 +225,9 @@ final class GameStateTest extends TestCase
         self::expectException(\InvalidArgumentException::class);
         self::expectExceptionMessage('Player 3 not found in GameState');
 
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -422,26 +238,15 @@ final class GameStateTest extends TestCase
                 0,
                 [],
                 [],
+                new PlayArea(),
             ),
         );
     }
 
     public function testWithCurrentPlayer()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
+        $player1 = $this->createPlayerState('1', 'Player 1', 1);
+        $player2 = $this->createPlayerState('2', 'Player 2', 1);
         $gameState = new GameState(
             $player1,
             $player2,
@@ -459,23 +264,9 @@ final class GameStateTest extends TestCase
         self::expectException(\InvalidArgumentException::class);
         self::expectExceptionMessage('Player 3 not found in GameState');
 
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -484,23 +275,9 @@ final class GameStateTest extends TestCase
 
     public function testAddCard()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -515,23 +292,9 @@ final class GameStateTest extends TestCase
 
     public function testWithUpdatedCardState()
     {
-        $player1 = new PlayerState(
-            new Player('1', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
-        $player2 = new PlayerState(
-            new Player('2', 'Player 1'),
-            1,
-            1,
-            [],
-            [],
-        );
         $gameState = new GameState(
-            $player1,
-            $player2,
+            $this->createPlayerState('1', 'Player 1', 1),
+            $this->createPlayerState('2', 'Player 2', 1),
             0,
         );
 
@@ -549,5 +312,17 @@ final class GameStateTest extends TestCase
         ));
 
         self::assertCount(1, $newState->cards['card1']->effects);
+    }
+
+    private function createPlayerState(string $id, string $username, int $healthPoints): PlayerState
+    {
+        return new PlayerState(
+            player: new Player($id, $username),
+            healthPoints: $healthPoints,
+            maxHealthPoints: 30,
+            hand: [],
+            drawPile: [],
+            playArea: new PlayArea(),
+        );
     }
 }
