@@ -14,10 +14,10 @@
         <tbody>
             {% for event in events %}
                 <tr>
-                    <td class="text-right nowrap">{{ event.type }}</td>
+                    <td class="text-right nowrap">{{ event.type.value }}</td>
                     <td class="font-normal">{{ event.origin }}</td>
-                    <td class="font-normal">{{ event.line ?? 'unknown' }}</td>
-                    <td class="font-normal">{{ profiler_dump(event.data) }}</td>
+                    <td class="font-normal">{{ event.origin ?? 'unknown' }}</td>
+                    <td class="font-normal">{{ event.data|join('|') }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -39,7 +39,31 @@
                 <tr>
                     <td class="text-right nowrap">{{ card.id }}</td>
                     <td class="font-normal">{{ card.instanceId }}</td>
-                    <td class="font-normal">{{ profiler_dump(card.effects) }}</td>
+                    <td class="font-normal">{{ card.effects is defined ? card.effects|join('|') : 'unknown' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro render_players_table(players, collector) %}
+    <table>
+        <thead>
+            <tr>
+                <th class="text-right">Id</th>
+                <th>Health point</th>
+                <th>Hand</th>
+                <th>Play area</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for player in players %}
+                <tr>
+                    <td class="text-right nowrap">{{ player.player.id }}</td>
+                    <td class="font-normal">{{ player.healthPoints }}</td>
+                    <td class="font-normal">{{ player.hand|join("\n")|nl2br }}</td>
+                    <td class="font-normal">{{ profiler_dump(collector.playArea(player.player.id)) }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -85,7 +109,7 @@
         <div class="metric-divider"></div>
         <div class="metric-group">
             <div class="metric">
-                <span class="value">{{ collector.mainEvent.type }}</span>
+                <span class="value">{{ collector.mainEvent?.type?.value ?? 'Unknow' }}</span>
                 <span class="label">Main event</span>
             </div>
             <div class="metric">
@@ -131,5 +155,18 @@
                 {{ _self.render_cards_table(collector.cards) }}
             </div>
         </div>
+
+        {% if collector.lastGameState is not null %}
+            <div class="tab">
+                <h3 class="tab-title">Last Game State</h3>
+                <div class="tab-content">
+                    {{ _self.render_players_table([
+                        collector.lastGameState.player1,
+                        collector.lastGameState.player2,
+                    ], collector) }}
+                </div>
+                {{ profiler_dump(collector.lastCards)}}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

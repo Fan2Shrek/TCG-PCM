@@ -180,6 +180,10 @@ class GameManager
             throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
         }
 
+        if (!\is_string($event->data['playerId'] ?? null)) {
+            throw new \LogicException('playerId is required to play a card');
+        }
+
         $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
@@ -187,6 +191,11 @@ class GameManager
         $events = [];
         if ($card instanceof AbstractPlayableCard) {
             $card->play($ctx, \is_array($data) ? $data : []);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+            ]);
         } elseif ($card instanceof AbstractPassiveCard) {
             $card->onCardPlace($ctx);
 
@@ -198,17 +207,6 @@ class GameManager
             throw new \LogicException('Card must be either a playable or passive card');
         }
 
-        if (!\is_string($event->data['playerId'] ?? null)) {
-            throw new \LogicException('playerId is required to play a card');
-        }
-
-        $events = array_merge($events, $ctx->flushEvents());
-
-        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
-            'playerId' => $event->data['playerId'],
-            'cardId' => $event->data['cardId'],
-        ]);
-
-        return $events;
+        return array_merge($events, $ctx->flushEvents());
     }
 }
