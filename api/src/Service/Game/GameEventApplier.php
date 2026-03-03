@@ -14,7 +14,7 @@ class GameEventApplier implements GameEventApplierInterface
 {
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
-        return match ($event->type) {
+        $gameState = match ($event->type) {
             GameEventTypeEnum::CARD_DRAWN => $this->applyCardDrawn($event, $gameState),
             GameEventTypeEnum::CARD_PLAYED => $this->applyCardPlayed($event, $gameState),
             GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
@@ -27,6 +27,8 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
         };
+
+        return $gameState->withLastEventId($event->id);
     }
 
     public function applyMultiple(array $events, GameState $gameState): GameState

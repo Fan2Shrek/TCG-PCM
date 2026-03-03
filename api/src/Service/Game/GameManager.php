@@ -9,9 +9,11 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Enum\RoomStatusEnum;
+use App\Game\AbstractCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotYourTurnException;
@@ -32,6 +34,7 @@ class GameManager
     public function __construct(
         private CardFactory $cardFactory,
         private GameContextFactoryInterface $gameContextFactory,
+        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function setupRoom(Room $room): GameState
@@ -83,6 +86,49 @@ class GameManager
         };
     }
 
+    /**
+     * @return GameEvent[]
+     */
+    public function getEventsForCard(GameEvent $event, GameState $state): array
+    {
+        if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('cardId is required to play a card');
+        }
+
+        if (!($cardState = $state->cards[$cardId] ?? null)) {
+            throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
+        }
+
+        if (!\is_string($event->data['playerId'] ?? null)) {
+            throw new \LogicException('playerId is required to play a card');
+        }
+
+        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
+        $data = $event->data['data'] ?? [];
+
+        $events = [];
+        if ($card instanceof AbstractPlayableCard) {
+            $card->play($ctx, \is_array($data) ? $data : []);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+            ]);
+        } elseif ($card instanceof AbstractPassiveCard) {
+            $card->onCardPlace($ctx);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+            ]);
+        } else {
+            throw new \LogicException('Card must be either a playable or passive card');
+        }
+
+        return array_merge($events, $ctx->flushEvents());
+    }
+
     private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
     {
         $characterCard = $this->cardFactory->create($deck->getCharacterCard());
@@ -132,7 +178,7 @@ class GameManager
             'cardId' => $card,
         ]);
 
-        return array_merge([$event], $this->doPlayCard($event, $state));
+        return array_merge([$event], $this->getEventsForCard($event, $state));
     }
 
     /**
@@ -146,8 +192,22 @@ class GameManager
             'playerId' => $action->author->id,
         ]);
 
+        $cards = $this->getTurnAwareCards($state);
+
+        foreach ($cards as $card) {
+            $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
+            $card->onTurnEnd($ctx);
+            $state = $this->gameEventApplier->applyMultiple($ctx->flushEvents(), $state);
+        }
+
         if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
             $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+        }
+
+        foreach ($cards as $card) {
+            $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
+            $card->onTurnStart($ctx);
+            $state = $this->gameEventApplier->applyMultiple($ctx->flushEvents(), $state);
         }
 
         $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
@@ -168,45 +228,35 @@ class GameManager
     }
 
     /**
-     * @return GameEvent[]
+     * @return array<AbstractCard&TurnAwareInterface>
      */
-    private function doPlayCard(GameEvent $event, GameState $state): array
+    private function getTurnAwareCards(GameState $gameState): array
     {
-        if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
-            throw new \LogicException('cardId is required to play a card');
+        $cards = [];
+
+        foreach ($this->getAllActiveCards($gameState) as $card) {
+            if (!$card instanceof TurnAwareInterface) {
+                continue;
+            }
+
+            $cards[] = $card;
         }
 
-        if (!($cardState = $state->cards[$cardId] ?? null)) {
-            throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
+        return $cards;
+    }
+
+    /**
+     * @return iterable<AbstractCard>
+     */
+    private function getAllActiveCards(GameState $gameState): iterable
+    {
+        foreach ($gameState->getAllActiveCards() as $card) {
+            if (!($state = $gameState->getCardState($card))) {
+                // @todo maybe log
+                continue;
+            }
+
+            yield $this->cardFactory->createWithState($state->templateId, $state);
         }
-
-        if (!\is_string($event->data['playerId'] ?? null)) {
-            throw new \LogicException('playerId is required to play a card');
-        }
-
-        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
-        $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
-        $data = $event->data['data'] ?? [];
-
-        $events = [];
-        if ($card instanceof AbstractPlayableCard) {
-            $card->play($ctx, \is_array($data) ? $data : []);
-
-            $events[] = GameEvent::game(GameEventTypeEnum::CARD_DISCARDED, [
-                'playerId' => $event->data['playerId'],
-                'cardId' => $event->data['cardId'],
-            ]);
-        } elseif ($card instanceof AbstractPassiveCard) {
-            $card->onCardPlace($ctx);
-
-            $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
-                'playerId' => $event->data['playerId'],
-                'cardId' => $event->data['cardId'],
-            ]);
-        } else {
-            throw new \LogicException('Card must be either a playable or passive card');
-        }
-
-        return array_merge($events, $ctx->flushEvents());
     }
 }

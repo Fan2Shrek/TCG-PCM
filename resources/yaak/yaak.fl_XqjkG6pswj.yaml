@@ -1,0 +1,14 @@
+type: folder
+model: folder
+id: fl_XqjkG6pswj
+createdAt: 2026-03-03T15:24:13.408999919
+updatedAt: 2026-03-03T15:25:53.100868581
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_JLpCFxuyh2
+authentication:
+  token: opo
+authenticationType: bearer
+description: ''
+headers: []
+name: Opponent
+sortPriority: 2.6666666666666665

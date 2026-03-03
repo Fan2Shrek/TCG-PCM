@@ -19,4 +19,12 @@ final readonly class PlayArea
             'passiveCards' => [...$this->passiveCards, $cardId],
         ]);
     }
+
+    /**
+     * @return string[]
+     */
+    public function getAll(): array
+    {
+        return array_merge($this->passiveCards);
+    }
 }

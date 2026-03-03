@@ -8,6 +8,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Service\Game\CardFactory;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
+use App\Service\Game\GameManager;
 use App\Service\Game\GameStateRebuilder;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -50,22 +51,26 @@ final class GameReplayTest extends TestCase
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            new GameEventApplier(),
-            new CardFactory(
-                new MockCardRegistry(require $cardsListPath),
-                new class implements CacheInterface {
-                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                        return $callable();
-                    }
+            $gea = new GameEventApplier(),
+            new GameManager(
+                new CardFactory(
+                    new MockCardRegistry(require $cardsListPath),
+                    new class implements CacheInterface {
+                        public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                            return $callable();
+                        }
 
-                    public function delete(string $key): bool
-                    {
-                        // no-op
-                        return true;
+                        public function delete(string $key): bool
+                        {
+                            // no-op
+                            return true;
+                        }
                     }
-                }
+                ),
+                $factory = new ReplayableGameContextFactory($rolls),
+                $gea,
             ),
-            new ReplayableGameContextFactory($rolls),
+            $factory,
         );
     }
 

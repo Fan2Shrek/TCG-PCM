@@ -12,6 +12,8 @@ use App\Enum\RoomStatusEnum;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\UnknowActionException;
 use App\Game\GameContext;
@@ -23,6 +25,7 @@ use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
 use App\Service\Game\Factory\GameContextFactory;
+use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -215,6 +218,37 @@ final class GameManagerTest extends TestCase
         self::assertEquals($expected, $events);
     }
 
+    public function testEndTurnCallTurnAwareCard()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $player = $gameState->player1->withPlayArea($gameState->player1->playArea->addPassiveCard('card1O'));
+        $gameState = new GameState(
+            $player,
+            $gameState->player2,
+            $gameState->lastEventId,
+            $gameState->currentPlayer,
+            [
+                'card1O' => new CardState(
+                    'card1O',
+                    SpyCard::class,
+                    '1',
+                    [],
+                ),
+            ],
+        );
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
+        $gm->handleAction($action, $gameState);
+
+        self::assertTrue(SpyCard::$turnStartCalled);
+    }
+
     public function testEndTurnWithNewRound()
     {
         $gm = $this->getSut();
@@ -336,6 +370,7 @@ final class GameManagerTest extends TestCase
                 }
             ),
             new GameContextFactory(),
+            new GameEventApplier(),
         );
     }
 }
@@ -415,9 +450,12 @@ class TestUser extends User
     }
 }
 
-class SpyCard extends AbstractPlayableCard
+class SpyCard extends AbstractPlayableCard implements TurnAwareInterface
 {
+    use TurnAwareTrait;
+
     public static ?GameContext $receivedContext = null;
+    public static bool $turnStartCalled = false;
 
     public function getId(): string
     {
@@ -441,5 +479,10 @@ class SpyCard extends AbstractPlayableCard
         if ($data['other'] ?? false) {
             $ctx->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, ['playerId' => $ctx->playerId, 'cardId' => 'other-spy']);
         }
+    }
+
+    public function onTurnStart(GameContext $ctx): void
+    {
+        self::$turnStartCalled = true;
     }
 }
