@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Debug\Card;
 
 use App\Game\AbstractCard;
+use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Service\Game\CardRegistryInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -27,6 +28,8 @@ final class TraceableCardRegistry implements CardRegistryInterface
 
         if ($card instanceof AbstractPlayableCard) {
             $card = TraceablePlayableCard::create($card, $this->stopwatch);
+        } elseif ($card instanceof AbstractPassiveCard) {
+            $card = TraceablePassiveCard::create($card, $this->stopwatch);
         }
 
         return $this->cards[] = $card;

@@ -17,7 +17,11 @@
                     <td class="text-right nowrap">{{ event.type.value }}</td>
                     <td class="font-normal">{{ event.origin }}</td>
                     <td class="font-normal">{{ event.origin ?? 'unknown' }}</td>
-                    <td class="font-normal">{{ event.data|join('|') }}</td>
+                    <td class="font-normal">
+                        {% for key, value in event.data %}
+                            {{ key }} : {{ value }}
+                        {% endfor %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -30,6 +34,8 @@
             <tr>
                 <th class="text-right">Id</th>
                 <th>Instance id</th>
+                <th>Class</th>
+                <th>Called methods</th>
                 <th>Effects</th>
             </tr>
         </thead>
@@ -39,7 +45,9 @@
                 <tr>
                     <td class="text-right nowrap">{{ card.id }}</td>
                     <td class="font-normal">{{ card.instanceId }}</td>
-                    <td class="font-normal">{{ card.effects is defined ? card.effects|join('|') : 'unknown' }}</td>
+                    <td class="font-normal">{{ constant('class', card) }}</td>
+                    <td class="font-normal">{{ card.methodCalled|join("\n")|nl2br }}</td>
+                    <td class="font-normal">{{ card.effects is defined ? card.effects.all|length : 'unknown' }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -126,11 +134,20 @@
             </div>
         {% endif %}
         <div class="tab">
-            <h3 class="tab-title">Events <span class="badge">{{ collector.events|length }}</span></h3>
+            <h3 class="tab-title">Events <span class="badge">{{ collector.realEvents|length }}</span></h3>
             <div class="tab-content">
-                {{ _self.render_events_table(collector.events) }}
+                {{ _self.render_events_table(collector.realEvents) }}
             </div>
         </div>
+
+        {% if collector.replayedEvents|length != 0 %}
+            <div class="tab">
+                <h3 class="tab-title">Replayed event <span class="badge">{{ collector.replayedEvents|length }}</span></h3>
+                <div class="tab-content">
+                    {{ _self.render_events_table(collector.replayedEvents) }}
+                </div>
+            </div>
+        {% endif %}
 
         <div class="tab">
             <h3 class="tab-title">Game contexts <span class="badge">{{ collector.gameContexts|length }}</span></h3>
