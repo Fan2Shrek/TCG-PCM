@@ -12,6 +12,7 @@ use App\Enum\RoomStatusEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Exception\CardNotInHandException;
@@ -32,7 +33,7 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardFactory $cardFactory,
+        private CardFactoryInterface $cardFactory,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
@@ -44,10 +45,7 @@ class GameManager
             throw new \RuntimeException('Room has no opponent');
         }
 
-        $player1InitialState = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck());
-        $player2InitialState = $this->createPlayerStateFromUser($opponent, $opponentDeck);
-
-        return new GameState($player1InitialState, $player2InitialState, null);
+        return $this->initializeGameState($room, $opponent, $opponentDeck);
     }
 
     /**
@@ -126,36 +124,6 @@ class GameManager
         }
 
         return array_merge($events, $ctx->flushEvents());
-    }
-
-    private function createPlayerStateFromUser(User $user, Deck $deck): PlayerState
-    {
-        $characterCard = $this->cardFactory->create($deck->getCharacterCard());
-
-        if (!$characterCard instanceof AbstractCharacterCard) {
-            throw new \RuntimeException('Deck character card is not a character card');
-        }
-
-        $player = Player::fromUser($user);
-        $cardsIds = $this->createCardsFromDeck($deck);
-
-        return new PlayerState($player, $characterCard->getHealthPoints(), $characterCard->getHealthPoints(), [], $cardsIds, new PlayArea());
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function createCardsFromDeck(Deck $deck): array
-    {
-        $cardsIds = [];
-        $cards = $deck->getCards();
-        shuffle($cards);
-
-        foreach ($cards as $card) {
-            $cardsIds[$this->createCardId()->toString()] = $card;
-        }
-
-        return $cardsIds;
     }
 
     /**
@@ -257,5 +225,61 @@ class GameManager
 
             yield $this->cardFactory->createWithState($state->templateId, $state);
         }
+    }
+
+    private function initializeGameState(Room $room, User $opponent, Deck $opponentDeck): GameState
+    {
+        $player1CharacterCard = $this->cardFactory->create($room->getOwnerDeck()->getCharacterCard());
+        $player2CharacterCard = $this->cardFactory->create($opponentDeck->getCharacterCard());
+
+        if (!$player1CharacterCard instanceof AbstractCharacterCard || !$player2CharacterCard instanceof AbstractCharacterCard) {
+            throw new \LogicException('Character card must be an instance of AbstractCharacterCard');
+        }
+
+        $player1State = $this->createPlayerStateFromUser($room->getOwner(), $room->getOwnerDeck(), $player1CharacterCard);
+        $player2State = $this->createPlayerStateFromUser($opponent, $opponentDeck, $player2CharacterCard);
+
+        $player1CharacterCardState = new CardState($player1State->characterCardId, $player1CharacterCard->getId(), $player1State->player->id);
+        $player2CharacterCardState = new CardState($player2State->characterCardId, $player2CharacterCard->getId(), $player2State->player->id);
+
+        $player1CharacterCard->setState($player1CharacterCardState);
+        $player2CharacterCard->setState($player2CharacterCardState);
+
+        return new GameState($player1State, $player2State, null, $player1State->player->id, [
+            $player1CharacterCardState->instanceId => $player1CharacterCardState,
+            $player2CharacterCardState->instanceId => $player2CharacterCardState,
+        ]);
+    }
+
+    private function createPlayerStateFromUser(User $user, Deck $deck, AbstractCharacterCard $characterCard): PlayerState
+    {
+        $player = Player::fromUser($user);
+        $cardsIds = $this->createCardsFromDeck($deck);
+
+        return new PlayerState(
+            $player,
+            $characterCard->getHealthPoints(),
+            $characterCard->getHealthPoints(),
+            $this->createCardId()->toString(),
+            [],
+            $cardsIds,
+            new PlayArea(),
+        );
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function createCardsFromDeck(Deck $deck): array
+    {
+        $cardsIds = [];
+        $cards = $deck->getCards();
+        shuffle($cards);
+
+        foreach ($cards as $card) {
+            $cardsIds[$this->createCardId()->toString()] = $card;
+        }
+
+        return $cardsIds;
     }
 }

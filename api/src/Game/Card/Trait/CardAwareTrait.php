@@ -9,12 +9,12 @@ use App\Game\GameContext;
 
 trait CardAwareTrait
 {
-    public function onCardPlayed(AbstractCard $card, GameContext $context): void
+    public function onCardPlayed(AbstractCard $card, GameContext $gameContext): void
     {
         // Default implementation does nothing
     }
 
-    public function onCardDrawn(AbstractCard $card, GameContext $context): void
+    public function onCardDrawn(AbstractCard $card, GameContext $gameContext): void
     {
         // Default implementation does nothing
     }

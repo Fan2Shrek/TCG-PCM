@@ -17,6 +17,7 @@ readonly class PlayerState
         public Player $player,
         public int $healthPoints,
         public int $maxHealthPoints,
+        public string $characterCardId,
         public array $hand,
         public array $drawPile,
         public PlayArea $playArea,

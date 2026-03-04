@@ -72,6 +72,11 @@ abstract class AbstractCard
         $this->effects->remove($effect->getName());
     }
 
+    public function getEffects(): EffectCollection
+    {
+        return $this->effects;
+    }
+
     public function setState(CardState $state): void
     {
         if ($this->getId() !== $state->templateId) {
