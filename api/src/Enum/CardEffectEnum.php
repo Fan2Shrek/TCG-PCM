@@ -9,9 +9,13 @@ use App\Game\Card\Effect;
 enum CardEffectEnum: string
 {
     case HACKED = 'Hacked';
+    case TORNED = 'Torned';
 
     public function getClass(): string
     {
-        return match ($this) { self::HACKED => Effect\HackedCardEffect::class };
+        return match ($this) {
+            self::HACKED => Effect\HackedCardEffect::class,
+            self::TORNED => throw new \LogicException('Torned effect is not implemented yet'),
+        };
     }
 }

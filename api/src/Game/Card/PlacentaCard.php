@@ -8,6 +8,7 @@ use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterface
 {
@@ -29,7 +30,9 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
 
     public function getDescription(): string
     {
-        return 'At the beginning of each turn, gain <value>5</value> health.';
+        return GameUtils::formatDescription('At the beginning of each turn, gain {{value}} health.', [
+            'value' => $this->getValue(self::HEALTH_GAIN, true),
+        ]);
     }
 
     public function onTurnStart(GameContext $gameContext): void
