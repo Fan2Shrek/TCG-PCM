@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Game;
 
 use App\Enum\CardRarityEnum;
-use App\Enum\CardSerieEnum;
+use App\Enum\CardSetEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\AbstractCardEffect;
 use App\Game\Card\EffectCollection;
@@ -26,7 +26,7 @@ abstract class AbstractCard
 
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
-    public static CardSerieEnum $serie = CardSerieEnum::ORIGINAL;
+    public static CardSetEnum $serie = CardSetEnum::ORIGINAL;
 
     abstract public function getId(): string;
 

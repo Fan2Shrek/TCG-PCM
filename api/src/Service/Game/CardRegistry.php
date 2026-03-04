@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Game;
 
 use App\Enum\CardRarityEnum;
-use App\Enum\CardSerieEnum;
+use App\Enum\CardSetEnum;
 use App\Game\AbstractCard;
 
 class CardRegistry implements CardRegistryInterface
@@ -38,8 +38,8 @@ class CardRegistry implements CardRegistryInterface
             throw new \InvalidArgumentException(sprintf('Rarity must be an instance of %s', CardRarityEnum::class));
         }
 
-        if (null !== $serie && !$serie instanceof CardSerieEnum) {
-            throw new \InvalidArgumentException(sprintf('Serie must be an instance of %s', CardSerieEnum::class));
+        if (null !== $serie && !$serie instanceof CardSetEnum) {
+            throw new \InvalidArgumentException(sprintf('Set must be an instance of %s', CardSetEnum::class));
         }
 
         $this->loadCards();

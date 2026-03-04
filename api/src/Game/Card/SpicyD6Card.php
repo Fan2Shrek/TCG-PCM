@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
-use App\Enum\CardSerieEnum;
+use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 
 final class SpicyD6Card extends AbstractPlayableCard
 {
-    public static CardSerieEnum $serie = CardSerieEnum::TBOI;
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     private const DAMAGE_MULTIPLIER = 10;
 

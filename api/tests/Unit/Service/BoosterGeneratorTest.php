@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Enum\CardRarityEnum;
-use App\Enum\CardSerieEnum;
+use App\Enum\CardSetEnum;
 use App\Game\AbstractCard;
 use App\Game\GameContext;
 use App\Service\BoosterGenerator;
@@ -37,13 +37,13 @@ final class BoosterGeneratorTest extends TestCase
         self::assertInstanceOf(LegendaryCardStub::class, $booster->getCards()[0]);
     }
 
-    public function testSerie(): void
+    public function testSet(): void
     {
         $BoosterGenerator = new class extends TestableBoosterGenerator {
             protected const BOOSTER_SIZE = 1;
         };
 
-        $booster = $BoosterGenerator->generateBooster(CardSerieEnum::BTD6);
+        $booster = $BoosterGenerator->generateBooster(CardSetEnum::BTD6);
 
         self::assertCount(1, $booster->getCards());
     }
@@ -87,7 +87,7 @@ class TestableBoosterGenerator extends BoosterGenerator
 
 class CommonCardStub extends AbstractCard
 {
-    public static CardSerieEnum $serie = CardSerieEnum::BTD6;
+    public static CardSetEnum $serie = CardSetEnum::BTD6;
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
 
     public function getId(): string
@@ -114,7 +114,7 @@ class CommonCardStub extends AbstractCard
 class LegendaryCardStub extends AbstractCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
-    public static CardSerieEnum $serie = CardSerieEnum::TBOI;
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     public function getId(): string
     {
