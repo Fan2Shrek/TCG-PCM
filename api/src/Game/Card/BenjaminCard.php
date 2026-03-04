@@ -7,6 +7,7 @@ namespace App\Game\Card;
 use App\Enum\CardEffectEnum;
 use App\Enum\CardSetEnum;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class BenjaminCard extends AbstractPlayableCard
 {
@@ -26,7 +27,10 @@ final class BenjaminCard extends AbstractPlayableCard
 
     public function getDescription(): string
     {
-        return 'Add <effect>Hacked</effect> to <value>1</value> cards';
+        return GameUtils::formatDescription('Add {{effect}} to {{value}} cards', [
+            'effect' => CardEffectEnum::HACKED,
+            'value' => $this->getValue(self::CARD_COUNT, true),
+        ]);
     }
 
     public function play(GameContext $context, array $data = []): void

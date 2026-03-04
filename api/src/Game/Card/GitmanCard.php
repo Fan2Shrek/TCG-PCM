@@ -5,6 +5,7 @@ namespace App\Game\Card;
 use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\ComputedCardInterface;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -30,7 +31,9 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
 
     public function getDescription(): string
     {
-        return 'Does <value>1</value> time per commits in this projects.';
+        return GameUtils::formatDescription('Does {{value}} time per commits in this projects.', [
+            'value' => self::DAMAGE_MULTIPLIER,
+        ]);
     }
 
     public function play(GameContext $context, array $data = []): void

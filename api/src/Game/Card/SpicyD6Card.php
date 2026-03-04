@@ -6,6 +6,7 @@ namespace App\Game\Card;
 
 use App\Enum\CardSetEnum;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class SpicyD6Card extends AbstractPlayableCard
 {
@@ -30,7 +31,9 @@ final class SpicyD6Card extends AbstractPlayableCard
 
     public function getDescription(): string
     {
-        return 'Roll a six-sided dice and does <value>10</value> time that many damage.';
+        return GameUtils::formatDescription('Roll a six-sided dice and does {{value}} time that many damage', [
+            'value' => $this->getValue(self::DAMAGE_MULTIPLIER, true),
+        ]);
     }
 
     public function play(GameContext $context, array $data = []): void
