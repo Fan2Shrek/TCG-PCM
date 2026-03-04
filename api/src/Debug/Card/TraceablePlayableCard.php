@@ -18,6 +18,11 @@ final class TraceablePlayableCard extends AbstractPlayableCard implements Comput
     private AbstractPlayableCard $card;
     private Stopwatch $stopwatch;
 
+    /**
+     * @var string[] $methodCalled
+     */
+    private array $methodCalled = [];
+
     public function getId(): string
     {
         return $this->card->getId();
@@ -46,6 +51,7 @@ final class TraceablePlayableCard extends AbstractPlayableCard implements Comput
     public function play(GameContext $context, array $data = []): void
     {
         $id = $this->getId().'.play';
+        $this->methodCalled[] = __METHOD__;
         $this->stopwatch->start($id, self::STOPWATCH_CATEGORY);
 
         $this->card->play($context);
@@ -70,6 +76,11 @@ final class TraceablePlayableCard extends AbstractPlayableCard implements Comput
     public function getEffects(): EffectCollection
     {
         return $this->card->effects;
+    }
+
+    public function getMethodCalled(): array
+    {
+        return $this->methodCalled;
     }
 
     public function computeValue(): mixed

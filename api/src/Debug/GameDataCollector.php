@@ -120,6 +120,16 @@ final class GameDataCollector extends AbstractDataCollector
         return $playArea ? $this->cloneVar($playArea) : null;
     }
 
+    public function getReplayedEvents(): array
+    {
+        return array_filter($this->data['events'], static fn(DebugGameEvent $e) => $e->isReplayEvent);
+    }
+
+    public function getRealEvents(): array
+    {
+        return array_filter($this->data['events'], static fn(DebugGameEvent $e) => !$e->isReplayEvent);
+    }
+
     public static function getTemplate(): ?string
     {
         return 'debug/game_events.html.twig';
