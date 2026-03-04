@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Debug;
 
 use App\Debug\Card\TraceableCardRegistry;
-use App\Debug\GameContext\DebugGameContext;
 use App\Debug\GameContext\TraceableGameContextFactory;
 use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;

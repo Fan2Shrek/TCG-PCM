@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Game\Card;
 
 use App\Enum\CardEffectEnum;
-use App\Enum\CardSerieEnum;
+use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 
 final class BenjaminCard extends AbstractPlayableCard
 {
-    public static CardSerieEnum $serie = CardSerieEnum::BTD6;
+    public static CardSetEnum $serie = CardSetEnum::BTD6;
 
     private const int CARD_COUNT = 1;
 

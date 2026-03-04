@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enum;
 
-enum CardSerieEnum: string
+enum CardSetEnum: string
 {
     case ORIGINAL = 'Original';
     case TBOI = 'The Binding of Isaac';
