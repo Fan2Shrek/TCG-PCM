@@ -143,6 +143,9 @@ final readonly class GameState
      */
     public function getAllActiveCards(): array
     {
-        return array_merge($this->player1->playArea->getAll(), $this->player2->playArea->getAll());
+        return array_merge($this->player1->playArea->getAll(), $this->player2->playArea->getAll(), [
+            $this->player1->characterCardId,
+            $this->player2->characterCardId,
+        ]);
     }
 }

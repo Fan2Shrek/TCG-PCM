@@ -17,12 +17,20 @@ final readonly class CardState
         public string $templateId,
         public string $ownerId,
         public array $effects = [],
+        public array $values = [],
     ) {}
 
     public function addEffect(CardEffectEnum $effect): self
     {
         return clone($this, [
             'effects' => [...$this->effects, $effect],
+        ]);
+    }
+
+    public function updateValues(array $newValues): self
+    {
+        return clone($this, [
+            'values' => array_merge($this->values, $newValues),
         ]);
     }
 }

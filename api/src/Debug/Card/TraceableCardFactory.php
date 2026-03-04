@@ -53,6 +53,11 @@ final class TraceableCardFactory implements CardFactoryInterface
         return $this->cards;
     }
 
+    public function hasCards(): bool
+    {
+        return [] !== $this->cards;
+    }
+
     private function trackCard(AbstractCard $card): AbstractCard
     {
         if ($card instanceof AbstractPlayableCard) {

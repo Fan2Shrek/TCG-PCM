@@ -106,4 +106,28 @@ class GameContext
     {
         return $this->state->currentPlayer === $playerId;
     }
+
+    public function getOneRandomCard(?string $playerId): string
+    {
+        $pool = null === $playerId
+            ? $this->state->getAllActiveCards()
+            : array_merge(
+                $this
+                    ->state->getPlayer($playerId)
+                    ->playArea->getAll(),
+                [$this->state->getPlayer($playerId)->characterCardId],
+            );
+
+        if ([] === $pool) {
+            throw new \LogicException('No cards available to select');
+        }
+
+        $randomCardId = $pool[array_rand($pool)];
+
+        $this->pushGameEvent(GameEventTypeEnum::CARD_RUNTIME_VALUE, [
+            'value' => $randomCardId,
+        ]);
+
+        return $randomCardId;
+    }
 }

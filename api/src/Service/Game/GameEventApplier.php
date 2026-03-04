@@ -26,6 +26,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
+            GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
         };
 
         return $event->id ? $gameState->withLastEventId($event->id) : $gameState;
@@ -214,5 +215,24 @@ class GameEventApplier implements GameEventApplierInterface
         $newArea = $player->playArea->addPassiveCard($cardId);
 
         return $gameState->withUpdatedPlayer($player->withPlayArea($newArea));
+    }
+
+    private function applyCardStateUpdate(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('Update card state requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['stateToUpdate'] ?? null) || !\is_array($playerId)) {
+            throw new \LogicException('Update card state requires a playerId');
+        }
+
+        if (!($state = $gameState->getCardState($cardId))) {
+            throw new \LogicException('Update card state requires a valid cardId');
+        }
+
+        $newState = $state->updateValues($event->data['stateToUpdate']);
+
+        return $gameState->withUpdatedCardState($newState);
     }
 }

@@ -18,4 +18,5 @@ enum GameEventTypeEnum: string
     case CARD_DISCARDED = 'CARD_DISCARDED';
     case EFFECT_ADDED = 'EFFECT_ADDED';
     case CARD_PLACE_IN_PLAY_AREA = 'CARD_PLACE_IN_PLAY_AREA';
+    case UPDATE_CARD_STATE = 'UPDATE_CARD_STATE';
 }
