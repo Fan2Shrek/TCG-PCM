@@ -25,7 +25,6 @@ use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
 use App\Service\Game\Factory\GameContextFactory;
-use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -67,6 +66,48 @@ final class GameManagerTest extends TestCase
         self::assertEquals($expectedPlayer2, $gameState->player2->player);
     }
 
+    public function testGameStartCharacterState()
+    {
+        $gm = $this->getSut();
+        $gm = $this->getSut();
+        $owner = new TestUser('user', 'email');
+        $opponent = new TestUser('opponent', 'email2');
+        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 5, DummyCard::class));
+        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class, array_fill(0, 5, DummyCard::class));
+        $room = new Room($owner);
+        $room->setOpponent($opponent);
+        $room->setOwnerDeck($ownerDeck);
+        $room->setOpponentDeck($opponentDeck);
+
+        $gameState = $gm->setupRoom($room);
+
+        $character1CardState = $gameState->cards[$gameState->player1->characterCardId];
+        $character2CardState = $gameState->cards[$gameState->player2->characterCardId];
+
+        self::assertSame(DummyCharacterCard::class, $character1CardState->templateId);
+        self::assertSame(DummyCharacterCardWithMoreHP::class, $character2CardState->templateId);
+    }
+
+    public function testGameStartCharacterId()
+    {
+        $gm = $this->getSut();
+        $gm = $this->getSut();
+        $owner = new TestUser('user', 'email');
+        $opponent = new TestUser('opponent', 'email2');
+        $ownerDeck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 5, DummyCard::class));
+        $opponentDeck = new Deck($opponent, 'test', DummyCharacterCardWithMoreHP::class, array_fill(0, 5, DummyCard::class));
+        $room = new Room($owner);
+        $room->setOpponent($opponent);
+        $room->setOwnerDeck($ownerDeck);
+        $room->setOpponentDeck($opponentDeck);
+
+        $gameState = $gm->setupRoom($room);
+
+        self::assertArrayHasKey($gameState->player1->characterCardId, $gameState->cards);
+        self::assertArrayHasKey($gameState->player2->characterCardId, $gameState->cards);
+        self::assertNotSame($gameState->player1->characterCardId, $gameState->player2->characterCardId);
+    }
+
     public function testPlayerStateDeck()
     {
         $gm = $this->getSut();
@@ -75,6 +116,7 @@ final class GameManagerTest extends TestCase
                 new Player('1', 'Player 1'),
                 30,
                 30,
+                '',
                 [],
                 ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
                 new PlayArea(),
@@ -83,6 +125,7 @@ final class GameManagerTest extends TestCase
                 new Player('2', 'Player 1'),
                 30,
                 30,
+                '',
                 [],
                 ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
                 new PlayArea(),
@@ -294,6 +337,7 @@ final class GameManagerTest extends TestCase
             new Player('1', 'Player 1', 67),
             30,
             30,
+            '',
             [
                 'card1',
                 'card2',
@@ -305,6 +349,7 @@ final class GameManagerTest extends TestCase
             new Player('2', 'Player 2', 69),
             30,
             30,
+            '',
             [],
             [],
             new PlayArea(),
@@ -419,7 +464,7 @@ class DummyCharacterCard extends AbstractCharacterCard
 
     public function getId(): string
     {
-        return '';
+        return static::class;
     }
 
     public function getName(): string

@@ -11,5 +11,5 @@ interface CardAwareInterface
 {
     public function onCardPlayed(AbstractCard $card, GameContext $gameContext): void;
 
-    public function onCardDrawn(AbstractCard $card, GameContext $gameContext);
+    public function onCardDrawn(AbstractCard $card, GameContext $gameContext): void;
 }

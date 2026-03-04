@@ -8,6 +8,7 @@ use App\Enum\CardEffectEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\EffectCollection;
 use PHPUnit\Framework\TestCase;
 
 final class AbstractCardTest extends TestCase
@@ -61,7 +62,7 @@ final class AbstractCardTest extends TestCase
         $card = new DummyCard();
         $card->setState($state);
 
-        self::assertCount(1, $card->getEffects());
+        self::assertCount(1, $card->getEffects()->all());
     }
 }
 
@@ -82,8 +83,8 @@ class DummyCard extends AbstractCard
         return 'This is a dummy card for testing purposes.';
     }
 
-    public function getEffects(): array
+    public function getEffects(): EffectCollection
     {
-        return $this->effects->all();
+        return $this->effects;
     }
 }

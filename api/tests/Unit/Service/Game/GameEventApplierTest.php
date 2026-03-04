@@ -150,6 +150,7 @@ final class GameEventApplierTest extends TestCase
                 ),
                 30,
                 30,
+                '',
                 [],
                 [
                     'id' => 'D6',
@@ -163,6 +164,7 @@ final class GameEventApplierTest extends TestCase
                 ),
                 30,
                 30,
+                '',
                 $player2Hand,
                 [
                     'id' => 'D6',

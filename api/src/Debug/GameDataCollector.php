@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Debug;
 
-use App\Debug\Card\TraceableCardRegistry;
+use App\Debug\Card\TraceableCardFactory;
 use App\Debug\GameContext\TraceableGameContextFactory;
 use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;
@@ -22,7 +22,7 @@ final class GameDataCollector extends AbstractDataCollector
     public function __construct(
         private TraceableGameEventApplier $gameEventApplier,
         private TraceableGameContextFactory $gameContextFactory,
-        private TraceableCardRegistry $cardRegistry,
+        private TraceableCardFactory $cardFactory,
     ) {}
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
@@ -31,7 +31,7 @@ final class GameDataCollector extends AbstractDataCollector
             return;
         }
 
-        if (!$this->gameEventApplier->hasEvents() && !$this->gameContextFactory->hasGameContexts() && !$this->cardRegistry->hasCards()) {
+        if (!$this->gameEventApplier->hasEvents() && !$this->gameContextFactory->hasGameContexts() && !$this->cardFactory->hasCards()) {
             return;
         }
 
@@ -51,7 +51,7 @@ final class GameDataCollector extends AbstractDataCollector
         $this->data['events'] = $events;
         $this->data['gameContexts'] = $this->gameContextFactory->getGameContexts();
 
-        $this->data['cards'] = $this->cardRegistry->getCards();
+        $this->data['cards'] = $this->cardFactory->getCards();
 
         $this->data['lastGameState'] = clone $this->gameEventApplier->getLastGameState();
     }
