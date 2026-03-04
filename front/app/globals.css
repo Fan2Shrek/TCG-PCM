@@ -5,12 +5,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --aspect-card: var(--aspect-card);
+  --spacing-card-sm: var(--spacing-card-sm);
+  --spacing-card-md: var(--spacing-card-md);
+  --spacing-card-lg: var(--spacing-card-lg);
+  --spacing-card-xl: var(--spacing-card-xl);
 }
 
 @layer base {
   :root {
     --background: #ffffff;
     --foreground: #171717;
+    --aspect-card: 5/7;
+    --spacing-card-sm: 8rem;
+    --spacing-card-md: 11rem;
+    --spacing-card-lg: 15rem;
+    --spacing-card-xl: 30rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -55,3 +65,4 @@
     background-blend-mode: soft-light, difference;
   }
 }
+
