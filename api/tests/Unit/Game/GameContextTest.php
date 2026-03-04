@@ -191,6 +191,70 @@ final class GameContextTest extends TestCase
         self::assertSame($event->type, GameEventTypeEnum::DICE_ROLLED);
     }
 
+    public function testGetOneRandomCard()
+    {
+        $gameState = new GameState(
+            new PlayerState(
+                player: new Player('1', 'Player 1'),
+                healthPoints: 30,
+                maxHealthPoints: 30,
+                characterCardId: 'characterCardId',
+                hand: [],
+                drawPile: [],
+                playArea: new PlayArea(),
+            ),
+            new PlayerState(
+                player: new Player('2', 'Player 2'),
+                healthPoints: 30,
+                maxHealthPoints: 30,
+                characterCardId: 'characterCardId',
+                hand: [],
+                drawPile: [],
+                playArea: new PlayArea(),
+            ),
+            null,
+            null,
+            [],
+        );
+        $ctx = new GameContext($gameState, '1');
+
+        $card = $ctx->getOneRandomCard(null);
+
+        self::assertSame('characterCardId', $card);
+    }
+
+    public function testGetOneRandomCardWithPlayerId()
+    {
+        $gameState = new GameState(
+            new PlayerState(
+                player: new Player('1', 'Player 1'),
+                healthPoints: 30,
+                maxHealthPoints: 30,
+                characterCardId: 'characterCardId1',
+                hand: [],
+                drawPile: [],
+                playArea: new PlayArea(),
+            ),
+            new PlayerState(
+                player: new Player('2', 'Player 2'),
+                healthPoints: 30,
+                maxHealthPoints: 30,
+                characterCardId: 'characterCardId2',
+                hand: [],
+                drawPile: [],
+                playArea: new PlayArea(),
+            ),
+            null,
+            null,
+            [],
+        );
+        $ctx = new GameContext($gameState, '1');
+
+        $card = $ctx->getOneRandomCard('1');
+
+        self::assertSame('characterCardId1', $card);
+    }
+
     private function getGameState(): GameState
     {
         return new GameState(

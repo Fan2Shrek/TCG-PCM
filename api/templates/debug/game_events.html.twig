@@ -15,11 +15,13 @@
             {% for event in events %}
                 <tr>
                     <td class="text-right nowrap">{{ event.type.value }}</td>
-                    <td class="font-normal">{{ event.origin }}</td>
+                    <td class="font-normal">{{ event.eventOrigin }}</td>
                     <td class="font-normal">{{ event.origin ?? 'unknown' }}</td>
                     <td class="font-normal">
                         {% for key, value in event.data %}
-                            {{ key }} : {{ value }}
+                            {% if value is not iterable%}
+                                {{ key }} : {{ value }}
+                            {% endif %}
                         {% endfor %}
                     </td>
                 </tr>

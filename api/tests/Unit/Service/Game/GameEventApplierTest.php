@@ -132,6 +132,36 @@ final class GameEventApplierTest extends TestCase
         self::assertCount(0, $newState->getPlayer('player2')->hand);
     }
 
+    public function testCardStateUpdate()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $cardState = new CardState(
+            'test',
+            '',
+            '',
+            [],
+            ['turnRemainingBeforeAction' => 2]
+        );
+        $state = $state->addCard($cardState);
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::UPDATE_CARD_STATE,
+            GameEvent::GAME_EVENT,
+            [
+                'cardId' => 'test',
+                'stateToUpdate' => [
+                    'turnRemainingBeforeAction' => 1,
+                ],
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertSame(1, $newState->cards['test']->values['turnRemainingBeforeAction']);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(
