@@ -15,11 +15,7 @@ abstract class Dice
 
     public static function roll(int $sides): int
     {
-        if (self::$generator === null) {
-            self::$generator = static fn(int $sides): int => random_int(1, $sides);
-        }
-
-        return (int) (self::$generator)($sides);
+        return self::_doRandom(1, $sides);
     }
 
     public static function randomBetweenFloat(float $min, float $max): float
@@ -27,8 +23,17 @@ abstract class Dice
         $min = (int) ($min * 100);
         $max = (int) ($max * 100);
 
-        $value = self::roll($max - $min + 1) + $min - 1;
+        $value = self::_doRandom($min, $max);
 
         return (float) $value / 100;
+    }
+
+    private static function _doRandom(int $min, int $max): int
+    {
+        if (self::$generator === null) {
+            self::$generator = random_int(...);
+        }
+
+        return (int) (self::$generator)($min, $max);
     }
 }

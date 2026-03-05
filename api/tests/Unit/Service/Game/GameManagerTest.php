@@ -256,6 +256,12 @@ final class GameManagerTest extends TestCase
                 GameEvent::GAME_EVENT,
                 ['playerId' => $gameState->player2->player->id],
             ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::CARD_DRAWN,
+                GameEvent::GAME_EVENT,
+                ['playerId' => $gameState->player2->player->id],
+            ),
         ];
 
         self::assertEquals($expected, $events);
@@ -323,6 +329,12 @@ final class GameManagerTest extends TestCase
             new GameEvent(
                 0,
                 GameEventTypeEnum::TURN_STARTED,
+                GameEvent::GAME_EVENT,
+                ['playerId' => $gameState->player1->player->id],
+            ),
+            new GameEvent(
+                0,
+                GameEventTypeEnum::CARD_DRAWN,
                 GameEvent::GAME_EVENT,
                 ['playerId' => $gameState->player1->player->id],
             ),
