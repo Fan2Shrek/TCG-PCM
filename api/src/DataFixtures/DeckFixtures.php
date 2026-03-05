@@ -10,6 +10,7 @@ use App\Game\Card\BenjaminCard;
 use App\Game\Card\Character\PierrotCard;
 use App\Game\Card\D6Card;
 use App\Game\Card\GitmanCard;
+use App\Game\Card\HackedZoneCard;
 use App\Game\Card\PlacentaCard;
 use App\Game\Card\SpicyD6Card;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -34,6 +35,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             $id,
             $id = new PlacentaCard()->getId(),
             $id,
+            new HackedZoneCard()->getId(),
         ];
         $pierrotCardId = new PierrotCard()->getId();
 
