@@ -26,7 +26,7 @@ final class ReplayableGameContextFactory implements GameContextFactoryInterface
         return $context;
     }
 
-    private function getNextRolls(): int
+    private function getNextRolls(): int|float|string
     {
         return array_shift($this->rolls) ?? throw new \BadMethodCallException('No more rolls available for replay.');
     }
@@ -35,7 +35,7 @@ final class ReplayableGameContextFactory implements GameContextFactoryInterface
 class ReplayableGameContext extends GameContext
 {
     /**
-     * @var \Closure(): int
+     * @var \Closure(): mixed
      */
     private \Closure $rollsFactory;
 
@@ -45,7 +45,7 @@ class ReplayableGameContext extends GameContext
     }
 
     /**
-     * @param \Closure(): int $rollsFactory
+     * @param \Closure(): mixed $rollsFactory
      */
     public function setRollsFactory(\Closure $rollsFactory): void
     {
@@ -54,6 +54,16 @@ class ReplayableGameContext extends GameContext
 
     public function rollDice(int $faces): int
     {
-        return ($this->rollsFactory)();
+        return (int) ($this->rollsFactory)();
+    }
+
+    public function randomBetween(float $min, float $max): float
+    {
+        return floatval(($this->rollsFactory)());
+    }
+
+    public function getOneRandomCard(?string $playerId): string
+    {
+        return (string) ($this->rollsFactory)();
     }
 }

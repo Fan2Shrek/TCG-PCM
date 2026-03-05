@@ -25,6 +25,7 @@ class GameStateRebuilder
         foreach ($events as $event) {
             $state = match ($event->type) {
                 GameEventTypeEnum::CARD_PLAYED => $this->replayCard($event, $state),
+                GameEventTypeEnum::TURN_ENDED => $this->replayEndTurn($event, $state),
                 default => $this->applier->apply($event, $state),
             };
             $state = $state->withLastEventId($event->id);
@@ -35,8 +36,11 @@ class GameStateRebuilder
 
     private function replayCard(GameEvent $event, GameState $state): GameState
     {
-        $events = $this->gameManager->getEventsForPlayedCard($event, $state);
+        return $this->gameManager->resolve($event, $state)->state;
+    }
 
-        return $this->applier->applyMultiple(array_merge([$event], $events), $state);
+    private function replayEndTurn(GameEvent $event, GameState $gameState): GameState
+    {
+        return $this->gameManager->resolve($event, $gameState)->state;
     }
 }

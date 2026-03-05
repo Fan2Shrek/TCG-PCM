@@ -36,6 +36,7 @@ class GameManager
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
+        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function setupRoom(Room $room): GameState
@@ -49,10 +50,7 @@ class GameManager
         return $this->initializeGameState($room, $opponent, $opponentDeck);
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    public function startGame(GameState $initialGameState): array
+    public function startGame(GameState $initialGameState): ResolutionResult
     {
         $events = [];
         foreach ($initialGameState->getPlayers() as $player) {
@@ -61,13 +59,14 @@ class GameManager
             }
         }
 
-        return $events;
+        $state = $this->gameEventApplier->applyMultiple($events, $initialGameState);
+
+        $roundStartedEvent = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+
+        return $this->resolve($roundStartedEvent, $state);
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    public function handleAction(PlayerAction $action, GameState $state): array
+    public function handleAction(PlayerAction $action, GameState $state): ResolutionResult
     {
         if ($state->getCurrentPlayer() !== $action->author) {
             throw new NotYourTurnException();
@@ -84,10 +83,44 @@ class GameManager
         };
     }
 
+    public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
+    {
+        $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
+
+        // @ŧodo modify this if we want to do depth events resolution instead of breadth
+        foreach ($firstLevelEvents as $event) {
+            $state = $this->gameEventApplier->apply($event, $state);
+            $allEvents = array_merge($allEvents, $events = $this->collectEventsFromAwareCards($event, $state));
+            $state = $this->gameEventApplier->applyMultiple($events, $state);
+        }
+
+        return new ResolutionResult($allEvents, $state);
+    }
+
     /**
      * @return GameEvent[]
      */
-    public function getEventsForPlayedCard(GameEvent $event, GameState $state): array
+    private function generateReactions(GameEvent $event, GameState $state): array
+    {
+        return match ($event->type) {
+            GameEventTypeEnum::TURN_ENDED => array_filter([
+                $this->isNewRound($state, $state->getNextPlayer()->id) ? GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []) : null,
+                GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+                    'playerId' => $state->getNextPlayer()->id,
+                ]),
+                GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+                    'playerId' => $state->getNextPlayer()->id,
+                ]),
+            ]),
+            GameEventTypeEnum::CARD_PLAYED => $this->doGenerateReactionsForCardPlayed($event, $state),
+            default => [],
+        };
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function doGenerateReactionsForCardPlayed(GameEvent $event, GameState $state): array
     {
         if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
             throw new \LogicException('cardId is required to play a card');
@@ -124,13 +157,10 @@ class GameManager
             throw new \LogicException('Card must be either a playable or passive card');
         }
 
-        return array_merge($events, $ctx->flushEvents(), $this->getSubEventsForEvent($event, $state));
+        return array_merge($events, $ctx->flushEvents());
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    private function playCardAction(PlayerAction $action, GameState $state): array
+    private function playCardAction(PlayerAction $action, GameState $state): ResolutionResult
     {
         $card = $action->payload['cardId'] ?? null;
         if (!\is_string($card)) {
@@ -146,43 +176,25 @@ class GameManager
             'cardId' => $card,
         ]);
 
-        return array_merge([$event], $this->getEventsForPlayedCard($event, $state));
+        return $this->resolve($event, $state);
     }
 
-    /**
-     * @param GameEvent[] $events
-     *
-     * @return GameEvent[]
-     */
-    private function applyAndPropagate(GameState $state, array $events): array
+    private function endTurnAction(PlayerAction $action, GameState $state): ResolutionResult
     {
-        $baseEvents = $events;
+        $event = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
+            'playerId' => $action->author->id,
+        ]);
 
-        foreach ($baseEvents as $event) {
-            $events = array_merge($events, match ($event->type) {
-                GameEventTypeEnum::CARD_PLAYED,
-                GameEventTypeEnum::CARD_DRAWN,
-                GameEventTypeEnum::TURN_STARTED,
-                GameEventTypeEnum::TURN_ENDED,
-                    => $this->getSubEventsForEvent($event, $state),
-                default => [],
-            });
-        }
-
-        return $events;
+        return $this->resolve($event, $state);
     }
 
     /**
      * @return GameEvent[]
      */
-    private function getSubEventsForEvent(GameEvent $event, GameState $state): array
+    private function collectEventsFromAwareCards(GameEvent $event, GameState $state): array
     {
         $events = [];
-        if (!($playerId = $event->data['playerId'] ?? null)) {
-            throw new \LogicException('playerId is required in event data');
-        }
-
-        $ctx = $this->gameContextFactory->createGameContext($state, (string) $playerId);
+        $ctx = $this->gameContextFactory->createGameContext($state, $state->currentPlayer);
 
         switch ($event->type) {
             case GameEventTypeEnum::TURN_ENDED:
@@ -206,8 +218,7 @@ class GameManager
             case GameEventTypeEnum::CARD_DRAWN:
                 $cards = $this->getCardAwareCards($state);
 
-                $drawPile = $state->getPlayer((string) $playerId)->drawPile;
-                $cardId = array_key_first($drawPile);
+                $cardId = $state->getLastAddedCardId();
 
                 if (!$cardId) {
                     throw new \LogicException('No card drawn for CARD_DRAWN event');
@@ -239,37 +250,6 @@ class GameManager
         }
 
         return $events;
-    }
-
-    /**
-     * @return GameEvent[]
-     */
-    private function endTurnAction(PlayerAction $action, GameState $state): array
-    {
-        $events = [];
-
-        $events[] = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
-            'playerId' => $action->author->id,
-        ]);
-
-        $events = array_merge($events, $this->getSubEventsForEvent($events[0], $state));
-
-        $newTurnEvents = [];
-        if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
-            $newTurnEvents[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
-        }
-
-        $nextPlayerId = $state->getNextPlayer()->id;
-        $event = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
-            'playerId' => $nextPlayerId,
-        ]);
-        $newTurnEvents = array_merge($newTurnEvents, [$event], $this->getSubEventsForEvent($event, $state));
-
-        $event = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
-            'playerId' => $nextPlayerId,
-        ]);
-
-        return array_merge($events, $newTurnEvents, $this->applyAndPropagate($state, [$event]));
     }
 
     private function isNewRound(GameState $state, string $nextPlayerId): bool

@@ -29,6 +29,7 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
     public function get(Room $room): ?GameState
     {
         $gameState = $this->redisClient->get($this->getRedisKey($room), GameState::class);
+        dd($gameState, $this->buildGameStateFromEvents($this->decoratedRepository->get($room), $room));
         if (!$gameState instanceof GameState) {
             $gameState = $this->decoratedRepository->get($room);
 
