@@ -71,7 +71,9 @@ abstract class AbstractCard
 
     public function addEffect(AbstractCardEffect $effect): void
     {
-        $this->effects->add($effect);
+        if (!$this->effects->has($effect)) {
+            $this->effects->add($effect);
+        }
     }
 
     public function removeEffect(AbstractCardEffect $effect): void

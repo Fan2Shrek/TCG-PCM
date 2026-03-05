@@ -45,4 +45,9 @@ final class EffectCollection
     {
         return array_values($this->effects);
     }
+
+    public function has(AbstractCardEffect $effect): bool
+    {
+        return null !== $this->get($effect->getName());
+    }
 }
