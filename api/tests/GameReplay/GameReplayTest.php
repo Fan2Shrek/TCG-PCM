@@ -34,7 +34,7 @@ final class GameReplayTest extends TestCase
         $gameState = $data['gameState'];
         $events = $data['events'];
 
-        $gameReplayer = $this->getGameStateRebuilder($this->filterRolls($events));
+        $gameReplayer = $this->getGameStateRebuilder();
         $gameState = $gameReplayer->rebuild($gameState, $events);
 
         $property = (new \ReflectionClass($gameState))->getProperty('lastAddedCardId');
@@ -51,12 +51,11 @@ final class GameReplayTest extends TestCase
         ];
     }
 
-    private function getGameStateRebuilder(array $rolls): GameStateRebuilder
+    private function getGameStateRebuilder(): GameStateRebuilder
     {
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            new GameEventApplier(),
             new GameManager(
                 new CardRuntimeMap(
                     new CardFactory(
@@ -74,10 +73,9 @@ final class GameReplayTest extends TestCase
                         }
                     ),
                 ),
-                $factory = new ReplayableGameContextFactory($rolls),
+                new ReplayableGameContextFactory(),
                 new GameEventApplier(),
             ),
-            $factory,
         );
     }
 
@@ -86,22 +84,5 @@ final class GameReplayTest extends TestCase
         return [
             'dummy_character' => DummyCharacterCard::class,
         ];
-    }
-
-    private function filterRolls(array &$events): array
-    {
-        $rolls = [];
-
-        foreach ($events as $event) {
-            if ($event->type === GameEventTypeEnum::DICE_ROLLED) {
-                $rolls[] = $event->data['result'];
-            } elseif ($event->type === GameEventTypeEnum::CARD_RUNTIME_VALUE) {
-                $rolls[] = $event->data['value'];
-            }
-        }
-
-        $events = array_filter($events, fn ($event) => $event->type !== GameEventTypeEnum::DICE_ROLLED);
-
-        return $rolls;
     }
 }

@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 final class ReplayableGameContextFactory implements GameContextFactoryInterface
 {
     /**
-     * @param int[] $rolls
+     * @param array<int|float|string> $rolls
      */
     public function __construct(
         private array $rolls = [],

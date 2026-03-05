@@ -39,6 +39,11 @@ class GameManager
         private GameEventApplierInterface $gameEventApplier,
     ) {}
 
+    public function setGameContextFactory(GameContextFactoryInterface $factory): void
+    {
+        $this->gameContextFactory = $factory;
+    }
+
     public function setupRoom(Room $room): GameState
     {
         $room->setStatus(RoomStatusEnum::PLAYING);

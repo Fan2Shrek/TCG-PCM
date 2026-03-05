@@ -22,7 +22,12 @@ final class CardRuntimeMap
     {
         $cardId = $cardState->instanceId;
 
-        return $this->map[$cardId] ??= $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        /** @var AbstractCard $card */
+        $card = $this->map[$cardId] ??= $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        // Make sure we have up to date card
+        $card->setState($cardState);
+
+        return $card;
     }
 
     public function create(string $cardId): AbstractCard
