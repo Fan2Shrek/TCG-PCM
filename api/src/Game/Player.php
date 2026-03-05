@@ -4,33 +4,17 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use App\Entity\User;
+
 final class Player
 {
-    /**
-     * @param AbstractCard[] $hand
-     * @param AbstractCard[] $deck
-     */
     public function __construct(
-        private readonly string $name,
-        private readonly int $score,
-        private array $hand = [],
-        private array $deck = [],
+        public readonly string $id,
+        public readonly string $name,
     ) {}
 
-    public function drawCard(int $count = 1): void
+    public static function fromUser(User $user): self
     {
-        for ($i = 0; $i < $count; $i++) {
-            if ([] === $this->deck) {
-                break;
-            }
-
-            $card = array_shift($this->deck);
-            $this->hand[] = $card;
-        }
-    }
-
-    public function getHandSize(): int
-    {
-        return count($this->hand);
+        return new self((string) $user->getId(), $user->getUsername());
     }
 }

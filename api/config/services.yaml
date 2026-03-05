@@ -1,13 +1,42 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 parameters:
+    app.resources_dir: "%kernel.project_dir%/resources"
+    app.cards_list: "%app.resources_dir%/cards_list.php"
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
+    _instanceof:
+        App\Game\Badge\Handler\BadgeHandlerInterface:
+            tags: ['app.badge_handler']
+
     App\:
         resource: '../src/'
+
+    App\Service\Game\GameEventApplierInterface: '@App\Service\Game\GameEventApplier'
+
+    App\Service\Game\Factory\GameContextFactoryInterface: '@App\Service\Game\Factory\GameContextFactory'
+
+    App\Service\Game\CardFactoryInterface: '@App\Service\Game\CardFactory'
+
+    App\Service\Game\CardRegistry:
+        arguments:
+            $cardsListPath: '%app.cards_list%'
+
+    App\Service\BadgeManager:
+        arguments:
+            $badgeHandlers: !tagged_iterator 'app.badge_handler'
+
+    App\Service\Game\State\GameStateRepositoryInterface: '@App\Service\Game\State\DoctrineGameStateRepository'
+
+    App\Service\Game\State\RedisGameStateRepository:
+        decorates: 'App\Service\Game\State\GameStateRepositoryInterface'
+
+    App\Service\Redis\RedisConnection:
+        arguments:
+            $redisDsn: '%env(string:REDIS_DSN)%'
 
 when@test:
     services:
@@ -15,3 +44,11 @@ when@test:
             autowire: true
             autoconfigure: true
             public: true
+
+        App\Service\Game\CardRegistry: '@App\Tests\Resources\MockCardRegistry'
+
+        App\Tests\Resources\MockCardRegistry: ~
+
+        App\Service\Game\State\RedisGameStateRepository: ~
+
+        App\Service\Game\GameStateRepositoryInterface: '@App\Tests\Resources\InMemoryGameStateRepository'

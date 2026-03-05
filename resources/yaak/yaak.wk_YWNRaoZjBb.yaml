@@ -1,0 +1,21 @@
+type: workspace
+model: workspace
+id: wk_YWNRaoZjBb
+createdAt: 2026-02-19T16:38:57.968997113
+updatedAt: 2026-02-19T16:42:55.450484928
+authentication:
+  disabled: false
+  token: ${[token]}
+authenticationType: bearer
+description: ''
+headers:
+- enabled: true
+  name: ''
+  value: ''
+  id: Vrvnb4zMNw
+name: TCG -- API
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0
+settingDnsOverrides: []

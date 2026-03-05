@@ -1,0 +1,23 @@
+type: http_request
+model: http_request
+id: rq_n2Pfsbno8X
+createdAt: 2026-02-19T16:38:57.969364250
+updatedAt: 2026-02-19T16:38:57.969364421
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body:
+  text: '{}'
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Create Room
+sortPriority: 1.0
+url: ${[host]}/api/rooms/create
+urlParameters: []

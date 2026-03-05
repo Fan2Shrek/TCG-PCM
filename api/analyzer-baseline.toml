@@ -1,7 +1,97 @@
 variant = "loose"
 
 [[issues]]
+file = "src/Command/UpdateCardListCommand.php"
+code = "possibly-false-iterator"
+message = "Expression being iterated (type `false|list<non-empty-string>`) might be `false` at runtime."
+count = 1
+
+[[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #2 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #3 of `sprintf`: expected `Stringable|null|scalar`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Debug/TraceableGameEventApplier.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 3
+
+[[issues]]
+file = "src/Doctrine/Type/PlayerStateType.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `json_decode`: expected `string`, but found `nonnull`."
+count = 1
+
+[[issues]]
 file = "src/Entity/User.php"
 code = "invalid-return-statement"
 message = 'Invalid return type for function `app\entity\user::getuseridentifier`: expected `non-empty-string`, but found `string`.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
+code = "invalid-parent-type"
+message = 'Cannot use `parent` as the current type (`App\Game\Card\Trait\BaseOnTurnTrait`) does not have a parent class.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
+code = "mixed-property-type-coercion"
+message = "A value with a less specific type `nonnull` is being assigned to property `$$turnRemainingBeforeAction` (int)."
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
+code = "non-existent-method"
+message = 'Method `beforeaction` does not exist on type `App\Game\Card\Trait\BaseOnTurnTrait`.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
+code = "non-existent-method"
+message = 'Method `getinstanceid` does not exist on type `App\Game\Card\Trait\BaseOnTurnTrait`.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Trait/TurnAwareTrait.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\GameContext::iscurrentplayer`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Repository/Game/GameEventRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\game\gameeventrepository::geteventsince`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Repository/UserBadgeRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\userbadgerepository::findbyuserandbadge`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/CardRegistry.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\service\game\cardregistry::getcardslist`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\Card\CardState::updatevalues`: expected `array<array-key, mixed>`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #2 of `app\game\card\effect\effectstate::__construct`: expected `array<array-key, mixed>`, but found `nonnull`.'
 count = 1

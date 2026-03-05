@@ -1,0 +1,35 @@
+type: http_request
+model: http_request
+id: rq_uoYhacDhph
+createdAt: 2026-02-19T16:38:57.970377800
+updatedAt: 2026-03-03T13:42:25.400820653
+workspaceId: wk_YWNRaoZjBb
+folderId: null
+authentication: {}
+authenticationType: none
+body:
+  text: |-
+    {
+        "username": "${[user_login]}",
+        "password": "${[user_password]}"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Login
+sortPriority: 9.0
+url: ${[host]}/api/login_check
+urlParameters:
+- enabled: false
+  name: token
+  value: ${[ response.body.path(request='rq_uoYhacDhph', behavior='smart', ttl='0', result='first', join=b64'LCA', path='token') ]}
+  id: NCfB3VtrWE
+- enabled: true
+  name: ''
+  value: ''
+  id: akGyURBaw0

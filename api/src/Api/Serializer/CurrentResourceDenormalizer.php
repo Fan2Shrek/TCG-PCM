@@ -17,11 +17,8 @@ final class CurrentResourceDenormalizer implements DenormalizerInterface, Denorm
     {
         /** @var CurrentResourceAwareInterface $object */
         $object = $this->denormalizer->denormalize($data, $type, $format, $context + [self::ALREADY_CALLED => true]);
-        if (!$object instanceof CurrentResourceAwareInterface) {
-            throw new \LogicException(sprintf('Object must implements "%s"', CurrentResourceAwareInterface::class));
-        }
 
-        if (!isset($context['object_to_populate']) || !\is_object($context['object_to_populate'])) {
+        if (!($context['object_to_populate'] ?? null) || !\is_object($context['object_to_populate'])) {
             throw new NotFoundHttpException();
         }
 
@@ -33,17 +30,9 @@ final class CurrentResourceDenormalizer implements DenormalizerInterface, Denorm
     /**
      * @param array<string, mixed> $context
      */
-    public function supportsDenormalization(
-        mixed $data,
-        string $type,
-        ?string $format = null,
-        array $context = [],
-    ): bool {
-        return (
-            is_subclass_of($type, CurrentResourceAwareInterface::class)
-            && false
-            === ($context[self::ALREADY_CALLED] ?? false)
-        );
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
+    {
+        return is_subclass_of($type, CurrentResourceAwareInterface::class) && false === ($context[self::ALREADY_CALLED] ?? false);
     }
 
     /**

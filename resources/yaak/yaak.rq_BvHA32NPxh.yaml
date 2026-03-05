@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_BvHA32NPxh
+createdAt: 2026-03-03T15:24:32.060876122
+updatedAt: 2026-03-03T16:10:48.023813820
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_XqjkG6pswj
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "actionId": "end_turn"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: End turn as opponent
+sortPriority: 2000.0
+url: ${[host]}/api/game/${[room_id]}/play
+urlParameters: []

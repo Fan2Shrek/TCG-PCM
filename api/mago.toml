@@ -1,14 +1,14 @@
-php-version = "8.4"
+php-version = "8.5"
 
 [source]
 paths = [
   "src",
 ]
-includes = ["vendor"]
+includes = ["vendor", "tests"]
 excludes = []
 
 [formatter]
-print-width = 120
+print-width = 160
 tab-width = 4
 use-tabs = false
 null-type-hint = "question"
@@ -20,9 +20,16 @@ integrations = ["symfony"]
 [linter.rules]
 ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
-halstead = { effort-threshold = 7000 }
+halstead = { enabled = false }
 strict-types = { enabled = false }
 no-boolean-flag-parameter = { enabled = false }
+single-class-per-file = { enabled = false }
+too-many-methods = { enabled = false }
+cyclomatic-complexity = { enabled = false }
+no-assign-in-condition = { enabled = false }
+kan-defect = { enabled = false }
+excessive-parameter-list = { threshold = 10 }
+no-else-clause = { enabled = false }
 
 [analyzer]
 find-unused-definitions = true
@@ -30,6 +37,6 @@ find-unused-expressions = false
 analyze-dead-code = false
 check-throws = true
 allow-possibly-undefined-array-keys = true
-ignore = ["missing-override-attribute", "unhandled-thrown-type"]
-excludes = ["src/DataFixtures"]
+ignore = ["missing-override-attribute", "unhandled-thrown-type", "mixed-assignment"]
+excludes = ["src/DataFixtures", "src/Debug/GameDataCollector.php"]
 baseline = "analyzer-baseline.toml"

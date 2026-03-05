@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,9 +35,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    /**
+     * @var Collection<int, UserBadge>
+     */
+    #[ORM\OneToMany(targetEntity: UserBadge::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $userBadges;
+
+    /**
+     * @var Collection<int, Deck>
+     */
+    #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $decks;
+
     public function __construct(string $username)
     {
         $this->username = $username;
+        $this->userBadges = new ArrayCollection();
+        $this->decks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,5 +130,62 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    /**
+     * @return Collection<int, UserBadge>
+     */
+    #[Ignore]
+    public function getUserBadges(): Collection
+    {
+        return $this->userBadges;
+    }
+
+    public function addUserBadge(UserBadge $userBadge): static
+    {
+        if (!$this->userBadges->contains($userBadge)) {
+            $this->userBadges->add($userBadge);
+            $userBadge->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserBadge(UserBadge $userBadge): static
+    {
+        if ($this->userBadges->removeElement($userBadge)) {
+            // set the owning side to null (unless already changed)
+            if ($userBadge->getUser() === $this) {
+                $userBadge->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Deck>
+     */
+    #[Ignore]
+    public function getDecks(): Collection
+    {
+        return $this->decks;
+    }
+
+    public function addDeck(Deck $deck): static
+    {
+        if (!$this->decks->contains($deck)) {
+            $this->decks->add($deck);
+        }
+
+        return $this;
+    }
+
+    public function removeDeck(Deck $deck): static
+    {
+        if ($this->decks->removeElement($deck)) {
+        }
+
+        return $this;
     }
 }

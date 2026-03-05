@@ -13,37 +13,27 @@ abstract class Dice
         self::$generator = $generator;
     }
 
-    public function d2(): int
+    public static function roll(int $sides): int
     {
-        return self::roll(2);
+        return self::_doRandom(1, $sides);
     }
 
-    public static function d6(): int
+    public static function randomBetweenFloat(float $min, float $max): float
     {
-        return self::roll(6);
+        $min = (int) ($min * 100);
+        $max = (int) ($max * 100);
+
+        $value = self::_doRandom($min, $max);
+
+        return (float) $value / 100;
     }
 
-    public static function d4(): int
-    {
-        return self::roll(4);
-    }
-
-    public static function d20(): int
-    {
-        return self::roll(20);
-    }
-
-    public static function d100(): int
-    {
-        return self::roll(100);
-    }
-
-    private static function roll(int $sides): int
+    private static function _doRandom(int $min, int $max): int
     {
         if (self::$generator === null) {
-            self::$generator = static fn (int $sides): int => random_int(1, $sides);
+            self::$generator = random_int(...);
         }
 
-        return (int) (self::$generator)($sides);
+        return (int) (self::$generator)($min, $max);
     }
 }

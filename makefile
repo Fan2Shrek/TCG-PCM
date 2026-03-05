@@ -8,10 +8,13 @@ endif
 ifeq ($(WITH_DOCKER), 1)
 	PHP=$(COMPOSE) exec php
 else
-	PHP=
+	PHP=cd api &&
 endif
 
 CONSOLE=$(PHP) php bin/console --env=$(env)
+
+card-list:
+	$(CONSOLE) app:update:card-list
 
 jwt:
 	$(CONSOLE) lexik:jwt:generate-keypair --overwrite -n
@@ -27,19 +30,33 @@ dbReset:
 	$(MAKE) fixtures
 
 setup-tests:
+	$(MAKE) jwt
 	$(MAKE) dbReset env=test
 
 tests:
 	$(PHP) bin/phpunit
 
+tests-replay:
+	$(PHP) bin/phpunit --group replay
+
 format:
 	$(PHP) vendor/bin/mago format
+
+format-dry-run:
+	$(PHP) vendor/bin/mago format --dry-run
+
+format-check:
+	$(PHP) vendor/bin/mago format --check
 
 lint:
 	$(PHP) vendor/bin/mago lint
 
 lint-fix:
 	$(PHP) vendor/bin/mago lint --fix --unsafe
+
+symfony-lint:
+	$(CONSOLE) lint:container
+	$(CONSOLE) debug:container --deprecations
 
 stan:
 	$(PHP) vendor/bin/mago analyze

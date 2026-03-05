@@ -1,0 +1,77 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Debug;
+
+use App\Game\State\GameEvent;
+use App\Game\State\GameState;
+use App\Service\Game\GameEventApplierInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
+
+final class TraceableGameEventApplier implements GameEventApplierInterface
+{
+    /**
+     * @var GameEvent[] $event
+     */
+    private array $events = [];
+
+    private GameState $lastGameState;
+
+    public function __construct(
+        private GameEventApplierInterface $decorated,
+        private Stopwatch $stopwatch,
+    ) {}
+
+    public function apply(GameEvent $event, GameState $gameState): GameState
+    {
+        $backtrace = debug_backtrace(2);
+        $originIndex = $backtrace[0]['file'] === __FILE__ ? 1 : 0;
+        $origin = \sprintf('%s:%d', $backtrace[$originIndex]['file'], $backtrace[$originIndex]['line']);
+        $this->addEvent(TraceableGameEvent::fromParent($event, $origin));
+
+        $this->stopwatch->start('game_event_apply', 'app.event_apply');
+
+        $result = $this->decorated->apply($event, $gameState);
+
+        $this->stopwatch->stop('game_event_apply');
+
+        return $this->lastGameState = $result;
+    }
+
+    public function applyMultiple(array $events, GameState $gameState): GameState
+    {
+        foreach ($events as $event) {
+            $gameState = $this->apply($event, $gameState);
+        }
+
+        return $gameState;
+    }
+
+    public function hasEvents(): bool
+    {
+        return [] !== $this->events;
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    public function getEvents(): array
+    {
+        return $this->events;
+    }
+
+    public function getLastGameState(): ?GameState
+    {
+        return $this->lastGameState ?? null;
+    }
+
+    private function addEvent(TraceableGameEvent $event): void
+    {
+        if (\in_array($event, $this->events, true)) {
+            return;
+        }
+
+        $this->events[] = $event;
+    }
+}

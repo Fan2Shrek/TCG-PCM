@@ -19,12 +19,15 @@ services:
       - db
 
   db:
-    image: mariadb:11.8
+    image: mariadb:11.8.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: app
     volumes:
       - db_data:/var/lib/mysql
+
+  redis:
+    image: redis:7
 
 volumes:
   db_data:
