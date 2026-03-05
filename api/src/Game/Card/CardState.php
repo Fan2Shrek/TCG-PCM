@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
-use App\Enum\CardEffectEnum;
 use App\Game\Card\Effect\EffectState;
 
 final readonly class CardState
@@ -20,7 +19,7 @@ final readonly class CardState
         public array $values = [],
     ) {}
 
-    public function addEffect(CardEffectEnum $effect): self
+    public function addEffect(EffectState $effect): self
     {
         return clone($this, [
             'effects' => [...$this->effects, $effect],

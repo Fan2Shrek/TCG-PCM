@@ -37,7 +37,9 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
 
     public function onTurnStart(GameContext $gameContext): void
     {
-        $this->skipIfNotOwnerTurn($gameContext);
+        if (!$this->isOwnerTurn($gameContext)) {
+            return;
+        }
 
         $gameContext->heal($this->getValue(self::HEALTH_GAIN, true), $this->ownerId);
     }

@@ -62,6 +62,13 @@ abstract class AbstractCard
         return $forceInt ? (int) round($value) : (float) $value;
     }
 
+    public function beforeAction(GameContext $gameContext): void
+    {
+        foreach ($this->effects->all() as $effect) {
+            $effect->beforeAction($this, $gameContext);
+        }
+    }
+
     public function addEffect(AbstractCardEffect $effect): void
     {
         $this->effects->add($effect);

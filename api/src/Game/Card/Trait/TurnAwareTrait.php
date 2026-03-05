@@ -19,7 +19,7 @@ trait TurnAwareTrait
         // Default implementation does nothing
     }
 
-    protected function skipIfNotOwnerTurn(GameContext $gameContext): bool
+    protected function isOwnerTurn(GameContext $gameContext): bool
     {
         assert($this instanceof AbstractCard, 'Must be AbstractCard');
 

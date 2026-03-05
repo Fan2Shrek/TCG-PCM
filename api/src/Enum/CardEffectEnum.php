@@ -15,7 +15,7 @@ enum CardEffectEnum: string
     {
         return match ($this) {
             self::HACKED => Effect\HackedCardEffect::class,
-            self::TORNED => throw new \LogicException('Torned effect is not implemented yet'),
+            self::TORNED => Effect\TornedCardEffect::class,
         };
     }
 }

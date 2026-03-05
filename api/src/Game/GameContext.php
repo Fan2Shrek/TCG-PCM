@@ -130,4 +130,14 @@ class GameContext
 
         return $randomCardId;
     }
+
+    public function getOtherPlayerId(string $playerId): string
+    {
+        return $this->state->player1->player->id === $playerId ? $this->state->player2->player->id : $this->state->player1->player->id;
+    }
+
+    public function lastActionHasBeenPrevented(): bool
+    {
+        return array_last($this->events)?->type === GameEventTypeEnum::CARD_ACTION_PREVENTED;
+    }
 }

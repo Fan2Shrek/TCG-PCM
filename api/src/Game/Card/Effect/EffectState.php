@@ -10,6 +10,6 @@ final readonly class EffectState
 {
     public function __construct(
         public CardEffectEnum $effect,
-        public array $data,
+        public array $data = [],
     ) {}
 }

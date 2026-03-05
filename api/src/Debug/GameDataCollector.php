@@ -27,10 +27,6 @@ final class GameDataCollector extends AbstractDataCollector
 
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
-        if ($exception) {
-            return;
-        }
-
         if (!$this->gameEventApplier->hasEvents() && !$this->gameContextFactory->hasGameContexts() && !$this->cardFactory->hasCards()) {
             return;
         }
@@ -53,7 +49,7 @@ final class GameDataCollector extends AbstractDataCollector
 
         $this->data['cards'] = $this->cardFactory->getCards();
 
-        $this->data['lastGameState'] = clone $this->gameEventApplier->getLastGameState();
+        $this->data['lastGameState'] = $this->gameEventApplier->getLastGameState();
     }
 
     /**
