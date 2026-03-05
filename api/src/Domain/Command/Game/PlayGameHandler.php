@@ -72,6 +72,7 @@ final class PlayGameHandler
         }
 
         $this->gameStateRepository->save($state, $room);
+        $this->em->commit();
 
         // sse $event;
     }

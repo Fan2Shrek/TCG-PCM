@@ -85,6 +85,12 @@ message = 'Could not infer a precise return type for function `app\service\game\
 count = 1
 
 [[issues]]
+file = "src/Service/Game/CardRuntimeMap.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\service\game\cardruntimemap::getbystate`. Saw type `nonnull`.'
+count = 1
+
+[[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\Card\CardState::updatevalues`: expected `array<array-key, mixed>`, but found `mixed`.'

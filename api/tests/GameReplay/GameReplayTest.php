@@ -6,6 +6,7 @@ namespace App\Tests\GameReplay;
 
 use App\Enum\GameEventTypeEnum;
 use App\Service\Game\CardFactory;
+use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
 use App\Service\Game\GameManager;
@@ -53,19 +54,21 @@ final class GameReplayTest extends TestCase
         return new GameStateRebuilder(
             new GameEventApplier(),
             new GameManager(
-                new CardFactory(
-                    new MockCardRegistry(require $cardsListPath),
-                    new class implements CacheInterface {
-                        public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                            return $callable();
-                        }
+                new CardRuntimeMap(
+                    new CardFactory(
+                        new MockCardRegistry(require $cardsListPath),
+                        new class implements CacheInterface {
+                            public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                                return $callable();
+                            }
 
-                        public function delete(string $key): bool
-                        {
-                            // no-op
-                            return true;
+                            public function delete(string $key): bool
+                            {
+                                // no-op
+                                return true;
+                            }
                         }
-                    }
+                    ),
                 ),
                 $factory = new ReplayableGameContextFactory($rolls),
             ),
