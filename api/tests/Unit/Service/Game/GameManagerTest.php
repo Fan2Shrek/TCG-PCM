@@ -26,6 +26,8 @@ use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\Factory\GameContextFactory;
+use App\Service\Game\GameEventApplier;
+use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -111,7 +113,7 @@ final class GameManagerTest extends TestCase
 
     public function testPlayerStateDeck()
     {
-        $gm = $this->getSut();
+        $gm = $this->getSut(true);
         $gameState = new GameState(
             new PlayerState(
                 new Player('1', 'Player 1'),
@@ -138,7 +140,8 @@ final class GameManagerTest extends TestCase
             ]
         );
 
-        $events = $gm->startGame($gameState);
+        $events = $gm->startGame($gameState)->events;
+        array_pop($events); // remove the last event which is the turn start for player 2
 
         self::assertCount(10, $events);
         foreach ($events as $event) {
@@ -157,7 +160,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => 'card1'],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
 
         $expected = [
             new GameEvent(
@@ -195,7 +198,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => 'card3'],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
     }
 
     public function testHandlePlayActionCallCard(): void
@@ -211,7 +214,7 @@ final class GameManagerTest extends TestCase
             ],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
 
         self::assertNotNull(SpyCard::$receivedContext);
         self::assertCount(2, $events);
@@ -229,7 +232,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => DummyCard::class],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
     }
 
     public function testEndTurn()
@@ -243,7 +246,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -294,7 +297,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
 
         self::assertTrue(SpyCard::$turnStartCalled);
     }
@@ -313,7 +316,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -355,7 +358,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
 
         self::assertCount(3, $events);
     }
@@ -422,8 +425,20 @@ final class GameManagerTest extends TestCase
         return $room;
     }
 
-    private function getSut(): GameManager
+    private function getSut(bool $fakeGEA = false): GameManager
     {
+        $gea = $fakeGEA ? new class implements GameEventApplierInterface {
+            public function apply(GameEvent $event, GameState $gameState): GameState
+            {
+                return $gameState;
+            }
+
+            public function applyMultiple(array $events, GameState $gameState): GameState
+            {
+                return $gameState;
+            }
+        } : new GameEventApplier();
+
         return new GameManager(
             new CardRuntimeMap(
                 new CardFactory(
@@ -450,6 +465,7 @@ final class GameManagerTest extends TestCase
                 ),
             ),
             new GameContextFactory(),
+            $gea,
         );
     }
 }

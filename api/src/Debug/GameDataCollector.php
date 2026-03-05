@@ -148,13 +148,6 @@ readonly class DebugGameEvent
 
     public static function fromTraceableGameEvent(TraceableGameEvent $event): self
     {
-        return new self(
-            $event->origin,
-            $event->type,
-            $event->eventOrigin,
-            $event->data,
-            $event->shouldBePersisted(),
-            str_contains($event->origin, 'Rebuilder'),
-        );
+        return new self($event->origin, $event->type, $event->eventOrigin, $event->data, $event->shouldBePersisted(), 0 !== $event->id);
     }
 }

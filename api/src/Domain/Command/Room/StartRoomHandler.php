@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Service\Auth\CurrentUserProviderInterface;
-use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,6 @@ final class StartRoomHandler
         private CurrentUserProviderInterface $currentUserProvider,
         private GameStateRepositoryInterface $gameStateRepository,
         private GameManager $gameManager,
-        private GameEventApplierInterface $gameEventApplier,
     ) {}
 
     public function __invoke(StartRoomCommand $command): void
@@ -36,10 +34,10 @@ final class StartRoomHandler
         }
 
         $gameState = $this->gameManager->setupRoom($room);
-        $events = $this->gameManager->startGame($gameState);
+        $resolution = $this->gameManager->startGame($gameState);
 
-        $gameState = $this->gameEventApplier->applyMultiple($events, $gameState);
+        $this->gameStateRepository->save($resolution->state, $room);
 
-        $this->gameStateRepository->save($gameState, $room);
+        // maybe dispatch events
     }
 }

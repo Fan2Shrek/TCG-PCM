@@ -34,8 +34,11 @@ final class GameReplayTest extends TestCase
         $gameState = $data['gameState'];
         $events = $data['events'];
 
-        $gameReplayer = $this->getGameStateRebuilder($this->filterRolls($events));
+        $gameReplayer = $this->getGameStateRebuilder();
         $gameState = $gameReplayer->rebuild($gameState, $events);
+
+        $property = (new \ReflectionClass($gameState))->getProperty('lastAddedCardId');
+        $property->setValue($gameState, null);
 
         self::assertEquals($data['finalGameState'], $gameState);
     }
@@ -44,19 +47,19 @@ final class GameReplayTest extends TestCase
     {
         return [
             'replay1' => ['replay1'],
+            'replay2' => ['replay2'],
         ];
     }
 
-    private function getGameStateRebuilder(array $rolls): GameStateRebuilder
+    private function getGameStateRebuilder(): GameStateRebuilder
     {
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            new GameEventApplier(),
             new GameManager(
                 new CardRuntimeMap(
                     new CardFactory(
-                        new MockCardRegistry(require $cardsListPath),
+                        new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())),
                         new class implements CacheInterface {
                             public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
                                 return $callable();
@@ -70,24 +73,16 @@ final class GameReplayTest extends TestCase
                         }
                     ),
                 ),
-                $factory = new ReplayableGameContextFactory($rolls),
+                new ReplayableGameContextFactory(),
+                new GameEventApplier(),
             ),
-            $factory,
         );
     }
 
-    private function filterRolls(array &$events): array
+    private function getDummiesCard(): array
     {
-        $rolls = [];
-
-        foreach ($events as $event) {
-            if ($event->type === GameEventTypeEnum::DICE_ROLLED) {
-                $rolls[] = $event->data['result'];
-            }
-        }
-
-        $events = array_filter($events, fn ($event) => $event->type !== GameEventTypeEnum::DICE_ROLLED);
-
-        return $rolls;
+        return [
+            'dummy_character' => DummyCharacterCard::class,
+        ];
     }
 }

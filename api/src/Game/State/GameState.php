@@ -11,6 +11,8 @@ final readonly class GameState
 {
     public string $currentPlayer;
 
+    public ?string $lastAddedCardId;
+
     /**
      * @var array<string, CardState> $cards
      */
@@ -28,6 +30,8 @@ final readonly class GameState
     ) {
         $this->currentPlayer = $currentPlayer ?? $this->player1->player->id;
         $this->cards = $cards;
+
+        $this->lastAddedCardId = null;
     }
 
     public function getPlayer(string $playerId): PlayerState
@@ -120,6 +124,7 @@ final readonly class GameState
 
         return clone($this, [
             'cards' => $cards,
+            'lastAddedCardId' => $card->instanceId,
         ]);
     }
 
@@ -147,5 +152,10 @@ final readonly class GameState
             $this->player1->characterCardId,
             $this->player2->characterCardId,
         ]);
+    }
+
+    public function getLastAddedCardId(): ?string
+    {
+        return $this->lastAddedCardId;
     }
 }

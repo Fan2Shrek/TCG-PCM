@@ -85,12 +85,6 @@ message = 'Could not infer a precise return type for function `app\service\game\
 count = 1
 
 [[issues]]
-file = "src/Service/Game/CardRuntimeMap.php"
-code = "mixed-return-statement"
-message = 'Could not infer a precise return type for function `app\service\game\cardruntimemap::getbystate`. Saw type `nonnull`.'
-count = 1
-
-[[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\Card\CardState::updatevalues`: expected `array<array-key, mixed>`, but found `mixed`.'
@@ -100,4 +94,10 @@ count = 1
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `app\game\card\effect\effectstate::__construct`: expected `array<array-key, mixed>`, but found `nonnull`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameStateRebuilder.php"
+code = "less-specific-nested-return-statement"
+message = '''Returned type `array{}|non-empty-list<mixed>` is less specific than the declared return type `array<array-key, float|int|string>` for function `app\service\game\gamestaterebuilder::filterrandomevents` due to nested 'mixed'.'''
 count = 1

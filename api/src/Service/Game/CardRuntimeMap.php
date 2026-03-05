@@ -22,8 +22,9 @@ final class CardRuntimeMap
     {
         $cardId = $cardState->instanceId;
 
+        /** @var AbstractCard $card */
         $card = $this->map[$cardId] ??= $this->cardFactory->createWithState($cardState->templateId, $cardState);
-
+        // Make sure we have up to date card
         $card->setState($cardState);
 
         return $card;
