@@ -8,6 +8,7 @@ use App\Enum\CardEffectEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\Effect\TornedCardEffect;
 use App\Game\Card\EffectCollection;
 use PHPUnit\Framework\TestCase;
 
@@ -63,6 +64,18 @@ final class AbstractCardTest extends TestCase
         $card->setState($state);
 
         self::assertCount(1, $card->getEffects()->all());
+    }
+
+    public function testSameEffectTwice()
+    {
+        $card = new DummyCard();
+
+        $effect = TornedCardEffect::fromEffectState(new EffectState(CardEffectEnum::TORNED));
+
+        $card->addEffect($effect);
+        $card->addEffect(clone $effect);
+
+        self::assertSame(1, count($card->getEffects()->all()));
     }
 }
 
