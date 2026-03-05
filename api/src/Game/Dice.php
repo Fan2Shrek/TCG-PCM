@@ -21,4 +21,14 @@ abstract class Dice
 
         return (int) (self::$generator)($sides);
     }
+
+    public static function randomBetweenFloat(float $min, float $max): float
+    {
+        $min = (int) ($min * 100);
+        $max = (int) ($max * 100);
+
+        $value = self::roll($max - $min + 1) + $min - 1;
+
+        return (float) $value / 100;
+    }
 }
