@@ -77,13 +77,11 @@ class GameManager
             throw new GameAlreadyFinishedException();
         }
 
-        $events = match ($action->actionId) {
+        return match ($action->actionId) {
             PlayerAction::PLAY_CARD => $this->playCardAction($action, $state),
             PlayerAction::END_TURN => $this->endTurnAction($action, $state),
             default => throw new UnknowActionException(),
         };
-
-        return $this->applyAndPropagate($state, $events);
     }
 
     /**
