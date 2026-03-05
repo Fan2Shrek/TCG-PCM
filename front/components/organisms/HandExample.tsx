@@ -65,7 +65,7 @@ export default function HandExample() {
           -10
         </button>
       </div>
-      <div className="mb-6 justify-center">
+      <div className="absolute bottom-5">
         <CardsHand cards={hand} />
       </div>
     </div>

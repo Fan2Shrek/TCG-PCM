@@ -1,4 +1,4 @@
-import { CardSize } from "../types/card";
+import { CardWithPosition, CardSize } from "../types/card";
 
 export const MAX_X_TILT = 30;
 export const MAX_Y_TILT = 45;
@@ -13,6 +13,11 @@ export const DEFAULT_GLARE = { x: 50, y: 50 };
 export const NORMAL_ANIMATION_DURATION_MS = 300;
 export const SNAPBACK_ANIMATION_DURATION_MS = 1000;
 export const SNAPBACK_DELAY_MS = 150;
+
+export const CARD_HAND_RADIUS_MULTIPLIER = 1.5;
+export const CARD_HAND_MIN_ARC_ANGLE = 10;
+export const CARD_HAND_ARC_ANGLE_SCALE = 10;
+export const DEGREES_TO_RADIANS = Math.PI / 180;
 
 export const calculateTilt = (x: number, y: number, currentRy: number) => {
   const rotateX = (y - NORMALIZED_CENTER) * MAX_Y_TILT;
@@ -45,30 +50,31 @@ export const remToPx = (rem: number): number => {
 };
 
 export const getCardAspectRatio = (): number => {
-  if (typeof document === 'undefined') {
-    return 5 / 7; // fallback to default
-  }
+
   const root = document.documentElement;
   const value = getComputedStyle(root).getPropertyValue('--aspect-card').trim();
   if (!value) {
-    return 5 / 7;
+    return 1;
   }
   const [width, height] = value.split('/').map(v => parseFloat(v.trim()));
   return width / height;
 };
 
-export const cardsHandComputeArcParameters = (totalCards: number, cardWidthPx: number, maxAngle: number) => {
-  const maxArcAngle = Math.min(maxAngle, 10 + totalCards * 10);
-  const arcAngleRadian = (maxArcAngle * Math.PI) / 180;
+export const cardsHandComputeArcParameters = (totalCards: number, cardWidthPx: number, maxAngle: number, fanOut: boolean) => {
+  
+  const maxArcAngle = Math.min(maxAngle, CARD_HAND_MIN_ARC_ANGLE + totalCards * CARD_HAND_ARC_ANGLE_SCALE);
+  const arcAngleRadian = maxArcAngle * DEGREES_TO_RADIANS;
 
-  const radius = cardWidthPx * 1.5;
+  const radius = cardWidthPx * (fanOut ? CARD_HAND_RADIUS_MULTIPLIER * totalCards / 1.95 : CARD_HAND_RADIUS_MULTIPLIER);
 
   return { arcAngleRadian, radius };
 }
 
-export const cardsHandComputeCardPosition = (index: number, totalCards: number, arcAngleRadian: number, radius: number) => {
+export const cardsHandComputeCardPosition = (index: number, totalCards: number, arcAngleRadian: number, radius: number, hoveredCardIndex?: number) => {
   const middleIndex = (totalCards - 1) / 2;
-  const normalizedIndex = index - middleIndex;
+  
+  const effectiveMiddleIndex = hoveredCardIndex ?? middleIndex;
+  const normalizedIndex = index - effectiveMiddleIndex;
 
   const angle = middleIndex === 0 ? 0 : (normalizedIndex / middleIndex) * (arcAngleRadian / 2);
   const x = radius * Math.sin(angle);

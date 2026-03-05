@@ -1,23 +1,38 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import Card from "../molecules/Card";
-import { CardModel, CardSize, CardInHand } from "../types/card";
+import { CardModel, CardSize, CardWithPosition } from "../types/card";
 import { useState } from "react";
-import { getCardWidthRem, remToPx, getCardAspectRatio, cardsHandComputeArcParameters, cardsHandComputeCardPosition } from "../utils/cardUtils";
+import { getCardWidthRem, remToPx, cardsHandComputeArcParameters, cardsHandComputeCardPosition } from "../utils/cardUtils";
+
+const CARD_ASPECT_RATIO = 5 / 7;
+const calculateCardHeightRem = (widthRem: number) => widthRem * CARD_ASPECT_RATIO;
+
 export type CardsHandProps = {
   cards: CardModel[];
-  onCardClick?: (cardId: string) => void;
   cardSize?: CardSize;
+  hoverCardSize?: CardSize;
   className?: string;
 };
 
-export default function CardsHand({ cards, onCardClick, cardSize = 'md', className }: CardsHandProps) {
+export default function CardsHand({ cards, cardSize = 'md', hoverCardSize = 'lg', className = '' }: CardsHandProps) {
 
   const cardWidthRem = getCardWidthRem(cardSize);
+  const hoverCardWidthRem = getCardWidthRem(hoverCardSize);
   const cardWidthPx = remToPx(cardWidthRem);
   
-  const [positionedCards, setPositionedCards] = useState<CardInHand[]>([]);
-  const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
-
+  const hoverYOffset = useMemo(() => {
+    const normalHeightRem = calculateCardHeightRem(cardWidthRem);
+    const hoverHeightRem = calculateCardHeightRem(hoverCardWidthRem);
+    const heightDiffRem = hoverHeightRem - normalHeightRem;
+    return remToPx(heightDiffRem * 2);
+  }, [cardWidthRem, hoverCardWidthRem]);
+  
+  const [positionedCards, setPositionedCards] = useState<CardWithPosition[]>([]);
+  const [hoveredCard, setHoveredCard] = useState<{
+    index: number | null;
+    card: CardWithPosition | null;
+  }>({ index: null, card: null });
+  
   const calculatePositions = useCallback(() => {
     const totalCards = cards.length;
     if (totalCards === 0) {
@@ -25,24 +40,54 @@ export default function CardsHand({ cards, onCardClick, cardSize = 'md', classNa
       return;
     }
 
-    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
-    const maxAngle = screenWidth < 768 ? 60 : 120;
+    const maxAngle = 60;
+    const cardInFocus = !!hoveredCard.card;
+    const normalParams = cardsHandComputeArcParameters(totalCards, cardWidthPx, maxAngle, false);
 
-    const { arcAngleRadian, radius } = cardsHandComputeArcParameters(totalCards, cardWidthPx, maxAngle);
+    const getPositions = (params: any, effectiveCenter?: number) =>
+      cards.map((_card, index) => {
+        const { x, y, rotation } = cardsHandComputeCardPosition(
+          index,
+          totalCards,
+          params.arcAngleRadian,
+          params.radius,
+          effectiveCenter
+        );
+        return { x, y, rotation };
+      }
+    );
 
-    setPositionedCards(
-      cards.map((card, index) => {
-        const { x, y, rotation } = cardsHandComputeCardPosition(index, totalCards, arcAngleRadian, radius);
-        return {
-          card,
-          position: index,
-          x,
-          y,
-          rotation,
-        };
+    const mapToCardWithPosition = (positions: any[]) =>
+      positions.map((position, index) => ({
+        card: cards[index],
+        rank: index,
+        ...position,
       })
     );
-  }, [cards, cardWidthPx, cardSize]);
+
+    const positions = getPositions(normalParams);
+
+    if (!cardInFocus) {
+      setPositionedCards(mapToCardWithPosition(positions));
+    } else {
+      const hoveredIndex = hoveredCard?.index ?? 0;
+      
+      const fanParams = cardsHandComputeArcParameters(totalCards, cardWidthPx, maxAngle, true);
+      const fannedPositions = getPositions(fanParams, hoveredCard.card?.rank);
+
+      // Calculate the shift needed to keep the hovered card in the same position
+      const shiftX = positions[hoveredIndex].x - fannedPositions[hoveredIndex].x;
+      const shiftY = positions[hoveredIndex].y - fannedPositions[hoveredIndex].y;
+
+      const shiftedPositions = fannedPositions.map((position) => ({
+        x: position.x + shiftX,
+        y: position.y + shiftY,
+        rotation: position.rotation,
+      }));
+
+      setPositionedCards(mapToCardWithPosition(shiftedPositions));
+    }
+  }, [cards, cardWidthPx, cardSize, hoveredCard]);
 
   useEffect(() => {
     calculatePositions();
@@ -60,20 +105,34 @@ export default function CardsHand({ cards, onCardClick, cardSize = 'md', classNa
     };
   }, [calculatePositions]);
 
-  const handleCardHover = (cardIdentifier: string, cardIndex: number) => {
-    console.log(`Hovering card ${cardIdentifier} at index ${cardIndex}`);
-    setHoveredCardIndex(cardIndex);
+  const handleCardClick = (card: CardWithPosition) => {
+
+  }
+
+  const handleCardHover = (card: CardWithPosition, index: number) => {
+    setHoveredCard({ 
+      index, 
+      card: { 
+        ...card, 
+        y: hoveredCard.card?.y ?? card.y 
+      } 
+    });
+    console.log( hoveredCard );
   }
 
   const handleCardLeave = () => {
-    setHoveredCardIndex(null);
+    setHoveredCard({ index: null, card: null });
   }
 
   return (
     <div className={`relative w-full h-82 ${className}`}>
-      {positionedCards.map((positionedCard, index) => (
+      {positionedCards.map((positionedCard, index) => {
+        const isHovered = hoveredCard.index === index;
+        const displayY = isHovered ? positionedCard.y - hoverYOffset : positionedCard.y;
+        
+        return (
         <div
-          key={positionedCard.position}
+          key={positionedCard.rank}
           className="transition-all duration-100 ease-in-out"
           style={{
             position: 'absolute',
@@ -82,22 +141,24 @@ export default function CardsHand({ cards, onCardClick, cardSize = 'md', classNa
             transform: `
               translate(
                 calc(-50% + ${positionedCard.x}px),
-                calc(50% + ${positionedCard.y}px)
+                calc(50% + ${displayY}px)
               )
             `,
-            zIndex: positionedCard.position,
+            zIndex: isHovered ? cards.length + 1 : positionedCard.rank,
           }}
-          onMouseEnter={() => handleCardHover(positionedCard.card.id, index)}
+          onMouseEnter={() => handleCardHover(positionedCard, index)}
           onMouseLeave={handleCardLeave}
-        >          
+          onClick={() => handleCardClick(positionedCard)}
+        >
           <Card
             key={index}
             card={positionedCard.card}
-            size={cardSize}
+            size={isHovered ? hoverCardSize : cardSize}
             tilt={{ x: 0, y: 0, z: positionedCard.rotation }}
           />
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -13,9 +13,9 @@ export type CardModel = {
   frontLayers?: CardLayer[] | null;
 };
 
-export type CardInHand = {
+export type CardWithPosition = {
   card: CardModel;
-  position: number;
+  rank: number;
   x: number;
   y: number;
   rotation: number;
