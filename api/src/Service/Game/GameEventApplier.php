@@ -28,6 +28,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
+            GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
         };
 
         return $event->id ? $gameState->withLastEventId($event->id) : $gameState;

@@ -23,7 +23,13 @@ trait BaseOnTurnTrait
         $this->turnRemainingBeforeAction--;
 
         if ($this->turnRemainingBeforeAction <= 0) {
-            $this->onTurnAction($gameContext);
+            $this->beforeAction($gameContext);
+            // @note If *someday* effects have
+            // critical interactions on gamestate
+            // we should change this X_X
+            if (!$gameContext->lastActionHasBeenPrevented()) {
+                $this->onTurnAction($gameContext);
+            }
 
             $this->turnRemainingBeforeAction = $this->getTurnDelay();
         }

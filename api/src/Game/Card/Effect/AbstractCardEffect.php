@@ -6,6 +6,7 @@ namespace App\Game\Card\Effect;
 
 use App\Enum\CardEffectEnum;
 use App\Game\AbstractCard;
+use App\Game\GameContext;
 
 /** @consistent-constructor */
 abstract class AbstractCardEffect
@@ -17,6 +18,11 @@ abstract class AbstractCardEffect
     public function modifyValue(float|int $value, AbstractCard $card): float|int
     {
         return $value;
+    }
+
+    public function beforeAction(AbstractCard $card, GameContext $gameContext): void
+    {
+        // no-op by default
     }
 
     public static function fromEffectState(EffectState $effectState): static
