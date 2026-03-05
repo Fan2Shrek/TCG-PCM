@@ -84,17 +84,31 @@ class GameContext
         return $result;
     }
 
+    public function randomBetween(float $min, float $max): float
+    {
+        $result = Dice::randomBetweenFloat($min, $max);
+
+        $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
+            'min' => $min,
+            'max' => $max,
+            'result' => $result,
+        ]);
+
+        return $result;
+    }
+
     public function runtimeValueEffect(mixed $value): void
     {
         $this->pushGameEvent(GameEventTypeEnum::CARD_RUNTIME_VALUE, ['value' => $value]);
     }
 
-    public function addEffect(CardEffectEnum $effect, string $cardId): void
+    public function addEffect(CardEffectEnum $effect, string $cardId, ?array $effectValues = null): void
     {
-        $this->events[] = GameEvent::game(GameEventTypeEnum::EFFECT_ADDED, [
+        $this->events[] = GameEvent::game(GameEventTypeEnum::EFFECT_ADDED, array_filter([
             'effect' => $effect->value,
             'cardId' => $cardId,
-        ]);
+            'effectValues' => $effectValues,
+        ]));
     }
 
     public function getCard(string $instanceId): CardState

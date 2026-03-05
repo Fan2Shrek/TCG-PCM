@@ -171,15 +171,20 @@ class GameManager
             $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
         }
 
+        $nextPlayerId = $state->getNextPlayer()->id;
         $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
-            'playerId' => $state->getNextPlayer()->id,
+            'playerId' => $nextPlayerId,
         ]);
 
         foreach ($cards as $card) {
-            $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
+            $ctx = $this->gameContextFactory->createGameContext($state, $nextPlayerId);
             $card->onTurnStart($ctx);
             $events = array_merge($events, $ctx->flushEvents());
         }
+
+        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+            'playerId' => $nextPlayerId,
+        ]);
 
         return $events;
     }

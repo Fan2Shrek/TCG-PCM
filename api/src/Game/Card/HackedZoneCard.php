@@ -7,6 +7,7 @@ namespace App\Game\Card;
 use App\Enum\CardEffectEnum;
 use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
+use App\Game\Card\Effect\HackedCardEffect;
 use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Trait\CardAwareTrait;
 use App\Game\GameContext;
@@ -49,7 +50,9 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
         );
 
         foreach ($cards as $card) {
-            $gameContext->addEffect(CardEffectEnum::HACKED, $card);
+            $gameContext->addEffect(CardEffectEnum::HACKED, $card, [
+                'value' => $gameContext->randomBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
+            ]);
         }
     }
 
@@ -65,6 +68,8 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
             throw new \LogicException('Card must have an instanceId to be affected by HackedZoneCard');
         }
 
-        $gameContext->addEffect(CardEffectEnum::HACKED, $id);
+        $gameContext->addEffect(CardEffectEnum::HACKED, $id, [
+            'value' => $gameContext->randomBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
+        ]);
     }
 }
