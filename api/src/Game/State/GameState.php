@@ -148,9 +148,4 @@ final readonly class GameState
             $this->player2->characterCardId,
         ]);
     }
-
-    public function getNextDrawId(): ?string
-    {
-        return array_first($this->getCurrentPlayerState()->drawPile) ?? null;
-    }
 }

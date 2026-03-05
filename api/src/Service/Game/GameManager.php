@@ -208,8 +208,15 @@ class GameManager
             case GameEventTypeEnum::CARD_DRAWN:
                 $cards = $this->getCardAwareCards($state);
 
+                $drawPile = $state->getPlayer((string) $playerId)->drawPile;
+                $cardId = array_key_first($drawPile);
+
+                if (!$cardId) {
+                    throw new \LogicException('No card drawn for CARD_DRAWN event');
+                }
+
                 foreach ($cards as $card) {
-                    $card->onCardDrawn($ctx);
+                    $card->onCardDrawn($cardId, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
 
@@ -260,12 +267,11 @@ class GameManager
         ]);
         $newTurnEvents = array_merge($newTurnEvents, [$event], $this->getSubEventsForEvent($event, $state));
 
-        $newTurnEvents[] =
-            $event = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
-                'playerId' => $nextPlayerId,
-            ]);
+        $event = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+            'playerId' => $nextPlayerId,
+        ]);
 
-        return array_merge($events, $newTurnEvents, $this->getSubEventsForEvent($event, $state));
+        return array_merge($events, $newTurnEvents, $this->applyAndPropagate($state, [$event]));
     }
 
     private function isNewRound(GameState $state, string $nextPlayerId): bool

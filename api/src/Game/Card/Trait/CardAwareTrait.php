@@ -14,7 +14,7 @@ trait CardAwareTrait
         // Default implementation does nothing
     }
 
-    public function onCardDrawn(GameContext $gameContext): void
+    public function onCardDrawn(string $cardId, GameContext $gameContext): void
     {
         // Default implementation does nothing
     }
