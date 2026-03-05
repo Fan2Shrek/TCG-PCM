@@ -134,59 +134,60 @@
             <div class="empty empty-panel">
                 <p>No game here.</p>
             </div>
-        {% endif %}
-        <div class="tab">
-            <h3 class="tab-title">Events <span class="badge">{{ collector.realEvents|length }}</span></h3>
-            <div class="tab-content">
-                {{ _self.render_events_table(collector.realEvents) }}
-            </div>
-        </div>
-
-        {% if collector.replayedEvents|length != 0 %}
+        {% else %}
             <div class="tab">
-                <h3 class="tab-title">Replayed event <span class="badge">{{ collector.replayedEvents|length }}</span></h3>
+                <h3 class="tab-title">Events <span class="badge">{{ collector.realEvents|length }}</span></h3>
                 <div class="tab-content">
-                    {{ _self.render_events_table(collector.replayedEvents) }}
+                    {{ _self.render_events_table(collector.realEvents) }}
                 </div>
             </div>
-        {% endif %}
 
-        <div class="tab">
-            <h3 class="tab-title">Game contexts <span class="badge">{{ collector.gameContexts|length }}</span></h3>
-            <div class="tab-content">
-                {% for gameContext in collector.gameContexts %}
-                     <h4>Game context #{{ loop.index }}</h4>
-                     <div>
-                         <h5>State</h5>
-                         {{ profiler_dump(gameContext.state) }}
-                     </div>
-                     <div>
-                         <h5>Flushed events</h5>
-                         {{ profiler_dump(gameContext.flushedEvents) }}
-                     </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="tab">
-            <h3 class="tab-title">Card <span class="badge">{{ collector.cards|length }}</span></h3>
-            <div class="tab-content">
-                {{ _self.render_cards_table(collector.cards) }}
-            </div>
-        </div>
-
-        {% if collector.lastGameState is not null %}
-            <div class="tab">
-                <h3 class="tab-title">Last Game State</h3>
-                <div class="tab-content">
-                    {{ _self.render_players_table([
-                        collector.lastGameState.player1,
-                        collector.lastGameState.player2,
-                    ], collector) }}
+            {% if collector.replayedEvents|length != 0 %}
+                <div class="tab">
+                    <h3 class="tab-title">Replayed event <span class="badge">{{ collector.replayedEvents|length }}</span></h3>
+                    <div class="tab-content">
+                        {{ _self.render_events_table(collector.replayedEvents) }}
+                    </div>
                 </div>
-                <h4>Cards states</h4>
-                {{ profiler_dump(collector.lastCards)}}
+            {% endif %}
+
+            <div class="tab">
+                <h3 class="tab-title">Game contexts <span class="badge">{{ collector.gameContexts|length }}</span></h3>
+                <div class="tab-content">
+                    {% for gameContext in collector.gameContexts %}
+                         <h4>Game context #{{ loop.index }}</h4>
+                         <div>
+                             <h5>State</h5>
+                             {{ profiler_dump(gameContext.state) }}
+                         </div>
+                         <div>
+                             <h5>Flushed events</h5>
+                             {{ profiler_dump(gameContext.flushedEvents) }}
+                         </div>
+                    {% endfor %}
+                </div>
             </div>
-        {% endif %}
-    </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Card <span class="badge">{{ collector.cards|length }}</span></h3>
+                <div class="tab-content">
+                    {{ _self.render_cards_table(collector.cards) }}
+                </div>
+            </div>
+
+            {% if collector.lastGameState is not null %}
+                <div class="tab">
+                    <h3 class="tab-title">Last Game State</h3>
+                    <div class="tab-content">
+                        {{ _self.render_players_table([
+                            collector.lastGameState.player1,
+                            collector.lastGameState.player2,
+                        ], collector) }}
+                    </div>
+                    <h4>Cards states</h4>
+                    {{ profiler_dump(collector.lastCards)}}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

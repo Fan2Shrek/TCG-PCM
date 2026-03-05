@@ -16,6 +16,7 @@ final class BaseOnTurnTraitTest extends TestCase
     {
         $card = new TestCard();
         $gameContext = $this->createStub(GameContext::class);
+        $gameContext->method('isCurrentPlayer')->willReturn(true);
         $card->setState(new CardState(
             '',
             TestCard::class,
@@ -33,7 +34,7 @@ final class BaseOnTurnTraitTest extends TestCase
     {
         $card = new TestCard();
         $gameContext = $this->createStub(GameContext::class);
-
+        $gameContext->method('isCurrentPlayer')->willReturn(true);
         $card->setState(new CardState(
             '',
             TestCard::class,
@@ -91,5 +92,10 @@ class TestCard extends AbstractCard
         parent::setState($state);
 
         $this->initFromState($state);
+    }
+
+    public function getOwnerId(): ?string
+    {
+        return '1';
     }
 }

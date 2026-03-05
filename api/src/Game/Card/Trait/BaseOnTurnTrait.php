@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Game\Card\Trait;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\GameContext;
 
@@ -17,6 +16,10 @@ trait BaseOnTurnTrait
 
     public function onTurnStart(GameContext $gameContext): void
     {
+        if (!$this->isOwnerTurn($gameContext)) {
+            return;
+        }
+
         $this->turnRemainingBeforeAction--;
 
         if ($this->turnRemainingBeforeAction <= 0) {

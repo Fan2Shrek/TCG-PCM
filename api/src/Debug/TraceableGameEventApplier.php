@@ -61,9 +61,9 @@ final class TraceableGameEventApplier implements GameEventApplierInterface
         return $this->events;
     }
 
-    public function getLastGameState(): GameState
+    public function getLastGameState(): ?GameState
     {
-        return $this->lastGameState;
+        return $this->lastGameState ?? null;
     }
 
     private function addEvent(TraceableGameEvent $event): void

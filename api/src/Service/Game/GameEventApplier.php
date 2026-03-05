@@ -7,6 +7,7 @@ namespace App\Service\Game;
 use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
+use App\Game\Card\Effect\EffectState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 
@@ -180,7 +181,7 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('EffectAdded requires a valid effect');
         }
 
-        $cardState = $cardState->addEffect($effect);
+        $cardState = $cardState->addEffect(new EffectState($effect, $event->data['effectValues'] ?? []));
 
         return $gameState->withUpdatedCardState($cardState);
     }
