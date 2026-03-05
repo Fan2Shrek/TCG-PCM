@@ -30,6 +30,7 @@ no-assign-in-condition = { enabled = false }
 kan-defect = { enabled = false }
 excessive-parameter-list = { threshold = 10 }
 no-else-clause = { enabled = false }
+no-multi-assignments = { enabled = false }
 
 [analyzer]
 find-unused-definitions = true

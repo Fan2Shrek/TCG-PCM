@@ -14,6 +14,7 @@ use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
@@ -76,17 +77,19 @@ class GameManager
             throw new GameAlreadyFinishedException();
         }
 
-        return match ($action->actionId) {
-            PlayerAction::PLAY_CARD => $this->playCard($action, $state),
-            PlayerAction::END_TURN => $this->endTurn($action, $state),
+        $events = match ($action->actionId) {
+            PlayerAction::PLAY_CARD => $this->playCardAction($action, $state),
+            PlayerAction::END_TURN => $this->endTurnAction($action, $state),
             default => throw new UnknowActionException(),
         };
+
+        return $this->applyAndPropagate($state, $events);
     }
 
     /**
      * @return GameEvent[]
      */
-    public function getEventsForCard(GameEvent $event, GameState $state): array
+    public function getEventsForPlayedCard(GameEvent $event, GameState $state): array
     {
         if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
             throw new \LogicException('cardId is required to play a card');
@@ -123,13 +126,13 @@ class GameManager
             throw new \LogicException('Card must be either a playable or passive card');
         }
 
-        return array_merge($events, $ctx->flushEvents());
+        return array_merge($events, $ctx->flushEvents(), $this->getSubEventsForEvent($event, $state));
     }
 
     /**
      * @return GameEvent[]
      */
-    private function playCard(PlayerAction $action, GameState $state): array
+    private function playCardAction(PlayerAction $action, GameState $state): array
     {
         $card = $action->payload['cardId'] ?? null;
         if (!\is_string($card)) {
@@ -145,13 +148,98 @@ class GameManager
             'cardId' => $card,
         ]);
 
-        return array_merge([$event], $this->getEventsForCard($event, $state));
+        return array_merge([$event], $this->getEventsForPlayedCard($event, $state));
+    }
+
+    /**
+     * @param GameEvent[] $events
+     *
+     * @return GameEvent[]
+     */
+    private function applyAndPropagate(GameState $state, array $events): array
+    {
+        $baseEvents = $events;
+
+        foreach ($baseEvents as $event) {
+            $events = array_merge($events, match ($event->type) {
+                GameEventTypeEnum::CARD_PLAYED,
+                GameEventTypeEnum::CARD_DRAWN,
+                GameEventTypeEnum::TURN_STARTED,
+                GameEventTypeEnum::TURN_ENDED,
+                    => $this->getSubEventsForEvent($event, $state),
+                default => [],
+            });
+        }
+
+        return $events;
     }
 
     /**
      * @return GameEvent[]
      */
-    private function endTurn(PlayerAction $action, GameState $state): array
+    private function getSubEventsForEvent(GameEvent $event, GameState $state): array
+    {
+        $events = [];
+        if (!($playerId = $event->data['playerId'] ?? null)) {
+            throw new \LogicException('playerId is required in event data');
+        }
+
+        $ctx = $this->gameContextFactory->createGameContext($state, (string) $playerId);
+
+        switch ($event->type) {
+            case GameEventTypeEnum::TURN_ENDED:
+                $cards = $this->getTurnAwareCards($state);
+
+                foreach ($cards as $card) {
+                    $card->onTurnEnd($ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+
+                break;
+            case GameEventTypeEnum::TURN_STARTED:
+                $cards = $this->getTurnAwareCards($state);
+
+                foreach ($cards as $card) {
+                    $card->onTurnStart($ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+
+                break;
+            case GameEventTypeEnum::CARD_DRAWN:
+                $cards = $this->getCardAwareCards($state);
+
+                foreach ($cards as $card) {
+                    $card->onCardDrawn($ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+
+                break;
+            case GameEventTypeEnum::CARD_PLAYED:
+                $cards = $this->getCardAwareCards($state);
+                $cardId = $event->data['cardId'] ?? null;
+                if (!\is_string($cardId)) {
+                    throw new \LogicException('cardId is required for CARD_DRAWN event');
+                }
+                $state = $state->getCardState($cardId) ?? throw new \LogicException('Card state not found for cardId '.$cardId);
+                $playedCard = $this->cardFactory->createWithState($state->templateId, $state);
+
+                foreach ($cards as $card) {
+                    $card->onCardPlayed($playedCard, $ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+                break;
+            default:
+
+            // @todo maybe log unknown event type
+        }
+
+        return $events;
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function endTurnAction(PlayerAction $action, GameState $state): array
     {
         $events = [];
 
@@ -159,34 +247,25 @@ class GameManager
             'playerId' => $action->author->id,
         ]);
 
-        $cards = $this->getTurnAwareCards($state);
+        $events = array_merge($events, $this->getSubEventsForEvent($events[0], $state));
 
-        foreach ($cards as $card) {
-            $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
-            $card->onTurnEnd($ctx);
-            $events = array_merge($events, $ctx->flushEvents());
-        }
-
+        $newTurnEvents = [];
         if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
-            $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+            $newTurnEvents[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
         }
 
         $nextPlayerId = $state->getNextPlayer()->id;
-        $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+        $event = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
             'playerId' => $nextPlayerId,
         ]);
+        $newTurnEvents = array_merge($newTurnEvents, [$event], $this->getSubEventsForEvent($event, $state));
 
-        foreach ($cards as $card) {
-            $ctx = $this->gameContextFactory->createGameContext($state, $nextPlayerId);
-            $card->onTurnStart($ctx);
-            $events = array_merge($events, $ctx->flushEvents());
-        }
+        $newTurnEvents[] =
+            $event = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+                'playerId' => $nextPlayerId,
+            ]);
 
-        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
-            'playerId' => $nextPlayerId,
-        ]);
-
-        return $events;
+        return array_merge($events, $newTurnEvents, $this->getSubEventsForEvent($event, $state));
     }
 
     private function isNewRound(GameState $state, string $nextPlayerId): bool
@@ -208,6 +287,24 @@ class GameManager
 
         foreach ($this->getAllActiveCards($gameState) as $card) {
             if (!$card instanceof TurnAwareInterface) {
+                continue;
+            }
+
+            $cards[] = $card;
+        }
+
+        return $cards;
+    }
+
+    /**
+     * @return array<AbstractCard&CardAwareInterface>
+     */
+    private function getCardAwareCards(GameState $gameState): array
+    {
+        $cards = [];
+
+        foreach ($this->getAllActiveCards($gameState) as $card) {
+            if (!$card instanceof CardAwareInterface) {
                 continue;
             }
 
