@@ -343,6 +343,22 @@ final class GameManagerTest extends TestCase
         self::assertEquals($expected, $events);
     }
 
+    public function testPropagate()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
+        $events = $gm->handleAction($action, $gameState);
+
+        self::assertCount(3, $events);
+    }
+
     private function createGameState(): GameState
     {
         $player1State = new PlayerState(
@@ -354,7 +370,9 @@ final class GameManagerTest extends TestCase
                 'card1',
                 'card2',
             ],
-            [],
+            [
+                'drawPile1' => DummyCard::class,
+            ],
             new PlayArea(),
         );
         $player2State = new PlayerState(
@@ -363,7 +381,9 @@ final class GameManagerTest extends TestCase
             30,
             '',
             [],
-            [],
+            [
+                'drawPile2' => DummyCard::class,
+            ],
             new PlayArea(),
         );
 

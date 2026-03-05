@@ -35,7 +35,7 @@ class GameStateRebuilder
 
     private function replayCard(GameEvent $event, GameState $state): GameState
     {
-        $events = $this->gameManager->getEventsForCard($event, $state);
+        $events = $this->gameManager->getEventsForPlayedCard($event, $state);
 
         return $this->applier->applyMultiple(array_merge([$event], $events), $state);
     }

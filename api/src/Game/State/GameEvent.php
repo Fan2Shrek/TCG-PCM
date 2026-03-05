@@ -39,4 +39,9 @@ readonly class GameEvent
             default => false,
         };
     }
+
+    public function withData(array $data): self
+    {
+        return clone($this, ['data' => array_merge($this->data, $data)]);
+    }
 }

@@ -11,6 +11,7 @@ use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -24,6 +25,7 @@ final class PlayGameHandler
         private GameStateRepositoryInterface $gameStateRepository,
         private GameEventRepositoryInterface $gameEventRepository,
         private CurrentUserProviderInterface $currentUserProvider,
+        private EntityManagerInterface $em,
     ) {}
 
     public function __invoke(PlayGameCommand $command): void
@@ -52,6 +54,7 @@ final class PlayGameHandler
             throw $e;
         }
 
+        $this->em->beginTransaction();
         foreach ($events as &$event) {
             if (!$event->shouldBePersisted()) {
                 continue;
@@ -60,7 +63,13 @@ final class PlayGameHandler
             $event = $this->gameEventRepository->save($event, $room->getId()->toString());
         }
 
-        $state = $this->gameEventApplier->applyMultiple($events, $state);
+        try {
+            $state = $this->gameEventApplier->applyMultiple($events, $state);
+        } catch (GameException $e) {
+            $this->em->rollback();
+
+            throw $e;
+        }
 
         $this->gameStateRepository->save($state, $room);
 

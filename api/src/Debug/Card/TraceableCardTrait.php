@@ -146,7 +146,7 @@ trait TraceableCardTrait
         $this->stopwatch->stop($id);
     }
 
-    public function onCardDrawn(AbstractCard $card, GameContext $gameContext): void
+    public function onCardDrawn(string $cardId, GameContext $gameContext): void
     {
         if (!$this->card instanceof CardAwareInterface) {
             return;
@@ -155,7 +155,7 @@ trait TraceableCardTrait
         $this->methodCalled[] = __METHOD__;
         $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
 
-        $this->card->onCardPlayed($card, $gameContext);
+        $this->card->onCardDrawn($cardId, $gameContext);
 
         $this->stopwatch->stop($id);
     }
