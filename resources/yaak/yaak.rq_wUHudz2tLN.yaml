@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_wUHudz2tLN
 createdAt: 2026-03-03T15:24:26.668775164
-updatedAt: 2026-03-05T20:40:10.736468258
+updatedAt: 2026-03-05T22:20:00.686702211
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_XqjkG6pswj
 authentication: {}
@@ -12,7 +12,7 @@ body:
     {
       "actionId": "play_card",
       "payload": {
-        "cardId": "49e026a6-b871-4027-a0f1-066e9ad55d5c"
+        "cardId": "f9da020f-c4d2-46b9-8c85-4be24b290809"
       }
     }
 

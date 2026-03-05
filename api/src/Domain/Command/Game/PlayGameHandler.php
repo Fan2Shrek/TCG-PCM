@@ -65,7 +65,7 @@ final class PlayGameHandler
             $state = $state->withLastEventId($lastId);
         }
 
-        $this->gameStateRepository->save($resolution->state, $room);
+        $this->gameStateRepository->save($state, $room);
 
         // sse $event;
     }

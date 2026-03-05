@@ -22,17 +22,20 @@ class GameStateRebuilder
     {
         $randomEvents = $this->filterRandomEvents($events);
 
-        $this->gameManager->setGameContextFactory(new ReplayableGameContextFactory($randomEvents));
-
+        $oldFactory = $this->gameManager->setGameContextFactory(new ReplayableGameContextFactory($randomEvents));
         $state = $initial;
 
-        foreach ($events as $event) {
-            $state = match ($event->type) {
-                GameEventTypeEnum::CARD_PLAYED => $this->replayCard($event, $state),
-                GameEventTypeEnum::TURN_ENDED => $this->replayEndTurn($event, $state),
-                default => $this->gameManager->resolve($event, $state)->state,
-            };
-            $state = $state->withLastEventId($event->id);
+        try {
+            foreach ($events as $event) {
+                $state = match ($event->type) {
+                    GameEventTypeEnum::CARD_PLAYED => $this->replayCard($event, $state),
+                    GameEventTypeEnum::TURN_ENDED => $this->replayEndTurn($event, $state),
+                    default => $this->gameManager->resolve($event, $state)->state,
+                };
+                $state = $state->withLastEventId($event->id);
+            }
+        } finally {
+            $this->gameManager->setGameContextFactory($oldFactory);
         }
 
         return $state;

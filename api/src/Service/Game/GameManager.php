@@ -39,9 +39,13 @@ class GameManager
         private GameEventApplierInterface $gameEventApplier,
     ) {}
 
-    public function setGameContextFactory(GameContextFactoryInterface $factory): void
+    public function setGameContextFactory(GameContextFactoryInterface $factory): GameContextFactoryInterface
     {
+        $previousFactory = $this->gameContextFactory;
+
         $this->gameContextFactory = $factory;
+
+        return $previousFactory;
     }
 
     public function setupRoom(Room $room): GameState
@@ -68,7 +72,9 @@ class GameManager
 
         $roundStartedEvent = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
 
-        return $this->resolve($roundStartedEvent, $state);
+        $result = $this->resolve($roundStartedEvent, $state);
+
+        return new ResolutionResult(array_merge($events, $result->events), $result->state);
     }
 
     public function handleAction(PlayerAction $action, GameState $state): ResolutionResult
