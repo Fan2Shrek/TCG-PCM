@@ -34,7 +34,7 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardFactoryInterface $cardFactory,
+        private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
     ) {}
 
@@ -101,7 +101,7 @@ class GameManager
             throw new \LogicException('playerId is required to play a card');
         }
 
-        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        $card = $this->cardRuntimeMap->getByState($cardState);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
 
@@ -226,7 +226,7 @@ class GameManager
                     throw new \LogicException('cardId is required for CARD_DRAWN event');
                 }
                 $state = $state->getCardState($cardId) ?? throw new \LogicException('Card state not found for cardId '.$cardId);
-                $playedCard = $this->cardFactory->createWithState($state->templateId, $state);
+                $playedCard = $this->cardRuntimeMap->getByState($state);
 
                 foreach ($cards as $card) {
                     $card->onCardPlayed($playedCard, $ctx);
@@ -329,14 +329,14 @@ class GameManager
                 continue;
             }
 
-            yield $this->cardFactory->createWithState($state->templateId, $state);
+            yield $this->cardRuntimeMap->getByState($state);
         }
     }
 
     private function initializeGameState(Room $room, User $opponent, Deck $opponentDeck): GameState
     {
-        $player1CharacterCard = $this->cardFactory->create($room->getOwnerDeck()->getCharacterCard());
-        $player2CharacterCard = $this->cardFactory->create($opponentDeck->getCharacterCard());
+        $player1CharacterCard = $this->cardRuntimeMap->create($room->getOwnerDeck()->getCharacterCard());
+        $player2CharacterCard = $this->cardRuntimeMap->create($opponentDeck->getCharacterCard());
 
         if (!$player1CharacterCard instanceof AbstractCharacterCard || !$player2CharacterCard instanceof AbstractCharacterCard) {
             throw new \LogicException('Character card must be an instance of AbstractCharacterCard');

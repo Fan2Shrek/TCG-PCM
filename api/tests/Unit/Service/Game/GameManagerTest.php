@@ -24,6 +24,7 @@ use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
+use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
@@ -424,27 +425,29 @@ final class GameManagerTest extends TestCase
     private function getSut(): GameManager
     {
         return new GameManager(
-            new CardFactory(
-                new MockCardRegistry(
-                    [
-                        DummyCard::class => DummyCard::class,
-                        'other_card' =>  DummyCard::class,
-                        DummyCharacterCard::class => DummyCharacterCard::class,
-                        DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-                        SpyCard::class => SpyCard::class,
-                    ]
-                ),
-                new class implements CacheInterface {
-                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                        return $callable();
-                    }
+            new CardRuntimeMap(
+                new CardFactory(
+                    new MockCardRegistry(
+                        [
+                            DummyCard::class => DummyCard::class,
+                            'other_card' =>  DummyCard::class,
+                            DummyCharacterCard::class => DummyCharacterCard::class,
+                            DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+                            SpyCard::class => SpyCard::class,
+                        ]
+                    ),
+                    new class implements CacheInterface {
+                        public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                            return $callable();
+                        }
 
-                    public function delete(string $key): bool
-                    {
-                        // no-op
-                        return true;
+                        public function delete(string $key): bool
+                        {
+                            // no-op
+                            return true;
+                        }
                     }
-                }
+                ),
             ),
             new GameContextFactory(),
         );
