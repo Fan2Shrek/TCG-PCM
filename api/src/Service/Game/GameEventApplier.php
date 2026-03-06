@@ -11,6 +11,7 @@ use App\Game\Card\Effect\EffectState;
 use App\Game\Card\MonsterCardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 
 class GameEventApplier implements GameEventApplierInterface
 {
@@ -108,10 +109,37 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('DAMAGE requires a damage integer');
         }
 
-        $targetPlayerState = $gameState->getPlayer($target);
-        $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
+        if ($damage < 0) {
+            throw new \LogicException('DAMAGE requires a positive damage integer');
+        }
 
-        return $gameState->withUpdatedPlayer($newPlayerState);
+        $state = match ($target) {
+            $gameState->player1->player->id, $gameState->player1->characterCardId => $gameState->player1,
+            $gameState->player2->player->id, $gameState->player2->characterCardId => $gameState->player2,
+            default => $gameState->getCardState($target),
+        };
+
+        if ($state instanceof PlayerState) {
+            $newState = $state->withUpdatedHealth($state->healthPoints - $damage);
+            $newGameState = $gameState->withUpdatedPlayer($newState);
+        } elseif ($state instanceof MonsterCardState) {
+            $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
+            $newGameState = $gameState->withUpdatedCardState($newState);
+        } else {
+            throw new \LogicException('DAMAGE target must be a player or a monster card');
+        }
+
+        $sourceId = $event->data['sourceId'] ?? null;
+        if (\is_string($sourceId)) {
+            $sourceState = $newGameState->getCardState($sourceId);
+
+            if ($sourceState instanceof MonsterCardState) {
+                $newSourceState = $sourceState->withCanAttack(false);
+                $newGameState = $newGameState->withUpdatedCardState($newSourceState);
+            }
+        }
+
+        return $newGameState;
     }
 
     public function applyHeal(GameEvent $event, GameState $gameState): GameState
@@ -146,7 +174,20 @@ class GameEventApplier implements GameEventApplierInterface
 
     private function applyTurnStarted(GameEvent $event, GameState $gameState): GameState
     {
-        // @todo appliquer les effets de début de tour (buffs, dégâts sur la durée, etc.)
+        if (!($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('TURN_STARTED requires a playerId');
+        }
+
+        $monsterCards = $gameState->getPlayer($playerId)->playArea->monsterCards;
+
+        foreach ($monsterCards as $cardId) {
+            $cardState = $gameState->getCardState($cardId);
+
+            if ($cardState instanceof MonsterCardState) {
+                $newCardState = $cardState->withCanAttack(true);
+                $gameState = $gameState->withUpdatedCardState($newCardState);
+            }
+        }
 
         return $gameState;
     }

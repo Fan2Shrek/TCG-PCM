@@ -18,6 +18,7 @@ final readonly class MonsterCardState extends CardState
         public int $currentHealthPoints,
         array $effects = [],
         array $values = [],
+        public bool $canAttack = true,
     ) {
         parent::__construct($instanceId, $templateId, $ownerId, $effects, $values);
     }
@@ -25,5 +26,21 @@ final readonly class MonsterCardState extends CardState
     public static function fromParent(CardState $state, int $currentHealthPoints): self
     {
         return new self($state->instanceId, $state->templateId, $state->ownerId, $currentHealthPoints, $state->effects, $state->values);
+    }
+
+    #[\NoDiscard]
+    public function withCurrentHealthPoints(int $currentHealthPoints): self
+    {
+        return clone($this, [
+            'currentHealthPoints' => $currentHealthPoints,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function withCanAttack(bool $canAttack): self
+    {
+        return clone($this, [
+            'canAttack' => $canAttack,
+        ]);
     }
 }

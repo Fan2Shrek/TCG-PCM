@@ -15,17 +15,29 @@ final class TraceableMonsterCard extends AbstractMonsterCard
 
     public function getAttack(): int
     {
+        $this->methodCalled[] = __METHOD__;
+
         return $this->card->getAttack();
     }
 
     public function getHealPoints(): int
     {
+        $this->methodCalled[] = __METHOD__;
+
         return $this->card->getHealPoints();
     }
 
     public function onMonsterPlayed(GameContext $context): void
     {
+        $this->methodCalled[] = __METHOD__;
         $this->card->onMonsterPlayed($context);
+    }
+
+    public function canAttack(): bool
+    {
+        $this->methodCalled[] = __METHOD__;
+
+        return $this->card->canAttack();
     }
 
     public static function create(AbstractMonsterCard $card, Stopwatch $stopwatch): self
