@@ -8,6 +8,7 @@ return [
 	'D6' => Card\D6Card::class,
 	'Gitman' => Card\GitmanCard::class,
 	'HackedZone' => Card\HackedZoneCard::class,
+	'Redbloons' => Card\Monster\RedBloonsMonsterCard::class,
 	'Placenta' => Card\PlacentaCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
 ];

@@ -8,6 +8,7 @@ use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\MonsterCardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 
@@ -23,12 +24,12 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
-            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED => $this->noOp($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
+            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => $this->applyCardPlaceInMonsterArea($event, $gameState),
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
-            GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
+            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
         };
 
         return $event->id ? $gameState->withLastEventId($event->id) : $gameState;
@@ -217,6 +218,31 @@ class GameEventApplier implements GameEventApplierInterface
         $newArea = $player->playArea->addPassiveCard($cardId);
 
         return $gameState->withUpdatedPlayer($player->withPlayArea($newArea));
+    }
+
+    private function applyCardPlaceInMonsterArea(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('DiscardCard requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('DiscardCard requires a playerId');
+        }
+
+        if (null === ($healthpoints = $event->data['cardHealthPoints'] ?? null) || !\is_int($healthpoints)) {
+            throw new \LogicException('DiscardCard requires a cardHealthPoints');
+        }
+
+        if (!($cardState = $gameState->getCardState($cardId))) {
+            throw new \LogicException('DiscardCard requires a valid cardId');
+        }
+
+        $player = $gameState->getPlayer($playerId);
+        $newArea = $player->playArea->addMonsterCard($cardId);
+        $newCardState = MonsterCardState::fromParent($cardState, $healthpoints);
+
+        return $gameState->withUpdatedPlayer($player->withPlayArea($newArea))->withUpdatedCardState($newCardState);
     }
 
     private function applyCardStateUpdate(GameEvent $event, GameState $gameState): GameState

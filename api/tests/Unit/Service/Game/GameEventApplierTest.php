@@ -8,6 +8,7 @@ use App\Enum\CardEffectEnum;
 use App\Game\State\GameEvent;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
+use App\Game\Card\MonsterCardState;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
@@ -160,6 +161,29 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertSame(1, $newState->cards['test']->values['turnRemainingBeforeAction']);
+    }
+
+    public function testCardPlaceInMonsterArea()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $state = $state->addCard(new CardState('test', '', '', []));
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA,
+            GameEvent::GAME_EVENT,
+            [
+                'cardId' => 'test',
+                'playerId' => '1',
+                'cardHealthPoints' => 5,
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertInstanceOf(MonsterCardState::class, $newState->cards['test']);
+        self::assertSame(5, $newState->cards['test']->currentHealthPoints);
     }
 
     private function getSut(array $cards = []): GameEventApplier

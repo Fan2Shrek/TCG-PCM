@@ -398,6 +398,10 @@
                 15 => [],
                 18 => [],
             ],
+            'monsterCards' => [
+                15 => [],
+                18 => [],
+            ],
         ],
         'App\\Game\\State\\GameEvent' => [
             'id' => [
