@@ -10,6 +10,8 @@ use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\EffectCollection;
+use App\Game\Card\Monster\AbstractMonsterCard;
+use App\Game\Card\MonsterCardState;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
@@ -22,10 +24,12 @@ final class UpdateCardListCommand
 
     private const array CLASSES_TO_IGNORE = [
         AbstractCard::class,
-        AbstractPlayableCard::class,
+        AbstractMonsterCard::class,
         AbstractCharacterCard::class,
         AbstractPassiveCard::class,
+        AbstractPlayableCard::class,
         CardState::class,
+        MonsterCardState::class,
         EffectCollection::class,
     ];
 

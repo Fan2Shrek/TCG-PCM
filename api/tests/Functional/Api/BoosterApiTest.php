@@ -19,6 +19,6 @@ final class BoosterApiTest extends FunctionalTestCase
 
         $data = json_decode($response->getContent() ?? '', true);
         $this->assertArrayHasKey('cards', $data);
-        $this->assertCount(1, $data['cards']); // Assuming a booster contains 5 cards
+        $this->assertCount(5, $data['cards']);
     }
 }

@@ -25,6 +25,7 @@ final class CardFactory implements CardFactoryInterface
     public function createWithState(string $cardId, CardState $state): AbstractCard
     {
         $card = $this->create($cardId);
+
         $card->setState($state);
 
         if ($card instanceof ComputedCardInterface) {

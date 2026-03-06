@@ -2,13 +2,13 @@ type: folder
 model: folder
 id: fl_XqjkG6pswj
 createdAt: 2026-03-03T15:24:13.408999919
-updatedAt: 2026-03-03T15:25:53.100868581
+updatedAt: 2026-03-06T13:32:19.173754585
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_JLpCFxuyh2
 authentication:
-  token: opo
+  token: ${[ opponent_token ]}
 authenticationType: bearer
 description: ''
 headers: []
 name: Opponent
-sortPriority: 2.6666666666666665
+sortPriority: 0.0

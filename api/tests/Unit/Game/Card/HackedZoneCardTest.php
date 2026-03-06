@@ -78,10 +78,9 @@ final class HackedZoneCardTest extends CardTestCase
     {
         $card = $this->getCard();
         $gameContext = $this->createGameContext();
-        $cardDrawned = $this->getCard();
         $this->ensureNextDiceRolls(100);
 
-        $card->onCardDrawn($cardDrawned, $gameContext);
+        $card->onCardDrawn('player1', $gameContext);
 
         $events = $gameContext->flushEvents();
 
@@ -93,7 +92,7 @@ final class HackedZoneCardTest extends CardTestCase
             GameEvent::GAME_EVENT,
             [
                 'effect' => CardEffectEnum::HACKED->value,
-                'cardId' => $cardDrawned->getInstanceId(),
+                'cardId' => 'player1',
                 'effectValues' => [
                     'value' => 1,
                 ],

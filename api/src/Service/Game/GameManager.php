@@ -14,7 +14,10 @@ use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Monster\AbstractMonsterCard;
+use App\Game\Exception\CardCannotAttackExpcetion;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotYourTurnException;
@@ -33,9 +36,19 @@ class GameManager
     private const INITIAL_HAND_SIZE = 5;
 
     public function __construct(
-        private CardFactoryInterface $cardFactory,
+        private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
+        private GameEventApplierInterface $gameEventApplier,
     ) {}
+
+    public function setGameContextFactory(GameContextFactoryInterface $factory): GameContextFactoryInterface
+    {
+        $previousFactory = $this->gameContextFactory;
+
+        $this->gameContextFactory = $factory;
+
+        return $previousFactory;
+    }
 
     public function setupRoom(Room $room): GameState
     {
@@ -48,10 +61,7 @@ class GameManager
         return $this->initializeGameState($room, $opponent, $opponentDeck);
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    public function startGame(GameState $initialGameState): array
+    public function startGame(GameState $initialGameState): ResolutionResult
     {
         $events = [];
         foreach ($initialGameState->getPlayers() as $player) {
@@ -60,13 +70,16 @@ class GameManager
             }
         }
 
-        return $events;
+        $state = $this->gameEventApplier->applyMultiple($events, $initialGameState);
+
+        $roundStartedEvent = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+
+        $result = $this->resolve($roundStartedEvent, $state);
+
+        return new ResolutionResult(array_merge($events, $result->events), $result->state);
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    public function handleAction(PlayerAction $action, GameState $state): array
+    public function handleAction(PlayerAction $action, GameState $state): ResolutionResult
     {
         if ($state->getCurrentPlayer() !== $action->author) {
             throw new NotYourTurnException();
@@ -77,16 +90,51 @@ class GameManager
         }
 
         return match ($action->actionId) {
-            PlayerAction::PLAY_CARD => $this->playCard($action, $state),
-            PlayerAction::END_TURN => $this->endTurn($action, $state),
+            PlayerAction::PLAY_CARD => $this->playCardAction($action, $state),
+            PlayerAction::END_TURN => $this->endTurnAction($action, $state),
+            PlayerAction::ATTACK => $this->attackAction($action, $state),
             default => throw new UnknowActionException(),
+        };
+    }
+
+    public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
+    {
+        $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
+
+        // @ŧodo modify this if we want to do depth events resolution instead of breadth
+        foreach ($firstLevelEvents as $event) {
+            $state = $this->gameEventApplier->apply($event, $state);
+            $allEvents = array_merge($allEvents, $events = $this->collectEventsFromAwareCards($event, $state));
+            $state = $this->gameEventApplier->applyMultiple($events, $state);
+        }
+
+        return new ResolutionResult($allEvents, $state);
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function generateReactions(GameEvent $event, GameState $state): array
+    {
+        return match ($event->type) {
+            GameEventTypeEnum::TURN_ENDED => array_filter([
+                $this->isNewRound($state, $state->getNextPlayer()->id) ? GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []) : null,
+                GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+                    'playerId' => $state->getNextPlayer()->id,
+                ]),
+                GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+                    'playerId' => $state->getNextPlayer()->id,
+                ]),
+            ]),
+            GameEventTypeEnum::CARD_PLAYED => $this->doGenerateReactionsForCardPlayed($event, $state),
+            default => [],
         };
     }
 
     /**
      * @return GameEvent[]
      */
-    public function getEventsForCard(GameEvent $event, GameState $state): array
+    private function doGenerateReactionsForCardPlayed(GameEvent $event, GameState $state): array
     {
         if (!($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
             throw new \LogicException('cardId is required to play a card');
@@ -100,7 +148,7 @@ class GameManager
             throw new \LogicException('playerId is required to play a card');
         }
 
-        $card = $this->cardFactory->createWithState($cardState->templateId, $cardState);
+        $card = $this->cardRuntimeMap->create($cardState->templateId);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
 
@@ -119,6 +167,14 @@ class GameManager
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
             ]);
+        } elseif ($card instanceof AbstractMonsterCard) {
+            $card->onMonsterPlayed($ctx);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+                'cardHealthPoints' => $card->getHealPoints(),
+            ]);
         } else {
             throw new \LogicException('Card must be either a playable or passive card');
         }
@@ -126,10 +182,7 @@ class GameManager
         return array_merge($events, $ctx->flushEvents());
     }
 
-    /**
-     * @return GameEvent[]
-     */
-    private function playCard(PlayerAction $action, GameState $state): array
+    private function playCardAction(PlayerAction $action, GameState $state): ResolutionResult
     {
         $card = $action->payload['cardId'] ?? null;
         if (!\is_string($card)) {
@@ -145,46 +198,126 @@ class GameManager
             'cardId' => $card,
         ]);
 
-        return array_merge([$event], $this->getEventsForCard($event, $state));
+        return $this->resolve($event, $state);
+    }
+
+    private function endTurnAction(PlayerAction $action, GameState $state): ResolutionResult
+    {
+        $event = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
+            'playerId' => $action->author->id,
+        ]);
+
+        return $this->resolve($event, $state);
+    }
+
+    private function attackAction(PlayerAction $action, GameState $state): ResolutionResult
+    {
+        $cardId = $action->payload['cardId'] ?? null;
+
+        if (!\is_string($cardId)) {
+            throw new \InvalidArgumentException('cardId is required in payload');
+        }
+
+        if (!$state->getCurrentPlayerState()->playArea->hasMonsterCard($cardId)) {
+            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $cardId);
+        }
+
+        if (!($targetId = $action->payload['targetId'] ?? null)) {
+            throw new \InvalidArgumentException('targetId is required in payload');
+        }
+
+        if (!($cardState = $state->getCardState($cardId))) {
+            throw new \LogicException('Card state not found for cardId '.$cardId);
+        }
+
+        $card = $this->cardRuntimeMap->getByState($cardState);
+
+        if (!$card instanceof AbstractMonsterCard) {
+            throw new \LogicException('Only monster cards can attack');
+        }
+
+        if (!$card->canAttack()) {
+            throw new CardCannotAttackExpcetion('Card cannot attack');
+        }
+
+        if ($targetId === $state->getOtherPlayerState()->characterCardId) {
+            $event = GameEvent::player(GameEventTypeEnum::DAMAGE, [
+                'targetId' => $state->getOtherPlayerState()->player->id,
+                'damage' => $card->getAttack(),
+                'sourceId' => $cardId,
+            ]);
+        } elseif (\in_array($targetId, $state->getOtherPlayerState()->playArea->monsterCards, true)) {
+            $event = GameEvent::player(GameEventTypeEnum::DAMAGE, [
+                'targetId' => $targetId,
+                'damage' => $card->getAttack(),
+                'sourceId' => $cardId,
+            ]);
+        } else {
+            throw new \LogicException('Invalid targetId '.(string) $targetId);
+        }
+
+        return $this->resolve($event, $state);
     }
 
     /**
      * @return GameEvent[]
      */
-    private function endTurn(PlayerAction $action, GameState $state): array
+    private function collectEventsFromAwareCards(GameEvent $event, GameState $state): array
     {
         $events = [];
+        $ctx = $this->gameContextFactory->createGameContext($state, $state->currentPlayer);
 
-        $events[] = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
-            'playerId' => $action->author->id,
-        ]);
+        switch ($event->type) {
+            case GameEventTypeEnum::TURN_ENDED:
+                $cards = $this->getTurnAwareCards($state);
 
-        $cards = $this->getTurnAwareCards($state);
+                foreach ($cards as $card) {
+                    $card->onTurnEnd($ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
 
-        foreach ($cards as $card) {
-            $ctx = $this->gameContextFactory->createGameContext($state, $state->getNextPlayer()->id);
-            $card->onTurnEnd($ctx);
-            $events = array_merge($events, $ctx->flushEvents());
+                break;
+            case GameEventTypeEnum::TURN_STARTED:
+                $cards = $this->getTurnAwareCards($state);
+
+                foreach ($cards as $card) {
+                    $card->onTurnStart($ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+
+                break;
+            case GameEventTypeEnum::CARD_DRAWN:
+                $cards = $this->getCardAwareCards($state);
+                $cardId = $state->getLastAddedCardId();
+
+                if (!$cardId) {
+                    throw new \LogicException('No card drawn for CARD_DRAWN event');
+                }
+
+                foreach ($cards as $card) {
+                    $card->onCardDrawn($cardId, $ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+
+                break;
+            case GameEventTypeEnum::CARD_PLAYED:
+                $cards = $this->getCardAwareCards($state);
+                $cardId = $event->data['cardId'] ?? null;
+                if (!\is_string($cardId)) {
+                    throw new \LogicException('cardId is required for CARD_DRAWN event');
+                }
+                $state = $state->getCardState($cardId) ?? throw new \LogicException('Card state not found for cardId '.$cardId);
+                $playedCard = $this->cardRuntimeMap->getByState($state);
+
+                foreach ($cards as $card) {
+                    $card->onCardPlayed($playedCard, $ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+                break;
+            default:
+
+            // @todo maybe log unknown event type
         }
-
-        if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
-            $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
-        }
-
-        $nextPlayerId = $state->getNextPlayer()->id;
-        $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
-            'playerId' => $nextPlayerId,
-        ]);
-
-        foreach ($cards as $card) {
-            $ctx = $this->gameContextFactory->createGameContext($state, $nextPlayerId);
-            $card->onTurnStart($ctx);
-            $events = array_merge($events, $ctx->flushEvents());
-        }
-
-        $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
-            'playerId' => $nextPlayerId,
-        ]);
 
         return $events;
     }
@@ -218,6 +351,24 @@ class GameManager
     }
 
     /**
+     * @return array<AbstractCard&CardAwareInterface>
+     */
+    private function getCardAwareCards(GameState $gameState): array
+    {
+        $cards = [];
+
+        foreach ($this->getAllActiveCards($gameState) as $card) {
+            if (!$card instanceof CardAwareInterface) {
+                continue;
+            }
+
+            $cards[] = $card;
+        }
+
+        return $cards;
+    }
+
+    /**
      * @return iterable<AbstractCard>
      */
     private function getAllActiveCards(GameState $gameState): iterable
@@ -228,14 +379,14 @@ class GameManager
                 continue;
             }
 
-            yield $this->cardFactory->createWithState($state->templateId, $state);
+            yield $this->cardRuntimeMap->getByState($state);
         }
     }
 
     private function initializeGameState(Room $room, User $opponent, Deck $opponentDeck): GameState
     {
-        $player1CharacterCard = $this->cardFactory->create($room->getOwnerDeck()->getCharacterCard());
-        $player2CharacterCard = $this->cardFactory->create($opponentDeck->getCharacterCard());
+        $player1CharacterCard = $this->cardRuntimeMap->create($room->getOwnerDeck()->getCharacterCard());
+        $player2CharacterCard = $this->cardRuntimeMap->create($opponentDeck->getCharacterCard());
 
         if (!$player1CharacterCard instanceof AbstractCharacterCard || !$player2CharacterCard instanceof AbstractCharacterCard) {
             throw new \LogicException('Character card must be an instance of AbstractCharacterCard');

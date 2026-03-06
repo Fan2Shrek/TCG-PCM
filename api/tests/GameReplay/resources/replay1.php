@@ -9,7 +9,7 @@ use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 
 return [
-    'gameState' => new GameState(
+    'initialGameState' => new GameState(
         new PlayerState(
             new Player(
                 '1',
@@ -17,12 +17,13 @@ return [
             ),
             300,
             300,
-            '',
+            'player1_character',
             [
-                'card1',
-                'card2',
+                'player1_card1',
             ],
-            [],
+            [
+                'player1_card2' => 'Spicy-D6',
+            ],
             new PlayArea(),
         ),
         new PlayerState(
@@ -32,30 +33,30 @@ return [
             ),
             100,
             100,
-            '',
-            [
-                'card3',
-            ],
+            'player2_character',
             [],
+            [
+                'player2_card1' => 'Spicy-D6',
+            ],
             new PlayArea(),
         ),
         0,
         null,
         [
-            'card1' => new CardState(
-                'card1',
-                'Spicy-D6',
+            'player1_character' => new CardState(
+                'player1_character',
+                'dummy_character',
                 '1',
                 [],
             ),
-            'card2' => new CardState(
-                'card2',
-                'Spicy-D6',
+            'player2_character' => new CardState(
+                'player2_character',
+                'dummy_character',
                 '2',
                 [],
             ),
-            'card3' => new CardState(
-                'card3',
+            'player1_card1' => new CardState(
+                'player1_card1',
                 'Spicy-D6',
                 '1',
                 [],
@@ -64,7 +65,7 @@ return [
     ),
     'events' => [
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'card1',
+            'cardId' => 'player1_card1',
             'playerId' => '1',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -75,7 +76,7 @@ return [
             'playerId' => '1',
         ]),
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'card3',
+            'cardId' => 'player2_card1',
             'playerId' => '2',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -86,7 +87,7 @@ return [
             'playerId' => '2',
         ]),
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'cardId' => 'card2',
+            'cardId' => 'player1_card2',
             'playerId' => '1',
         ]),
         GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
@@ -102,13 +103,13 @@ return [
             ),
             290,
             300,
-            '',
+            'player1_character',
             [],
             [],
             new PlayArea(),
             [
-                'card1',
-                'card2',
+                'player1_card1',
+                'player1_card2',
             ],
         ),
         new PlayerState(
@@ -118,14 +119,29 @@ return [
             ),
             0,
             100,
-            '',
+            'player2_character',
             [],
             [],
             new PlayArea(),
             [
-                'card3',
+                'player2_card1',
             ]
         ),
         0,
+        null,
+        [
+            'player1_character' => new CardState(
+                'player1_character',
+                'dummy_character',
+                '1',
+                [],
+            ),
+            'player2_character' => new CardState(
+                'player2_character',
+                'dummy_character',
+                '2',
+                [],
+            ),
+        ]
     ),
 ];

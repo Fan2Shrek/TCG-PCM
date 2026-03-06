@@ -9,6 +9,7 @@ use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Service\Game\CardFactoryInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -66,6 +67,8 @@ final class TraceableCardFactory implements CardFactoryInterface
             $card = TraceablePassiveCard::create($card, $this->stopwatch);
         } elseif ($card instanceof AbstractCharacterCard) {
             $card = TraceableCharacterCard::create($card, $this->stopwatch);
+        } elseif ($card instanceof AbstractMonsterCard) {
+            $card = TraceableMonsterCard::create($card, $this->stopwatch);
         }
 
         return $this->cards[] = $card;

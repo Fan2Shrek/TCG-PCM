@@ -107,6 +107,11 @@ final class GameDataCollector extends AbstractDataCollector
         return $this->data['lastGameState'] ?? null;
     }
 
+    public function getFullLastGameState(): ?Data
+    {
+        return $this->cloneVar($this->data['lastGameState']) ?? null;
+    }
+
     public function getLastCards(): Data|GameState|null
     {
         return $this->cloneVar($this->data['lastGameState']->cards) ?? null;
@@ -148,13 +153,6 @@ readonly class DebugGameEvent
 
     public static function fromTraceableGameEvent(TraceableGameEvent $event): self
     {
-        return new self(
-            $event->origin,
-            $event->type,
-            $event->eventOrigin,
-            $event->data,
-            $event->shouldBePersisted(),
-            str_contains($event->origin, 'Rebuilder'),
-        );
+        return new self($event->origin, $event->type, $event->eventOrigin, $event->data, $event->shouldBePersisted(), 0 !== $event->id);
     }
 }

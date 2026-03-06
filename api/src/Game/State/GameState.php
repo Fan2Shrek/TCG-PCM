@@ -11,6 +11,8 @@ final readonly class GameState
 {
     public string $currentPlayer;
 
+    public ?string $lastAddedCardId;
+
     /**
      * @var array<string, CardState> $cards
      */
@@ -28,6 +30,8 @@ final readonly class GameState
     ) {
         $this->currentPlayer = $currentPlayer ?? $this->player1->player->id;
         $this->cards = $cards;
+
+        $this->lastAddedCardId = null;
     }
 
     public function getPlayer(string $playerId): PlayerState
@@ -53,6 +57,11 @@ final readonly class GameState
         return $this->getCurrentPlayerState()->player;
     }
 
+    public function getOtherPlayerState(): PlayerState
+    {
+        return $this->currentPlayer === $this->player1->player->id ? $this->player2 : $this->player1;
+    }
+
     public function getNextPlayer(): Player
     {
         return $this->currentPlayer === $this->player1->player->id ? $this->player2->player : $this->player1->player;
@@ -68,7 +77,29 @@ final readonly class GameState
         return !$this->player1->isAlive() || !$this->player2->isAlive();
     }
 
-    public function withUpdatedPlayer(PlayerState $updatedPlayer): GameState
+    public function getCardState(string $cardId): ?CardState
+    {
+        return $this->cards[$cardId] ?? null;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllActiveCards(): array
+    {
+        return array_merge($this->player1->playArea->getAll(), $this->player2->playArea->getAll(), [
+            $this->player1->characterCardId,
+            $this->player2->characterCardId,
+        ]);
+    }
+
+    public function getLastAddedCardId(): ?string
+    {
+        return $this->lastAddedCardId;
+    }
+
+    #[\NoDiscard]
+    public function withUpdatedPlayer(PlayerState $updatedPlayer): self
     {
         if ($this->player1->player->id === $updatedPlayer->player->id) {
             return clone($this, [
@@ -85,7 +116,8 @@ final readonly class GameState
         throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
     }
 
-    public function withCurrentPlayer(string $currentPlayer): GameState
+    #[\NoDiscard]
+    public function withCurrentPlayer(string $currentPlayer): self
     {
         if (!\in_array($currentPlayer, [$this->player1->player->id, $this->player2->player->id], true)) {
             throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $currentPlayer));
@@ -96,14 +128,27 @@ final readonly class GameState
         ]);
     }
 
-    public function withLastEventId(int $lastEventId): GameState
+    #[\NoDiscard]
+    public function withLastEventId(int $lastEventId): self
     {
         return clone($this, [
             'lastEventId' => $lastEventId,
         ]);
     }
 
-    public function removeCard(string $cardId): GameState
+    #[\NoDiscard]
+    public function withUpdatedCardState(CardState $card): self
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function removeCard(string $cardId): self
     {
         $cards = $this->cards;
         unset($cards[$cardId]);
@@ -113,39 +158,15 @@ final readonly class GameState
         ]);
     }
 
-    public function addCard(CardState $card): GameState
+    #[\NoDiscard]
+    public function addCard(CardState $card): self
     {
         $cards = $this->cards;
         $cards[$card->instanceId] = $card;
 
         return clone($this, [
             'cards' => $cards,
-        ]);
-    }
-
-    public function getCardState(string $cardId): ?CardState
-    {
-        return $this->cards[$cardId] ?? null;
-    }
-
-    public function withUpdatedCardState(CardState $card): GameState
-    {
-        $cards = $this->cards;
-        $cards[$card->instanceId] = $card;
-
-        return clone($this, [
-            'cards' => $cards,
-        ]);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllActiveCards(): array
-    {
-        return array_merge($this->player1->playArea->getAll(), $this->player2->playArea->getAll(), [
-            $this->player1->characterCardId,
-            $this->player2->characterCardId,
+            'lastAddedCardId' => $card->instanceId,
         ]);
     }
 }

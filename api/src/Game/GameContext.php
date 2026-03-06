@@ -138,9 +138,7 @@ class GameContext
 
         $randomCardId = $pool[array_rand($pool)];
 
-        $this->pushGameEvent(GameEventTypeEnum::CARD_RUNTIME_VALUE, [
-            'value' => $randomCardId,
-        ]);
+        $this->runtimeValueEffect($randomCardId);
 
         return $randomCardId;
     }

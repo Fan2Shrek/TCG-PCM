@@ -39,4 +39,16 @@ readonly class GameEvent
             default => false,
         };
     }
+
+    #[\NoDiscard]
+    public function withData(array $data): self
+    {
+        return clone($this, ['data' => array_merge($this->data, $data)]);
+    }
+
+    #[\NoDiscard]
+    public function withId(int $id): self
+    {
+        return clone($this, ['id' => $id]);
+    }
 }

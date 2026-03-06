@@ -8,8 +8,10 @@ use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\MonsterCardState;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Game\State\PlayerState;
 
 class GameEventApplier implements GameEventApplierInterface
 {
@@ -23,12 +25,12 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
             GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
             GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
-            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED => $this->noOp($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
+            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => $this->applyCardPlaceInMonsterArea($event, $gameState),
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
-            GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
+            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
         };
 
         return $event->id ? $gameState->withLastEventId($event->id) : $gameState;
@@ -107,10 +109,37 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('DAMAGE requires a damage integer');
         }
 
-        $targetPlayerState = $gameState->getPlayer($target);
-        $newPlayerState = $targetPlayerState->withUpdatedHealth($targetPlayerState->healthPoints - $damage);
+        if ($damage < 0) {
+            throw new \LogicException('DAMAGE requires a positive damage integer');
+        }
 
-        return $gameState->withUpdatedPlayer($newPlayerState);
+        $state = match ($target) {
+            $gameState->player1->player->id, $gameState->player1->characterCardId => $gameState->player1,
+            $gameState->player2->player->id, $gameState->player2->characterCardId => $gameState->player2,
+            default => $gameState->getCardState($target),
+        };
+
+        if ($state instanceof PlayerState) {
+            $newState = $state->withUpdatedHealth($state->healthPoints - $damage);
+            $newGameState = $gameState->withUpdatedPlayer($newState);
+        } elseif ($state instanceof MonsterCardState) {
+            $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
+            $newGameState = $gameState->withUpdatedCardState($newState);
+        } else {
+            throw new \LogicException('DAMAGE target must be a player or a monster card');
+        }
+
+        $sourceId = $event->data['sourceId'] ?? null;
+        if (\is_string($sourceId)) {
+            $sourceState = $newGameState->getCardState($sourceId);
+
+            if ($sourceState instanceof MonsterCardState) {
+                $newSourceState = $sourceState->withCanAttack(false);
+                $newGameState = $newGameState->withUpdatedCardState($newSourceState);
+            }
+        }
+
+        return $newGameState;
     }
 
     public function applyHeal(GameEvent $event, GameState $gameState): GameState
@@ -145,7 +174,20 @@ class GameEventApplier implements GameEventApplierInterface
 
     private function applyTurnStarted(GameEvent $event, GameState $gameState): GameState
     {
-        // @todo appliquer les effets de début de tour (buffs, dégâts sur la durée, etc.)
+        if (!($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('TURN_STARTED requires a playerId');
+        }
+
+        $monsterCards = $gameState->getPlayer($playerId)->playArea->monsterCards;
+
+        foreach ($monsterCards as $cardId) {
+            $cardState = $gameState->getCardState($cardId);
+
+            if ($cardState instanceof MonsterCardState) {
+                $newCardState = $cardState->withCanAttack(true);
+                $gameState = $gameState->withUpdatedCardState($newCardState);
+            }
+        }
 
         return $gameState;
     }
@@ -217,6 +259,31 @@ class GameEventApplier implements GameEventApplierInterface
         $newArea = $player->playArea->addPassiveCard($cardId);
 
         return $gameState->withUpdatedPlayer($player->withPlayArea($newArea));
+    }
+
+    private function applyCardPlaceInMonsterArea(GameEvent $event, GameState $gameState): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('DiscardCard requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('DiscardCard requires a playerId');
+        }
+
+        if (null === ($healthpoints = $event->data['cardHealthPoints'] ?? null) || !\is_int($healthpoints)) {
+            throw new \LogicException('DiscardCard requires a cardHealthPoints');
+        }
+
+        if (!($cardState = $gameState->getCardState($cardId))) {
+            throw new \LogicException('DiscardCard requires a valid cardId');
+        }
+
+        $player = $gameState->getPlayer($playerId);
+        $newArea = $player->playArea->addMonsterCard($cardId);
+        $newCardState = MonsterCardState::fromParent($cardState, $healthpoints);
+
+        return $gameState->withUpdatedPlayer($player->withPlayArea($newArea))->withUpdatedCardState($newCardState);
     }
 
     private function applyCardStateUpdate(GameEvent $event, GameState $gameState): GameState

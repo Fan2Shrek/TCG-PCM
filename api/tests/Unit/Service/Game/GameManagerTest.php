@@ -24,7 +24,10 @@ use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactory;
+use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\Factory\GameContextFactory;
+use App\Service\Game\GameEventApplier;
+use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -110,7 +113,7 @@ final class GameManagerTest extends TestCase
 
     public function testPlayerStateDeck()
     {
-        $gm = $this->getSut();
+        $gm = $this->getSut(true);
         $gameState = new GameState(
             new PlayerState(
                 new Player('1', 'Player 1'),
@@ -137,7 +140,8 @@ final class GameManagerTest extends TestCase
             ]
         );
 
-        $events = $gm->startGame($gameState);
+        $events = $gm->startGame($gameState)->events;
+        array_pop($events); // remove the last event which is the turn start for player 2
 
         self::assertCount(10, $events);
         foreach ($events as $event) {
@@ -156,7 +160,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => 'card1'],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
 
         $expected = [
             new GameEvent(
@@ -194,7 +198,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => 'card3'],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
     }
 
     public function testHandlePlayActionCallCard(): void
@@ -210,7 +214,7 @@ final class GameManagerTest extends TestCase
             ],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
 
         self::assertNotNull(SpyCard::$receivedContext);
         self::assertCount(2, $events);
@@ -228,7 +232,7 @@ final class GameManagerTest extends TestCase
             ['cardId' => DummyCard::class],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
     }
 
     public function testEndTurn()
@@ -242,7 +246,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -293,7 +297,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $gm->handleAction($action, $gameState);
+        $gm->handleAction($action, $gameState)->events;
 
         self::assertTrue(SpyCard::$turnStartCalled);
     }
@@ -312,7 +316,7 @@ final class GameManagerTest extends TestCase
             [],
         );
 
-        $events = $gm->handleAction($action, $gameState);
+        $events = $gm->handleAction($action, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -343,6 +347,22 @@ final class GameManagerTest extends TestCase
         self::assertEquals($expected, $events);
     }
 
+    public function testPropagate()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
+        $events = $gm->handleAction($action, $gameState)->events;
+
+        self::assertCount(3, $events);
+    }
+
     private function createGameState(): GameState
     {
         $player1State = new PlayerState(
@@ -354,7 +374,9 @@ final class GameManagerTest extends TestCase
                 'card1',
                 'card2',
             ],
-            [],
+            [
+                'drawPile1' => DummyCard::class,
+            ],
             new PlayArea(),
         );
         $player2State = new PlayerState(
@@ -363,7 +385,9 @@ final class GameManagerTest extends TestCase
             30,
             '',
             [],
-            [],
+            [
+                'drawPile2' => DummyCard::class,
+            ],
             new PlayArea(),
         );
 
@@ -401,32 +425,47 @@ final class GameManagerTest extends TestCase
         return $room;
     }
 
-    private function getSut(): GameManager
+    private function getSut(bool $fakeGEA = false): GameManager
     {
-        return new GameManager(
-            new CardFactory(
-                new MockCardRegistry(
-                    [
-                        DummyCard::class => DummyCard::class,
-                        'other_card' =>  DummyCard::class,
-                        DummyCharacterCard::class => DummyCharacterCard::class,
-                        DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-                        SpyCard::class => SpyCard::class,
-                    ]
-                ),
-                new class implements CacheInterface {
-                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                        return $callable();
-                    }
+        $gea = $fakeGEA ? new class implements GameEventApplierInterface {
+            public function apply(GameEvent $event, GameState $gameState): GameState
+            {
+                return $gameState;
+            }
 
-                    public function delete(string $key): bool
-                    {
-                        // no-op
-                        return true;
+            public function applyMultiple(array $events, GameState $gameState): GameState
+            {
+                return $gameState;
+            }
+        } : new GameEventApplier();
+
+        return new GameManager(
+            new CardRuntimeMap(
+                new CardFactory(
+                    new MockCardRegistry(
+                        [
+                            DummyCard::class => DummyCard::class,
+                            'other_card' =>  DummyCard::class,
+                            DummyCharacterCard::class => DummyCharacterCard::class,
+                            DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+                            SpyCard::class => SpyCard::class,
+                        ]
+                    ),
+                    new class implements CacheInterface {
+                        public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
+                            return $callable();
+                        }
+
+                        public function delete(string $key): bool
+                        {
+                            // no-op
+                            return true;
+                        }
                     }
-                }
+                ),
             ),
             new GameContextFactory(),
+            $gea,
         );
     }
 }

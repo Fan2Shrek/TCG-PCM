@@ -8,16 +8,16 @@ final readonly class PlayArea
 {
     /**
      * @param string[] $passiveCards
+     * @param string[] $monsterCards
      */
     public function __construct(
         public array $passiveCards = [],
+        public array $monsterCards = [],
     ) {}
 
-    public function addPassiveCard(string $cardId): self
+    public function hasMonsterCard(string $id): bool
     {
-        return clone($this, [
-            'passiveCards' => [...$this->passiveCards, $cardId],
-        ]);
+        return \in_array($id, $this->monsterCards, true);
     }
 
     /**
@@ -25,6 +25,22 @@ final readonly class PlayArea
      */
     public function getAll(): array
     {
-        return array_merge($this->passiveCards);
+        return array_merge($this->passiveCards, $this->monsterCards);
+    }
+
+    #[\NoDiscard]
+    public function addPassiveCard(string $cardId): self
+    {
+        return clone($this, [
+            'passiveCards' => [...$this->passiveCards, $cardId],
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function addMonsterCard(string $cardId): self
+    {
+        return clone($this, [
+            'monsterCards' => [$cardId],
+        ]);
     }
 }

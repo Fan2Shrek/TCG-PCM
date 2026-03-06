@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Redis;
 
-use Symfony\Component\Serializer\SerializerInterface;
-
 class RedisClient
 {
     public function __construct(
         private RedisConnection $connection,
-        private SerializerInterface $serializer,
     ) {}
 
     /**
@@ -25,12 +22,22 @@ class RedisClient
     {
         $data = $this->connection->get($key);
 
-        return $data ? $this->serializer->deserialize($data, $type, 'json') : null;
+        if (!\is_string($data)) {
+            return null;
+        }
+
+        $value = unserialize($data);
+
+        if ($value !== null && !$value instanceof $type) {
+            throw new \UnexpectedValueException(sprintf('Expected value of type "%s", got "%s".', $type, get_debug_type($value)));
+        }
+
+        return $value;
     }
 
     public function set(string $key, object $value): void
     {
-        $data = $this->serializer->serialize($value, 'json');
+        $data = serialize($value);
 
         $this->connection->set($key, $data);
     }

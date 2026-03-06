@@ -186,6 +186,8 @@
                     </div>
                     <h4>Cards states</h4>
                     {{ profiler_dump(collector.lastCards)}}
+                    <h4>Full game state</h4>
+                    {{ profiler_dump(collector.fullLastGameState) }}
                 </div>
             {% endif %}
         </div>
