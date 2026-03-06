@@ -48,6 +48,7 @@ final class GameReplayTest extends TestCase
             'replay1' => ['replay1'],
             'replay2' => ['replay2'],
             'replay3' => ['replay3'],
+            'replay4' => ['replay4'],
         ];
     }
 
