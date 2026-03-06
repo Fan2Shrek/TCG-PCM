@@ -108,7 +108,7 @@ export default function HoverableCard({ card, size = "md", onHover, onClick }: H
   }, [onClick, card.id, tilt.y]);
 
   return (
-    <div ref={rootRef} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
+    <div ref={rootRef} onClick={handleClick} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave} className="cursor-pointer">
       <Card card={card} size={size} tilt={tilt} glare={glare} isHovering={isHovering} style={style} />
     </div>
   );

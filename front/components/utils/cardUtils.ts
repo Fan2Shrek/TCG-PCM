@@ -50,9 +50,11 @@ export const remToPx = (rem: number): number => {
 };
 
 export const getCardAspectRatio = (): number => {
-
-  const root = document.documentElement;
-  const value = getComputedStyle(root).getPropertyValue('--aspect-card').trim();
+  if (typeof document === 'undefined') {
+    return 0;
+  }
+  
+  const value = getComputedStyle(document.documentElement).getPropertyValue('--aspect-card').trim();
   if (!value) {
     return 1;
   }
@@ -76,7 +78,7 @@ export const cardsHandComputeCardPosition = (index: number, totalCards: number, 
   const effectiveMiddleIndex = hoveredCardIndex ?? middleIndex;
   const normalizedIndex = index - effectiveMiddleIndex;
 
-  const angle = middleIndex === 0 ? 0 : (normalizedIndex / middleIndex) * (arcAngleRadian / 2);
+  const angle = middleIndex === 0 ? 0 : (normalizedIndex / middleIndex) * (arcAngleRadian / 1.8);
   const x = radius * Math.sin(angle);
   const y = -radius * Math.cos(angle);
 

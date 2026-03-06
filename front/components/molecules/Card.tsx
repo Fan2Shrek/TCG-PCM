@@ -26,7 +26,7 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
 
   return (
     <div
-      className={`relative rounded-xl ${cardAspectRatio} ${cardSizeInfo} transform-3d will-change-transform cursor-pointer ${className ?? ''}`}
+      className={`relative rounded-xl ${cardAspectRatio} ${cardSizeInfo} transform-3d will-change-transform user-select-none${className ?? ''}`}
       style={
         {
           transform: `perspective(1000px) rotateX(${appliedTilt.x}deg) rotateY(${appliedTilt.y}deg) rotateZ(${appliedTilt.z}deg)`,
