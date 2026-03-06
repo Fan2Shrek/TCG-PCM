@@ -34,6 +34,7 @@ final class PlayGameHandler
 
         $room = $command->getCurrentResource();
         $state = $this->gameStateRepository->get($room);
+        dd($state);
 
         if (!$state) {
             throw HttpException::fromStatusCode(Response::HTTP_NOT_FOUND, 'Game state not found');
