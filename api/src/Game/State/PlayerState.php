@@ -24,6 +24,17 @@ readonly class PlayerState
         public array $discardPile = [],
     ) {}
 
+    public function isAlive(): bool
+    {
+        return $this->healthPoints > 0;
+    }
+
+    public function hasCardInHand(string $cardId): bool
+    {
+        return \in_array($cardId, $this->hand, true);
+    }
+
+    #[\NoDiscard]
     public function withUpdatedHealth(int $newHealth): self
     {
         return clone($this, [
@@ -35,6 +46,7 @@ readonly class PlayerState
      * @param string[] $newHand
      * @param string[] $newDeck
      */
+    #[\NoDiscard]
     public function withNewHandAndDeck(array $newHand, array $newDeck): self
     {
         return clone($this, [
@@ -43,16 +55,7 @@ readonly class PlayerState
         ]);
     }
 
-    public function isAlive(): bool
-    {
-        return $this->healthPoints > 0;
-    }
-
-    public function hasCardInHand(string $cardId): bool
-    {
-        return \in_array($cardId, $this->hand, true);
-    }
-
+    #[\NoDiscard]
     public function removeCardFromHand(string $cardId): self
     {
         $hand = $this->hand;
@@ -69,6 +72,7 @@ readonly class PlayerState
         ]);
     }
 
+    #[\NoDiscard]
     public function withDiscardedCard(string $cardId): self
     {
         return clone($this, [
@@ -76,6 +80,7 @@ readonly class PlayerState
         ]);
     }
 
+    #[\NoDiscard]
     public function withPlayArea(PlayArea $playArea): self
     {
         return clone($this, [

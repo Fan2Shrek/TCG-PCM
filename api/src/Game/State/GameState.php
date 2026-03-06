@@ -72,75 +72,9 @@ final readonly class GameState
         return !$this->player1->isAlive() || !$this->player2->isAlive();
     }
 
-    public function withUpdatedPlayer(PlayerState $updatedPlayer): GameState
-    {
-        if ($this->player1->player->id === $updatedPlayer->player->id) {
-            return clone($this, [
-                'player1' => $updatedPlayer,
-            ]);
-        }
-
-        if ($this->player2->player->id === $updatedPlayer->player->id) {
-            return clone($this, [
-                'player2' => $updatedPlayer,
-            ]);
-        }
-
-        throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
-    }
-
-    public function withCurrentPlayer(string $currentPlayer): GameState
-    {
-        if (!\in_array($currentPlayer, [$this->player1->player->id, $this->player2->player->id], true)) {
-            throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $currentPlayer));
-        }
-
-        return clone($this, [
-            'currentPlayer' => $currentPlayer,
-        ]);
-    }
-
-    public function withLastEventId(int $lastEventId): GameState
-    {
-        return clone($this, [
-            'lastEventId' => $lastEventId,
-        ]);
-    }
-
-    public function removeCard(string $cardId): GameState
-    {
-        $cards = $this->cards;
-        unset($cards[$cardId]);
-
-        return clone($this, [
-            'cards' => $cards,
-        ]);
-    }
-
-    public function addCard(CardState $card): GameState
-    {
-        $cards = $this->cards;
-        $cards[$card->instanceId] = $card;
-
-        return clone($this, [
-            'cards' => $cards,
-            'lastAddedCardId' => $card->instanceId,
-        ]);
-    }
-
     public function getCardState(string $cardId): ?CardState
     {
         return $this->cards[$cardId] ?? null;
-    }
-
-    public function withUpdatedCardState(CardState $card): GameState
-    {
-        $cards = $this->cards;
-        $cards[$card->instanceId] = $card;
-
-        return clone($this, [
-            'cards' => $cards,
-        ]);
     }
 
     /**
@@ -157,5 +91,77 @@ final readonly class GameState
     public function getLastAddedCardId(): ?string
     {
         return $this->lastAddedCardId;
+    }
+
+    #[\NoDiscard]
+    public function withUpdatedPlayer(PlayerState $updatedPlayer): self
+    {
+        if ($this->player1->player->id === $updatedPlayer->player->id) {
+            return clone($this, [
+                'player1' => $updatedPlayer,
+            ]);
+        }
+
+        if ($this->player2->player->id === $updatedPlayer->player->id) {
+            return clone($this, [
+                'player2' => $updatedPlayer,
+            ]);
+        }
+
+        throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $updatedPlayer->player->id));
+    }
+
+    #[\NoDiscard]
+    public function withCurrentPlayer(string $currentPlayer): self
+    {
+        if (!\in_array($currentPlayer, [$this->player1->player->id, $this->player2->player->id], true)) {
+            throw new \InvalidArgumentException(\sprintf('Player %s not found in GameState', $currentPlayer));
+        }
+
+        return clone($this, [
+            'currentPlayer' => $currentPlayer,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function withLastEventId(int $lastEventId): self
+    {
+        return clone($this, [
+            'lastEventId' => $lastEventId,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function withUpdatedCardState(CardState $card): self
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function removeCard(string $cardId): self
+    {
+        $cards = $this->cards;
+        unset($cards[$cardId]);
+
+        return clone($this, [
+            'cards' => $cards,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function addCard(CardState $card): self
+    {
+        $cards = $this->cards;
+        $cards[$card->instanceId] = $card;
+
+        return clone($this, [
+            'cards' => $cards,
+            'lastAddedCardId' => $card->instanceId,
+        ]);
     }
 }
