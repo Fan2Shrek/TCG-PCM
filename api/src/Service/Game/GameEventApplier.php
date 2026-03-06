@@ -235,9 +235,13 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('DiscardCard requires a cardId');
         }
 
-        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
-            throw new \LogicException('DiscardCard requires a playerId');
+        $cardState = $gameState->getCardState($cardId);
+
+        if (!$cardState) {
+            throw new \LogicException('DiscardCard requires a valid cardId');
         }
+
+        $playerId = $cardState->ownerId;
 
         $player = $gameState->getPlayer($playerId);
         $player = $player->withDiscardedCard($cardId);

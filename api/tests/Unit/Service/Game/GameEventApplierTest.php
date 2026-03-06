@@ -166,14 +166,15 @@ final class GameEventApplierTest extends TestCase
     public function testCardDiscarded()
     {
         $eventApplier = $this->getSut();
-        $state = $this->getInitialGameState();
+        $state = $this->getInitialGameState(cards: [
+            'D6' => new CardState('D6', 'D6', 'player2', []),
+        ]);
 
         $event = new GameEvent(
             1,
             GameEventTypeEnum::CARD_DISCARDED,
             GameEvent::GAME_EVENT,
             [
-                'playerId' => 'player2',
                 'cardId' => 'D6',
             ]
         );

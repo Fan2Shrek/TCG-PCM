@@ -2,19 +2,20 @@ type: http_request
 model: http_request
 id: rq_wUHudz2tLN
 createdAt: 2026-03-03T15:24:26.668775164
-updatedAt: 2026-03-06T10:53:42.513627888
+updatedAt: 2026-03-06T17:21:41.499060224
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_XqjkG6pswj
 authentication: {}
 authenticationType: null
 body:
-  text: |
+  text: |+
     {
       "actionId": "play_card",
       "payload": {
-        "cardId": "315a57f2-79ea-45f5-b7b1-d38a1bd38b5f"
+        "cardId": "4cf933d4-a492-4b4e-9f15-6a9353563df0"
       }
     }
+
 bodyType: application/json
 description: ''
 headers:

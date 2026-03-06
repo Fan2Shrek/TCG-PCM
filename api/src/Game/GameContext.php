@@ -152,4 +152,22 @@ class GameContext
     {
         return array_last($this->events)?->type === GameEventTypeEnum::CARD_ACTION_PREVENTED;
     }
+
+    public function preventLastAction(): void
+    {
+        $this->pushGameEvent(GameEventTypeEnum::CARD_ACTION_PREVENTED);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMonsters(): array
+    {
+        return array_merge($this->state->player1->playArea->monsterCards, $this->state->player2->playArea->monsterCards);
+    }
+
+    public function discardCard(string $cardId): void
+    {
+        $this->pushGameEvent(GameEventTypeEnum::CARD_DISCARDED, ['cardId' => $cardId]);
+    }
 }
