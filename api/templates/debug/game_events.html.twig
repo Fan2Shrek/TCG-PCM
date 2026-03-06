@@ -62,6 +62,7 @@
             <tr>
                 <th class="text-right">Id</th>
                 <th>Health point</th>
+                <th>Coins</th>
                 <th>Hand</th>
                 <th>Play area</th>
             </tr>
@@ -72,6 +73,7 @@
                 <tr>
                     <td class="text-right nowrap">{{ player.player.id }}</td>
                     <td class="font-normal">{{ player.healthPoints }}</td>
+                    <td class="font-normal">{{ player.coins }}</td>
                     <td class="font-normal">{{ player.hand|join("\n")|nl2br }}</td>
                     <td class="font-normal">{{ profiler_dump(collector.playArea(player.player.id)) }}</td>
                 </tr>

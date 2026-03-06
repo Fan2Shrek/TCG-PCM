@@ -264,6 +264,15 @@ final class GameManagerTest extends TestCase
             ),
             new GameEvent(
                 0,
+                GameEventTypeEnum::COINS_GAINED,
+                GameEvent::GAME_EVENT,
+                [
+                    'playerId' => $gameState->player2->player->id,
+                    'amount' => 3,
+                ],
+            ),
+            new GameEvent(
+                0,
                 GameEventTypeEnum::CARD_DRAWN,
                 GameEvent::GAME_EVENT,
                 ['playerId' => $gameState->player2->player->id],
@@ -271,37 +280,6 @@ final class GameManagerTest extends TestCase
         ];
 
         self::assertEquals($expected, $events);
-    }
-
-    public function testEndTurnCallTurnAwareCard()
-    {
-        $gm = $this->getSut();
-
-        $gameState = $this->createGameState();
-        $player = $gameState->player1->withPlayArea($gameState->player1->playArea->addPassiveCard('card1O'));
-        $gameState = new GameState(
-            $player,
-            $gameState->player2,
-            $gameState->lastEventId,
-            $gameState->currentPlayer,
-            [
-                'card1O' => new CardState(
-                    'card1O',
-                    SpyCard::class,
-                    '1',
-                    [],
-                ),
-            ],
-        );
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::END_TURN,
-            [],
-        );
-
-        $gm->handleAction($action, $gameState)->events;
-
-        self::assertTrue(SpyCard::$turnStartCalled);
     }
 
     public function testEndTurnWithNewRound()
@@ -340,6 +318,15 @@ final class GameManagerTest extends TestCase
             ),
             new GameEvent(
                 0,
+                GameEventTypeEnum::COINS_GAINED,
+                GameEvent::GAME_EVENT,
+                [
+                    'playerId' => $gameState->player1->player->id,
+                    'amount' => 3,
+                ],
+            ),
+            new GameEvent(
+                0,
                 GameEventTypeEnum::CARD_DRAWN,
                 GameEvent::GAME_EVENT,
                 ['playerId' => $gameState->player1->player->id],
@@ -347,6 +334,37 @@ final class GameManagerTest extends TestCase
         ];
 
         self::assertEquals($expected, $events);
+    }
+
+    public function testEndTurnCallTurnAwareCard()
+    {
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $player = $gameState->player1->withPlayArea($gameState->player1->playArea->addPassiveCard('card1O'));
+        $gameState = new GameState(
+            $player,
+            $gameState->player2,
+            $gameState->lastEventId,
+            $gameState->currentPlayer,
+            [
+                'card1O' => new CardState(
+                    'card1O',
+                    SpyCard::class,
+                    '1',
+                    [],
+                ),
+            ],
+        );
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::END_TURN,
+            [],
+        );
+
+        $gm->handleAction($action, $gameState)->events;
+
+        self::assertTrue(SpyCard::$turnStartCalled);
     }
 
     public function testPropagate()
@@ -362,7 +380,7 @@ final class GameManagerTest extends TestCase
 
         $events = $gm->handleAction($action, $gameState)->events;
 
-        self::assertCount(3, $events);
+        self::assertCount(4, $events);
     }
 
     private function createGameState(): GameState

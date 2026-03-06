@@ -152,7 +152,7 @@ final class PlayerStateTest extends TestCase
             playArea: new PlayArea(),
         );
 
-        $newPlayerState = $playerState->withCoins(10);
+        $newPlayerState = $playerState->withUpdatedCoins(10);
 
         self::assertSame(10, $newPlayerState->coins);
         self::assertSame(0, $playerState->coins);

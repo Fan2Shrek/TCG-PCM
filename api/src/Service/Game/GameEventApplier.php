@@ -30,6 +30,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => $this->applyCardPlaceInMonsterArea($event, $gameState),
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
+            GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
             GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
         };
 
@@ -296,7 +297,7 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('Update card state requires a cardId');
         }
 
-        if (null === ($playerId = $event->data['stateToUpdate'] ?? null) || !\is_array($playerId)) {
+        if (null === ($newStats = $event->data['stateToUpdate'] ?? null) || !\is_array($newStats)) {
             throw new \LogicException('Update card state requires a playerId');
         }
 
@@ -304,8 +305,31 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('Update card state requires a valid cardId');
         }
 
-        $newState = $state->updateValues($event->data['stateToUpdate']);
+        $newState = $state->updateValues($newStats);
 
         return $gameState->withUpdatedCardState($newState);
+    }
+
+    private function applyCoinsChange(GameEvent $event, GameState $state): GameState
+    {
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('Coins changed requires a playerId');
+        }
+
+        if (null === ($amount = $event->data['amount'] ?? null) || !\is_int($amount)) {
+            throw new \LogicException('Coins changed requires a cardId');
+        }
+
+        $player = $state->getPlayer($playerId);
+
+        $newCoins = match ($event->type) {
+            GameEventTypeEnum::COINS_GAINED => $player->coins + $amount,
+            GameEventTypeEnum::COINS_LOST => $player->coins - $amount,
+            default => throw new \LogicException('Invalid event type for coins change'),
+        };
+
+        $newPlayer = $player->withUpdatedCoins($newCoins);
+
+        return $state->withUpdatedPlayer($newPlayer);
     }
 }

@@ -90,7 +90,7 @@ readonly class PlayerState
     }
 
     #[\NoDiscard]
-    public function withCoins(int $coins): self
+    public function withUpdatedCoins(int $coins): self
     {
         return clone($this, [
             'coins' => $coins,

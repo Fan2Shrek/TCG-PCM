@@ -29,12 +29,12 @@ final class PierreSaidNoMonsterZone extends AbstractPlayableCard
         return 'Discard all active monsters';
     }
 
-    public function play(GameContext $gameContext, array $data = []): void
+    public function play(GameContext $context, array $data = []): void
     {
-        $monsters = $gameContext->getMonsters();
+        $monsters = $context->getMonsters();
 
         foreach ($monsters as $monster) {
-            $gameContext->discardCard($monster);
+            $context->discardCard($monster);
         }
     }
 }

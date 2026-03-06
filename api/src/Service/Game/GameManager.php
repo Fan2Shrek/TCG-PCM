@@ -123,6 +123,10 @@ class GameManager
                 GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
                     'playerId' => $state->getNextPlayer()->id,
                 ]),
+                GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
+                    'playerId' => $state->getNextPlayer()->id,
+                    'amount' => $this->calculateCoinsGain($state),
+                ]),
                 GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
                     'playerId' => $state->getNextPlayer()->id,
                 ]),
@@ -439,5 +443,12 @@ class GameManager
         }
 
         return $cardsIds;
+    }
+
+    private function calculateCoinsGain(GameState $state): int
+    {
+        // maybe round based
+
+        return 3;
     }
 }
