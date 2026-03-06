@@ -12,6 +12,7 @@ use App\Game\Card\D6Card;
 use App\Game\Card\GitmanCard;
 use App\Game\Card\HackedZoneCard;
 use App\Game\Card\Monster\RedBloonsMonsterCard;
+use App\Game\Card\PierreSaidNoMonsterZone;
 use App\Game\Card\PlacentaCard;
 use App\Game\Card\SpicyD6Card;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -40,6 +41,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             $id,
             $id,
             new HackedZoneCard()->getId(),
+            new PierreSaidNoMonsterZone()->getId(),
         ];
         $pierrotCardId = new PierrotCard()->getId();
 
