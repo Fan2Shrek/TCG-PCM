@@ -34,7 +34,6 @@ final class PlayGameHandler
 
         $room = $command->getCurrentResource();
         $state = $this->gameStateRepository->get($room);
-        dd($state);
 
         if (!$state) {
             throw HttpException::fromStatusCode(Response::HTTP_NOT_FOUND, 'Game state not found');
@@ -63,6 +62,8 @@ final class PlayGameHandler
 
             $lastId = $event->id ? $event->id : null;
         }
+
+        $state = $resolution->state;
 
         if ($lastId) {
             $state = $state->withLastEventId($lastId);

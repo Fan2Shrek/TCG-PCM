@@ -51,7 +51,7 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(15, $newState->player2->healthPoints);
     }
 
-    public function testApplyTurnEneded()
+    public function testApplyTurnEnded()
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
@@ -61,7 +61,7 @@ final class GameEventApplierTest extends TestCase
             GameEventTypeEnum::TURN_ENDED,
             GameEvent::PLAYER_EVENT,
             [
-                'playerId' => 'player2',
+                'playerId' => 'player1',
             ]
         );
 

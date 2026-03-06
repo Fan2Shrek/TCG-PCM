@@ -107,6 +107,11 @@ final class GameDataCollector extends AbstractDataCollector
         return $this->data['lastGameState'] ?? null;
     }
 
+    public function getFullLastGameState(): ?Data
+    {
+        return $this->cloneVar($this->data['lastGameState']) ?? null;
+    }
+
     public function getLastCards(): Data|GameState|null
     {
         return $this->cloneVar($this->data['lastGameState']->cards) ?? null;

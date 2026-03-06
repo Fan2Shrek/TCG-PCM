@@ -146,7 +146,7 @@ class GameManager
             throw new \LogicException('playerId is required to play a card');
         }
 
-        $card = $this->cardRuntimeMap->getByState($cardState);
+        $card = $this->cardRuntimeMap->create($cardState->templateId);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
 
