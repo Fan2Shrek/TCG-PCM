@@ -87,12 +87,6 @@ count = 1
 [[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Game\Card\CardState::updatevalues`: expected `array<array-key, mixed>`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "src/Service/Game/GameEventApplier.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `app\game\card\effect\effectstate::__construct`: expected `array<array-key, mixed>`, but found `nonnull`.'
 count = 1
 

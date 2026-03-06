@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\GameReplay;
 
+use App\Game\AbstractCard;
 use App\Service\Game\CardFactory;
+use App\Service\Game\CardFactoryInterface;
+use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
@@ -49,6 +52,7 @@ final class GameReplayTest extends TestCase
             'replay2' => ['replay2'],
             'replay3' => ['replay3'],
             'replay4' => ['replay4'],
+            'replay5' => ['replay5'],
         ];
     }
 
@@ -59,19 +63,8 @@ final class GameReplayTest extends TestCase
         return new GameStateRebuilder(
             new GameManager(
                 new CardRuntimeMap(
-                    new CardFactory(
+                    new TestCardFactory(
                         new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())),
-                        new class implements CacheInterface {
-                            public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                                return $callable();
-                            }
-
-                            public function delete(string $key): bool
-                            {
-                                // no-op
-                                return true;
-                            }
-                        }
                     ),
                 ),
                 new ReplayableGameContextFactory(),
@@ -85,5 +78,26 @@ final class GameReplayTest extends TestCase
         return [
             'dummy_character' => DummyCharacterCard::class,
         ];
+    }
+}
+
+class TestCardFactory implements CardFactoryInterface
+{
+    public function __construct(
+        private CardRegistryInterface $cardRegistry,
+    ) {
+    }
+
+    public function create(string $cardId): AbstractCard
+    {
+        return clone $this->cardRegistry->getCardTemplateById($cardId);
+    }
+
+    public function createWithState(string $cardId, \App\Game\Card\CardState $state): AbstractCard
+    {
+        $card = $this->create($cardId);
+        $card->setState($state);
+
+        return $card;
     }
 }

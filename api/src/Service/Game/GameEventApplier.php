@@ -245,6 +245,15 @@ class GameEventApplier implements GameEventApplierInterface
         $playerId = $cardState->ownerId;
 
         $player = $gameState->getPlayer($playerId);
+
+        if (\in_array($cardId, $player->playArea->passiveCards, true)) {
+            $newPlayArea = $player->playArea->removePassiveCard($cardId);
+            $player = $player->withPlayArea($newPlayArea);
+        } elseif (\in_array($cardId, $player->playArea->monsterCards, true)) {
+            $newPlayArea = $player->playArea->removeMonsterCard($cardId);
+            $player = $player->withPlayArea($newPlayArea);
+        }
+
         $player = $player->withDiscardedCard($cardId);
 
         return $gameState->withUpdatedPlayer($player)->removeCard($cardId);

@@ -38,10 +38,14 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
 
     public function play(GameContext $context, array $data = []): void
     {
-        $damageValue = $this->getValue(self::DAMAGE_MULTIPLIER, true) * $this->getCommitCount();
+        $value = fn() => $this->getValue(self::DAMAGE_MULTIPLIER, true) * $this->getCommitCount();
 
-        $context->runtimeValueEffect($damageValue);
-        $context->attack($damageValue);
+        $value = $context->runtimeValueEffect($value);
+
+        if (!\is_int($value)) {
+            throw new \RuntimeException('Expected an integer value for GitmanCard damage calculation.');
+        }
+        $context->attack($value);
     }
 
     public function computeValue(): mixed
