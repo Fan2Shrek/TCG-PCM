@@ -97,9 +97,15 @@ class GameContext
         return $result;
     }
 
-    public function runtimeValueEffect(mixed $value): void
+    public function runtimeValueEffect(mixed $value): mixed
     {
+        if (\is_callable($value)) {
+            $value = $value();
+        }
+
         $this->pushGameEvent(GameEventTypeEnum::CARD_RUNTIME_VALUE, ['value' => $value]);
+
+        return $value;
     }
 
     public function addEffect(CardEffectEnum $effect, string $cardId, ?array $effectValues = null): void

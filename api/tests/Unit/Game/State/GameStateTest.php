@@ -188,6 +188,7 @@ final class GameStateTest extends TestCase
                 '',
                 [],
                 [],
+                0,
                 new PlayArea(),
             ),
         );
@@ -214,6 +215,7 @@ final class GameStateTest extends TestCase
                 '',
                 [],
                 [],
+                0,
                 new PlayArea(),
             ),
         );
@@ -241,6 +243,7 @@ final class GameStateTest extends TestCase
                 '',
                 [],
                 [],
+                0,
                 new PlayArea(),
             ),
         );
@@ -326,6 +329,7 @@ final class GameStateTest extends TestCase
             characterCardId: '',
             hand: [],
             drawPile: [],
+            coins: 1,
             playArea: new PlayArea(),
         );
     }

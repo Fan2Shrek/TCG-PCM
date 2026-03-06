@@ -38,7 +38,7 @@ final class PlayerStateType extends Type
             return $value;
         }
 
-        /** @var array{player: array{id: string, name: string}, healthPoints: int, maxHealthPoints: int, characterCardId: string, hand: string[], drawPile: array<string, string>} $data */
+        /** @var array{player: array{id: string, name: string}, healthPoints: int, maxHealthPoints: int, characterCardId: string, hand: string[], drawPile: array<string, string>, coins: int} $data */
         $data = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         return new PlayerState(
@@ -48,6 +48,7 @@ final class PlayerStateType extends Type
             $data['characterCardId'],
             $data['hand'],
             $data['drawPile'],
+            $data['coins'],
             new PlayArea(),
         );
     }

@@ -259,6 +259,47 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(5, $newState->cards['test']->currentHealthPoints);
     }
 
+    public function testCoinsGained()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::COINS_GAINED,
+            GameEvent::GAME_EVENT,
+            [
+                'playerId' => '1',
+                'amount' => 5,
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertSame(5, $newState->getPlayer('1')->coins);
+    }
+
+    public function testCoinsLost()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $state = $state->withUpdatedPlayer($state->player1->withUpdatedCoins(10));
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::COINS_LOST,
+            GameEvent::GAME_EVENT,
+            [
+                'playerId' => 'player1',
+                'amount' => 5,
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertSame(5, $newState->getPlayer('player1')->coins);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(
@@ -282,6 +323,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                0,
                 new PlayArea(
                     [],
                     ['monster']
@@ -299,6 +341,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                0,
                 new PlayArea(),
             ),
             $lastEventId,

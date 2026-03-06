@@ -24,6 +24,7 @@ return [
             [
                 'player1_card2' => 'Spicy-D6',
             ],
+            5,
             new PlayArea(),
         ),
         new PlayerState(
@@ -38,6 +39,7 @@ return [
             [
                 'player2_card1' => 'Spicy-D6',
             ],
+            5,
             new PlayArea(),
         ),
         0,
@@ -106,6 +108,7 @@ return [
             'player1_character',
             [],
             [],
+            6,
             new PlayArea(),
             [
                 'player1_card1',
@@ -122,6 +125,7 @@ return [
             'player2_character',
             [],
             [],
+            7,
             new PlayArea(),
             [
                 'player2_card1',

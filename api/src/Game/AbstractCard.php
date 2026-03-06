@@ -104,4 +104,15 @@ abstract class AbstractCard
             $this->addEffect($effect);
         }
     }
+
+    public function getCost(): int
+    {
+        return match (static::$rarity) {
+            CardRarityEnum::COMMON => 1,
+            CardRarityEnum::UNCOMMON => 2,
+            CardRarityEnum::RARE => 3,
+            CardRarityEnum::EPIC => 4,
+            CardRarityEnum::LEGENDARY => 5,
+        };
+    }
 }

@@ -20,6 +20,7 @@ use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Exception\CardCannotAttackExpcetion;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
+use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\Exception\NotYourTurnException;
 use App\Game\Exception\UnknowActionException;
 use App\Game\Player;
@@ -34,6 +35,7 @@ use Symfony\Component\Uid\Uuid;
 class GameManager
 {
     private const INITIAL_HAND_SIZE = 5;
+    private const INITIAL_COINS = 5;
 
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
@@ -122,6 +124,10 @@ class GameManager
                 GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
                     'playerId' => $state->getNextPlayer()->id,
                 ]),
+                GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
+                    'playerId' => $state->getNextPlayer()->id,
+                    'amount' => $this->calculateCoinsGain($state),
+                ]),
                 GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
                     'playerId' => $state->getNextPlayer()->id,
                 ]),
@@ -151,8 +157,19 @@ class GameManager
         $card = $this->cardRuntimeMap->create($cardState->templateId);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
-
         $events = [];
+
+        $cardCost = $card->getCost();
+
+        if ($state->getCurrentPlayerState()->coins < $cardCost) {
+            throw new NotEnoughCoinsException($cardCost, $state->getCurrentPlayerState()->coins);
+        }
+
+        $events[] = GameEvent::game(GameEventTypeEnum::COINS_LOST, [
+            'playerId' => $event->data['playerId'],
+            'amount' => $cardCost,
+        ]);
+
         if ($card instanceof AbstractPlayableCard) {
             $card->play($ctx, \is_array($data) ? $data : []);
 
@@ -419,6 +436,7 @@ class GameManager
             $this->createCardId()->toString(),
             [],
             $cardsIds,
+            self::INITIAL_COINS,
             new PlayArea(),
         );
     }
@@ -437,5 +455,12 @@ class GameManager
         }
 
         return $cardsIds;
+    }
+
+    private function calculateCoinsGain(GameState $state): int
+    {
+        // maybe round based
+
+        return 3;
     }
 }

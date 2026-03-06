@@ -34,6 +34,7 @@ final class HackedZoneCardTest extends CardTestCase
                     'card2',
                 ],
                 [],
+                0,
                 new PlayArea(['card3']),
             ),
             new PlayerState(
@@ -46,6 +47,7 @@ final class HackedZoneCardTest extends CardTestCase
                     'card5',
                 ],
                 [],
+                0,
                 new PlayArea(['card6']),
             ),
             null,

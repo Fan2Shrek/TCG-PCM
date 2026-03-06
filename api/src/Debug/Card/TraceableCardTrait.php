@@ -160,6 +160,11 @@ trait TraceableCardTrait
         $this->stopwatch->stop($id);
     }
 
+    public function getCost(): int
+    {
+        return $this->card->getCost();
+    }
+
     public function __clone()
     {
         $this->card = clone $this->card;

@@ -66,4 +66,11 @@ class ReplayableGameContext extends GameContext
     {
         return (string) ($this->rollsFactory)();
     }
+
+    public function runtimeValueEffect(mixed $value): mixed
+    {
+        $value = ($this->rollsFactory)();
+
+        return parent::runtimeValueEffect($value);
+    }
 }
