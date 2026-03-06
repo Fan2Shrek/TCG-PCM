@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_Fn8y7KLqQk
+createdAt: 2026-03-06T13:32:17.281618146
+updatedAt: 2026-03-06T13:34:56.539037402
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_JLpCFxuyh2
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "actionId": "attack",
+      "payload": {
+        "cardId": "1f7ef3e4-1b21-4007-8108-7c2d41093dcc",
+        "targetId": ""
+      }
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: null
+method: POST
+name: Attack
+sortPriority: 2000.0
+url: ${[host]}/api/game/${[room_id]}/play
+urlParameters: []

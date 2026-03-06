@@ -15,6 +15,11 @@ final readonly class PlayArea
         public array $monsterCards = [],
     ) {}
 
+    public function hasMonsterCard(string $id): bool
+    {
+        return \in_array($id, $this->monsterCards, true);
+    }
+
     /**
      * @return string[]
      */

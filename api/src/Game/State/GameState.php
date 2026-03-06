@@ -57,6 +57,11 @@ final readonly class GameState
         return $this->getCurrentPlayerState()->player;
     }
 
+    public function getOtherPlayerState(): PlayerState
+    {
+        return $this->currentPlayer === $this->player1->player->id ? $this->player2 : $this->player1;
+    }
+
     public function getNextPlayer(): Player
     {
         return $this->currentPlayer === $this->player1->player->id ? $this->player2->player : $this->player1->player;
