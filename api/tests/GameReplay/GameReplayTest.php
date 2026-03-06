@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\GameReplay;
 
-use App\Enum\GameEventTypeEnum;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\GameEventApplier;
@@ -31,7 +30,7 @@ final class GameReplayTest extends TestCase
 
         $data = require $fileName;
 
-        $gameState = $data['gameState'];
+        $gameState = $data['initialGameState'];
         $events = $data['events'];
 
         $gameReplayer = $this->getGameStateRebuilder();
@@ -48,6 +47,7 @@ final class GameReplayTest extends TestCase
         return [
             'replay1' => ['replay1'],
             'replay2' => ['replay2'],
+            'replay3' => ['replay3'],
         ];
     }
 

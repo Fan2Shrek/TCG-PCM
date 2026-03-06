@@ -11,7 +11,7 @@ use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 
 return [
-    'gameState' => new GameState(
+    'initialGameState' => new GameState(
         new PlayerState(
             new Player(
                 '1',

@@ -34,6 +34,7 @@
         "symfony/serializer": ">=8.0.5",
         "symfony/twig-bundle": ">=8.0.4",
         "symfony/validator": ">=8.0.5",
+        "symfony/var-exporter": "8.0.*",
         "symfony/yaml": ">=8.0.1"
     },
     "config": {

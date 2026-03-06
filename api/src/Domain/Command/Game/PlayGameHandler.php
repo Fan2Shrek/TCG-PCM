@@ -48,6 +48,8 @@ final class PlayGameHandler
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, $e->getMessage());
         } catch (\Throwable $e) {
             // @todo retry without redis cache
+
+            throw $e;
         }
 
         $lastId = null;
