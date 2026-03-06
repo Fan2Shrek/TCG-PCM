@@ -201,6 +201,7 @@ final class GameContextTest extends TestCase
                 characterCardId: 'characterCardId',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             new PlayerState(
@@ -210,6 +211,7 @@ final class GameContextTest extends TestCase
                 characterCardId: 'characterCardId',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             null,
@@ -233,6 +235,7 @@ final class GameContextTest extends TestCase
                 characterCardId: 'characterCardId1',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             new PlayerState(
@@ -242,6 +245,7 @@ final class GameContextTest extends TestCase
                 characterCardId: 'characterCardId2',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             null,
@@ -265,6 +269,7 @@ final class GameContextTest extends TestCase
                 characterCardId: '',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             new PlayerState(
@@ -274,6 +279,7 @@ final class GameContextTest extends TestCase
                 characterCardId: '',
                 hand: [],
                 drawPile: [],
+                coins: 1,
                 playArea: new PlayArea(),
             ),
             null,

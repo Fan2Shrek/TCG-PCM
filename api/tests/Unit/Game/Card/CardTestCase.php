@@ -84,6 +84,7 @@ abstract class CardTestCase extends TestCase
             '',
             [],
             [],
+            0,
             new PlayArea(),
         );
     }

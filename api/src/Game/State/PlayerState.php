@@ -20,6 +20,7 @@ readonly class PlayerState
         public string $characterCardId,
         public array $hand,
         public array $drawPile,
+        public int $coins,
         public PlayArea $playArea,
         public array $discardPile = [],
     ) {}
@@ -85,6 +86,14 @@ readonly class PlayerState
     {
         return clone($this, [
             'playArea' => $playArea,
+        ]);
+    }
+
+    #[\NoDiscard]
+    public function withCoins(int $coins): self
+    {
+        return clone($this, [
+            'coins' => $coins,
         ]);
     }
 }

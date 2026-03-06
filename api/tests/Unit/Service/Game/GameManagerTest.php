@@ -122,6 +122,7 @@ final class GameManagerTest extends TestCase
                 '',
                 [],
                 ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
+                0,
                 new PlayArea(),
             ),
             new PlayerState(
@@ -131,6 +132,7 @@ final class GameManagerTest extends TestCase
                 '',
                 [],
                 ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
+                0,
                 new PlayArea(),
             ),
             0,
@@ -377,6 +379,7 @@ final class GameManagerTest extends TestCase
             [
                 'drawPile1' => DummyCard::class,
             ],
+            0,
             new PlayArea(),
         );
         $player2State = new PlayerState(
@@ -388,6 +391,7 @@ final class GameManagerTest extends TestCase
             [
                 'drawPile2' => DummyCard::class,
             ],
+            0,
             new PlayArea(),
         );
 

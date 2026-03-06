@@ -30,6 +30,7 @@ final class GameBuilder extends RoomBuilder
                 '',
                 ['1'],
                 [],
+                0,
                 new PlayArea(),
             ),
             new PlayerState(
@@ -39,6 +40,7 @@ final class GameBuilder extends RoomBuilder
                 '',
                 ['2'],
                 [],
+                0,
                 new PlayArea(),
             ),
             [

@@ -34,6 +34,7 @@ use Symfony\Component\Uid\Uuid;
 class GameManager
 {
     private const INITIAL_HAND_SIZE = 5;
+    private const INITIAL_COINS = 5;
 
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
@@ -419,6 +420,7 @@ class GameManager
             $this->createCardId()->toString(),
             [],
             $cardsIds,
+            self::INITIAL_COINS,
             new PlayArea(),
         );
     }

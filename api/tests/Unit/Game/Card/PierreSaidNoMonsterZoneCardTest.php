@@ -29,6 +29,7 @@ final class PierreSaidNoMonsterZoneCardTest extends CardTestCase
                 '',
                 [],
                 [],
+                1,
                 new PlayArea([], [
                     'monster1',
                     'monster2',
@@ -41,6 +42,7 @@ final class PierreSaidNoMonsterZoneCardTest extends CardTestCase
                 '',
                 [],
                 [],
+                1,
                 new PlayArea([], [
                     'monster3',
                 ]),

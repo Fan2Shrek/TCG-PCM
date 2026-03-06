@@ -282,6 +282,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                0,
                 new PlayArea(
                     [],
                     ['monster']
@@ -299,6 +300,7 @@ final class GameEventApplierTest extends TestCase
                 [
                     'id' => 'D6',
                 ],
+                0,
                 new PlayArea(),
             ),
             $lastEventId,
