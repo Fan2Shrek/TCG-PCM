@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Card from "../molecules/Card";
+import Card from "./Card";
 import { CardSize, CardWithPosition } from "../types/card";
 import { useDebouncedValue } from "../hooks/useDebounceValue";
 
-type CardInHandProps = {
+type HandCardProps = {
   positionedCard: CardWithPosition;
   hoverYOffset: number;
   cardSize: CardSize;
@@ -11,11 +11,10 @@ type CardInHandProps = {
   totalCards: number;
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
-  onClick: (card: CardWithPosition) => void;
   onDragCard: (e: React.MouseEvent) => void;
 };
 
-export default function CardInHand({
+export default function HandCard({
   positionedCard,
   hoverYOffset,
   cardSize,
@@ -23,9 +22,8 @@ export default function CardInHand({
   totalCards,
   onHover,
   onLeave,
-  onClick,
   onDragCard,
-}: CardInHandProps) {
+}: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
   const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
@@ -143,7 +141,6 @@ export default function CardInHand({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={handleMouseDown}
-      onClick={() => onClick(positionedCard)}
     >
       <Card
         card={positionedCard.card}

@@ -19,13 +19,13 @@ export const CARD_HAND_MIN_ARC_ANGLE = 10;
 export const CARD_HAND_ARC_ANGLE_SCALE = 10;
 export const DEGREES_TO_RADIANS = Math.PI / 180;
 
-export const calculateTilt = (x: number, y: number, currentRy: number) => {
+export const calculateTiltOnHover = (x: number, y: number, currentRy: number) => {
   const rotateX = (y - NORMALIZED_CENTER) * MAX_Y_TILT;
   const rotateY = (NORMALIZED_CENTER - x) * MAX_X_TILT + (currentRy > HALF_ROTATION ? FLIP_DEG : 0);
   return { x: rotateX, y: rotateY, z: 0 };
 };
 
-export const calculateGlare = (x: number, y: number, currentRy: number) => {
+export const calculateGlareOnHover = (x: number, y: number, currentRy: number) => {
   const glareX = currentRy > HALF_ROTATION ? (1 - x) * 100 : x * 100;
   const glareY = y * 100;
   return { x: glareX, y: glareY };

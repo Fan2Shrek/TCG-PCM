@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CardModel, CardSize, CardWithPosition } from "../types/card";
 import { getCardWidthRem, remToPx, getCardAspectRatio, cardsHandComputeArcParameters, cardsHandComputeCardPosition } from "../utils/cardUtils";
-import CardInHand from "../molecules/CardInHand";
+import HandCard from "../molecules/HandCard";
 import { useDebouncedValue } from "../hooks/useDebounceValue";
 
 export type CardsHandProps = {
@@ -102,10 +102,6 @@ export default function CardsHand({
     console.log(e);
   }
 
-  const handleCardClick = (card: CardWithPosition) => {
-    console.log(card);
-  };
-
   const handleCardHover = (card: CardWithPosition) => {
     setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
   };
@@ -119,7 +115,7 @@ export default function CardsHand({
   return (
     <div className={`relative w-82 h-82 ${className}`}>
       {positionedCards.map((positionedCard) => (
-        <CardInHand
+        <HandCard
           key={positionedCard.card.id}
           positionedCard={positionedCard}
           hoverYOffset={hoverYOffset}
@@ -128,7 +124,6 @@ export default function CardsHand({
           totalCards={cards.length}
           onHover={handleCardHover}
           onLeave={handleCardLeave}
-          onClick={handleCardClick}
           onDragCard={handleCardDrag}
         />
       ))}

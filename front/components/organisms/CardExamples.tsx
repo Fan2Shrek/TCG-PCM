@@ -1,6 +1,6 @@
 'use client';
 
-import HoverableCard from '@/components/molecules/HoverableCard';
+import InteractiveCard from '@/components/molecules/InteractiveCard';
 import { foilEffects } from '../types/card';
 
 export default function CardExamples() {
@@ -57,7 +57,7 @@ export default function CardExamples() {
         {/* SM - flipped true */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">SM (front)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...baseCardGuppy, id: 'sm' }}
             size="sm"
             onHover={handleHover}
@@ -68,7 +68,7 @@ export default function CardExamples() {
         {/* MD - default */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">MD (default)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...baseCardGuppy, id: 'md' }}
             size="md"
             onHover={handleHover}
@@ -79,7 +79,7 @@ export default function CardExamples() {
         {/* LG - non-interactive */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">LG (non-interactive, back)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...baseCardGuppy, id: 'lg' }}
             size="lg"
             onClick={handleClick}
@@ -89,7 +89,7 @@ export default function CardExamples() {
         {/* XL - big, front */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">XL (preview)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...baseCardGuppy, id: 'xl' }}
             size="xl"
             onHover={handleHover}
@@ -100,7 +100,7 @@ export default function CardExamples() {
         {/* XL - big, front */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">XL (preview)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...testBooster, id: 'test-booster' }}
             size="xl"
             onHover={handleHover}
@@ -111,7 +111,7 @@ export default function CardExamples() {
         {/* card with multiple layers */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-zinc-600">XL (multiple layers)</span>
-          <HoverableCard
+          <InteractiveCard
             card={{ ...baseCardIsaac, id: 'xl-isaac' }}
             size="xl"
             onHover={handleHover}

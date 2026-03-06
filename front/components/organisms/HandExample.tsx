@@ -1,7 +1,7 @@
 'use client';
 
 import React, { use, useEffect, useState } from 'react';
-import HoverableCard from '@/components/molecules/HoverableCard';
+import InteractiveCard from '@/components/molecules/InteractiveCard';
 import CardsHand from './CardsHand';
 import { foilEffects } from '../types/card';
 

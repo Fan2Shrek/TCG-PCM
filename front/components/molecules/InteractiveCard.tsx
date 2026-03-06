@@ -13,18 +13,18 @@ import {
   NORMAL_ANIMATION_DURATION_MS,
   SNAPBACK_ANIMATION_DURATION_MS,
   SNAPBACK_DELAY_MS,
-  calculateTilt,
-  calculateGlare,
+  calculateTiltOnHover,
+  calculateGlareOnHover,
 } from "../utils/cardUtils";
 
-export type HoverableCardProps = {
+export type InteractiveCardProps = {
   card: CardModel;
   size?: CardSize;
   onHover?: (cardId: string) => void;
   onClick?: (cardId: string) => void;
 };
 
-export default function HoverableCard({ card, size = "md", onHover, onClick }: HoverableCardProps) {
+export default function InteractiveCard({ card, size = "md", onHover, onClick }: InteractiveCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [tilt, setTilt] = useState(DEFAULT_TILT);
   const [glare, setGlare] = useState(DEFAULT_GLARE);
@@ -48,7 +48,7 @@ export default function HoverableCard({ card, size = "md", onHover, onClick }: H
   useEffect(() => {
     return () => clearTimeouts();
   }, []);
-
+  
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
 
@@ -65,8 +65,8 @@ export default function HoverableCard({ card, size = "md", onHover, onClick }: H
       const x = clamp((e.clientX - bounds.left) / bounds.width);
       const y = clamp((e.clientY - bounds.top) / bounds.height);
 
-      const newTilt = calculateTilt(x, y, tilt.y);
-      const newGlare = calculateGlare(x, y, tilt.y);
+      const newTilt = calculateTiltOnHover(x, y, tilt.y);
+      const newGlare = calculateGlareOnHover(x, y, tilt.y);
 
       setTilt(newTilt);
       setGlare(newGlare);
@@ -85,8 +85,8 @@ export default function HoverableCard({ card, size = "md", onHover, onClick }: H
     tiltBackTimeoutRef.current = window.setTimeout(() => {
       setStyle({ transition: `transform ${SNAPBACK_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)` });
 
-      const newTilt = calculateTilt(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
-      const newGlare = calculateGlare(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
+      const newTilt = calculateTiltOnHover(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
+      const newGlare = calculateGlareOnHover(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
 
       setTilt(newTilt);
       setGlare(newGlare);
