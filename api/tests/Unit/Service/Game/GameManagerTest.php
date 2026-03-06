@@ -15,6 +15,7 @@ use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\Exception\CardNotInHandException;
+use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\Exception\UnknowActionException;
 use App\Game\GameContext;
 use App\Game\Player;
@@ -197,9 +198,34 @@ final class GameManagerTest extends TestCase
         self::assertEquals($expected, $events);
     }
 
+    public function testCardPlayWithNoMoney()
+    {
+        self::expectException(NotEnoughCoinsException::class);
+        self::expectExceptionMessage('Action cost 1 coins, got 0');
+
+        $gm = $this->getSut();
+
+        $gameState = $this->createGameState();
+        $gameState = new GameState(
+            $gameState->player1->withUpdatedCoins(0),
+            $gameState->player2,
+            $gameState->lastEventId,
+            $gameState->currentPlayer,
+            $gameState->cards,
+        );
+        $action = new PlayerAction(
+            $gameState->player1->player,
+            PlayerAction::PLAY_CARD,
+            ['cardId' => 'card1'],
+        );
+
+        $gm->handleAction($action, $gameState)->events;
+    }
+
     public function testHandlePlayActionWithCardNoInDeck()
     {
-        $this->expectException(CardNotInHandException::class);
+        self::expectException(CardNotInHandException::class);
+
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
@@ -432,7 +458,7 @@ final class GameManagerTest extends TestCase
             [
                 'drawPile1' => DummyCard::class,
             ],
-            0,
+            10,
             new PlayArea(),
         );
         $player2State = new PlayerState(
@@ -444,7 +470,7 @@ final class GameManagerTest extends TestCase
             [
                 'drawPile2' => DummyCard::class,
             ],
-            0,
+            10,
             new PlayArea(),
         );
 

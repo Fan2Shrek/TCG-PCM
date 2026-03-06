@@ -20,6 +20,7 @@ use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Exception\CardCannotAttackExpcetion;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
+use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\Exception\NotYourTurnException;
 use App\Game\Exception\UnknowActionException;
 use App\Game\Player;
@@ -158,9 +159,15 @@ class GameManager
         $data = $event->data['data'] ?? [];
         $events = [];
 
+        $cardCost = $card->getCost();
+
+        if ($state->getCurrentPlayerState()->coins < $cardCost) {
+            throw new NotEnoughCoinsException($cardCost, $state->getCurrentPlayerState()->coins);
+        }
+
         $events[] = GameEvent::game(GameEventTypeEnum::COINS_LOST, [
             'playerId' => $event->data['playerId'],
-            'amount' => $card->getCost(),
+            'amount' => $cardCost,
         ]);
 
         if ($card instanceof AbstractPlayableCard) {
