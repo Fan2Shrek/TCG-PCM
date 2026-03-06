@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_zsCVovWLT2
 createdAt: 2026-03-03T15:16:11.070057396
-updatedAt: 2026-03-06T10:41:33.823568073
+updatedAt: 2026-03-06T13:32:19.202620813
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_JLpCFxuyh2
 authentication: {}
@@ -21,6 +21,6 @@ headers:
   id: null
 method: POST
 name: End turn
-sortPriority: 8.001
+sortPriority: 3000.0
 url: ${[host]}/api/game/${[room_id]}/play
 urlParameters: []

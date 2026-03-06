@@ -37,12 +37,6 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
-file = "src/Game/Card/Monster/AbstractMonsterCard.php"
-code = "mixed-property-type-coercion"
-message = "A value with a less specific type `nonnull` is being assigned to property `$$currentHealthPoints` (int)."
-count = 1
-
-[[issues]]
 file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
 code = "invalid-parent-type"
 message = 'Cannot use `parent` as the current type (`App\Game\Card\Trait\BaseOnTurnTrait`) does not have a parent class.'

@@ -23,6 +23,11 @@ final readonly class PlayArea
         return array_merge($this->passiveCards, $this->monsterCards);
     }
 
+    public function hasMonsterCard(string $id): bool
+    {
+        return \in_array($id, $this->monsterCards, true);
+    }
+
     #[\NoDiscard]
     public function addPassiveCard(string $cardId): self
     {
