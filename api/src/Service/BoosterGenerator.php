@@ -11,7 +11,7 @@ use App\Service\Game\CardRegistryInterface;
 
 class BoosterGenerator
 {
-    protected const BOOSTER_SIZE = 1;
+    protected const BOOSTER_SIZE = 5;
 
     /**
      * @var array<string, float>
