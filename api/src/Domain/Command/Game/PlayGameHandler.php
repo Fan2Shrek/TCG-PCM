@@ -45,9 +45,9 @@ final class PlayGameHandler
         try {
             $resolution = $this->gameManager->handleAction($action, $state);
         } catch (GameException $e) {
-            // do something here
-
-            throw $e;
+            throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        } catch (\Throwable $e) {
+            // @todo retry without redis cache
         }
 
         $lastId = null;

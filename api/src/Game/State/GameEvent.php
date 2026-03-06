@@ -44,4 +44,9 @@ readonly class GameEvent
     {
         return clone($this, ['data' => array_merge($this->data, $data)]);
     }
+
+    public function withId(int $id): self
+    {
+        return clone($this, ['id' => $id]);
+    }
 }
