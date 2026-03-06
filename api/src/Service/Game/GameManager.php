@@ -156,8 +156,13 @@ class GameManager
         $card = $this->cardRuntimeMap->create($cardState->templateId);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
-
         $events = [];
+
+        $events[] = GameEvent::game(GameEventTypeEnum::COINS_LOST, [
+            'playerId' => $event->data['playerId'],
+            'amount' => $card->getCost(),
+        ]);
+
         if ($card instanceof AbstractPlayableCard) {
             $card->play($ctx, \is_array($data) ? $data : []);
 

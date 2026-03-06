@@ -176,6 +176,15 @@ final class GameManagerTest extends TestCase
             ),
             new GameEvent(
                 0,
+                GameEventTypeEnum::COINS_LOST,
+                GameEvent::GAME_EVENT,
+                [
+                    'playerId' => $gameState->player1->player->id,
+                    'amount' => 1,
+                ],
+            ),
+            new GameEvent(
+                0,
                 GameEventTypeEnum::CARD_DISCARDED,
                 GameEvent::GAME_EVENT,
                 [
@@ -219,7 +228,13 @@ final class GameManagerTest extends TestCase
         $events = $gm->handleAction($action, $gameState)->events;
 
         self::assertNotNull(SpyCard::$receivedContext);
-        self::assertCount(2, $events);
+        self::assertCount(3, $events);
+        self::assertEquals([
+                GameEventTypeEnum::CARD_PLAYED,
+                GameEventTypeEnum::COINS_LOST,
+                GameEventTypeEnum::CARD_DISCARDED,
+        ], array_map(fn (GameEvent $event) => $event->type, $events)
+        );
     }
 
     public function testHandleActionWithUnexistingAction()
@@ -334,6 +349,26 @@ final class GameManagerTest extends TestCase
         ];
 
         self::assertEquals($expected, $events);
+    }
+
+    public function testCardPlay()
+    {
+        $gm = $this->getSut();
+        $gameState = $this->createGameState();
+
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::CARD_PLAYED,
+            GameEvent::PLAYER_EVENT,
+            [
+                'playerId' => $gameState->player1->player->id,
+                'cardId' => 'card2',
+            ],
+        );
+
+        $resolution = $gm->resolve($event, $gameState);
+
+        self::assertCount(3, $resolution->events);
     }
 
     public function testEndTurnCallTurnAwareCard()

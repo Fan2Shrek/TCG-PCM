@@ -12,7 +12,7 @@ final class PierreSaidNoMonsterZone extends AbstractPlayableCard
 {
     use CardAwareTrait;
 
-    public const CardRarityEnum = CardRarityEnum::LEGENDARY;
+    public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
 
     public function getId(): string
     {
