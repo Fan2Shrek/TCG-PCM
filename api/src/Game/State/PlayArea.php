@@ -15,6 +15,15 @@ final readonly class PlayArea
         public array $monsterCards = [],
     ) {}
 
+    /**
+     * @return string[]
+     */
+    public function getAll(): array
+    {
+        return array_merge($this->passiveCards, $this->monsterCards);
+    }
+
+    #[\NoDiscard]
     public function addPassiveCard(string $cardId): self
     {
         return clone($this, [
@@ -22,18 +31,11 @@ final readonly class PlayArea
         ]);
     }
 
+    #[\NoDiscard]
     public function addMonsterCard(string $cardId): self
     {
         return clone($this, [
             'monsterCards' => [$cardId],
         ]);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAll(): array
-    {
-        return array_merge($this->passiveCards, $this->monsterCards);
     }
 }
