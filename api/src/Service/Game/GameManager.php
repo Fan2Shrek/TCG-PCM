@@ -16,6 +16,7 @@ use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotYourTurnException;
@@ -145,7 +146,7 @@ class GameManager
             throw new \LogicException('playerId is required to play a card');
         }
 
-        $card = $this->cardRuntimeMap->getByState($cardState);
+        $card = $this->cardRuntimeMap->create($cardState->templateId);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
 
@@ -163,6 +164,14 @@ class GameManager
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
+            ]);
+        } elseif ($card instanceof AbstractMonsterCard) {
+            $card->onMonsterPlayed($ctx);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
+                'playerId' => $event->data['playerId'],
+                'cardId' => $event->data['cardId'],
+                'cardHealthPoints' => $card->getHealPoints(),
             ]);
         } else {
             throw new \LogicException('Card must be either a playable or passive card');

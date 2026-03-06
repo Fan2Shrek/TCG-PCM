@@ -6,7 +6,7 @@ namespace App\Game\Card;
 
 use App\Game\Card\Effect\EffectState;
 
-final readonly class CardState
+readonly class CardState
 {
     /**
      * @param EffectState[] $effects

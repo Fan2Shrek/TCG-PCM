@@ -63,6 +63,8 @@ final class PlayGameHandler
             $lastId = $event->id ? $event->id : null;
         }
 
+        $state = $resolution->state;
+
         if ($lastId) {
             $state = $state->withLastEventId($lastId);
         }
