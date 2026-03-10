@@ -5,6 +5,7 @@ use App\Game\Card;
 return [
 	'Benjamin' => Card\BenjaminCard::class,
 	'Pierrot' => Card\Character\PierrotCard::class,
+	'Stonks' => Card\Character\StonksCard::class,
 	'D6' => Card\D6Card::class,
 	'Gitman' => Card\GitmanCard::class,
 	'HackedZone' => Card\HackedZoneCard::class,
