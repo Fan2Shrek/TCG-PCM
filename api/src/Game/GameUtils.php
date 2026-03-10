@@ -11,6 +11,7 @@ final class GameUtils
     public const array MARKUPS = [
         'effect',
         'value',
+        'const',
     ];
 
     public static function formatDescription(string $description, array $data = []): string
