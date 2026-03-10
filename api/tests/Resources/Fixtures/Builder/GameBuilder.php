@@ -23,6 +23,7 @@ final class GameBuilder extends RoomBuilder
 
         $gameState = new InitialGameState(
             $this->entity->getId()->toString(),
+            0,
             new PlayerState(
                 Player::fromUser($this->entity->getOwner()),
                 100,

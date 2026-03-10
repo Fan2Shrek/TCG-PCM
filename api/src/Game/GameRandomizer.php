@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace App\Game;
 
-abstract class Dice
+use Random\Engine\Mt19937;
+use Random\Randomizer;
+
+abstract class GameRandomizer
 {
+    private static Randomizer $randomizer;
+
     private static ?\Closure $generator = null;
+
+    public static function setUp(?int $seed): void
+    {
+        self::$randomizer = new Randomizer(new Mt19937($seed));
+    }
 
     public static function setGenerator(?\Closure $generator): void
     {
@@ -31,7 +41,10 @@ abstract class Dice
     private static function _doRandom(int $min, int $max): int
     {
         if (self::$generator === null) {
-            self::$generator = random_int(...);
+            if (null === self::$randomizer ?? null) {
+                self::setUp(null);
+            }
+            self::$generator = static fn(int $min, int $max) => self::$randomizer->getInt($min, $max);
         }
 
         return (int) (self::$generator)($min, $max);

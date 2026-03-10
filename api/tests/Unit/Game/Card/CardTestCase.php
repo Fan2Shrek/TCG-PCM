@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Game\Card;
 
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
-use App\Game\Dice;
+use App\Game\GameRandomizer;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
@@ -23,7 +23,7 @@ abstract class CardTestCase extends TestCase
     #[Before]
     public function beforeAll(): void
     {
-        Dice::setGenerator(null);
+        GameRandomizer::setGenerator(null);
     }
 
     public function getCard(): AbstractCard
@@ -42,7 +42,7 @@ abstract class CardTestCase extends TestCase
 
     protected function ensureNextDiceRolls(int $result): void
     {
-        Dice::setGenerator(fn ($sides) => $result);
+        GameRandomizer::setGenerator(fn ($sides) => $result);
     }
 
     protected static function allRollFromGenerator(int $count): \Generator
@@ -61,6 +61,7 @@ abstract class CardTestCase extends TestCase
             $player1State,
             $player2State,
             1,
+            0,
             null,
             [
                 'test_card' => new CardState(

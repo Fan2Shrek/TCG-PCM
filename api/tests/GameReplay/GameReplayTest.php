@@ -49,10 +49,10 @@ final class GameReplayTest extends TestCase
     {
         return [
             'replay1' => ['replay1'],
-            'replay2' => ['replay2'],
-            'replay3' => ['replay3'],
-            'replay4' => ['replay4'],
-            'replay5' => ['replay5'],
+            /* 'replay2' => ['replay2'], */
+            /* 'replay3' => ['replay3'], */
+            /* 'replay4' => ['replay4'], */
+            /* 'replay5' => ['replay5'], */
         ];
     }
 

@@ -24,6 +24,9 @@ class InitialGameState
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
+    #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
+    private int $seed;
+
     #[ORM\Column(type: PlayerStateType::NAME)]
     private PlayerState $player1State;
 
@@ -39,9 +42,10 @@ class InitialGameState
     /**
      * @param array<string, CardState> $cards
      */
-    public function __construct(string $id, PlayerState $player1State, PlayerState $player2State, array $cards = [])
+    public function __construct(string $id, int $seed, PlayerState $player1State, PlayerState $player2State, array $cards = [])
     {
         $this->id = $id;
+        $this->seed = $seed;
 
         $this->createdAt = new \DateTimeImmutable();
         $this->player1State = $player1State;
@@ -52,6 +56,11 @@ class InitialGameState
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getSeed(): int
+    {
+        return $this->seed;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -76,11 +85,11 @@ class InitialGameState
 
     public static function createFromRoomAndGameState(Room $room, GameState $gameState): self
     {
-        return new self($room->getId()->toString(), $gameState->player1, $gameState->player2, $gameState->cards);
+        return new self($room->getId()->toString(), $gameState->seed, $gameState->player1, $gameState->player2, $gameState->cards);
     }
 
     public function toGameState(): GameState
     {
-        return new GameState($this->player1State, $this->player2State, null, null, $this->cards);
+        return new GameState($this->player1State, $this->player2State, null, $this->seed, null, $this->cards);
     }
 }

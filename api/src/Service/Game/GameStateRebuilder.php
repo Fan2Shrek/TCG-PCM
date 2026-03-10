@@ -51,11 +51,11 @@ class GameStateRebuilder
         $rolls = [];
 
         foreach ($events as $event) {
-            if ($event->type === GameEventTypeEnum::DICE_ROLLED) {
-                $rolls[] = $event->data['result'];
-            } elseif ($event->type === GameEventTypeEnum::CARD_RUNTIME_VALUE) {
-                $rolls[] = $event->data['value'];
+            if ($event->type !== GameEventTypeEnum::CARD_RUNTIME_VALUE) {
+                continue;
             }
+
+            $rolls[] = $event->data['value'];
         }
 
         $events = array_filter(

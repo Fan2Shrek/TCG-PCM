@@ -25,6 +25,7 @@ final readonly class GameState
         public PlayerState $player1,
         public PlayerState $player2,
         public ?int $lastEventId,
+        public int $seed,
         ?string $currentPlayer = null,
         array $cards = [],
     ) {

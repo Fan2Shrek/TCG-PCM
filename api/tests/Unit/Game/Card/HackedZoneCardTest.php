@@ -51,6 +51,7 @@ final class HackedZoneCardTest extends CardTestCase
                 new PlayArea(['card6']),
             ),
             null,
+            0,
             null,
             [],
         );

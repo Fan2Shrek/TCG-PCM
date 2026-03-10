@@ -23,6 +23,7 @@ use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\Exception\NotYourTurnException;
 use App\Game\Exception\UnknowActionException;
+use App\Game\GameRandomizer;
 use App\Game\Player;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
@@ -101,6 +102,7 @@ class GameManager
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
     {
+        GameRandomizer::setUp($state->seed);
         $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
 
         // @ŧodo modify this if we want to do depth events resolution instead of breadth
@@ -418,7 +420,7 @@ class GameManager
         $player1CharacterCard->setState($player1CharacterCardState);
         $player2CharacterCard->setState($player2CharacterCardState);
 
-        return new GameState($player1State, $player2State, null, $player1State->player->id, [
+        return new GameState($player1State, $player2State, null, $this->generateSeed(), $player1State->player->id, [
             $player1CharacterCardState->instanceId => $player1CharacterCardState,
             $player2CharacterCardState->instanceId => $player2CharacterCardState,
         ]);
@@ -462,5 +464,10 @@ class GameManager
         // maybe round based
 
         return 3;
+    }
+
+    private function generateSeed(): int
+    {
+        return random_int(0, 0xFFFF_FFFF);
     }
 }

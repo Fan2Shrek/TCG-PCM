@@ -24,6 +24,7 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             null,
+            0,
             '',
         );
         $gameEvent = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
@@ -43,6 +44,7 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             1,
+            0,
             '',
         );
         $gameEvent = new GameEvent(4, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);
@@ -66,6 +68,7 @@ final class RedisGameStateRepositoryTest extends TestCase
             $this->createStub(PlayerState::class),
             $this->createStub(PlayerState::class),
             null,
+            0,
             '',
         );
         $gameEvent = new GameEvent(4, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, []);

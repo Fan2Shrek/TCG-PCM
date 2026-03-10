@@ -69,6 +69,7 @@ final class ExportGameReplayCommand
                 $gameState->player1,
                 $gameState->player2,
                 $gameState->lastEventId,
+                $gameState->seed,
                 $gameState->currentPlayer,
                 $gameState->cards,
             );

@@ -48,6 +48,7 @@ final class PierreSaidNoMonsterZoneCardTest extends CardTestCase
                 ]),
             ),
             1,
+            0,
             null,
             [
                 'monster1' => new CardState(

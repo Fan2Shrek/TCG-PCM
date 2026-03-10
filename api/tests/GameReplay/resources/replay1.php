@@ -43,6 +43,7 @@ return [
             new PlayArea(),
         ),
         0,
+        0,
         null,
         [
             'player1_character' => new CardState(
@@ -70,10 +71,6 @@ return [
             'cardId' => 'player1_card1',
             'playerId' => '1',
         ]),
-        GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
-            'sides' => 6,
-            'result' => 6,
-        ]),
         GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
             'playerId' => '1',
         ]),
@@ -81,20 +78,12 @@ return [
             'cardId' => 'player2_card1',
             'playerId' => '2',
         ]),
-        GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
-            'sides' => 6,
-            'result' => 1,
-        ]),
         GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
             'playerId' => '2',
         ]),
         GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
             'cardId' => 'player1_card2',
             'playerId' => '1',
-        ]),
-        GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
-            'slide' => 6,
-            'result' => 4,
         ]),
     ],
     'finalGameState' => new GameState(
@@ -131,6 +120,7 @@ return [
                 'player2_card1',
             ]
         ),
+        0,
         0,
         null,
         [

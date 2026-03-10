@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Game;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\Dice;
+use App\Game\GameRandomizer;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameEvent;
@@ -182,7 +182,7 @@ final class GameContextTest extends TestCase
     public function testRollDiceEvent()
     {
         $ctx = new GameContext($this->getGameState(), '1');
-        Dice::setGenerator(fn (int $faces) => 4);
+        GameRandomizer::setGenerator(fn (int $faces) => 4);
 
         $result = $ctx->rollDice(6);
         $event = $ctx->flushEvents()[0];
@@ -215,6 +215,7 @@ final class GameContextTest extends TestCase
                 playArea: new PlayArea(),
             ),
             null,
+            0,
             null,
             [],
         );
@@ -249,6 +250,7 @@ final class GameContextTest extends TestCase
                 playArea: new PlayArea(),
             ),
             null,
+            0,
             null,
             [],
         );
@@ -283,6 +285,7 @@ final class GameContextTest extends TestCase
                 playArea: new PlayArea(),
             ),
             null,
+            0,
         );
     }
 }
