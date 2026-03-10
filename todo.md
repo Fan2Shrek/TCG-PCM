@@ -4,9 +4,16 @@
 
 - [X] CI
 - [X] Régler mago et tt ca
-- [ ] Voir si on découple les classes abstraites des cartes, (AbstractCharacterCard, AbstractActiveCards)
+- [X] Voir si on découple les classes abstraites des cartes, (AbstractCharacterCard, AbstractActiveCards)
+- [X] Enlever les cartes de la main une fois jouées
 - [ ] Création de deck
-- [ ] Enlever les cartes de la main une fois jouées
+- [ ] Plus de carte
+- [ ] Inventaire
+
+# API -- Game Engine
+
+- [ ] Voir si on passe par un Aléatoire seedé plutôt que tous stocker
+- [ ] Boutique
 
 ## Front
 
