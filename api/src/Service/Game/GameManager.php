@@ -74,7 +74,9 @@ class GameManager
 
         $state = $this->gameEventApplier->applyMultiple($events, $initialGameState);
 
-        $roundStartedEvent = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+        $roundStartedEvent = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+            'playerId' => $state->currentPlayer,
+        ]);
 
         $result = $this->resolve($roundStartedEvent, $state);
 
@@ -118,23 +120,36 @@ class GameManager
      */
     private function generateReactions(GameEvent $event, GameState $state): array
     {
-        return match ($event->type) {
-            GameEventTypeEnum::TURN_ENDED => array_filter([
-                $this->isNewRound($state, $state->getNextPlayer()->id) ? GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []) : null,
-                GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
-                    'playerId' => $state->getNextPlayer()->id,
-                ]),
-                GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
-                    'playerId' => $state->getNextPlayer()->id,
+        $events = [];
+        $playerId = $state->currentPlayer;
+
+        switch ($event->type) {
+            case GameEventTypeEnum::TURN_ENDED:
+                $playerId = $state->getNextPlayer()->id;
+                if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
+                    $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
+                }
+                $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
+                    'playerId' => $playerId,
+                ]);
+            // no-break
+            case GameEventTypeEnum::TURN_STARTED:
+                $events[] = GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
+                    'playerId' => $playerId,
                     'amount' => $this->calculateCoinsGain($state),
-                ]),
-                GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
-                    'playerId' => $state->getNextPlayer()->id,
-                ]),
-            ]),
-            GameEventTypeEnum::CARD_PLAYED => $this->doGenerateReactionsForCardPlayed($event, $state),
-            default => [],
-        };
+                ]);
+                $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
+                    'playerId' => $playerId,
+                ]);
+                break;
+            case GameEventTypeEnum::CARD_PLAYED:
+                $events = $this->doGenerateReactionsForCardPlayed($event, $state);
+                break;
+            default:
+                break;
+        }
+
+        return $events;
     }
 
     /**
@@ -257,7 +272,7 @@ class GameManager
             throw new CardCannotAttackExpcetion('Card cannot attack');
         }
 
-        if ($targetId === $state->getOtherPlayerState()->characterCardId) {
+        if (\in_array($targetId, [$state->getOtherPlayerState()->characterCardId, $state->getOtherPlayerState()->player->id], true)) {
             $event = GameEvent::player(GameEventTypeEnum::DAMAGE, [
                 'targetId' => $state->getOtherPlayerState()->player->id,
                 'damage' => $card->getAttack(),
@@ -305,6 +320,11 @@ class GameManager
                 break;
             case GameEventTypeEnum::CARD_DRAWN:
                 $cards = $this->getCardAwareCards($state);
+
+                if ([] === $cards) {
+                    return [];
+                }
+
                 $cardId = $state->getLastAddedCardId();
 
                 if (!$cardId) {

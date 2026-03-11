@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use Random\Engine;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 class GameRandomizer
 {
     private Randomizer $randomizer;
+    private Engine $engine;
 
     public function __construct(
         private ?int $seed,
     ) {
-        $this->randomizer = new Randomizer(new Mt19937($seed));
+        $this->engine = new Mt19937($seed);
+        $this->randomizer = new Randomizer($this->engine);
     }
 
     public function roll(int $sides): int
@@ -41,7 +44,15 @@ class GameRandomizer
     {
         return [
             'seed' => $this->seed,
-            'randomizer' => $this->randomizer,
+            'engine' => serialize($this->engine),
         ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->seed = $data['seed'];
+
+        $this->engine = unserialize($data['engine']);
+        $this->randomizer = new Randomizer($this->engine);
     }
 }

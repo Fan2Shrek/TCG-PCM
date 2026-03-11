@@ -1,6 +1,12 @@
 variant = "loose"
 
 [[issues]]
+file = "src/Command/ExportGameReplayCommand.php"
+code = "possibly-invalid-argument"
+message = '''Possible argument type mismatch for argument #1 of `App\Command\ExportGameReplayCommand::exportfile`: expected `array{'events': array<array-key, App\Game\State\GameEvent>, 'finalGameState'?: App\Game\State\GameState, 'initialGameState': App\Game\State\GameState}`, but possibly received `array{'events': array<array-key, App\Game\State\GameEvent>, 'finalGameState'?: App\Game\State\GameState, 'initialGameState': App\Game\State\GameState|null}`.'''
+count = 1
+
+[[issues]]
 file = "src/Command/UpdateCardListCommand.php"
 code = "possibly-false-iterator"
 message = "Expression being iterated (type `false|list<non-empty-string>`) might be `false` at runtime."
@@ -64,6 +70,24 @@ count = 1
 file = "src/Game/Card/Trait/TurnAwareTrait.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\GameContext::iscurrentplayer`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Game/GameRandomizer.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `unserialize`: expected `string`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Game/GameRandomizer.php"
+code = "mixed-property-type-coercion"
+message = 'A value with a less specific type `mixed` is being assigned to property `$$engine` (Random\Engine).'
+count = 1
+
+[[issues]]
+file = "src/Game/GameRandomizer.php"
+code = "mixed-property-type-coercion"
+message = "A value with a less specific type `mixed` is being assigned to property `$$seed` (int|null)."
 count = 1
 
 [[issues]]
