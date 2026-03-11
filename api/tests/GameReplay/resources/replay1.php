@@ -43,7 +43,7 @@ return [
             new PlayArea(),
         ),
         0,
-        0,
+        219,
         null,
         [
             'player1_character' => new CardState(
@@ -121,7 +121,7 @@ return [
             ]
         ),
         0,
-        0,
+        219,
         null,
         [
             'player1_character' => new CardState(

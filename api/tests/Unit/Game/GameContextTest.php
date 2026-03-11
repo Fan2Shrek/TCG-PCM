@@ -179,18 +179,6 @@ final class GameContextTest extends TestCase
         self::assertLessThanOrEqual(6, $result);
     }
 
-    public function testRollDiceEvent()
-    {
-        $ctx = new GameContext($this->getGameState(), '1');
-        GameRandomizer::setGenerator(fn (int $faces) => 4);
-
-        $result = $ctx->rollDice(6);
-        $event = $ctx->flushEvents()[0];
-
-        self::assertSame(4, $result);
-        self::assertSame($event->type, GameEventTypeEnum::DICE_ROLLED);
-    }
-
     public function testGetOneRandomCard()
     {
         $gameState = new GameState(

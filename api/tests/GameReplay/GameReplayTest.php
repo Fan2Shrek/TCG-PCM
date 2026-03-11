@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\GameReplay;
 
 use App\Game\AbstractCard;
-use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
@@ -17,7 +16,6 @@ use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\Cache\CacheInterface;
 
 #[Group('replay')]
 final class GameReplayTest extends TestCase
@@ -49,10 +47,6 @@ final class GameReplayTest extends TestCase
     {
         return [
             'replay1' => ['replay1'],
-            /* 'replay2' => ['replay2'], */
-            /* 'replay3' => ['replay3'], */
-            /* 'replay4' => ['replay4'], */
-            /* 'replay5' => ['replay5'], */
         ];
     }
 

@@ -74,7 +74,7 @@ class GameContext
 
     public function rollDice(int $faces): int
     {
-        $result = GameRandomizer::roll($faces);
+        $result = $this->state->randomizer->roll($faces);
 
         $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
             'faces' => $faces,
@@ -86,7 +86,7 @@ class GameContext
 
     public function randomBetween(float $min, float $max): float
     {
-        $result = GameRandomizer::randomBetweenFloat($min, $max);
+        $result = $this->state->randomizer->randomBetweenFloat($min, $max);
 
         $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
             'min' => $min,
