@@ -73,6 +73,9 @@ final class ExportGameReplayCommand
                 $gameState->currentPlayer,
                 $gameState->cards,
             );
+
+            // make sure we have clean game state for the replay test
+            $dataToExport['initialGameState'] = $this->gameStateRepository->get($room);
         }
 
         $this->exportFile($dataToExport, $roomId, $test);

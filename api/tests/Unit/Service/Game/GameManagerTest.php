@@ -122,7 +122,7 @@ final class GameManagerTest extends TestCase
                 30,
                 '',
                 [],
-                ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'],
+                ['card1', 'card2', 'card3', 'card4', 'card5', 'card6', 'card7'],
                 0,
                 new PlayArea(),
             ),
@@ -145,7 +145,9 @@ final class GameManagerTest extends TestCase
         );
 
         $events = $gm->startGame($gameState)->events;
-        array_pop($events); // remove the last event which is the turn start for player 2
+        array_pop($events); // turn_started
+        array_pop($events); // draw_card
+        array_pop($events); // coins_gained
 
         self::assertCount(10, $events);
         foreach ($events as $event) {
