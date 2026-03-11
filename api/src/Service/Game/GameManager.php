@@ -418,7 +418,7 @@ class GameManager
         $player1CharacterCard->setState($player1CharacterCardState);
         $player2CharacterCard->setState($player2CharacterCardState);
 
-        return new GameState($player1State, $player2State, null, $player1State->player->id, [
+        return new GameState($player1State, $player2State, null, $this->generateSeed(), $player1State->player->id, [
             $player1CharacterCardState->instanceId => $player1CharacterCardState,
             $player2CharacterCardState->instanceId => $player2CharacterCardState,
         ]);
@@ -462,5 +462,10 @@ class GameManager
         // maybe round based
 
         return 3;
+    }
+
+    private function generateSeed(): int
+    {
+        return random_int(0, 0xFFFF_FFFF);
     }
 }

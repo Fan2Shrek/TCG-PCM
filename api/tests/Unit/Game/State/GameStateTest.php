@@ -22,6 +22,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertSame($player1, $gameState->getPlayer('1'));
@@ -36,6 +37,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertSame([$player1->player, $player2->player], $gameState->getPlayers());
@@ -49,6 +51,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertSame($player1, $gameState->getCurrentPlayerState());
@@ -61,6 +64,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $player1,
             $player2,
+            0,
             0,
             '2',
         );
@@ -76,6 +80,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertSame($player1->player, $gameState->getCurrentPlayer());
@@ -88,6 +93,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $player1,
             $player2,
+            0,
             0,
             '2',
         );
@@ -103,6 +109,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertSame($player2->player, $gameState->getNextPlayer());
@@ -115,6 +122,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $player1,
             $player2,
+            0,
             0,
             '2',
         );
@@ -131,6 +139,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         self::assertTrue($gameState->isCurrentPlayer($player1->player));
@@ -143,6 +152,7 @@ final class GameStateTest extends TestCase
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 1),
             0,
+            0,
         );
 
         self::assertFalse($gameState->isFinished());
@@ -154,6 +164,7 @@ final class GameStateTest extends TestCase
             $this->createPlayerState('1', 'Player 1', 0),
             $this->createPlayerState('2', 'Player 2', 1),
             0,
+            0,
         );
 
         self::assertTrue($gameState->isFinished());
@@ -164,6 +175,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 0),
+            0,
             0,
         );
 
@@ -177,6 +189,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $player1,
             $player2,
+            0,
             0,
         );
 
@@ -204,6 +217,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $player1,
             $player2,
+            0,
             0,
         );
 
@@ -233,6 +247,7 @@ final class GameStateTest extends TestCase
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 1),
             0,
+            0,
         );
 
         $gameState->withUpdatedPlayer(
@@ -257,6 +272,7 @@ final class GameStateTest extends TestCase
             $player1,
             $player2,
             0,
+            0,
         );
 
         $newGameState = $gameState->withCurrentPlayer('2');
@@ -274,6 +290,7 @@ final class GameStateTest extends TestCase
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 1),
             0,
+            0,
         );
 
         $gameState->withCurrentPlayer('3');
@@ -284,6 +301,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 1),
+            0,
             0,
         );
 
@@ -301,6 +319,7 @@ final class GameStateTest extends TestCase
         $gameState = new GameState(
             $this->createPlayerState('1', 'Player 1', 1),
             $this->createPlayerState('2', 'Player 2', 1),
+            0,
             0,
         );
 

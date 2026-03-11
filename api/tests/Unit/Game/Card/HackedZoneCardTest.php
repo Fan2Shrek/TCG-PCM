@@ -51,6 +51,7 @@ final class HackedZoneCardTest extends CardTestCase
                 new PlayArea(['card6']),
             ),
             null,
+            0,
             null,
             [],
         );
@@ -79,15 +80,14 @@ final class HackedZoneCardTest extends CardTestCase
     public function testOnCardDrawn()
     {
         $card = $this->getCard();
+        $this->ensureNextDiceRolls(1);
         $gameContext = $this->createGameContext();
-        $this->ensureNextDiceRolls(100);
 
         $card->onCardDrawn('player1', $gameContext);
 
         $events = $gameContext->flushEvents();
 
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::DICE_ROLLED, $events[0]->type);
+        self::assertCount(1, $events);
         self::assertEquals(new GameEvent(
             0,
             GameEventTypeEnum::EFFECT_ADDED,
@@ -99,6 +99,6 @@ final class HackedZoneCardTest extends CardTestCase
                     'value' => 1,
                 ],
             ],
-        ), $events[1]);
+        ), $events[0]);
     }
 }

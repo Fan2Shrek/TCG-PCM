@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Game\State;
 
 use App\Game\Card\CardState;
+use App\Game\GameRandomizer;
 use App\Game\Player;
 
 final readonly class GameState
@@ -18,6 +19,8 @@ final readonly class GameState
      */
     public array $cards;
 
+    public GameRandomizer $randomizer;
+
     /**
      * @param array<string, CardState> $cards
      */
@@ -25,6 +28,7 @@ final readonly class GameState
         public PlayerState $player1,
         public PlayerState $player2,
         public ?int $lastEventId,
+        public int $seed,
         ?string $currentPlayer = null,
         array $cards = [],
     ) {
@@ -32,6 +36,7 @@ final readonly class GameState
         $this->cards = $cards;
 
         $this->lastAddedCardId = null;
+        $this->randomizer = new GameRandomizer($seed);
     }
 
     public function getPlayer(string $playerId): PlayerState
