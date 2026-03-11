@@ -8,6 +8,7 @@ use App\Entity\Deck;
 use App\Entity\User;
 use App\Game\Card\BenjaminCard;
 use App\Game\Card\Character\PierrotCard;
+use App\Game\Card\Character\StonksCard;
 use App\Game\Card\D6Card;
 use App\Game\Card\GitmanCard;
 use App\Game\Card\HackedZoneCard;
@@ -44,6 +45,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             new PierreSaidNoMonsterZone()->getId(),
         ];
         $pierrotCardId = new PierrotCard()->getId();
+        $stonksCardId = new StonksCard()->getId();
 
         yield [
             'user' => $this->getReference('User_1', User::class),
@@ -56,7 +58,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             'user' => $this->getReference('User_1', User::class),
             'name' => 'deck_2',
             'cards' => $cards,
-            'characterCard' => $pierrotCardId,
+            'characterCard' => $stonksCardId,
         ];
     }
 

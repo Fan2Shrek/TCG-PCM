@@ -35,8 +35,9 @@ final class StonksCardTest extends CardTestCase
         $card = $this->getCard();
         $gameState = $this->createGameContext()->state;
         $gameState = $gameState->withUpdatedPlayer(
-            $gameState->getCurrentPlayerState()->withUpdatedCoins($currentCoins)
+            $gameState->getPlayer('2')->withUpdatedCoins($currentCoins)
         );
+        $gameState = $gameState->withCurrentPlayer($gameState->player2->player->id);
         $gameContext = new GameContext($gameState, $gameState->player1->player->id);
 
         $card->onTurnEnd($gameContext);

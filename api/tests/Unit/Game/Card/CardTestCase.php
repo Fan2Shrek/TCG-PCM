@@ -48,8 +48,8 @@ abstract class CardTestCase extends TestCase
 
     protected function createGameContext(): GameContext
     {
-        $player1State = $this->createPlayerState();
-        $player2State = $this->createPlayerState();
+        $player1State = $this->createPlayerState('1');
+        $player2State = $this->createPlayerState('2');
 
         $state = new GameState(
             $player1State,
@@ -70,10 +70,10 @@ abstract class CardTestCase extends TestCase
         return new TestableGameContext($state, '1', $this->nextRoll ?? 0);
     }
 
-    protected function createPlayerState(): PlayerState
+    protected function createPlayerState(string $id): PlayerState
     {
         return new PlayerState(
-            new Player('1', 'Player 1', 67),
+            new Player($id, 'Player 1', 67),
             30,
             30,
             '',

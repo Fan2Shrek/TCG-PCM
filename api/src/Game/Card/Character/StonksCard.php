@@ -45,15 +45,24 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
 
     public function onTurnStart(GameContext $gameContext): void
     {
+        if (!$gameContext->isCurrentPlayer($this->getOwnerId())) {
+            return;
+        }
+
         $gameContext->addCoins($this->getValue(self::COINS_BONUS, true));
     }
 
     public function onTurnEnd(GameContext $gameContext): void
     {
+        // Inverted bc turn ended
+        if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
+            return;
+        }
+
         $currentCoins = $gameContext->getCurrentPlayerState()->coins;
         $interest = (int) floor(($currentCoins * $this->getValue(self::COINS_INTEREST_POURCENT, true)) / 100);
         $interest = min($interest, $this->getValue(self::COINS_INTEREST_MAX, true));
 
-        $gameContext->addCoins($interest);
+        $gameContext->addCoins($interest, $this->getOwnerId());
     }
 }
