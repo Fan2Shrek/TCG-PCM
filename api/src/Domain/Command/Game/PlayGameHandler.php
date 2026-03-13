@@ -10,6 +10,7 @@ use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\GameManager;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Service\GameEventPublisher;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -22,6 +23,7 @@ final class PlayGameHandler
         private GameStateRepositoryInterface $gameStateRepository,
         private GameEventRepositoryInterface $gameEventRepository,
         private CurrentUserProviderInterface $currentUserProvider,
+        private GameEventPublisher $gameEventPublisher,
     ) {}
 
     public function __invoke(PlayGameCommand $command): void
@@ -71,6 +73,6 @@ final class PlayGameHandler
 
         $this->gameStateRepository->save($state, $room);
 
-        // sse $event;
+        $this->gameEventPublisher->publish($resolution->events, $state, $room);
     }
 }
