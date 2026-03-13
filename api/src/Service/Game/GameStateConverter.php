@@ -59,10 +59,9 @@ final class GameStateConverter
      */
     private function removeCardsNotVisibleToPlayer(GameState $gameState, string $playerId): array
     {
-        return array_filter($gameState->cards, static fn(CardState $state) => \in_array(
-            $state->instanceId,
-            $gameState->getOtherPlayerStateById($playerId)->hand,
-            true,
-        ));
+        return array_filter(
+            $gameState->cards,
+            static fn(CardState $state) => !\in_array($state->instanceId, $gameState->getOtherPlayerStateById($playerId)->hand, true),
+        );
     }
 }

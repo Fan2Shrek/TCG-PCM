@@ -1,12 +1,17 @@
 import PlayerPanel from "@/components/atoms/game/PlayerPanel";
+import Card from "@/components/molecules/Card";
 import BoardRow from "@/components/molecules/game/BoardRow";
+import { GameContext } from "@/context/GameContext";
 import { GameState } from "@/lib/game/type/gameState";
+import { useContext } from "react";
 
-type Props = {
-	game: GameState;
-}
+export default () => {
+  const { game, getCardById } = useContext(GameContext);
 
-export default ({game}: Props) => {
+  if (!game) {
+  	return <div>Loading...</div>;
+  }
+
   const p1 = game.player1;
   const p2 = game.player2;
 
@@ -34,10 +39,9 @@ export default ({game}: Props) => {
         <PlayerPanel player={p1} />
 
         <div className="flex gap-2 mt-4 justify-center">
-			<p>Card</p>
-			<p>Card</p>
-			<p>Card</p>
-			<p>Card</p>
+		  {game.player1.hand.map((cardId) => (
+			<Card key={cardId} card={getCardById(cardId)} />
+		  ))}
         </div>
       </div>
     </div>

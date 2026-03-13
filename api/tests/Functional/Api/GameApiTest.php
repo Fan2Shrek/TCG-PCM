@@ -10,7 +10,8 @@ use App\Tests\Unit\Fixtures\DummyCard;
 
 final class GameApiTest extends FunctionalTestCase
 {
-    public const string PLAY_URL = '/api/game/{id}/play';
+    protected const string PLAY_URL = '/api/game/{id}/play';
+    protected const GET_GAME_URI = '/api/game/{id}';
 
     public function testPlayGame()
     {
@@ -36,5 +37,38 @@ final class GameApiTest extends FunctionalTestCase
         ]);
 
         self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testGetCurrentState()
+    {
+        $room = ThereIs::aGame()->build();
+
+        $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
+        );
+
+        self::assertResponseStatusCodeSame(200);
+    }
+
+    public function testGetCurrentState404()
+    {
+        $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']),
+        );
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testHiddenCard()
+    {
+        $room = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $response = $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
+        );
+
+        $data = $response->toArray();
+
+        self::assertArrayNotHasKey('cardtest', $data['cards']);
     }
 }

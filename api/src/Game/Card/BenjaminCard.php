@@ -25,6 +25,11 @@ final class BenjaminCard extends AbstractPlayableCard
         return 'Benjamin';
     }
 
+    public function getImage(): string
+    {
+        return 'https://static.wikia.nocookie.net/b__/images/a/af/BenjaminPortrait.png/revision/latest?cb=20190612025211&path-prefix=bloons';
+    }
+
     public function getDescription(): string
     {
         return GameUtils::formatDescription('Add {{effect}} to {{value}} cards', [
