@@ -53,6 +53,8 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
       <CardFront layers={tempCardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
       <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
+	  <p className="text-center absolute text-black">{card?.name}</p>
+	  <p className="text-center absolute text-black top-40">{card?.description}</p>
     </div>
   );
 };
