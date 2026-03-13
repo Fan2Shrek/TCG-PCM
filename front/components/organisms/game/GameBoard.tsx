@@ -4,6 +4,7 @@ import BoardRow from "@/components/molecules/game/BoardRow";
 import { GameContext } from "@/context/GameContext";
 import { GameState } from "@/lib/game/type/gameState";
 import { useContext } from "react";
+import CardsHand from "../CardsHand";
 
 export default () => {
   const { game, getCardById } = useContext(GameContext);
@@ -39,9 +40,7 @@ export default () => {
         <PlayerPanel player={p1} />
 
         <div className="flex gap-2 mt-4 justify-center">
-		  {game.player1.hand.map((cardId) => (
-			<Card key={cardId} card={getCardById(cardId)} />
-		  ))}
+		  <CardsHand cards={game.player1.hand.map((cardId) => getCardById(cardId))} />
         </div>
       </div>
     </div>

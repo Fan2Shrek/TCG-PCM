@@ -24,7 +24,8 @@ export type CardModel = {
 };
 
 export type CardWithPosition = {
-  card: CardModel;
+  // card: CardModel;
+  card: BasicCard;
   rank: number;
   x: number;
   y: number;
