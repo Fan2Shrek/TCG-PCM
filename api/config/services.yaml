@@ -8,31 +8,16 @@ services:
         autowire: true
         autoconfigure: true
 
-    _instanceof:
-        App\Game\Badge\Handler\BadgeHandlerInterface:
-            tags: ['app.badge_handler']
-
     App\:
         resource: '../src/'
-
-    App\Service\Game\GameEventApplierInterface: '@App\Service\Game\GameEventApplier'
-
-    App\Service\Game\Factory\GameContextFactoryInterface: '@App\Service\Game\Factory\GameContextFactory'
-
-    App\Service\Game\CardFactoryInterface: '@App\Service\Game\CardFactory'
-
-    App\Service\Game\CardRegistry:
-        arguments:
-            $cardsListPath: '%app.cards_list%'
+        exclude:
+            - '../src/Game'
+            - '../src/Debug'
+            - '../src/Service/Game'
 
     App\Service\BadgeManager:
         arguments:
             $badgeHandlers: !tagged_iterator 'app.badge_handler'
-
-    App\Service\Game\State\GameStateRepositoryInterface: '@App\Service\Game\State\DoctrineGameStateRepository'
-
-    App\Service\Game\State\RedisGameStateRepository:
-        decorates: 'App\Service\Game\State\GameStateRepositoryInterface'
 
     App\Service\Redis\RedisConnection:
         arguments:
@@ -44,11 +29,3 @@ when@test:
             autowire: true
             autoconfigure: true
             public: true
-
-        App\Service\Game\CardRegistry: '@App\Tests\Resources\MockCardRegistry'
-
-        App\Tests\Resources\MockCardRegistry: ~
-
-        App\Service\Game\State\RedisGameStateRepository: ~
-
-        App\Service\Game\GameStateRepositoryInterface: '@App\Tests\Resources\InMemoryGameStateRepository'

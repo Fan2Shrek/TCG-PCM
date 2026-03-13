@@ -11,13 +11,13 @@ use App\Game\AbstractCard;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
-use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Throwable;
 
-final class GameDataCollector extends AbstractDataCollector
+final class GameDataCollector extends DataCollector
 {
     public function __construct(
         private TraceableGameEventApplier $gameEventApplier,
@@ -25,7 +25,12 @@ final class GameDataCollector extends AbstractDataCollector
         private TraceableCardFactory $cardFactory,
     ) {}
 
-    public function collect(Request $request, Response $response, ?Throwable $exception = null): void
+    public function getName(): string
+    {
+        return 'game';
+    }
+
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         if (!$this->gameEventApplier->hasEvents() && !$this->gameContextFactory->hasGameContexts() && !$this->cardFactory->hasCards()) {
             return;
@@ -132,11 +137,6 @@ final class GameDataCollector extends AbstractDataCollector
     public function getRealEvents(): array
     {
         return array_filter($this->data['events'], static fn(DebugGameEvent $e) => !$e->isReplayEvent);
-    }
-
-    public static function getTemplate(): ?string
-    {
-        return 'debug/game_events.html.twig';
     }
 }
 
