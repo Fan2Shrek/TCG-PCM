@@ -21,6 +21,7 @@ final class RoomApiTest extends FunctionalTestCase
     protected const JOIN_URI = '/api/rooms/{id}/join';
     protected const START_URI = '/api/rooms/{id}/start';
     protected const CHANGE_DECK_URI = '/api/rooms/{id}/change_deck';
+    protected const GET_GAME_URI = '/api/game/{id}';
 
     public function testCreateRoomSuccess()
     {
@@ -216,5 +217,26 @@ final class RoomApiTest extends FunctionalTestCase
         );
 
         self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testGetCurrentState()
+    {
+        self::markTestIncomplete('FIx builders.');
+        $room = ThereIs::aGame()->build();
+
+        $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
+        );
+
+        self::assertResponseStatusCodeSame(200);
+    }
+
+    public function testGetCurrentState404()
+    {
+        $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']),
+        );
+
+        self::assertResponseStatusCodeSame(404);
     }
 }

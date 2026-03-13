@@ -13,9 +13,11 @@ export default () => {
 		setData(prev => ({ ...prev, [name]: value }))
 	}
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		api.auth.login(data.username, data.password)
+		const response = await api.auth.login(data.username, data.password)
+		const token = response.token;
+		document.cookie = `token=${token}; path=/; max-age=36000; secure; samesite=strict`;
 	}
 
 	return <form>

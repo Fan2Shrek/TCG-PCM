@@ -65,6 +65,11 @@ abstract class FunctionalTestCase extends ApiTestCase
         return $user;
     }
 
+    protected function get(string $uri): ResponseInterface
+    {
+        return $this->client->request('GET', $uri);
+    }
+
     protected function post(string $uri, array $json = []): ResponseInterface
     {
         return $this->client->request('POST', $uri, [
