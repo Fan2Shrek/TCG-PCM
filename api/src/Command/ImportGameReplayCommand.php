@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Room;
+use App\Enum\RoomStatusEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Repository\DeckRepository;
@@ -43,6 +44,7 @@ final class ImportGameReplayCommand
         $opponent = $this->userRepository->find($gameState->player2->player->id);
 
         $room = new Room($user);
+        $room->setStatus(RoomStatusEnum::PLAYING);
         $room->setOpponent($opponent);
         $room->setOwnerDeck($this->deckRepository->findOneBy(['user' => $user]));
         $room->setOpponentDeck($this->deckRepository->findOneBy(['user' => $opponent]));
