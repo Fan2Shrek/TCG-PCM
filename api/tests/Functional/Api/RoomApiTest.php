@@ -221,7 +221,6 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testGetCurrentState()
     {
-        self::markTestIncomplete('FIx builders.');
         $room = ThereIs::aGame()->build();
 
         $this->get(

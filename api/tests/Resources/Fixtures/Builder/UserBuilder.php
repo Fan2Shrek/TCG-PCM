@@ -11,9 +11,18 @@ use App\Entity\User;
  */
 final class UserBuilder extends AbstractBuilder
 {
+    protected static array $usedIds = [];
+
     protected function doBuild(): void
     {
-        $this->entity = new User('user_'.spl_object_id($this));
+        $id = 'user_'.spl_object_id($this);
+
+        if (\in_array($id, self::$usedIds)) {
+            $id = 'user_'.spl_object_id($this).'-'.count(self::$usedIds);
+        }
+        self::$usedIds[] = $id;
+
+        $this->entity = new User($id);
         $this->entity->setPassword('password');
     }
 }
