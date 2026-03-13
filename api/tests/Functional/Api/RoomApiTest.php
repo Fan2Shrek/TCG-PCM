@@ -238,4 +238,17 @@ final class RoomApiTest extends FunctionalTestCase
 
         self::assertResponseStatusCodeSame(404);
     }
+
+    public function testHiddenCard()
+    {
+        $room = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $response = $this->get(
+            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
+        );
+
+        $data = $response->toArray();
+
+        self::assertArrayNotHasKey('1', $data['cards']);
+    }
 }
