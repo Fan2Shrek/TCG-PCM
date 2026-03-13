@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use App\Api\Provider\GameProvider;
 use App\Domain\Command\Game\PlayGameCommand;
 use App\Domain\Command\Room\ChangeDeckCommand;
 use App\Domain\Command\Room\CreateRoomCommand;
@@ -18,6 +20,8 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
+    new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
+
     new Post(uriTemplate: '/rooms/create', messenger: 'input', input: CreateRoomCommand::class, status: 201),
     new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
     new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 204),

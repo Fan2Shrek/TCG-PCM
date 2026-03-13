@@ -1,21 +1,32 @@
 import { AuthResource } from "./resources/AuthResource";
 import { BoosterResource } from "./resources/BoosterResource";
+import { GameResource } from "./resources/GameResource";
 
 export class ApiClient {
-	private baseUrl: string;
-
 	auth: AuthResource;
   	booster: BoosterResource;
+	game: GameResource;
 
-	constructor(baseUrl: string) {
-		this.baseUrl = baseUrl;
+	constructor(
+	  private baseUrl: string,
+	  private token: string | null = null,
+	) {
 
 		this.auth = new AuthResource(this);
 		this.booster = new BoosterResource(this);
+		this.game = new GameResource(this);
 	}
 
 	async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-		const response = await fetch(`${this.baseUrl}${endpoint}`, options);
+	    const headers: HeadersInit = {
+		  "Content-Type": "application/json",
+		  ...(this.token && { Authorization: `Bearer ${this.token}` }),
+		};
+		const response = await fetch(`${this.baseUrl}${endpoint}`, {
+		  ...options,
+		  headers,
+		});
+
 		if (!response.ok) {
 			throw new Error(`API request failed with status ${response.status}`);
 		}
@@ -35,6 +46,17 @@ export class ApiClient {
 	}
 }
 
-const client = new ApiClient(process.env.NEXT_API_URL || 'http://localhost:8000/api');
+const token =
+  typeof document !== "undefined"
+    ? document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1] || null
+    : null;
+
+const client = new ApiClient(
+  process.env.NEXT_API_URL || 'http://localhost:8000/api',
+  token,
+);
 
 export default client;
