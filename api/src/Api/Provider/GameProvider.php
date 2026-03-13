@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Game\State\GameState;
 use App\Repository\RoomRepository;
+use App\Service\Auth\CurrentUserProviderInterface;
+use App\Service\Game\GameStateConverter;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -19,6 +21,8 @@ final class GameProvider implements ProviderInterface
     public function __construct(
         private RoomRepository $roomRepository,
         private GameStateRepositoryInterface $gameStateRepository,
+        private CurrentUserProviderInterface $currentUserProvider,
+        private GameStateConverter $gameStateConverter,
     ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object
@@ -31,7 +35,8 @@ final class GameProvider implements ProviderInterface
             throw new NotFoundHttpException();
         }
 
-        // @todo Anonymize game state service
-        return $gameState;
+        $user = $this->currentUserProvider->getCurrentUser();
+
+        return $this->gameStateConverter->convertGameState($gameState, (string) $user->getId());
     }
 }
