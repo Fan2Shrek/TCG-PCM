@@ -55,7 +55,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
         ];
 
         yield [
-            'user' => $this->getReference('User_1', User::class),
+            'user' => $this->getReference('User_2', User::class),
             'name' => 'deck_2',
             'cards' => $cards,
             'characterCard' => $stonksCardId,

@@ -7,6 +7,24 @@ message = '''Possible argument type mismatch for argument #1 of `App\Command\Exp
 count = 1
 
 [[issues]]
+file = "src/Command/ImportGameReplayCommand.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Entity\Room::setopponentdeck` is possibly `null`, but parameter type `App\Entity\Deck` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Command/ImportGameReplayCommand.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Entity\Room::setownerdeck` is possibly `null`, but parameter type `App\Entity\Deck` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Command/ImportGameReplayCommand.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `app\entity\room::__construct` is possibly `null`, but parameter type `App\Entity\User` does not accept it.'
+count = 1
+
+[[issues]]
 file = "src/Command/UpdateCardListCommand.php"
 code = "possibly-false-iterator"
 message = "Expression being iterated (type `false|list<non-empty-string>`) might be `false` at runtime."
