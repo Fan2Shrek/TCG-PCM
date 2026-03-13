@@ -28,6 +28,11 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
         return 'Placenta';
     }
 
+    public function getImage(): string
+    {
+        return 'https://static.wikia.nocookie.net/bindingofisaac/images/f/f9/Objeto_Placenta.png/revision/latest?cb=20210304051738&path-prefix=es';
+    }
+
     public function getDescription(): string
     {
         return GameUtils::formatDescription('At the beginning of each turn, gain {{value}} health.', [

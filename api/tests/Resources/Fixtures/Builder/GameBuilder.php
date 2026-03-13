@@ -39,17 +39,22 @@ final class GameBuilder extends RoomBuilder
                 100,
                 100,
                 '',
-                ['2'],
+                ['cardtest'],
                 [],
                 3,
                 new PlayArea(),
             ),
             [
-                1 => new CardState(
+                '1' => new CardState(
                     '1',
                     DummyCard::class,
                     'ownerId',
-                )
+                ),
+                'cardtest' => new CardState(
+                    'cardtest',
+                    DummyCard::class,
+                    'ownerId',
+                ),
             ],
         );
 

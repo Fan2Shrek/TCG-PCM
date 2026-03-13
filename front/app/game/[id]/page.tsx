@@ -4,6 +4,7 @@ import { use, useEffect, useState } from 'react'
 import api from "../../../lib/api/api";
 import { GameState } from '@/lib/game/type/gameState';
 import GameBoard from '@/components/organisms/game/GameBoard';
+import { GameContext, GameProvider } from '@/context/GameContext';
 
 export default ({ params }: { params: Promise<{ id: string }> }) =>  {
   const { id } = use(params)
@@ -24,6 +25,8 @@ export default ({ params }: { params: Promise<{ id: string }> }) =>  {
 
 
   return (
-	<GameBoard game={game} />
+	<GameProvider game={ game }>
+	  <GameBoard/>
+	</GameProvider>
   )
 }

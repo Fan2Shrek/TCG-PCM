@@ -28,6 +28,11 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
         return 'Hacked zone';
     }
 
+    public function getImage(): string
+    {
+        return 'https://m.media-amazon.com/images/I/71I-l6f6OaL._AC_SX569_.jpg';
+    }
+
     public function getDescription(): string
     {
         return GameUtils::formatDescription('Apply {{effect}} to all cards in both side', [
