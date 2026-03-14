@@ -1,4 +1,6 @@
 import { BasicCard } from '@/components/types/card';
+import useMercure from '@/hook/useMercure';
+import { GameEventType } from '@/lib/game/type/eventType';
 import { GameState } from '@/lib/game/type/gameState';
 
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
@@ -10,22 +12,48 @@ type GameContextType = {
 
 type Props = {
   children: ReactNode;
+  gameId: string;
   game?: GameState | null;
 };
 
 export const GameContext = createContext<GameContextType>();
 
-export const GameProvider = ({ children, game: initialGame }: Props) => {
+export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
   const [game, setGame] = useState<GameState | null>(initialGame || null);
 
   const getCardById = useCallback(
     (cardId: string): BasicCard | undefined => {
-      if (!game) return undefined;
+      if (!game) {
+		return undefined;
+	  }
 
-	  console.log(cardId, game.cards)
       return game.cards[cardId] as BasicCard | undefined;
     },
     [game]
+  );
+
+  useMercure(
+	`http://localhost:8080/.well-known/mercure?topic=game/${gameId}`, // @todo change
+	{
+	  [GameEventType.CARD_DRAWN]: (e) => {
+		const playerId = e.data.playerId;
+		const playerState = game.player1.player.id === playerId ? game.player1 : game.player2;
+		const newPlayerState = {
+		  ...playerState,
+		  hand: e.partialState.hand,
+		  drawPile: e.partialState.drawPile
+		};
+
+		setGame((prevGame) => ({
+		  ...prevGame,
+		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,
+		  player2: game.player2.player.id === playerId ? newPlayerState : prevGame.player2,
+		  cards: e.partialState.cards
+		}));
+
+		console.log(game, e, newPlayerState);
+	  }
+	}
   );
 
   return (

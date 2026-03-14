@@ -25,7 +25,7 @@ export default ({ params }: { params: Promise<{ id: string }> }) =>  {
 
 
   return (
-	<GameProvider game={ game }>
+	<GameProvider gameId={id} game={ game }>
 	  <GameBoard/>
 	</GameProvider>
   )

@@ -13,6 +13,8 @@ export default ({ player }: Props) => {
 
       <div>Coins: {player.coins}</div>
 
+      <div>Cards in hand: {player.hand.length}</div>
+
       <div>Deck: {player.drawPile.length}</div>
 
       <div>Discard: {player.discardPile.length}</div>

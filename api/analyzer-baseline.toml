@@ -1,12 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "src/Command/ExportGameReplayCommand.php"
-code = "possibly-invalid-argument"
-message = '''Possible argument type mismatch for argument #1 of `App\Command\ExportGameReplayCommand::exportfile`: expected `array{'events': array<array-key, App\Game\State\GameEvent>, 'finalGameState'?: App\Game\State\GameState, 'initialGameState': App\Game\State\GameState}`, but possibly received `array{'events': array<array-key, App\Game\State\GameEvent>, 'finalGameState'?: App\Game\State\GameState, 'initialGameState': App\Game\State\GameState|null}`.'''
-count = 1
-
-[[issues]]
 file = "src/Command/ImportGameReplayCommand.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Entity\Room::setopponentdeck` is possibly `null`, but parameter type `App\Entity\Deck` does not accept it.'
