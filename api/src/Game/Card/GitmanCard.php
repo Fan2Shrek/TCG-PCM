@@ -29,6 +29,11 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
         return 'Gitman';
     }
 
+    public function getImage(): string
+    {
+        return 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg';
+    }
+
     public function getDescription(): string
     {
         return GameUtils::formatDescription('Does {{value}} time per commits in this projects.', [

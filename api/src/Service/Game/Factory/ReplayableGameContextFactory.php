@@ -12,23 +12,23 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 final class ReplayableGameContextFactory implements GameContextFactoryInterface
 {
     /**
-     * @param array<int|float|string> $rolls
+     * @param array<int|float|string> $runtimesValues
      */
     public function __construct(
-        private array $rolls = [],
+        private array $runtimesValues = [],
     ) {}
 
     public function createGameContext(GameState $gameState, string $playerId): GameContext
     {
         $context = new ReplayableGameContext($gameState, $playerId);
-        $context->setRollsFactory($this->getNextRolls(...));
+        $context->setRuntimeValueProvider($this->getNextRolls(...));
 
         return $context;
     }
 
     private function getNextRolls(): int|float|string
     {
-        return array_shift($this->rolls) ?? throw new \BadMethodCallException('No more rolls available for replay.');
+        return array_shift($this->runtimesValues) ?? throw new \BadMethodCallException('No more values available for replay.');
     }
 }
 
@@ -37,39 +37,24 @@ class ReplayableGameContext extends GameContext
     /**
      * @var \Closure(): mixed
      */
-    private \Closure $rollsFactory;
-
-    public function __construct(GameState $state, string $playerId)
-    {
-        parent::__construct($state, $playerId);
-    }
+    private \Closure $runtimeValuesProvider;
 
     /**
-     * @param \Closure(): mixed $rollsFactory
+     * @param \Closure(): mixed $runtimeValueProvider
      */
-    public function setRollsFactory(\Closure $rollsFactory): void
+    public function setRuntimeValueProvider(\Closure $runtimeValueProvider): void
     {
-        $this->rollsFactory = $rollsFactory;
-    }
-
-    public function rollDice(int $faces): int
-    {
-        return (int) ($this->rollsFactory)();
-    }
-
-    public function randomBetween(float $min, float $max): float
-    {
-        return floatval(($this->rollsFactory)());
+        $this->runtimeValuesProvider = $runtimeValueProvider;
     }
 
     public function getOneRandomCard(?string $playerId): string
     {
-        return (string) ($this->rollsFactory)();
+        return ($this->runtimeValuesProvider)();
     }
 
     public function runtimeValueEffect(mixed $value): mixed
     {
-        $value = ($this->rollsFactory)();
+        $value = ($this->runtimeValuesProvider)();
 
         return parent::runtimeValueEffect($value);
     }

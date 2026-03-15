@@ -74,7 +74,7 @@ class GameContext
 
     public function rollDice(int $faces): int
     {
-        $result = Dice::roll($faces);
+        $result = $this->state->randomizer->roll($faces);
 
         $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
             'faces' => $faces,
@@ -86,7 +86,7 @@ class GameContext
 
     public function randomBetween(float $min, float $max): float
     {
-        $result = Dice::randomBetweenFloat($min, $max);
+        $result = $this->state->randomizer->randomBetweenFloat($min, $max);
 
         $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
             'min' => $min,
@@ -175,5 +175,12 @@ class GameContext
     public function discardCard(string $cardId): void
     {
         $this->pushGameEvent(GameEventTypeEnum::CARD_DISCARDED, ['cardId' => $cardId]);
+    }
+
+    public function addCoins(int $amount, ?string $playerId = null): void
+    {
+        $playerId ??= $this->playerId;
+
+        $this->pushGameEvent(GameEventTypeEnum::COINS_GAINED, ['playerId' => $playerId, 'amount' => $amount]);
     }
 }

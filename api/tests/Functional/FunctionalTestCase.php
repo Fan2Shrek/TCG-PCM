@@ -26,6 +26,7 @@ abstract class FunctionalTestCase extends ApiTestCase
         $this->client = self::createClient([], [
             'headers' => [
                 'Accept-Language' => 'fr',
+                'Accept' => 'application/json',
             ],
         ]);
 
@@ -63,6 +64,11 @@ abstract class FunctionalTestCase extends ApiTestCase
         $this->getEm()->flush();
 
         return $user;
+    }
+
+    protected function get(string $uri): ResponseInterface
+    {
+        return $this->client->request('GET', $uri);
     }
 
     protected function post(string $uri, array $json = []): ResponseInterface

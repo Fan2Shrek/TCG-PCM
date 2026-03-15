@@ -345,6 +345,7 @@ final class GameEventApplierTest extends TestCase
                 new PlayArea(),
             ),
             $lastEventId,
+            0,
             null,
             null !== $cards ? $cards : [
                 'monster' => MonsterCardState::fromParent(new CardState('monster', 'monster', 'player1'), 10),

@@ -1,3 +1,13 @@
+export type BasicCard = {
+	name: string;
+	description: string;
+	image: string;
+	rarity: string;
+	set: string;
+	instanceId: string;
+	effects: any;
+}
+
 export type CardLayer = {
   src: string;
   depth: number;
@@ -14,7 +24,8 @@ export type CardModel = {
 };
 
 export type CardWithPosition = {
-  card: CardModel;
+  // card: CardModel;
+  card: BasicCard;
   rank: number;
   x: number;
   y: number;

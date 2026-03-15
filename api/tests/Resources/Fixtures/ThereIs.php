@@ -31,7 +31,9 @@ abstract /* static */ class ThereIs
 
     public static function anUser(): UserBuilder
     {
-        return new UserBuilder(self::$container);
+        $a= new UserBuilder(self::$container);
+
+        return $a;
     }
 
     public static function setContainer(ContainerInterface $container): void

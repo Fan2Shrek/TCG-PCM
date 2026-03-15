@@ -6,9 +6,9 @@ namespace App\Command;
 
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
+use App\Repository\Game\InitialGameStateRepository;
 use App\Repository\RoomRepository;
 use App\Service\Game\GameStateRebuilder;
-use App\Service\Game\State\DoctrineGameStateRepository;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -28,7 +28,7 @@ final class ExportGameReplayCommand
     public function __construct(
         private GameStateRebuilder $gameStateRebuilder,
         private GameEventRepositoryInterface $gameEventRepository,
-        private DoctrineGameStateRepository $gameStateRepository,
+        private InitialGameStateRepository $gameStateRepository,
         private RoomRepository $roomRepository,
     ) {}
 
@@ -51,13 +51,14 @@ final class ExportGameReplayCommand
             return 1;
         }
 
-        $gameState = $this->gameStateRepository->get($room);
+        $initialGameState = $this->gameStateRepository->findOneBy(['room' => $room]);
 
-        if (!$gameState) {
+        if (!$initialGameState) {
             $output->writeln(sprintf('<error>No game state found for room "%s".</error>', $roomId));
 
             return 1;
         }
+        $gameState = $initialGameState->toGameState();
 
         $dataToExport = [];
         $dataToExport['initialGameState'] = $gameState;
@@ -69,9 +70,13 @@ final class ExportGameReplayCommand
                 $gameState->player1,
                 $gameState->player2,
                 $gameState->lastEventId,
+                $gameState->seed,
                 $gameState->currentPlayer,
                 $gameState->cards,
             );
+
+            // make sure we have clean game state for the replay test
+            $dataToExport['initialGameState'] = $initialGameState->toGameState();
         }
 
         $this->exportFile($dataToExport, $roomId, $test);

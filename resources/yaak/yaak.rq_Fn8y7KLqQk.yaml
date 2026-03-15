@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_Fn8y7KLqQk
 createdAt: 2026-03-06T13:32:17.281618146
-updatedAt: 2026-03-06T22:48:22.410317312
+updatedAt: 2026-03-11T11:16:17.148265631
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_JLpCFxuyh2
 authentication: {}
@@ -12,8 +12,8 @@ body:
     {
       "actionId": "attack",
       "payload": {
-        "cardId": "73895cc8-9b7d-4419-921b-62ff0d73e21c",
-        "targetId": "4e7e4c34-c8fa-4faf-9885-12b517a18cf7"
+        "cardId": "12e05ab9-6353-4340-a545-0eb421d9c2a8",
+        "targetId": "2"
       }
     }
 bodyType: application/json

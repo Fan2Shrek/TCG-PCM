@@ -8,7 +8,7 @@ import { CardModel, CardSizeMap, CardSize, CardLayer } from "../types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "../utils/cardUtils";
 
 export type CardViewProps = {
-  card: CardModel;
+  card: BasicCard;
   size?: CardSize;
   tilt?: { x: number; y: number, z: number };
   glare?: { x: number; y: number };
@@ -18,11 +18,26 @@ export type CardViewProps = {
 };
 
 const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: CardViewProps) => {
-  const cartFrontLayers = card.frontLayers ?? [];
   const cardSizeInfo = CardSizeMap[size];
 
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
+
+  const tempCardLayers = [
+      {
+		src: card?.image || '/isaac_card_layer_1.png',
+		isHovering: false,
+		depth: -20,
+	  },
+      { src: '/isaac_card_layer_2.webp', depth: -10 },
+      {
+        src: '/isaac_card_layer_3.png',
+        depth: 0,
+        foil: '/foil.webp',
+        mask: '/mask.webp',
+      },
+      { src: '/isaac_card_layer_4.gif', depth: 20 },
+  ];
 
   return (
     <div
@@ -34,9 +49,11 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
         } as React.CSSProperties
       }
     >
-      <CardFront layers={cartFrontLayers as CardLayer[]} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
-      <CardBack backImage={card.backImage} id={card.id} />
+      <CardFront layers={tempCardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
+      <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
+	  <p className="text-center absolute text-black">{card?.name}</p>
+	  <p className="text-center absolute text-black top-40">{card?.description}</p>
     </div>
   );
 };

@@ -35,7 +35,7 @@ readonly class GameEvent
         }
 
         return match ($this->type) {
-            GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_RUNTIME_VALUE => true,
+            GameEventTypeEnum::CARD_RUNTIME_VALUE => true,
             default => false,
         };
     }

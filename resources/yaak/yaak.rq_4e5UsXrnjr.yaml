@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_4e5UsXrnjr
+createdAt: 2026-03-13T11:02:59.345487149
+updatedAt: 2026-03-13T11:04:30.101595589
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Get current game
+sortPriority: 9.0
+url: ${[ host ]}/api/game/${[ room_id ]}
+urlParameters: []

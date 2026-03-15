@@ -59,7 +59,7 @@ export default function CardsHand({
     <div className={`relative w-82 h-82 ${className}`}>
       {positionedCards.map((positionedCard) => (
         <HandCard
-          key={positionedCard.card.id}
+          key={positionedCard.card.instanceId}
           positionedCard={positionedCard}
           hoverYOffset={hoverYOffset}
           cardSize={cardSize}

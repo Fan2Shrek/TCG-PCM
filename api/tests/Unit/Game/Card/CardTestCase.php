@@ -6,25 +6,19 @@ namespace App\Tests\Unit\Game\Card;
 
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
-use App\Game\Dice;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 
 abstract class CardTestCase extends TestCase
 {
-    abstract protected function getCardFQCN(): string;
+    private float $nextRoll;
 
-    #[Before]
-    public function beforeAll(): void
-    {
-        Dice::setGenerator(null);
-    }
+    abstract protected function getCardFQCN(): string;
 
     public function getCard(): AbstractCard
     {
@@ -42,7 +36,7 @@ abstract class CardTestCase extends TestCase
 
     protected function ensureNextDiceRolls(int $result): void
     {
-        Dice::setGenerator(fn ($sides) => $result);
+        $this->nextRoll = $result;
     }
 
     protected static function allRollFromGenerator(int $count): \Generator
@@ -54,13 +48,14 @@ abstract class CardTestCase extends TestCase
 
     protected function createGameContext(): GameContext
     {
-        $player1State = $this->createPlayerState();
-        $player2State = $this->createPlayerState();
+        $player1State = $this->createPlayerState('1');
+        $player2State = $this->createPlayerState('2');
 
         $state = new GameState(
             $player1State,
             $player2State,
             1,
+            0,
             null,
             [
                 'test_card' => new CardState(
@@ -72,13 +67,13 @@ abstract class CardTestCase extends TestCase
             ]
         );
 
-        return new GameContext($state, '1');
+        return new TestableGameContext($state, '1', $this->nextRoll ?? 0);
     }
 
-    protected function createPlayerState(): PlayerState
+    protected function createPlayerState(string $id): PlayerState
     {
         return new PlayerState(
-            new Player('1', 'Player 1', 67),
+            new Player($id, 'Player 1', 67),
             30,
             30,
             '',
@@ -87,5 +82,23 @@ abstract class CardTestCase extends TestCase
             0,
             new PlayArea(),
         );
+    }
+}
+
+class TestableGameContext extends GameContext
+{
+    public function __construct(GameState $state, string $playerId, public float $nextRoll)
+    {
+        parent::__construct($state, $playerId);
+    }
+
+    public function rollDice(int $sides): int
+    {
+        return (int) $this->nextRoll;
+    }
+
+    public function randomBetween(float $min, float $max): float
+    {
+        return $this->nextRoll;
     }
 }
