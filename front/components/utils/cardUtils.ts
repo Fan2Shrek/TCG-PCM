@@ -1,4 +1,4 @@
-import { CardWithPosition, CardSize } from "../types/card";
+import { CardSize } from "../types/card";
 
 export const MAX_X_TILT = 30;
 export const MAX_Y_TILT = 45;
@@ -19,6 +19,15 @@ export const CARD_HAND_MIN_ARC_ANGLE = 10;
 export const CARD_HAND_ARC_ANGLE_SCALE = 10;
 export const DEGREES_TO_RADIANS = Math.PI / 180;
 
+export const CARD_WIDTH_PX = {
+  sm: 128,
+  md: 176,
+  lg: 240,
+  xl: 480,
+};
+
+export const CARD_ASPECT_RATIO = 5 / 7;
+
 export const calculateTiltOnHover = (x: number, y: number, currentRy: number) => {
   const rotateX = (y - NORMALIZED_CENTER) * MAX_Y_TILT;
   const rotateY = (NORMALIZED_CENTER - x) * MAX_X_TILT + (currentRy > HALF_ROTATION ? FLIP_DEG : 0);
@@ -31,39 +40,16 @@ export const calculateGlareOnHover = (x: number, y: number, currentRy: number) =
   return { x: glareX, y: glareY };
 };
 
-export const getCardWidthRem = (size: CardSize): number => {
-  if (typeof document === 'undefined') {
-    return 0;
-  }
-  const root = document.documentElement;
-  const cssVar = `--spacing-card-${size}`;
-  const value = getComputedStyle(root).getPropertyValue(cssVar).trim();
-  return value ? parseFloat(value) : 0;
-};
-
-export const remToPx = (rem: number): number => {
-  if (typeof document === 'undefined') {
-    return 0;
-  }
-  const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-  return rem * rootFontSize;
+export const getCardWidthPx = (size: CardSize): number => {
+  return CARD_WIDTH_PX[size];
 };
 
 export const getCardAspectRatio = (): number => {
-  if (typeof document === 'undefined') {
-    return 0;
-  }
-  
-  const value = getComputedStyle(document.documentElement).getPropertyValue('--aspect-card').trim();
-  if (!value) {
-    return 1;
-  }
-  const [width, height] = value.split('/').map(v => parseFloat(v.trim()));
-  return width / height;
+  return CARD_ASPECT_RATIO;
 };
 
 export const cardsHandComputeArcParameters = (totalCards: number, cardWidthPx: number, maxAngle: number, fanOut: boolean) => {
-  
+
   const maxArcAngle = Math.min(maxAngle, CARD_HAND_MIN_ARC_ANGLE + totalCards * CARD_HAND_ARC_ANGLE_SCALE);
   const arcAngleRadian = maxArcAngle * DEGREES_TO_RADIANS;
 
@@ -74,7 +60,7 @@ export const cardsHandComputeArcParameters = (totalCards: number, cardWidthPx: n
 
 export const cardsHandComputeCardPosition = (index: number, totalCards: number, arcAngleRadian: number, radius: number, hoveredCardIndex?: number) => {
   const middleIndex = (totalCards - 1) / 2;
-  
+
   const effectiveMiddleIndex = hoveredCardIndex ?? middleIndex;
   const normalizedIndex = index - effectiveMiddleIndex;
 

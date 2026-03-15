@@ -4,7 +4,7 @@ import React from "react";
 import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
-import { CardModel, CardSizeMap, CardSize, CardLayer, cardAspectRatio } from "../types/card";
+import { CardModel, CardSizeMap, CardSize, CardLayer } from "../types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "../utils/cardUtils";
 
 export type CardViewProps = {
@@ -26,7 +26,7 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
 
   return (
     <div
-      className={`relative rounded-xl ${cardAspectRatio} ${cardSizeInfo} transform-3d will-change-transform user-select-none${className ?? ''}`}
+      className={`relative rounded-xl aspect-card ${cardSizeInfo} transform-3d will-change-transform user-select-none${className ?? ''}`}
       style={
         {
           transform: `perspective(1000px) rotateX(${appliedTilt.x}deg) rotateY(${appliedTilt.y}deg) rotateZ(${appliedTilt.z}deg)`,
