@@ -259,6 +259,41 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(5, $newState->cards['test']->currentHealthPoints);
     }
 
+    public function testMultipleCardPlaceInMonsterArea()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $state = $state->addCard(new CardState('test', '', '', []));
+        $state = $state->withUpdatedPlayer($state->player1->withPlayArea(new PlayArea()));
+
+        $events = [
+            new GameEvent(
+                1,
+                GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA,
+                GameEvent::GAME_EVENT,
+                [
+                    'cardId' => 'test',
+                    'playerId' => 'player1',
+                    'cardHealthPoints' => 5,
+                ]
+            ),
+            new GameEvent(
+                2,
+                GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA,
+                GameEvent::GAME_EVENT,
+                [
+                    'cardId' => 'test',
+                    'playerId' => 'player1',
+                    'cardHealthPoints' => 5,
+                ]
+            ),
+        ];
+
+        $newState = $eventApplier->applyMultiple($events, $state);
+
+        self::assertCount(2, $newState->player1->playArea->getAll());
+    }
+
     public function testCoinsGained()
     {
         $eventApplier = $this->getSut();
