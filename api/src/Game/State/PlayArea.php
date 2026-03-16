@@ -40,7 +40,7 @@ final readonly class PlayArea
     public function addMonsterCard(string $cardId): self
     {
         return clone($this, [
-            'monsterCards' => [$cardId],
+            'monsterCards' => [...$this->monsterCards, $cardId],
         ]);
     }
 

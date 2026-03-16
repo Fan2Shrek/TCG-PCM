@@ -62,11 +62,17 @@ final class GameEventPublisher
         $newHand = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->hand : $player1DTO->player2->hand;
         $newCards = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->cards : $player1DTO->cards;
         $newDrawpile = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->drawPile : $player1DTO->player2->drawPile;
+        $newPlayArea = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->playArea : $player1DTO->player2->playArea;
 
         $partialState = match ($event->type) {
             GameEventTypeEnum::CARD_DRAWN => [
                 'hand' => $newHand, // @todo publish to player private topic
                 'drawPile' => $newDrawpile,
+                'cards' => $newCards,
+            ],
+            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => [
+                'hand' => $newHand,
+                'playArea' => $newPlayArea,
                 'cards' => $newCards,
             ],
             default => null,
