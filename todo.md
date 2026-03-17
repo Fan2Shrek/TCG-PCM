@@ -12,7 +12,7 @@
 
 # API -- Game Engine
 
-- [ ] Voir si on passe par un Aléatoire seedé plutôt que tous stocker
+- [X] Voir si on passe par un Aléatoire seedé plutôt que tous stocker
 - [ ] Boutique
 
 ## Front
