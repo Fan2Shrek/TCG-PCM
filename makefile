@@ -13,6 +13,8 @@ endif
 
 CONSOLE=$(PHP) php bin/console --env=$(env)
 
+COVERAGE_DIR=var/phpunit
+
 card-list:
 	$(CONSOLE) app:update:card-list
 
@@ -35,6 +37,14 @@ setup-tests:
 
 tests:
 	$(PHP) bin/phpunit
+
+tests-coverage:
+	$(PHP) bin/phpunit --coverage-html=$(COVERAGE_DIR)
+
+tests-ci:
+	$(PHP) bin/phpunit \
+		--log-junit var/junit.xml \
+		--coverage-clover var/coverage.xml
 
 tests-replay:
 	$(PHP) bin/phpunit --group replay
