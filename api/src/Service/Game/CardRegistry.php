@@ -66,7 +66,7 @@ class CardRegistry implements CardRegistryInterface
     protected function getCardsList(): array
     {
         try {
-            return require_once $this->cardsListPath;
+            return require $this->cardsListPath;
         } catch (\Throwable) {
             throw new \RuntimeException(sprintf('Unable to load cards list from path "%s"', $this->cardsListPath));
         }

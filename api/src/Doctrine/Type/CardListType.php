@@ -24,7 +24,7 @@ final class CardListType extends Type
         }
 
         if (!\is_array($value)) {
-            throw new \InvalidArgumentException('Expected PlayerState.');
+            throw new \InvalidArgumentException('Expected array.');
         }
 
         return json_encode($value, JSON_THROW_ON_ERROR);
