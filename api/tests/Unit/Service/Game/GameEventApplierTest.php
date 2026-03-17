@@ -335,6 +335,27 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(5, $newState->getPlayer('player1')->coins);
     }
 
+    public function testMonsterDied()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(
+            1,
+            GameEventTypeEnum::MONSTER_DIED,
+            GameEvent::GAME_EVENT,
+            [
+                'playerId' => 'player1',
+                'cardId' => 'monster',
+            ]
+        );
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(0, $newState->getPlayer('player1')->playArea->monsterCards);
+        self::assertCount(1, $newState->getPlayer('player1')->discardPile);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(
