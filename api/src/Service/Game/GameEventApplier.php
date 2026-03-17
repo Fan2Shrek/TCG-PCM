@@ -30,8 +30,13 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => $this->applyCardPlaceInMonsterArea($event, $gameState),
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
+            GameEventTypeEnum::MONSTER_DIED => $this->applyMonsterDied($event, $gameState),
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
-            GameEventTypeEnum::CARD_RUNTIME_VALUE, GameEventTypeEnum::DICE_ROLLED, GameEventTypeEnum::CARD_ACTION_PREVENTED => $this->noOp($event, $gameState),
+            GameEventTypeEnum::PLAYER_DIED,
+            GameEventTypeEnum::CARD_RUNTIME_VALUE,
+            GameEventTypeEnum::DICE_ROLLED,
+            GameEventTypeEnum::CARD_ACTION_PREVENTED,
+                => $this->noOp($event, $gameState),
         };
 
         return $event->id ? $gameState->withLastEventId($event->id) : $gameState;
@@ -340,5 +345,23 @@ class GameEventApplier implements GameEventApplierInterface
         $newPlayer = $player->withUpdatedCoins($newCoins);
 
         return $state->withUpdatedPlayer($newPlayer);
+    }
+
+    private function applyMonsterDied(GameEvent $event, GameState $state): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('MonsterDied requires a cardId');
+        }
+
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('MonsterDied requires a playerId');
+        }
+
+        $player = $state->getPlayer($playerId);
+        $newPlayArea = $player->playArea->removeMonsterCard($cardId);
+        $player = $player->withPlayArea($newPlayArea);
+        $player = $player->withDiscardedCard($cardId);
+
+        return $state->withUpdatedPlayer($player);
     }
 }

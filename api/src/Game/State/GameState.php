@@ -108,6 +108,14 @@ final readonly class GameState
         return $this->lastAddedCardId;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getAllMonsters(): array
+    {
+        return array_merge($this->player1->playArea->monsterCards, $this->player2->playArea->monsterCards);
+    }
+
     #[\NoDiscard]
     public function withUpdatedPlayer(PlayerState $updatedPlayer): self
     {

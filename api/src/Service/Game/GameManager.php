@@ -112,7 +112,51 @@ class GameManager
             $state = $this->gameEventApplier->applyMultiple($events, $state);
         }
 
+        $postResolutionEvents = $this->generateSystemsEvent($state);
+        $this->gameEventApplier->applyMultiple($postResolutionEvents, $state);
+        $allEvents = array_merge($allEvents, $postResolutionEvents);
+
         return new ResolutionResult($allEvents, $state);
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function generateSystemsEvent(GameState $state): array
+    {
+        $events = [];
+
+        foreach ([$state->player1, $state->player2] as $playerState) {
+            if ($playerState->healthPoints > 0) {
+                continue;
+            }
+
+            $events[] = GameEvent::game(GameEventTypeEnum::PLAYER_DIED, [
+                'playerId' => $playerState->player->id,
+            ]);
+        }
+
+        foreach ($state->getAllMonsters() as $monsterCardId) {
+            $cardState = $state->getCardState($monsterCardId);
+            if (!$cardState) {
+                continue;
+            }
+
+            $card = $this->cardRuntimeMap->getByState($cardState);
+
+            if (!$card instanceof AbstractMonsterCard) {
+                continue;
+            }
+
+            if ($card->getHealPoints() <= 0) {
+                $events[] = GameEvent::game(GameEventTypeEnum::MONSTER_DIED, [
+                    'playerId' => $cardState->ownerId,
+                    'cardId' => $monsterCardId,
+                ]);
+            }
+        }
+
+        return $events;
     }
 
     /**
