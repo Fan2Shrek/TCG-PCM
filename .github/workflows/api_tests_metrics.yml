@@ -1,0 +1,74 @@
+name: PHPUnit Baseline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  baseline:
+    name: Save PHPUnit Baseline
+    runs-on: ubuntu-latest
+
+    env:
+      WITH_DOCKER: 0
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/app?serverVersion=10.4.34-MariaDB&charset=utf8mb4
+
+    services:
+      mariadb:
+        image: mariadb:10.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.composer/cache
+            api/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.5
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+        working-directory: api
+
+      - name: Setup test environment
+        run: make setup-tests
+
+      - name: Run PHPUnit with metrics
+        run: |
+          make tests-ci | tee phpunit-output.txt
+
+      - name: Extract metrics
+        id: metrics
+        run: |
+          cd api
+
+          TESTS=$(grep -oP '\d+(?=\s+tests)' ../phpunit-output.txt)
+          ASSERTIONS=$(grep -oP '\d+(?=\s+assertions)' ../phpunit-output.txt)
+          TIME=$(grep -oP '(?<=Time: )\d{2}:\d{2}\.\d{3}' ../phpunit-output.txt)
+
+          COVERAGE=$(grep -oP 'elements="\d+"|coveredelements="\d+"' ./var/coverage.xml | tail -n2 | awk -F'"' 'NR==1{total=$2} NR==2{ covered=$2} END{printf "%.2f\n", covered/total*100}')
+
+          echo "{\"tests\": $TESTS, \"assertions\": $ASSERTIONS, \"time\": \"$TIME\", \"coverage\": \"$COVERAGE\"}" > ../baseline.json
+
+      - name: Upload baseline artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-baseline
+          path: baseline.json

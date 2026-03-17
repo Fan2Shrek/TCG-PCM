@@ -39,6 +39,11 @@ tests:
 tests-replay:
 	$(PHP) bin/phpunit --group replay
 
+tests-ci:
+	$(PHP) bin/phpunit \
+		--log-junit var/junit.xml \
+		--coverage-clover var/coverage.xml
+
 format:
 	$(PHP) vendor/bin/mago format
 
