@@ -39,9 +39,11 @@ tests:
 	$(PHP) bin/phpunit
 
 tests-coverage:
+	make remove-cache
 	$(PHP) bin/phpunit --coverage-html=$(COVERAGE_DIR)
 
 tests-ci:
+	make remove-cache
 	$(PHP) bin/phpunit \
 		--log-junit var/junit.xml \
 		--coverage-clover var/coverage.xml
@@ -49,10 +51,8 @@ tests-ci:
 tests-replay:
 	$(PHP) bin/phpunit --group replay
 
-tests-ci:
-	$(PHP) bin/phpunit \
-		--log-junit var/junit.xml \
-		--coverage-clover var/coverage.xml
+remove-cache:
+	@rm -rf api/var
 
 format:
 	$(PHP) vendor/bin/mago format
