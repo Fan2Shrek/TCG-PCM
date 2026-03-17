@@ -18,13 +18,8 @@ use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Exception\CardCannotAttackExpcetion;
-use App\Game\Exception\CardNotInHandException;
-use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotEnoughCoinsException;
-use App\Game\Exception\NotYourTurnException;
-use App\Game\Exception\UnknowActionException;
 use App\Game\Player;
-use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
@@ -81,24 +76,6 @@ class GameManager
         $result = $this->resolve($roundStartedEvent, $state);
 
         return new ResolutionResult(array_merge($events, $result->events), $result->state);
-    }
-
-    public function handleAction(PlayerAction $action, GameState $state): ResolutionResult
-    {
-        if ($state->getCurrentPlayer() !== $action->author) {
-            throw new NotYourTurnException();
-        }
-
-        if ($state->isFinished()) {
-            throw new GameAlreadyFinishedException();
-        }
-
-        return match ($action->actionId) {
-            PlayerAction::PLAY_CARD => $this->playCardAction($action, $state),
-            PlayerAction::END_TURN => $this->endTurnAction($action, $state),
-            PlayerAction::ATTACK => $this->attackAction($action, $state),
-            default => throw new UnknowActionException(),
-        };
     }
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
@@ -189,6 +166,9 @@ class GameManager
             case GameEventTypeEnum::CARD_PLAYED:
                 $events = $this->doGenerateReactionsForCardPlayed($event, $state);
                 break;
+            case GameEventTypeEnum::ATTACK:
+                $events = $this->doGenerateReactionsForAttack($event, $state);
+                break;
             default:
                 break;
         }
@@ -258,55 +238,26 @@ class GameManager
         return array_merge($events, $ctx->flushEvents());
     }
 
-    private function playCardAction(PlayerAction $action, GameState $state): ResolutionResult
+    /**
+     * @return GameEvent[]
+     */
+    private function doGenerateReactionsForAttack(GameEvent $event, GameState $state): array
     {
-        $card = $action->payload['cardId'] ?? null;
-        if (!\is_string($card)) {
-            throw new \InvalidArgumentException('cardId is required in payload');
+        if (!\is_string($event->data['attackerId'] ?? null)) {
+            throw new \LogicException('attackerId is required for attack event');
         }
 
-        if (!$state->getCurrentPlayerState()->hasCardInHand($card)) {
-            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $card);
+        if (!\is_string($event->data['targetId'] ?? null)) {
+            throw new \LogicException('targetId is required for attack event');
         }
 
-        $event = GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
-            'playerId' => $action->author->id,
-            'cardId' => $card,
-        ]);
+        $attackerCardState = $state->getCardState($attackerId = $event->data['attackerId']);
 
-        return $this->resolve($event, $state);
-    }
-
-    private function endTurnAction(PlayerAction $action, GameState $state): ResolutionResult
-    {
-        $event = GameEvent::player(GameEventTypeEnum::TURN_ENDED, [
-            'playerId' => $action->author->id,
-        ]);
-
-        return $this->resolve($event, $state);
-    }
-
-    private function attackAction(PlayerAction $action, GameState $state): ResolutionResult
-    {
-        $cardId = $action->payload['cardId'] ?? null;
-
-        if (!\is_string($cardId)) {
-            throw new \InvalidArgumentException('cardId is required in payload');
+        if (!$attackerCardState) {
+            throw new \LogicException('Attacker card state not found for cardId '.$event->data['attackerId']);
         }
 
-        if (!$state->getCurrentPlayerState()->playArea->hasMonsterCard($cardId)) {
-            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $cardId);
-        }
-
-        if (!($targetId = $action->payload['targetId'] ?? null)) {
-            throw new \InvalidArgumentException('targetId is required in payload');
-        }
-
-        if (!($cardState = $state->getCardState($cardId))) {
-            throw new \LogicException('Card state not found for cardId '.$cardId);
-        }
-
-        $card = $this->cardRuntimeMap->getByState($cardState);
+        $card = $this->cardRuntimeMap->getByState($attackerCardState);
 
         if (!$card instanceof AbstractMonsterCard) {
             throw new \LogicException('Only monster cards can attack');
@@ -316,23 +267,20 @@ class GameManager
             throw new CardCannotAttackExpcetion('Card cannot attack');
         }
 
-        if (\in_array($targetId, [$state->getOtherPlayerState()->characterCardId, $state->getOtherPlayerState()->player->id], true)) {
-            $event = GameEvent::player(GameEventTypeEnum::DAMAGE, [
-                'targetId' => $state->getOtherPlayerState()->player->id,
-                'damage' => $card->getAttack(),
-                'sourceId' => $cardId,
-            ]);
-        } elseif (\in_array($targetId, $state->getOtherPlayerState()->playArea->monsterCards, true)) {
-            $event = GameEvent::player(GameEventTypeEnum::DAMAGE, [
-                'targetId' => $targetId,
-                'damage' => $card->getAttack(),
-                'sourceId' => $cardId,
-            ]);
-        } else {
-            throw new \LogicException('Invalid targetId '.(string) $targetId);
-        }
+        $targetId = match (true) {
+            \in_array($event->data['targetId'], [$state->getOtherPlayerState()->characterCardId, $state->getOtherPlayerState()->player->id], true)
+                => $state->getOtherPlayerState()->player->id,
+            \in_array($event->data['targetId'], $state->getOtherPlayerState()->playArea->monsterCards, true) => $event->data['targetId'],
+            default => throw new \LogicException('Invalid targetId '.$event->data['targetId']),
+        };
 
-        return $this->resolve($event, $state);
+        $event = GameEvent::game(GameEventTypeEnum::DAMAGE, [
+            'targetId' => $targetId,
+            'damage' => $card->getAttack(),
+            'sourceId' => $attackerId,
+        ]);
+
+        return [$event];
     }
 
     /**

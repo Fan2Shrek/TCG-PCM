@@ -14,12 +14,9 @@ use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
-use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\NotEnoughCoinsException;
-use App\Game\Exception\UnknowActionException;
 use App\Game\GameContext;
 use App\Game\Player;
-use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
@@ -155,52 +152,6 @@ final class GameManagerTest extends TestCase
         }
     }
 
-    public function testHandlePlayAction()
-    {
-        $gm = $this->getSut();
-
-        $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::PLAY_CARD,
-            ['cardId' => 'card1'],
-        );
-
-        $events = $gm->handleAction($action, $gameState)->events;
-
-        $expected = [
-            new GameEvent(
-                0,
-                GameEventTypeEnum::CARD_PLAYED,
-                GameEvent::PLAYER_EVENT,
-                [
-                    'playerId' => $gameState->player1->player->id,
-                    'cardId' => 'card1',
-                ],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::COINS_LOST,
-                GameEvent::GAME_EVENT,
-                [
-                    'playerId' => $gameState->player1->player->id,
-                    'amount' => 1,
-                ],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::CARD_DISCARDED,
-                GameEvent::GAME_EVENT,
-                [
-                    'playerId' => $gameState->player1->player->id,
-                    'cardId' => 'card1',
-                ],
-            ),
-        ];
-
-        self::assertEquals($expected, $events);
-    }
-
     public function testCardPlayWithNoMoney()
     {
         self::expectException(NotEnoughCoinsException::class);
@@ -217,29 +168,14 @@ final class GameManagerTest extends TestCase
             $gameState->currentPlayer,
             $gameState->cards,
         );
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::PLAY_CARD,
-            ['cardId' => 'card1'],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::CARD_PLAYED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player1->player->id, 'cardId' => 'card1'],
         );
 
-        $gm->handleAction($action, $gameState)->events;
-    }
-
-    public function testHandlePlayActionWithCardNoInDeck()
-    {
-        self::expectException(CardNotInHandException::class);
-
-        $gm = $this->getSut();
-
-        $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::PLAY_CARD,
-            ['cardId' => 'card3'],
-        );
-
-        $gm->handleAction($action, $gameState)->events;
+        $gm->resolve($event, $gameState)->events;
     }
 
     public function testHandlePlayActionCallCard(): void
@@ -247,15 +183,14 @@ final class GameManagerTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::PLAY_CARD,
-            [
-                'cardId' => 'card2',
-            ],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::CARD_PLAYED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player1->player->id, 'cardId' => 'card2'],
         );
 
-        $events = $gm->handleAction($action, $gameState)->events;
+        $events = $gm->resolve($event, $gameState)->events;
 
         self::assertNotNull(SpyCard::$receivedContext);
         self::assertCount(3, $events);
@@ -267,33 +202,19 @@ final class GameManagerTest extends TestCase
         );
     }
 
-    public function testHandleActionWithUnexistingAction()
-    {
-        $this->expectException(UnknowActionException::class);
-        $gm = $this->getSut();
-
-        $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            'blablabla',
-            ['cardId' => DummyCard::class],
-        );
-
-        $gm->handleAction($action, $gameState)->events;
-    }
-
     public function testEndTurn()
     {
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::END_TURN,
-            [],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::TURN_ENDED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player1->player->id],
         );
 
-        $events = $gm->handleAction($action, $gameState)->events;
+        $events = $gm->resolve($event, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -335,13 +256,14 @@ final class GameManagerTest extends TestCase
         $gameState = $gameState->withCurrentPlayer(
             $gameState->player2->player->id,
         );
-        $action = new PlayerAction(
-            $gameState->player2->player,
-            PlayerAction::END_TURN,
-            [],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::TURN_ENDED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player2->player->id],
         );
 
-        $events = $gm->handleAction($action, $gameState)->events;
+        $events = $gm->resolve($event, $gameState)->events;
         $expected = [
             new GameEvent(
                 0,
@@ -422,13 +344,14 @@ final class GameManagerTest extends TestCase
                 ),
             ],
         );
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::END_TURN,
-            [],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::TURN_ENDED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player1->player->id],
         );
 
-        $gm->handleAction($action, $gameState)->events;
+        $gm->resolve($event, $gameState)->events;
 
         self::assertTrue(SpyCard::$turnStartCalled);
     }
@@ -438,13 +361,14 @@ final class GameManagerTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $action = new PlayerAction(
-            $gameState->player1->player,
-            PlayerAction::END_TURN,
-            [],
+        $event = new GameEvent(
+            0,
+            GameEventTypeEnum::TURN_ENDED,
+            GameEvent::PLAYER_EVENT,
+            ['playerId' => $gameState->player1->player->id],
         );
 
-        $events = $gm->handleAction($action, $gameState)->events;
+        $events = $gm->resolve($event, $gameState)->events;
 
         self::assertCount(4, $events);
     }

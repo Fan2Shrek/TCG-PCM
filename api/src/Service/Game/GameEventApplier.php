@@ -33,6 +33,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::MONSTER_DIED => $this->applyMonsterDied($event, $gameState),
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
             GameEventTypeEnum::PLAYER_DIED,
+            GameEventTypeEnum::ATTACK,
             GameEventTypeEnum::CARD_RUNTIME_VALUE,
             GameEventTypeEnum::DICE_ROLLED,
             GameEventTypeEnum::CARD_ACTION_PREVENTED,
