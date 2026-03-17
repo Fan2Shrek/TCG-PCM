@@ -31,6 +31,9 @@ RUN addgroup -g 1000 app && adduser -G app -g app -s /bin/sh -D app
 # =========================
 FROM base AS dev
 
+RUN install-php-extensions \
+    pcov
+
 COPY . /app
 
 RUN composer install
