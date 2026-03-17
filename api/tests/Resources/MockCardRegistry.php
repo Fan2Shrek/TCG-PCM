@@ -14,7 +14,7 @@ final class MockCardRegistry extends CardRegistry
     public function __construct(
         ?array $mockCardsList = null,
     ) {
-        $this->mockCardsList = $mockCardsList ?? array_merge(require dirname(__DIR__, 2).'/resources/cards_list.php', [DummyCard::class => DummyCard::class]);
+        $this->mockCardsList = $mockCardsList ?? array_merge(require_once dirname(__DIR__, 2).'/resources/cards_list.php', [DummyCard::class => DummyCard::class]);
     }
 
     protected function getCardsList(): array
