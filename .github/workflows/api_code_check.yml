@@ -105,29 +105,6 @@ jobs:
           php-version: 8.5
           coverage: pcov
 
-      - name: Setup tests environment
-        run: make setup-tests
-
-      - name: Run PHPUnit with metrics
-        run: |
-          make tests-ci | tee phpunit-output.txt
-
-      - name: Extract metrics
-        id: metrics
-        run: |
-          cd api
-
-          TESTS=$(grep -oP '\d+(?=\s+tests)' ../phpunit-output.txt)
-          ASSERTIONS=$(grep -oP '\d+(?=\s+assertions)' ../phpunit-output.txt)
-          TIME=$(grep -oP '(?<=Time: )\d{2}:\d{2}\.\d{3}' ../phpunit-output.txt)
-
-          COVERAGE=$(grep -oP 'elements="\d+"|coveredelements="\d+"' ./var/coverage.xml | tail -n2 | awk -F'"' 'NR==1{total=$2} NR==2{ covered=$2} END{printf "%.2f\n", covered/total*100}')
-
-          echo "tests=$TESTS" >> $GITHUB_OUTPUT
-          echo "assertions=$ASSERTIONS" >> $GITHUB_OUTPUT
-          echo "time=$TIME" >> $GITHUB_OUTPUT
-          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
-
       - name: Download artifact
         id: download-artifact
         uses: dawidd6/action-download-artifact@v18
@@ -138,78 +115,44 @@ jobs:
           branch: main
           path: .
 
-      - name: Compute diff
-        if: github.event_name == 'pull_request'
-        id: diff
+      - name: Setup tests environment
+        run: make setup-tests
+
+      - name: Run tests
+        id: tests
         run: |
-          BASE_TESTS=$(jq -r .tests baseline.json)
-          BASE_ASSERTIONS=$(jq -r .assertions baseline.json)
-          BASE_COVERAGE=$(jq -r .coverage baseline.json)
+          ./resources/generate_tests_result.php ./baseline.json 2>&1 | tee result.log
+          EXITCODE=${PIPESTATUS[0]}
 
-          echo "tests_diff=$((${{ steps.metrics.outputs.tests }} - $BASE_TESTS))" >> $GITHUB_OUTPUT
-          echo "assertions_diff=$((${{ steps.metrics.outputs.assertions }} - $BASE_ASSERTIONS))" >> $GITHUB_OUTPUT
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          cat result.log >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          COVERAGE_DIFF=$(echo "scale=2; 62.13 - $BASE_COVERAGE" | bc)
-          echo "coverage_diff=$COVERAGE_DIFF" >> $GITHUB_OUTPUT
+          if [ $EXITCODE -ne 0 ]; then
+            echo "test failed with exit code $EXITCODE"
+            cat result.log
+            exit $EXITCODE
+          fi
 
-      - name: Comment PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        env:
-          TESTS: ${{ steps.metrics.outputs.tests }}
-          TESTS_DIFF: ${{ steps.diff.outputs.tests_diff }}
-          ASSERTIONS: ${{ steps.metrics.outputs.assertions }}
-          ASSERTIONS_DIFF: ${{ steps.diff.outputs.assertions_diff }}
-          TIME: ${{ steps.metrics.outputs.time }}
-          COVERAGE: ${{ steps.metrics.outputs.coverage }}
-          COVERAGE_DIFF: ${{ steps.diff.outputs.coverage_diff }}
+      - name: Find Comment
+        uses: peter-evans/find-comment@v4
+        id: fc
         with:
-          script: |
-            const marker = '## 🧪 PHPUnit Report';
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "## 🧪 PHPUnit Report"
 
-            const tests = parseInt(process.env.TESTS);
-            const testsDiff = parseInt(process.env.TESTS_DIFF);
-            const assertions = parseInt(process.env.ASSERTIONS);
-            const assertionsDiff = parseInt(process.env.ASSERTIONS_DIFF);
-            const time = process.env.TIME;
-            const coverage = parseFloat(process.env.COVERAGE);
-            const coverageDiff = parseFloat(process.env.COVERAGE_DIFF);
-
-            const body = `
-            ${marker}
-
-            | Metric     | Current | Diff |
-            |-----------|---------|------|
-            | Tests      | ${tests} | ${testsDiff >= 0 ? '+' : ''}${testsDiff} |
-            | Assertions | ${assertions} | ${assertionsDiff >= 0 ? '+' : ''}${assertionsDiff} |
-            | Time       | ${time}s | - |
-            | Coverage   | ${coverage}% | ${coverageDiff >= 0 ? '+' : ''}${coverageDiff}% |
-            `;
-
-            const { data: comments } = await github.rest.issues.listComments({
-              ...context.repo,
-              issue_number: context.issue.number
-            });
-
-            const existing = comments.find(c => c.body.includes(marker));
-
-            if (existing) {
-              await github.rest.issues.updateComment({
-                ...context.repo,
-                comment_id: existing.id,
-                body
-              });
-            } else {
-              await github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: context.issue.number,
-                body
-              });
-            }
-
-      - uses: codecov/codecov-action@v4
+      - name: Comment json-verify result on PR
+        if: steps.verify.outcome != 'success'
+        uses: peter-evans/create-or-update-comment@v4
         with:
-           files: api/var/coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## 🧪 PHPUnit Report
+
+            ${{ steps.tests.outputs.output }}
 
   replay:
     name: PHP replay test
