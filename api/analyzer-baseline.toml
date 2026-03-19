@@ -143,3 +143,9 @@ file = "src/Service/Game/GameStateRebuilder.php"
 code = "less-specific-nested-return-statement"
 message = '''Returned type `array{}|non-empty-list<mixed>` is less specific than the declared return type `array<array-key, float|int|string>` for function `app\service\game\gamestaterebuilder::filterrandomevents` due to nested 'mixed'.'''
 count = 1
+
+[[issues]]
+file = "src/Utils/KillSwitch.php"
+code = "mixed-property-type-coercion"
+message = "A value with a less specific type `mixed` is being assigned to property `$$features` (array<string, bool>)."
+count = 1
