@@ -9,8 +9,8 @@ use App\Entity\User;
 use App\Tests\Resources\Fixtures\ThereIs;
 
 /**
-* @extends AbstractBuilder<Room>
-*/
+ * @extends AbstractBuilder<Room>
+ */
 class RoomBuilder extends AbstractBuilder
 {
     private User $owner;

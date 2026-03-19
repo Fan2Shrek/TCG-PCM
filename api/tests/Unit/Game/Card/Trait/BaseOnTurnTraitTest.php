@@ -17,13 +17,7 @@ final class BaseOnTurnTraitTest extends TestCase
         $card = new TestCard();
         $gameContext = $this->createStub(GameContext::class);
         $gameContext->method('isCurrentPlayer')->willReturn(true);
-        $card->setState(new CardState(
-            '',
-            TestCard::class,
-            '',
-            [],
-            [],
-        ));
+        $card->setState(new CardState('', TestCard::class, '', [], []));
 
         $card->onTurnStart($gameContext);
 
@@ -35,15 +29,17 @@ final class BaseOnTurnTraitTest extends TestCase
         $card = new TestCard();
         $gameContext = $this->createStub(GameContext::class);
         $gameContext->method('isCurrentPlayer')->willReturn(true);
-        $card->setState(new CardState(
-            '',
-            TestCard::class,
-            '',
-            [],
-            [
-                'turnRemainingBeforeAction' => 1,
-            ],
-        ));
+        $card->setState(
+            new CardState(
+                '',
+                TestCard::class,
+                '',
+                [],
+                [
+                    'turnRemainingBeforeAction' => 1,
+                ],
+            ),
+        );
 
         $card->onTurnStart($gameContext);
 

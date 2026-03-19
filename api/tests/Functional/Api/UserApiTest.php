@@ -12,10 +12,7 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testLogin()
     {
-        $this->createUser(
-            'onMangeDesPatesCeSoir',
-            'jyPeutRienJsuisEtudiant',
-        );
+        $this->createUser('onMangeDesPatesCeSoir', 'jyPeutRienJsuisEtudiant');
 
         $response = $this->client->request('POST', static::LOGIN_URI, [
             'json' => [
@@ -30,10 +27,7 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testLoginWithWrongCredentials()
     {
-        $this->createUser(
-            'jaiFaimSVP',
-            'genreJeVeuxManger',
-        );
+        $this->createUser('jaiFaimSVP', 'genreJeVeuxManger');
 
         $this->client->request('POST', static::LOGIN_URI, [
             'json' => [

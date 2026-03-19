@@ -16,12 +16,7 @@ final class AbstractCardTest extends TestCase
 {
     public function testSetState(): void
     {
-        $state = new CardState(
-            'id',
-            DummyCard::class,
-            'ownerId',
-            [],
-        );
+        $state = new CardState('id', DummyCard::class, 'ownerId', []);
 
         $card = new DummyCard();
         $card->setState($state);
@@ -33,12 +28,7 @@ final class AbstractCardTest extends TestCase
     public function testSetStateWithWrongId(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $state = new CardState(
-            'id',
-            'badId',
-            '',
-            [],
-        );
+        $state = new CardState('id', 'badId', '', []);
 
         $card = new DummyCard();
         $card->setState($state);
@@ -46,19 +36,11 @@ final class AbstractCardTest extends TestCase
 
     public function testSetStateEffects(): void
     {
-        $state = new CardState(
-            'id',
-            DummyCard::class,
-            'ownerId',
-            [
-                new EffectState(
-                    CardEffectEnum::HACKED,
-                    [
-                        'value' => 2.0,
-                    ]
-                ),
-            ],
-        );
+        $state = new CardState('id', DummyCard::class, 'ownerId', [
+            new EffectState(CardEffectEnum::HACKED, [
+                'value' => 2.0,
+            ]),
+        ]);
 
         $card = new DummyCard();
         $card->setState($state);

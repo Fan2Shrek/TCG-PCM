@@ -22,8 +22,8 @@ final class GameUtilsTest extends TestCase
     public static function formatDescriptionProvider(): iterable
     {
         yield [
-            'expected' => "Test <effect>HACKED</effect> with value <value>50</value>",
-            'description' => "Test {{effect}} with value {{value}}",
+            'expected' => 'Test <effect>HACKED</effect> with value <value>50</value>',
+            'description' => 'Test {{effect}} with value {{value}}',
             'data' => [
                 'effect' => CardEffectEnum::HACKED,
                 'value' => 50,
@@ -31,16 +31,16 @@ final class GameUtilsTest extends TestCase
         ];
 
         yield [
-            'expected' => "Test value <value>100</value>",
-            'description' => "Test value {{value}}",
+            'expected' => 'Test value <value>100</value>',
+            'description' => 'Test value {{value}}',
             'data' => [
                 'value' => 100,
             ],
         ];
 
         yield [
-            'expected' => "Test <value>1</value> and <value>2</value>",
-            'description' => "Test {{value1}} and {{value2}}",
+            'expected' => 'Test <value>1</value> and <value>2</value>',
+            'description' => 'Test {{value1}} and {{value2}}',
             'data' => [
                 'value1' => 1,
                 'value2' => 2,

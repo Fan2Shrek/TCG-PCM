@@ -102,32 +102,28 @@ final class RoomStarterTest extends TestCase
         return $room;
     }
 
-
     private function getSut(): RoomStarter
     {
-        return new RoomStarter(
-            new CardFactory(
-                new MockCardRegistry(
-                    [
-                        DummyCard::class => DummyCard::class,
-                        'other_card' =>  DummyCard::class,
-                        DummyCharacterCard::class => DummyCharacterCard::class,
-                        DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-                    ]
-                ),
-                new class implements CacheInterface {
-                    public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                        return $callable();
-                    }
-
-                    public function delete(string $key): bool
-                    {
-                        // no-op
-                        return true;
-                    }
+        return new RoomStarter(new CardFactory(
+            new MockCardRegistry([
+                DummyCard::class => DummyCard::class,
+                'other_card' => DummyCard::class,
+                DummyCharacterCard::class => DummyCharacterCard::class,
+                DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+            ]),
+            new class implements CacheInterface {
+                public function get(string $name, callable $callable, ?float $beta = null, ?array &$metadata = null): mixed
+                {
+                    return $callable();
                 }
-            ),
-        );
+
+                public function delete(string $key): bool
+                {
+                    // no-op
+                    return true;
+                }
+            },
+        ));
     }
 }
 

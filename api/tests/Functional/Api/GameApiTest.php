@@ -70,18 +70,14 @@ final class GameApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aGame()->build();
 
-        $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
-        );
+        $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseStatusCodeSame(200);
     }
 
     public function testGetCurrentState404()
     {
-        $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']),
-        );
+        $this->get($this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']));
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -90,9 +86,7 @@ final class GameApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aGame()->withOwner($this->currentUser)->build();
 
-        $response = $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
-        );
+        $response = $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
 
         $data = $response->toArray();
 

@@ -24,12 +24,7 @@ abstract class CardTestCase extends TestCase
     {
         $card = new ($this->getCardFQCN())();
 
-        $card->setState(new CardState(
-            'test_card',
-            $card->getId(),
-            '1',
-            [],
-        ));
+        $card->setState(new CardState('test_card', $card->getId(), '1', []));
 
         return $card;
     }
@@ -51,44 +46,26 @@ abstract class CardTestCase extends TestCase
         $player1State = $this->createPlayerState('1');
         $player2State = $this->createPlayerState('2');
 
-        $state = new GameState(
-            $player1State,
-            $player2State,
-            1,
-            0,
-            null,
-            [
-                'test_card' => new CardState(
-                    'test_card',
-                    DummyCard::class,
-                    '1',
-                    [],
-                ),
-            ]
-        );
+        $state = new GameState($player1State, $player2State, 1, 0, null, [
+            'test_card' => new CardState('test_card', DummyCard::class, '1', []),
+        ]);
 
         return new TestableGameContext($state, '1', $this->nextRoll ?? 0);
     }
 
     protected function createPlayerState(string $id): PlayerState
     {
-        return new PlayerState(
-            new Player($id, 'Player 1', 67),
-            30,
-            30,
-            '',
-            [],
-            [],
-            0,
-            new PlayArea(),
-        );
+        return new PlayerState(new Player($id, 'Player 1', 67), 30, 30, '', [], [], 0, new PlayArea());
     }
 }
 
 class TestableGameContext extends GameContext
 {
-    public function __construct(GameState $state, string $playerId, public float $nextRoll)
-    {
+    public function __construct(
+        GameState $state,
+        string $playerId,
+        public float $nextRoll,
+    ) {
         parent::__construct($state, $playerId);
     }
 

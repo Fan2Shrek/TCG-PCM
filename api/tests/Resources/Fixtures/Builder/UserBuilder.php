@@ -17,7 +17,7 @@ final class UserBuilder extends AbstractBuilder
     {
         $id = 'user_'.spl_object_id($this);
 
-        if (\in_array($id, self::$usedIds)) {
+        if (\in_array($id, self::$usedIds, true)) {
             $id = 'user_'.spl_object_id($this).'-'.count(self::$usedIds);
         }
         self::$usedIds[] = $id;

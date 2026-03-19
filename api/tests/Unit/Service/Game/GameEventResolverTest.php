@@ -50,12 +50,10 @@ final class GameEventResolverTest extends TestCase
             $gameState->currentPlayer,
             $gameState->cards,
         );
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_PLAYED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player1->player->id, 'cardId' => 'card1'],
-        );
+        $event = new GameEvent(0, GameEventTypeEnum::CARD_PLAYED, GameEvent::PLAYER_EVENT, [
+            'playerId' => $gameState->player1->player->id,
+            'cardId' => 'card1',
+        ]);
 
         $gm->resolve($event, $gameState)->events;
     }
@@ -65,22 +63,22 @@ final class GameEventResolverTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_PLAYED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player1->player->id, 'cardId' => 'card2'],
-        );
+        $event = new GameEvent(0, GameEventTypeEnum::CARD_PLAYED, GameEvent::PLAYER_EVENT, [
+            'playerId' => $gameState->player1->player->id,
+            'cardId' => 'card2',
+        ]);
 
         $events = $gm->resolve($event, $gameState)->events;
 
         self::assertNotNull(SpyCard::$receivedContext);
         self::assertCount(3, $events);
-        self::assertEquals([
+        self::assertEquals(
+            [
                 GameEventTypeEnum::CARD_PLAYED,
                 GameEventTypeEnum::COINS_LOST,
                 GameEventTypeEnum::CARD_DISCARDED,
-        ], array_map(fn (GameEvent $event) => $event->type, $events)
+            ],
+            array_map(static fn(GameEvent $event) => $event->type, $events),
         );
     }
 
@@ -89,42 +87,17 @@ final class GameEventResolverTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::TURN_ENDED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player1->player->id],
-        );
+        $event = new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player1->player->id]);
 
         $events = $gm->resolve($event, $gameState)->events;
         $expected = [
-            new GameEvent(
-                0,
-                GameEventTypeEnum::TURN_ENDED,
-                GameEvent::PLAYER_EVENT,
-                ['playerId' => $gameState->player1->player->id],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::TURN_STARTED,
-                GameEvent::GAME_EVENT,
-                ['playerId' => $gameState->player2->player->id],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::COINS_GAINED,
-                GameEvent::GAME_EVENT,
-                [
-                    'playerId' => $gameState->player2->player->id,
-                    'amount' => 3,
-                ],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::CARD_DRAWN,
-                GameEvent::GAME_EVENT,
-                ['playerId' => $gameState->player2->player->id],
-            ),
+            new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player1->player->id]),
+            new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::GAME_EVENT, ['playerId' => $gameState->player2->player->id]),
+            new GameEvent(0, GameEventTypeEnum::COINS_GAINED, GameEvent::GAME_EVENT, [
+                'playerId' => $gameState->player2->player->id,
+                'amount' => 3,
+            ]),
+            new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, ['playerId' => $gameState->player2->player->id]),
         ];
 
         self::assertEquals($expected, $events);
@@ -135,51 +108,19 @@ final class GameEventResolverTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $gameState = $gameState->withCurrentPlayer(
-            $gameState->player2->player->id,
-        );
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::TURN_ENDED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player2->player->id],
-        );
+        $gameState = $gameState->withCurrentPlayer($gameState->player2->player->id);
+        $event = new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player2->player->id]);
 
         $events = $gm->resolve($event, $gameState)->events;
         $expected = [
-            new GameEvent(
-                0,
-                GameEventTypeEnum::TURN_ENDED,
-                GameEvent::PLAYER_EVENT,
-                ['playerId' => $gameState->player2->player->id],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::ROUND_STARTED,
-                GameEvent::GAME_EVENT,
-                [],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::TURN_STARTED,
-                GameEvent::GAME_EVENT,
-                ['playerId' => $gameState->player1->player->id],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::COINS_GAINED,
-                GameEvent::GAME_EVENT,
-                [
-                    'playerId' => $gameState->player1->player->id,
-                    'amount' => 3,
-                ],
-            ),
-            new GameEvent(
-                0,
-                GameEventTypeEnum::CARD_DRAWN,
-                GameEvent::GAME_EVENT,
-                ['playerId' => $gameState->player1->player->id],
-            ),
+            new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player2->player->id]),
+            new GameEvent(0, GameEventTypeEnum::ROUND_STARTED, GameEvent::GAME_EVENT, []),
+            new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::GAME_EVENT, ['playerId' => $gameState->player1->player->id]),
+            new GameEvent(0, GameEventTypeEnum::COINS_GAINED, GameEvent::GAME_EVENT, [
+                'playerId' => $gameState->player1->player->id,
+                'amount' => 3,
+            ]),
+            new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, ['playerId' => $gameState->player1->player->id]),
         ];
 
         self::assertEquals($expected, $events);
@@ -190,15 +131,10 @@ final class GameEventResolverTest extends TestCase
         $gm = $this->getSut();
         $gameState = $this->createGameState();
 
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_PLAYED,
-            GameEvent::PLAYER_EVENT,
-            [
-                'playerId' => $gameState->player1->player->id,
-                'cardId' => 'card2',
-            ],
-        );
+        $event = new GameEvent(0, GameEventTypeEnum::CARD_PLAYED, GameEvent::PLAYER_EVENT, [
+            'playerId' => $gameState->player1->player->id,
+            'cardId' => 'card2',
+        ]);
 
         $resolution = $gm->resolve($event, $gameState);
 
@@ -211,27 +147,10 @@ final class GameEventResolverTest extends TestCase
 
         $gameState = $this->createGameState();
         $player = $gameState->player1->withPlayArea($gameState->player1->playArea->addPassiveCard('card1O'));
-        $gameState = new GameState(
-            $player,
-            $gameState->player2,
-            $gameState->lastEventId,
-            $gameState->seed,
-            $gameState->currentPlayer,
-            [
-                'card1O' => new CardState(
-                    'card1O',
-                    SpyCard::class,
-                    '1',
-                    [],
-                ),
-            ],
-        );
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::TURN_ENDED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player1->player->id],
-        );
+        $gameState = new GameState($player, $gameState->player2, $gameState->lastEventId, $gameState->seed, $gameState->currentPlayer, [
+            'card1O' => new CardState('card1O', SpyCard::class, '1', []),
+        ]);
+        $event = new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player1->player->id]);
 
         $gm->resolve($event, $gameState)->events;
 
@@ -243,12 +162,7 @@ final class GameEventResolverTest extends TestCase
         $gm = $this->getSut();
 
         $gameState = $this->createGameState();
-        $event = new GameEvent(
-            0,
-            GameEventTypeEnum::TURN_ENDED,
-            GameEvent::PLAYER_EVENT,
-            ['playerId' => $gameState->player1->player->id],
-        );
+        $event = new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player1->player->id]);
 
         $events = $gm->resolve($event, $gameState)->events;
 
@@ -285,27 +199,10 @@ final class GameEventResolverTest extends TestCase
             new PlayArea(),
         );
 
-        return new GameState(
-            $player1State,
-            $player2State,
-            1,
-            0,
-            null,
-            [
-                'card1' => new CardState(
-                    'card1',
-                    DummyCard::class,
-                    '1',
-                    [],
-                ),
-                'card2' => new CardState(
-                    'card2',
-                    SpyCard::class,
-                    '2',
-                    [],
-                ),
-            ]
-        );
+        return new GameState($player1State, $player2State, 1, 0, null, [
+            'card1' => new CardState('card1', DummyCard::class, '1', []),
+            'card2' => new CardState('card2', SpyCard::class, '2', []),
+        ]);
     }
 
     private function createRoom(): Room
@@ -322,44 +219,38 @@ final class GameEventResolverTest extends TestCase
 
     private function getSut(bool $fakeGEA = false): GameEventResolver
     {
-        $gea = $fakeGEA ? new class implements GameEventApplierInterface {
-            public function apply(GameEvent $event, GameState $gameState): GameState
-            {
-                return $gameState;
-            }
+        $gea = $fakeGEA
+            ? new class implements GameEventApplierInterface {
+                public function apply(GameEvent $event, GameState $gameState): GameState
+                {
+                    return $gameState;
+                }
 
-            public function applyMultiple(array $events, GameState $gameState): GameState
-            {
-                return $gameState;
-            }
-        } : new GameEventApplier();
+                public function applyMultiple(array $events, GameState $gameState): GameState
+                {
+                    return $gameState;
+                }
+            } : new GameEventApplier();
 
-        return new GameEventResolver(
-            new CardRuntimeMap(
-                new CardFactory(
-                    new MockCardRegistry(
-                        [
-                            DummyCard::class => DummyCard::class,
-                            'other_card' =>  DummyCard::class,
-                            SpyCard::class => SpyCard::class,
-                        ]
-                    ),
-                    new class implements CacheInterface {
-                        public function get(string $name, callable $callable, ?float $beta = null, array &$metadata = null): mixed{
-                            return $callable();
-                        }
+        return new GameEventResolver(new CardRuntimeMap(new CardFactory(
+            new MockCardRegistry([
+                DummyCard::class => DummyCard::class,
+                'other_card' => DummyCard::class,
+                SpyCard::class => SpyCard::class,
+            ]),
+            new class implements CacheInterface {
+                public function get(string $name, callable $callable, ?float $beta = null, ?array &$metadata = null): mixed
+                {
+                    return $callable();
+                }
 
-                        public function delete(string $key): bool
-                        {
-                            // no-op
-                            return true;
-                        }
-                    }
-                ),
-            ),
-            new GameContextFactory(),
-            $gea,
-        );
+                public function delete(string $key): bool
+                {
+                    // no-op
+                    return true;
+                }
+            },
+        )), new GameContextFactory(), $gea);
     }
 }
 
@@ -367,8 +258,7 @@ class SpyGameStateRepository implements GameStateRepositoryInterface
 {
     public function __construct(
         public ?GameState $gameState = null,
-    ) {
-    }
+    ) {}
 
     public function save(GameState $gameContext, Room $room): void
     {
@@ -385,8 +275,7 @@ class InMemoryGameEventRepository implements GameEventRepositoryInterface
 {
     public function __construct(
         public array $memory = [],
-    ) {
-    }
+    ) {}
 
     public function save(GameEvent $gameEvent, string $roomId): GameEvent
     {
@@ -395,7 +284,7 @@ class InMemoryGameEventRepository implements GameEventRepositoryInterface
 
     public function getEventsSince(?int $lastEventId, string $roomId): array
     {
-        return array_filter($this->memory, fn (GameEvent $event) => $event->id > $lastEventId);
+        return array_filter($this->memory, static fn(GameEvent $event) => $event->id > $lastEventId);
     }
 }
 

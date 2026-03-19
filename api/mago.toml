@@ -3,9 +3,10 @@ php-version = "8.5"
 [source]
 paths = [
   "src",
+  "tests"
 ]
-includes = ["vendor", "tests"]
-excludes = []
+includes = ["vendor"]
+excludes = ["tests/bootstrap.php", "tests/GameReplay/resources"]
 
 [formatter]
 print-width = 160
@@ -31,13 +32,16 @@ kan-defect = { enabled = false }
 excessive-parameter-list = { threshold = 10 }
 no-else-clause = { enabled = false }
 no-multi-assignments = { enabled = false }
+no-literal-password = { exclude = ["tests"] }
+sensitive-parameter = { exclude = ["tests"] }
 
 [analyzer]
+excludes = ["tests", "src/DataFixtures", "src/Debug/GameDataCollector.php"]
+baseline = "analyzer-baseline.toml"
+
 find-unused-definitions = true
 find-unused-expressions = false
 analyze-dead-code = false
 check-throws = true
 allow-possibly-undefined-array-keys = true
 ignore = ["missing-override-attribute", "unhandled-thrown-type", "mixed-assignment"]
-excludes = ["src/DataFixtures", "src/Debug/GameDataCollector.php"]
-baseline = "analyzer-baseline.toml"

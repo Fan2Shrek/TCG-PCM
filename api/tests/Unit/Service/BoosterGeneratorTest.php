@@ -71,9 +71,7 @@ class TestableBoosterGenerator extends BoosterGenerator
 
     public function __construct()
     {
-        parent::__construct(new MockCardRegistry(
-            $this->getCardsList(),
-        ));
+        parent::__construct(new MockCardRegistry($this->getCardsList()));
     }
 
     public function getCardsList(): array
