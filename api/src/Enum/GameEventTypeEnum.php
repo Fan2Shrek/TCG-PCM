@@ -25,4 +25,5 @@ enum GameEventTypeEnum: string
     case COINS_LOST = 'COINS_LOST';
     case PLAYER_DIED = 'PLAYER_DIED';
     case MONSTER_DIED = 'MONSTER_DIED';
+    case ATTACK = 'ATTACK';
 }

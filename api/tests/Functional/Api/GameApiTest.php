@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Api;
 
 use App\Tests\Functional\FunctionalTestCase;
 use App\Tests\Resources\Fixtures\ThereIs;
-use App\Tests\Unit\Fixtures\DummyCard;
 
 final class GameApiTest extends FunctionalTestCase
 {
@@ -34,6 +33,34 @@ final class GameApiTest extends FunctionalTestCase
         $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
             'actionId' => 'invalid_action',
             'payload' => [],
+        ]);
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testPlayGameCardNotInHand(): void
+    {
+        $gameState = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
+            'actionId' => 'play_card',
+            'payload' => [
+                'cardId' => 'no_card',
+            ],
+        ]);
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testUnknownAction()
+    {
+        $gameState = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
+            'actionId' => 'play_card_bla_bla_bla',
+            'payload' => [
+                'cardId' => 'no_card',
+            ],
         ]);
 
         self::assertResponseStatusCodeSame(400);

@@ -12,7 +12,7 @@ use App\Service\Game\Factory\ReplayableGameContextFactory;
 class GameStateRebuilder
 {
     public function __construct(
-        private GameManager $gameManager,
+        private GameEventResolver $gameEventResolver,
     ) {}
 
     /**
@@ -22,7 +22,7 @@ class GameStateRebuilder
     {
         $randomEvents = $this->filterRandomEvents($events);
 
-        $oldFactory = $this->gameManager->setGameContextFactory(new ReplayableGameContextFactory($randomEvents));
+        $oldFactory = $this->gameEventResolver->setGameContextFactory(new ReplayableGameContextFactory($randomEvents));
         $state = $initial;
 
         try {
@@ -30,12 +30,12 @@ class GameStateRebuilder
                 $state = match ($event->type) {
                     GameEventTypeEnum::CARD_PLAYED => $this->replayCard($event, $state),
                     GameEventTypeEnum::TURN_ENDED => $this->replayEndTurn($event, $state),
-                    default => $this->gameManager->resolve($event, $state)->state,
+                    default => $this->gameEventResolver->resolve($event, $state)->state,
                 };
                 $state = $state->withLastEventId($event->id);
             }
         } finally {
-            $this->gameManager->setGameContextFactory($oldFactory);
+            $this->gameEventResolver->setGameContextFactory($oldFactory);
         }
 
         return $state;
@@ -68,11 +68,11 @@ class GameStateRebuilder
 
     private function replayCard(GameEvent $event, GameState $state): GameState
     {
-        return $this->gameManager->resolve($event, $state)->state;
+        return $this->gameEventResolver->resolve($event, $state)->state;
     }
 
     private function replayEndTurn(GameEvent $event, GameState $gameState): GameState
     {
-        return $this->gameManager->resolve($event, $gameState)->state;
+        return $this->gameEventResolver->resolve($event, $gameState)->state;
     }
 }
