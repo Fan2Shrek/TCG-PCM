@@ -35,7 +35,7 @@ final class RoomApiTest extends FunctionalTestCase
 
         self::assertEntityCount(1, Room::class);
         $room = $this->getLastInsertedEntity();
-        // TODO fix this assertion but the security service does not seem to
+        // @TODO fix this assertion but the security service does not seem to
         // work with reusing login in clientTest::loginUser
         self::assertSame($this->currentUser->getUsername(), $room->getOwner()->getUsername());
     }
@@ -105,8 +105,7 @@ final class RoomApiTest extends FunctionalTestCase
         $room = ThereIs::aRoom()
             ->withOwner($this->currentUser)
             ->withOpponent()
-            ->build()
-        ;
+            ->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -119,8 +118,7 @@ final class RoomApiTest extends FunctionalTestCase
         $room = ThereIs::aRoom()
             ->withOwner($user)
             ->withOpponent()
-            ->build()
-        ;
+            ->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -129,9 +127,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testStartRoomFailedIfNoOpponent()
     {
-        $room = ThereIs::aRoom()
-            ->withOwner($this->currentUser)
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -141,9 +137,7 @@ final class RoomApiTest extends FunctionalTestCase
     protected function createUser(?string $username = null, ?string $password = null): User
     {
         $user = new User($username ?? 'test');
-        $user->setPassword(self::getContainer()->get('security.password_hasher')
-            ->hashPassword($user, $password ?? 'password'))
-        ;
+        $user->setPassword(self::getContainer()->get('security.password_hasher')->hashPassword($user, $password ?? 'password'));
         $deck = new Deck($user, 'test deck', '');
         $deck->setCharacterCard(new PierrotCard()->getId());
         $user->addDeck($deck);
@@ -156,32 +150,22 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testChangeDeckSuccess()
     {
-        $room = ThereIs::aRoom()
-            ->withOwner($this->currentUser)
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
         $deck = $this->currentUser->getDecks()[0];
 
-        $this->post(
-            $this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]),
-            ['deck' => '/api/decks/'.$deck->getId()]
-        );
+        $this->post($this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]), ['deck' => '/api/decks/'.$deck->getId()]);
 
         self::assertResponseIsSuccessful();
     }
 
     public function testChangeDeckAsOwner()
     {
-        $room = ThereIs::aRoom()
-            ->withOwner($this->currentUser)
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->build();
 
         $deck = $this->currentUser->getDecks()[0];
 
-        $this->post(
-            $this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]),
-            ['deck' => '/api/decks/'.$deck->getId()]
-        );
+        $this->post($this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]), ['deck' => '/api/decks/'.$deck->getId()]);
 
         self::assertSame($deck, $room->getOwnerDeck());
     }
@@ -196,10 +180,7 @@ final class RoomApiTest extends FunctionalTestCase
 
         $deck = $this->currentUser->getDecks()[0];
 
-        $this->post(
-            $this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]),
-            ['deck' => '/api/decks/'.$deck->getId()]
-        );
+        $this->post($this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]), ['deck' => '/api/decks/'.$deck->getId()]);
 
         self::assertSame($deck, $room->getOpponentDeck());
     }
@@ -210,10 +191,7 @@ final class RoomApiTest extends FunctionalTestCase
 
         $deck = $this->currentUser->getDecks()[0];
 
-        $this->post(
-            $this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]),
-            ['deck' => '/api/decks/'.$deck->getId()]
-        );
+        $this->post($this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]), ['deck' => '/api/decks/'.$deck->getId()]);
 
         self::assertResponseStatusCodeSame(403);
     }

@@ -44,11 +44,7 @@ final class BadgeManagerTest extends TestCase
     {
         $repository = $this->createStub(UserBadgeRepository::class);
 
-        return new BadgeManager(
-            $handlers,
-            $repository,
-            new DummyCurrentUserProvider(),
-        );
+        return new BadgeManager($handlers, $repository, new DummyCurrentUserProvider());
     }
 }
 

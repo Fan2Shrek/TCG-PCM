@@ -14,21 +14,14 @@ trait EntityAssertionTrait
     #[BeforeClass]
     public static function startCollector(): void
     {
-        self::$collector = static::getContainer()
-            ->get(DoctrineCollector::class)
-        ;
+        self::$collector = static::getContainer()->get(DoctrineCollector::class);
 
         self::$collector->start();
     }
 
     protected static function assertEntityCount(int $expectedCount, string $entityClass): void
     {
-        self::assertSame(
-            $expectedCount,
-            static::getEm()
-                ->getRepository($entityClass)
-                ->count([]),
-        );
+        self::assertSame($expectedCount, static::getEm()->getRepository($entityClass)->count([]));
     }
 
     protected function getLastInsertedEntity(): object

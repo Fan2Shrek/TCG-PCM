@@ -63,18 +63,21 @@ final class HackedZoneCardTest extends CardTestCase
         $events = $gameContext->flushEvents();
 
         self::assertCount(16, $events);
-        $cardIds = array_map(fn ($event) => $event->data['cardId'], array_filter($events, fn ($a) => GameEventTypeEnum::EFFECT_ADDED === $a->type));
+        $cardIds = array_map(static fn($event) => $event->data['cardId'], array_filter($events, static fn($a) => GameEventTypeEnum::EFFECT_ADDED === $a->type));
         self::assertCount(8, array_unique($cardIds));
-        self::assertEqualsCanonicalizing([
-            'card1',
-            'card2',
-            'card3',
-            'card4',
-            'card5',
-            'card6',
-            'characterCardId1',
-            'characterCardId2',
-        ], $cardIds);
+        self::assertEqualsCanonicalizing(
+            [
+                'card1',
+                'card2',
+                'card3',
+                'card4',
+                'card5',
+                'card6',
+                'characterCardId1',
+                'characterCardId2',
+            ],
+            $cardIds,
+        );
     }
 
     public function testOnCardDrawn()
@@ -88,17 +91,12 @@ final class HackedZoneCardTest extends CardTestCase
         $events = $gameContext->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::EFFECT_ADDED,
-            GameEvent::GAME_EVENT,
-            [
-                'effect' => CardEffectEnum::HACKED->value,
-                'cardId' => 'player1',
-                'effectValues' => [
-                    'value' => 1,
-                ],
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::EFFECT_ADDED, GameEvent::GAME_EVENT, [
+            'effect' => CardEffectEnum::HACKED->value,
+            'cardId' => 'player1',
+            'effectValues' => [
+                'value' => 1,
             ],
-        ), $events[0]);
+        ]), $events[0]);
     }
 }

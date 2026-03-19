@@ -17,8 +17,7 @@ final class DoctrineCollector
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function postPersist(LifecycleEventArgs $args): void
     {
@@ -70,9 +69,6 @@ final class DoctrineCollector
 
         $this->isBooted = true;
 
-        $this->entityManager
-            ->getEventManager()
-            ->addEventListener(['postPersist'], $this)
-        ;
+        $this->entityManager->getEventManager()->addEventListener(['postPersist'], $this);
     }
 }
