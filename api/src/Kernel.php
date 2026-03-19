@@ -6,10 +6,12 @@ use App\DependencyInjection\UseRedisGameStateRepositoryPass;
 use App\Game\Badge\Handler\BadgeHandlerInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Resources\MockHub;
+use App\Utils\KillSwitch;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Mercure\HubInterface;
 
@@ -41,5 +43,15 @@ class Kernel extends BaseKernel
         $container->registerForAutoconfiguration(BadgeHandlerInterface::class)->addTag('app.badge_handler');
 
         $container->addCompilerPass(new UseRedisGameStateRepositoryPass());
+
+        $container
+            ->register('kernel.get_feature', \Closure::class)
+            ->setFactory([\Closure::class, 'fromCallable'])
+            ->setArguments([
+                [new Reference(KillSwitch::class), 'isEnable'],
+            ])
+            ->addTag('routing.expression_language_function', [
+                'function' => 'is_enable',
+            ]);
     }
 }

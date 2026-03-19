@@ -1,8 +1,13 @@
 name: API code check
+
 on:
   pull_request:
     paths:
       - 'api/**'
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   install-deps:
@@ -98,12 +103,56 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.5
+          coverage: pcov
+
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v18
+        if: github.event_name == 'pull_request'
+        with:
+          workflow: api_tests_metrics.yml
+          name: phpunit-baseline
+          branch: main
+          path: .
 
       - name: Setup tests environment
         run: make setup-tests
 
-      - name: Run PHPUnit
-        run: make tests
+      - name: Run tests
+        id: tests
+        run: |
+          ./resources/generate_tests_result.php ./baseline.json 2>&1 | tee result.log
+          EXITCODE=${PIPESTATUS[0]}
+
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          cat result.log >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [ $EXITCODE -ne 0 ]; then
+            echo "test failed with exit code $EXITCODE"
+            cat result.log
+            exit $EXITCODE
+          fi
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v4
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "## 🧪 PHPUnit Report"
+
+      - name: Comment json-verify result on PR
+        if: steps.verify.outcome != 'success'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## 🧪 PHPUnit Report
+
+            ${{ steps.tests.outputs.output }}
 
   replay:
     name: PHP replay test

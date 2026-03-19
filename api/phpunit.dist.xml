@@ -18,7 +18,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
+        <testsuite name="TCG Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -37,6 +37,12 @@
         <include>
             <directory>src</directory>
         </include>
+
+        <exclude>
+          <directory suffix=".php">src/DataFixtures/</directory>
+          <directory suffix=".php">src/Dev/</directory>
+          <directory suffix=".php">src/Debug/</directory>
+        </exclude>
 
         <deprecationTrigger>
             <method>Doctrine\Deprecations\Deprecation::trigger</method>

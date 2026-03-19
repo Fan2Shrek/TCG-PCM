@@ -13,7 +13,7 @@ export default ({ label, onChange = null, type = 'text'}: TextInputProps) => (
 	  type={type}
 	  id={label}
 	  name={label}
-	  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+	  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
 	  placeholder="Enter your username"
 	  onChange={onChange}
 	/>

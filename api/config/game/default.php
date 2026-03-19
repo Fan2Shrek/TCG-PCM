@@ -11,7 +11,8 @@ use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\Factory\GameContextFactoryInterface;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameEventApplierInterface;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameEventResolver;
+use App\Service\Game\GameInitializer;
 use App\Service\Game\GameStateConverter;
 use App\Service\Game\GameStateRebuilder;
 use App\Service\Game\State\DoctrineGameEventRepository;
@@ -21,13 +22,20 @@ use App\Service\Game\State\GameStateRepositoryInterface;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
-        ->set('game.manager', GameManager::class)
+        ->set('game.event_resolver', GameEventResolver::class)
             ->args([
                 service('game.card_runtime_map'),
                 service('game.game_context_factory'),
                 service('game.event_applier'),
             ])
-        ->alias(GameManager::class, 'game.manager')
+        ->alias(GameEventResolver::class, 'game.event_resolver')
+
+        ->set('game.initializer', GameInitializer::class)
+        ->args([
+            service('game.event_applier'),
+            service('game.event_resolver'),
+        ])
+        ->alias(GameInitializer::class, 'game.initializer')
 
         ->set('game.card_runtime_map', CardRuntimeMap::class)
             ->args([
@@ -69,7 +77,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set('game.game_state_rebuilder', GameStateRebuilder::class)
             ->args([
-                service('game.manager'),
+                service('game.event_resolver'),
             ])
         ->alias(GameStateRebuilder::class, 'game.game_state_rebuilder')
     ;

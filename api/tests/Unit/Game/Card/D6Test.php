@@ -40,13 +40,7 @@ final class D6Test extends CardTestCase
 
         [$drawEvent] = $ctx->flushEvents();
 
-        self::assertEquals(
-            GameEvent::game(
-                GameEventTypeEnum::CARD_DRAWN,
-                ['playerId' => '1'],
-            ),
-            $drawEvent,
-        );
+        self::assertEquals(GameEvent::game(GameEventTypeEnum::CARD_DRAWN, ['playerId' => '1']), $drawEvent);
     }
 
     public static function d6RollsProvider(): \Generator

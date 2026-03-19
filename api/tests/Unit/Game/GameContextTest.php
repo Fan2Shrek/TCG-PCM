@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Game;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\GameRandomizer;
 use App\Game\GameContext;
 use App\Game\Player;
 use App\Game\State\GameEvent;
@@ -26,31 +25,16 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(3, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_DRAWN,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => '1',
-            ],
-        ), $events[0]);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_DRAWN,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => '1',
-            ],
-        ), $events[1]);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::GAME_EVENT,
-            [
-                'targetId' => '2',
-                'damage' => 2,
-            ],
-        ), $events[2]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+        ]), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+        ]), $events[1]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::DAMAGE, GameEvent::GAME_EVENT, [
+            'targetId' => '2',
+            'damage' => 2,
+        ]), $events[2]);
         self::assertEmpty($ctx->flushEvents());
     }
 
@@ -63,14 +47,9 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_DRAWN,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => '1',
-            ],
-        ), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+        ]), $events[0]);
     }
 
     public function testDrawCardsOtherPlayer()
@@ -82,14 +61,9 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::CARD_DRAWN,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => '2',
-            ],
-        ), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::CARD_DRAWN, GameEvent::GAME_EVENT, [
+            'playerId' => '2',
+        ]), $events[0]);
     }
 
     public function testAttack()
@@ -101,15 +75,10 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::GAME_EVENT,
-            [
-                'targetId' => '2',
-                'damage' => 2,
-            ],
-        ), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::DAMAGE, GameEvent::GAME_EVENT, [
+            'targetId' => '2',
+            'damage' => 2,
+        ]), $events[0]);
     }
 
     public function testAttackSamePlayer()
@@ -121,15 +90,10 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::GAME_EVENT,
-            [
-                'targetId' => '1',
-                'damage' => 2,
-            ],
-        ), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::DAMAGE, GameEvent::GAME_EVENT, [
+            'targetId' => '1',
+            'damage' => 2,
+        ]), $events[0]);
     }
 
     public function testPushGameEvent()
@@ -141,14 +105,9 @@ final class GameContextTest extends TestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertEquals(new GameEvent(
-            0,
-            GameEventTypeEnum::TURN_STARTED,
-            GameEvent::GAME_EVENT,
-            [
-                'turn' => 1,
-            ],
-        ), $events[0]);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::GAME_EVENT, [
+            'turn' => 1,
+        ]), $events[0]);
     }
 
     public function testGetOpponent()

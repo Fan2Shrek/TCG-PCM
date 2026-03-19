@@ -51,25 +51,10 @@ final class PierreSaidNoMonsterZoneCardTest extends CardTestCase
             0,
             null,
             [
-                'monster1' => new CardState(
-                    'monster1',
-                    DummyCard::class,
-                    '1',
-                    [],
-                ),
-                'monster2' => new CardState(
-                    'monster2',
-                    DummyCard::class,
-                    '1',
-                    [],
-                ),
-                'monster3' => new CardState(
-                    'monster3',
-                    DummyCard::class,
-                    '1',
-                    [],
-                ),
-            ]
+                'monster1' => new CardState('monster1', DummyCard::class, '1', []),
+                'monster2' => new CardState('monster2', DummyCard::class, '1', []),
+                'monster3' => new CardState('monster3', DummyCard::class, '1', []),
+            ],
         );
         $ctx = new GameContext($gameState, 'player1');
         $card = $this->getCard();

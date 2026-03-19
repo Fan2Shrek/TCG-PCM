@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Game;
 
 use App\Enum\CardEffectEnum;
-use App\Game\State\GameEvent;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\MonsterCardState;
 use App\Game\Player;
+use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
@@ -49,16 +49,11 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::PLAYER_EVENT,
-            [
-                'targetId' => 'monster',
-                'sourceId' => 'monster',
-                'damage' => 1,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'monster',
+            'sourceId' => 'monster',
+            'damage' => 1,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -69,15 +64,10 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::PLAYER_EVENT,
-            [
-                'targetId' => 'player2',
-                'damage' => 15,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'player2',
+            'damage' => 15,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -88,15 +78,10 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::PLAYER_EVENT,
-            [
-                'targetId' => 'character_2',
-                'damage' => 15,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'character_2',
+            'damage' => 15,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -107,15 +92,10 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::DAMAGE,
-            GameEvent::PLAYER_EVENT,
-            [
-                'targetId' => 'monster',
-                'damage' => 1,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'monster',
+            'damage' => 1,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
         $state = $newState->getCardState('monster');
@@ -128,14 +108,9 @@ final class GameEventApplierTest extends TestCase
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::TURN_ENDED,
-            GameEvent::PLAYER_EVENT,
-            [
-                'playerId' => 'player1',
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, [
+            'playerId' => 'player1',
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -148,15 +123,10 @@ final class GameEventApplierTest extends TestCase
         $state = $this->getInitialGameState();
         $state = $state->addCard(new CardState('D6', 'D6', '1', []));
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::EFFECT_ADDED,
-            GameEvent::GAME_EVENT,
-            [
-                'cardId' => 'D6',
-                'effect' => CardEffectEnum::HACKED->value,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::EFFECT_ADDED, GameEvent::GAME_EVENT, [
+            'cardId' => 'D6',
+            'effect' => CardEffectEnum::HACKED->value,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -170,14 +140,9 @@ final class GameEventApplierTest extends TestCase
             'D6' => new CardState('D6', 'D6', 'player2', []),
         ]);
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::CARD_DISCARDED,
-            GameEvent::GAME_EVENT,
-            [
-                'cardId' => 'D6',
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_DISCARDED, GameEvent::GAME_EVENT, [
+            'cardId' => 'D6',
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -190,15 +155,10 @@ final class GameEventApplierTest extends TestCase
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => 'player2',
-                'cardId' => 'D6',
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, GameEvent::GAME_EVENT, [
+            'playerId' => 'player2',
+            'cardId' => 'D6',
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -210,26 +170,15 @@ final class GameEventApplierTest extends TestCase
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
-        $cardState = new CardState(
-            'test',
-            '',
-            '',
-            [],
-            ['turnRemainingBeforeAction' => 2]
-        );
+        $cardState = new CardState('test', '', '', [], ['turnRemainingBeforeAction' => 2]);
         $state = $state->addCard($cardState);
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::UPDATE_CARD_STATE,
-            GameEvent::GAME_EVENT,
-            [
-                'cardId' => 'test',
-                'stateToUpdate' => [
-                    'turnRemainingBeforeAction' => 1,
-                ],
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::UPDATE_CARD_STATE, GameEvent::GAME_EVENT, [
+            'cardId' => 'test',
+            'stateToUpdate' => [
+                'turnRemainingBeforeAction' => 1,
+            ],
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -242,16 +191,11 @@ final class GameEventApplierTest extends TestCase
         $state = $this->getInitialGameState();
         $state = $state->addCard(new CardState('test', '', '', []));
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA,
-            GameEvent::GAME_EVENT,
-            [
-                'cardId' => 'test',
-                'playerId' => '1',
-                'cardHealthPoints' => 5,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, GameEvent::GAME_EVENT, [
+            'cardId' => 'test',
+            'playerId' => '1',
+            'cardHealthPoints' => 5,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -259,20 +203,40 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(5, $newState->cards['test']->currentHealthPoints);
     }
 
+    public function testMultipleCardPlaceInMonsterArea()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $state = $state->addCard(new CardState('test', '', '', []));
+        $state = $state->withUpdatedPlayer($state->player1->withPlayArea(new PlayArea()));
+
+        $events = [
+            new GameEvent(1, GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, GameEvent::GAME_EVENT, [
+                'cardId' => 'test',
+                'playerId' => 'player1',
+                'cardHealthPoints' => 5,
+            ]),
+            new GameEvent(2, GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, GameEvent::GAME_EVENT, [
+                'cardId' => 'test',
+                'playerId' => 'player1',
+                'cardHealthPoints' => 5,
+            ]),
+        ];
+
+        $newState = $eventApplier->applyMultiple($events, $state);
+
+        self::assertCount(2, $newState->player1->playArea->getAll());
+    }
+
     public function testCoinsGained()
     {
         $eventApplier = $this->getSut();
         $state = $this->getInitialGameState();
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::COINS_GAINED,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => '1',
-                'amount' => 5,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::COINS_GAINED, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+            'amount' => 5,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
@@ -285,37 +249,42 @@ final class GameEventApplierTest extends TestCase
         $state = $this->getInitialGameState();
         $state = $state->withUpdatedPlayer($state->player1->withUpdatedCoins(10));
 
-        $event = new GameEvent(
-            1,
-            GameEventTypeEnum::COINS_LOST,
-            GameEvent::GAME_EVENT,
-            [
-                'playerId' => 'player1',
-                'amount' => 5,
-            ]
-        );
+        $event = new GameEvent(1, GameEventTypeEnum::COINS_LOST, GameEvent::GAME_EVENT, [
+            'playerId' => 'player1',
+            'amount' => 5,
+        ]);
 
         $newState = $eventApplier->apply($event, $state);
 
         self::assertSame(5, $newState->getPlayer('player1')->coins);
     }
 
+    public function testMonsterDied()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(1, GameEventTypeEnum::MONSTER_DIED, GameEvent::GAME_EVENT, [
+            'playerId' => 'player1',
+            'cardId' => 'monster',
+        ]);
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(0, $newState->getPlayer('player1')->playArea->monsterCards);
+        self::assertCount(1, $newState->getPlayer('player1')->discardPile);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
-        return new GameEventApplier(
-            new MockCardRegistry($cards),
-            new GameContextFactory()
-        );
+        return new GameEventApplier(new MockCardRegistry($cards), new GameContextFactory());
     }
 
     private function getInitialGameState(int $lastEventId = 1, array $player2Hand = [], ?array $cards = null): GameState
     {
         return new GameState(
             new PlayerState(
-                new Player(
-                    'player1',
-                    'Alice',
-                ),
+                new Player('player1', 'Alice'),
                 30,
                 30,
                 '',
@@ -324,16 +293,10 @@ final class GameEventApplierTest extends TestCase
                     'id' => 'D6',
                 ],
                 0,
-                new PlayArea(
-                    [],
-                    ['monster']
-                ),
+                new PlayArea([], ['monster']),
             ),
             new PlayerState(
-                new Player(
-                    'player2',
-                    'Bob',
-                ),
+                new Player('player2', 'Bob'),
                 30,
                 30,
                 'character_2',
@@ -347,9 +310,11 @@ final class GameEventApplierTest extends TestCase
             $lastEventId,
             0,
             null,
-            null !== $cards ? $cards : [
-                'monster' => MonsterCardState::fromParent(new CardState('monster', 'monster', 'player1'), 10),
-            ]
+            null !== $cards
+                ? $cards
+                : [
+                    'monster' => MonsterCardState::fromParent(new CardState('monster', 'monster', 'player1'), 10),
+                ],
         );
     }
 }

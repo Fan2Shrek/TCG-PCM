@@ -7,10 +7,7 @@ namespace App\Domain\Command\Game;
 use App\Game\Exception\GameException;
 use App\Game\PlayerAction;
 use App\Service\Auth\CurrentUserProviderInterface;
-use App\Service\Game\GameManager;
-use App\Service\Game\State\GameEventRepositoryInterface;
-use App\Service\Game\State\GameStateRepositoryInterface;
-use App\Service\GameEventPublisher;
+use App\Service\PlayerActionHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -19,11 +16,8 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final class PlayGameHandler
 {
     public function __construct(
-        private GameManager $gameManager,
-        private GameStateRepositoryInterface $gameStateRepository,
-        private GameEventRepositoryInterface $gameEventRepository,
         private CurrentUserProviderInterface $currentUserProvider,
-        private GameEventPublisher $gameEventPublisher,
+        private PlayerActionHandler $playerActionHandler,
     ) {}
 
     public function __invoke(PlayGameCommand $command): void
@@ -35,17 +29,10 @@ final class PlayGameHandler
         }
 
         $room = $command->getCurrentResource();
-        $state = $this->gameStateRepository->get($room);
-
-        if (!$state) {
-            throw HttpException::fromStatusCode(Response::HTTP_NOT_FOUND, 'Game state not found');
-        }
-
-        $authorState = $state->getPlayer((string) $user->getId());
-        $action = new PlayerAction($authorState->player, $command->actionId, $command->payload);
+        $action = new PlayerAction((string) $user->getId(), $command->actionId, $command->payload);
 
         try {
-            $resolution = $this->gameManager->handleAction($action, $state);
+            $this->playerActionHandler->handle($action, $room);
         } catch (GameException $e) {
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, $e->getMessage());
         } catch (\Throwable $e) {
@@ -53,26 +40,5 @@ final class PlayGameHandler
 
             throw $e;
         }
-
-        $lastId = null;
-        foreach ($resolution->events as $event) {
-            if (!$event->shouldBePersisted()) {
-                continue;
-            }
-
-            $event = $this->gameEventRepository->save($event, $room->getId()->toString());
-
-            $lastId = $event->id ? $event->id : null;
-        }
-
-        $state = $resolution->state;
-
-        if ($lastId) {
-            $state = $state->withLastEventId($lastId);
-        }
-
-        $this->gameStateRepository->save($state, $room);
-
-        $this->gameEventPublisher->publish($resolution->events, $state, $room);
     }
 }

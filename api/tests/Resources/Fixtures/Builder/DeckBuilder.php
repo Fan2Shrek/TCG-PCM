@@ -11,8 +11,8 @@ use App\Tests\Resources\Fixtures\ThereIs;
 use App\Tests\Unit\Fixtures\DummyCard;
 
 /**
-* @extends AbstractBuilder<Deck>
-*/
+ * @extends AbstractBuilder<Deck>
+ */
 final class DeckBuilder extends AbstractBuilder
 {
     private User $owner;

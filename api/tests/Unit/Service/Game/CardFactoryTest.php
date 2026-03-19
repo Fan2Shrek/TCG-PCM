@@ -35,12 +35,7 @@ final class CardFactoryTest extends TestCase
     public function testCreateWithState()
     {
         $factory = $this->getSut();
-        $state = new CardState(
-            'instanceId',
-            DummyCard::class,
-            'ownerId',
-            []
-        );
+        $state = new CardState('instanceId', DummyCard::class, 'ownerId', []);
         $card = $factory->createWithState(DummyCard::class, $state);
 
         self::assertInstanceOf(DummyCard::class, $card);
@@ -52,9 +47,9 @@ final class CardFactoryTest extends TestCase
     {
         return new CardFactory(
             new MockCardRegistry([
-                DummyCard::class => DummyCard::class
+                DummyCard::class => DummyCard::class,
             ]),
-            new class implements CacheInterface{
+            new class implements CacheInterface {
                 public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
                 {
                     return $callback();
@@ -64,7 +59,7 @@ final class CardFactoryTest extends TestCase
                 {
                     return true;
                 }
-            }
+            },
         );
     }
 }

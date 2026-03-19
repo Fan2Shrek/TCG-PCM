@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Api;
 
 use App\Tests\Functional\FunctionalTestCase;
 use App\Tests\Resources\Fixtures\ThereIs;
-use App\Tests\Unit\Fixtures\DummyCard;
 
 final class GameApiTest extends FunctionalTestCase
 {
@@ -39,22 +38,46 @@ final class GameApiTest extends FunctionalTestCase
         self::assertResponseStatusCodeSame(400);
     }
 
+    public function testPlayGameCardNotInHand(): void
+    {
+        $gameState = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
+            'actionId' => 'play_card',
+            'payload' => [
+                'cardId' => 'no_card',
+            ],
+        ]);
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testUnknownAction()
+    {
+        $gameState = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
+            'actionId' => 'play_card_bla_bla_bla',
+            'payload' => [
+                'cardId' => 'no_card',
+            ],
+        ]);
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
     public function testGetCurrentState()
     {
         $room = ThereIs::aGame()->build();
 
-        $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
-        );
+        $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
 
         self::assertResponseStatusCodeSame(200);
     }
 
     public function testGetCurrentState404()
     {
-        $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']),
-        );
+        $this->get($this->getUri(self::GET_GAME_URI, ['id' => 'blablabla']));
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -63,9 +86,7 @@ final class GameApiTest extends FunctionalTestCase
     {
         $room = ThereIs::aGame()->withOwner($this->currentUser)->build();
 
-        $response = $this->get(
-            $this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]),
-        );
+        $response = $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
 
         $data = $response->toArray();
 

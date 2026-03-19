@@ -21,10 +21,7 @@ final class PlacentaCardTest extends CardTestCase
         $gameContext = $this->createGameContext();
         $player = $gameContext->getCurrentPlayerState();
         $player = $player->withUpdatedHealth(10);
-        $gameContext = new GameContext(
-            $gameContext->state->withUpdatedPlayer($player),
-            $gameContext->playerId,
-        );
+        $gameContext = new GameContext($gameContext->state->withUpdatedPlayer($player), $gameContext->playerId);
 
         $card->onTurnStart($gameContext);
         $events = $gameContext->flushEvents();

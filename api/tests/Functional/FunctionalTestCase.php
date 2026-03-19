@@ -57,9 +57,7 @@ abstract class FunctionalTestCase extends ApiTestCase
     protected function createUser(?string $username = null, ?string $password = null): User
     {
         $user = new User($username ?? 'test');
-        $user->setPassword(self::getContainer()->get('security.password_hasher')
-            ->hashPassword($user, $password ?? 'password'))
-        ;
+        $user->setPassword(self::getContainer()->get('security.password_hasher')->hashPassword($user, $password ?? 'password'));
         $this->getEm()->persist($user);
         $this->getEm()->flush();
 
@@ -75,7 +73,7 @@ abstract class FunctionalTestCase extends ApiTestCase
     {
         return $this->client->request('POST', $uri, [
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             'json' => $json,
         ]);
@@ -85,7 +83,7 @@ abstract class FunctionalTestCase extends ApiTestCase
     {
         $uri = $uriTemplate;
         foreach ($variables as $key => $value) {
-            $uri = str_replace('{' . $key . '}', (string) $value, $uri);
+            $uri = str_replace('{'.$key.'}', (string) $value, $uri);
         }
 
         return $uri;

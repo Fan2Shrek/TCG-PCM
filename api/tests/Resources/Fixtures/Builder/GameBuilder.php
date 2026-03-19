@@ -24,37 +24,11 @@ final class GameBuilder extends RoomBuilder
         $gameState = new InitialGameState(
             $this->entity->getId()->toString(),
             0,
-            new PlayerState(
-                Player::fromUser($this->entity->getOwner()),
-                100,
-                100,
-                '',
-                ['1'],
-                [],
-                2,
-                new PlayArea(),
-            ),
-            new PlayerState(
-                Player::fromUser($this->entity->getOpponent()),
-                100,
-                100,
-                '',
-                ['cardtest'],
-                [],
-                3,
-                new PlayArea(),
-            ),
+            new PlayerState(Player::fromUser($this->entity->getOwner()), 100, 100, '', ['1'], [], 2, new PlayArea()),
+            new PlayerState(Player::fromUser($this->entity->getOpponent()), 100, 100, '', ['cardtest'], [], 3, new PlayArea()),
             [
-                '1' => new CardState(
-                    '1',
-                    DummyCard::class,
-                    'ownerId',
-                ),
-                'cardtest' => new CardState(
-                    'cardtest',
-                    DummyCard::class,
-                    'ownerId',
-                ),
+                '1' => new CardState('1', DummyCard::class, 'ownerId'),
+                'cardtest' => new CardState('cardtest', DummyCard::class, 'ownerId'),
             ],
         );
 

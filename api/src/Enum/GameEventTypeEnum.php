@@ -23,4 +23,7 @@ enum GameEventTypeEnum: string
     case CARD_ACTION_PREVENTED = 'CARD_ACTION_PREVENTED';
     case COINS_GAINED = 'COINS_GAINED';
     case COINS_LOST = 'COINS_LOST';
+    case PLAYER_DIED = 'PLAYER_DIED';
+    case MONSTER_DIED = 'MONSTER_DIED';
+    case ATTACK = 'ATTACK';
 }

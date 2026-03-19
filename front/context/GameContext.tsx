@@ -1,6 +1,7 @@
 import { BasicCard } from '@/components/types/card';
 import useMercure from '@/hook/useMercure';
 import { GameEventType } from '@/lib/game/type/eventType';
+import { GameEvent } from '@/lib/game/type/gameEvent';
 import { GameState } from '@/lib/game/type/gameState';
 
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
@@ -35,7 +36,8 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   useMercure(
 	`http://localhost:8080/.well-known/mercure?topic=game/${gameId}`, // @todo change
 	{
-	  [GameEventType.CARD_DRAWN]: (e) => {
+	  [GameEventType.CARD_DRAWN]: (e: GameEvent) => {
+		if (!game) return;
 		const playerId = e.data.playerId;
 		const playerState = game.player1.player.id === playerId ? game.player1 : game.player2;
 		const newPlayerState = {
@@ -44,14 +46,30 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 		  drawPile: e.partialState.drawPile
 		};
 
-		setGame((prevGame) => ({
+		setGame((prevGame: GameState) => ({
 		  ...prevGame,
 		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,
 		  player2: game.player2.player.id === playerId ? newPlayerState : prevGame.player2,
 		  cards: e.partialState.cards
 		}));
+	  },
+	  [GameEventType.CARD_PLACE_IN_MONSTER_AREA]: (e: GameEvent) => {
+		if (!game) return;
 
-		console.log(game, e, newPlayerState);
+		const playerId = e.data.playerId;
+		const playerState = game.player1.player.id === playerId ? game.player1 : game.player2;
+		const newPlayerState = {
+		  ...playerState,
+		  hand: e.partialState.hand,
+		  playArea: e.partialState.playArea
+		};
+
+		setGame((prevGame: GameState) => ({
+		  ...prevGame,
+		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,
+		  player2: game.player2.player.id === playerId ? newPlayerState : prevGame.player2,
+		  cards: e.partialState.cards
+		}));
 	  }
 	}
   );

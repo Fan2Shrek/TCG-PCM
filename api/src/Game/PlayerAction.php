@@ -17,7 +17,7 @@ final readonly class PlayerAction
     ];
 
     public function __construct(
-        public Player $author,
+        public string $authorId,
         public string $actionId,
         public array $payload,
     ) {}

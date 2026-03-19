@@ -8,9 +8,9 @@ use App\Game\AbstractCard;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
-use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameEventApplier;
+use App\Service\Game\GameEventResolver;
 use App\Service\Game\GameStateRebuilder;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,7 +25,7 @@ final class GameReplayTest extends TestCase
     #[DataProvider('replayProvider')]
     public function testReplay(string $fileName)
     {
-        if (!file_exists($fileName = \sprintf("%s/%s.php", self::REPLAY_DIR, $fileName))) {
+        if (!file_exists($fileName = \sprintf('%s/%s.php', self::REPLAY_DIR, $fileName))) {
             $this->markTestSkipped(sprintf('Replay file "%s.php" not found.', $fileName));
         }
 
@@ -37,7 +37,7 @@ final class GameReplayTest extends TestCase
         $gameReplayer = $this->getGameStateRebuilder();
         $gameState = $gameReplayer->rebuild($gameState, $events);
 
-        $property = (new \ReflectionClass($gameState))->getProperty('lastAddedCardId');
+        $property = new \ReflectionClass($gameState)->getProperty('lastAddedCardId');
         $property->setValue($gameState, null);
 
         self::assertEquals($data['finalGameState'], $gameState);
@@ -57,12 +57,8 @@ final class GameReplayTest extends TestCase
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            new GameManager(
-                new CardRuntimeMap(
-                    new TestCardFactory(
-                        new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())),
-                    ),
-                ),
+            new GameEventResolver(
+                new CardRuntimeMap(new TestCardFactory(new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())))),
                 new ReplayableGameContextFactory(),
                 new GameEventApplier(),
             ),
@@ -81,8 +77,7 @@ class TestCardFactory implements CardFactoryInterface
 {
     public function __construct(
         private CardRegistryInterface $cardRegistry,
-    ) {
-    }
+    ) {}
 
     public function create(string $cardId): AbstractCard
     {
