@@ -10,7 +10,6 @@ use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
-use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\Exception\NotEnoughCoinsException;
@@ -25,7 +24,7 @@ use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameEventApplierInterface;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameEventResolver;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Tests\Resources\MockCardRegistry;
@@ -33,50 +32,8 @@ use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 
-final class GameManagerTest extends TestCase
+final class GameEventResolverTest extends TestCase
 {
-    public function testPlayerStateDeck()
-    {
-        $gm = $this->getSut(true);
-        $gameState = new GameState(
-            new PlayerState(
-                new Player('1', 'Player 1'),
-                30,
-                30,
-                '',
-                [],
-                ['card1', 'card2', 'card3', 'card4', 'card5', 'card6', 'card7'],
-                0,
-                new PlayArea(),
-            ),
-            new PlayerState(
-                new Player('2', 'Player 1'),
-                30,
-                30,
-                '',
-                [],
-                ['card7', 'card8', 'card9', 'card10', 'card11', 'card12'],
-                0,
-                new PlayArea(),
-            ),
-            0,
-            1,
-            null,
-            [
-
-            ]
-        );
-
-        $events = $gm->startGame($gameState)->events;
-        array_pop($events); // turn_started
-        array_pop($events); // draw_card
-        array_pop($events); // coins_gained
-
-        self::assertCount(12, $events);
-        $cardDrawnEvents = array_filter($events, fn (GameEvent $event) => $event->type === GameEventTypeEnum::CARD_DRAWN);
-        self::assertCount(10, $cardDrawnEvents);
-    }
-
     public function testCardPlayWithNoMoney()
     {
         self::expectException(NotEnoughCoinsException::class);
@@ -363,7 +320,7 @@ final class GameManagerTest extends TestCase
         return $room;
     }
 
-    private function getSut(bool $fakeGEA = false): GameManager
+    private function getSut(bool $fakeGEA = false): GameEventResolver
     {
         $gea = $fakeGEA ? new class implements GameEventApplierInterface {
             public function apply(GameEvent $event, GameState $gameState): GameState
@@ -377,7 +334,7 @@ final class GameManagerTest extends TestCase
             }
         } : new GameEventApplier();
 
-        return new GameManager(
+        return new GameEventResolver(
             new CardRuntimeMap(
                 new CardFactory(
                     new MockCardRegistry(

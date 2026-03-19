@@ -10,7 +10,7 @@ use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\Factory\ReplayableGameContextFactory;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameEventResolver;
 use App\Service\Game\GameStateRebuilder;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -57,7 +57,7 @@ final class GameReplayTest extends TestCase
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
         return new GameStateRebuilder(
-            new GameManager(
+            new GameEventResolver(
                 new CardRuntimeMap(
                     new TestCardFactory(
                         new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())),

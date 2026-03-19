@@ -13,7 +13,7 @@ use App\Game\Exception\UnknowActionException;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameEventResolver;
 use App\Service\Game\ResolutionResult;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
@@ -21,7 +21,7 @@ use App\Service\Game\State\GameStateRepositoryInterface;
 final class PlayerActionHandler
 {
     public function __construct(
-        private GameManager $gameManager,
+        private GameEventResolver $gameEventResolver,
         private GameStateRepositoryInterface $gameStateRepository,
         private GameEventRepositoryInterface $gameEventRepository,
         private GameEventPublisher $gameEventPublisher,
@@ -91,7 +91,7 @@ final class PlayerActionHandler
             'cardId' => $card,
         ]);
 
-        return $this->gameManager->resolve($event, $state);
+        return $this->gameEventResolver->resolve($event, $state);
     }
 
     private function endTurnAction(PlayerAction $action, GameState $state): ResolutionResult
@@ -100,7 +100,7 @@ final class PlayerActionHandler
             'playerId' => $action->authorId,
         ]);
 
-        return $this->gameManager->resolve($event, $state);
+        return $this->gameEventResolver->resolve($event, $state);
     }
 
     private function attackAction(PlayerAction $action, GameState $state): ResolutionResult
@@ -124,6 +124,6 @@ final class PlayerActionHandler
             'targetId' => $targetId,
         ]);
 
-        return $this->gameManager->resolve($event, $state);
+        return $this->gameEventResolver->resolve($event, $state);
     }
 }

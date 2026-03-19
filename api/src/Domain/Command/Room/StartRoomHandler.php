@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Service\Auth\CurrentUserProviderInterface;
-use App\Service\Game\GameManager;
+use App\Service\Game\GameInitializer;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Service\RoomStarter;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ final class StartRoomHandler
         private CurrentUserProviderInterface $currentUserProvider,
         private GameStateRepositoryInterface $gameStateRepository,
         private RoomStarter $roomStarter,
-        private GameManager $gameManager,
+        private GameInitializer $gameInitializer,
     ) {}
 
     public function __invoke(StartRoomCommand $command): void
@@ -36,7 +36,7 @@ final class StartRoomHandler
         }
 
         $gameState = $this->roomStarter->startRoom($room);
-        $result = $this->gameManager->startGame($gameState);
+        $result = $this->gameInitializer->startGame($gameState);
 
         $this->gameStateRepository->save($result->state, $room);
 

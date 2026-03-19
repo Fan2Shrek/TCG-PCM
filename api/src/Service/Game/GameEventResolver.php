@@ -17,11 +17,8 @@ use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Service\Game\Factory\GameContextFactoryInterface;
 
-class GameManager
+class GameEventResolver
 {
-    private const INITIAL_HAND_SIZE = 5;
-    private const INITIAL_COINS = 5;
-
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
@@ -35,31 +32,6 @@ class GameManager
         $this->gameContextFactory = $factory;
 
         return $previousFactory;
-    }
-
-    public function startGame(GameState $initialGameState): ResolutionResult
-    {
-        $events = [];
-        foreach ($initialGameState->getPlayers() as $player) {
-            for ($i = 0; $i < self::INITIAL_HAND_SIZE; $i++) {
-                $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, ['playerId' => $player->id]);
-            }
-
-            $events[] = GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
-                'playerId' => $player->id,
-                'amount' => self::INITIAL_COINS,
-            ]);
-        }
-
-        $state = $this->gameEventApplier->applyMultiple($events, $initialGameState);
-
-        $roundStartedEvent = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
-            'playerId' => $state->currentPlayer,
-        ]);
-
-        $result = $this->resolve($roundStartedEvent, $state);
-
-        return new ResolutionResult(array_merge($events, $result->events), $result->state);
     }
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
