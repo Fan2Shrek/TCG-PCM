@@ -30,7 +30,6 @@ use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class GameEventResolverTest extends TestCase
 {
@@ -232,25 +231,15 @@ final class GameEventResolverTest extends TestCase
                 }
             } : new GameEventApplier();
 
-        return new GameEventResolver(new CardRuntimeMap(new CardFactory(
-            new MockCardRegistry([
+        return new GameEventResolver(
+            new CardRuntimeMap(new CardFactory(new MockCardRegistry([
                 DummyCard::class => DummyCard::class,
                 'other_card' => DummyCard::class,
                 SpyCard::class => SpyCard::class,
-            ]),
-            new class implements CacheInterface {
-                public function get(string $name, callable $callable, ?float $beta = null, ?array &$metadata = null): mixed
-                {
-                    return $callable();
-                }
-
-                public function delete(string $key): bool
-                {
-                    // no-op
-                    return true;
-                }
-            },
-        )), new GameContextFactory(), $gea);
+            ]))),
+            new GameContextFactory(),
+            $gea,
+        );
     }
 }
 

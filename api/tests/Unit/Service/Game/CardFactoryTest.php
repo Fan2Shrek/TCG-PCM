@@ -9,7 +9,6 @@ use App\Service\Game\CardFactory;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class CardFactoryTest extends TestCase
 {
@@ -45,21 +44,8 @@ final class CardFactoryTest extends TestCase
 
     private function getSut(): CardFactory
     {
-        return new CardFactory(
-            new MockCardRegistry([
-                DummyCard::class => DummyCard::class,
-            ]),
-            new class implements CacheInterface {
-                public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
-                {
-                    return $callback();
-                }
-
-                public function delete(string $key): bool
-                {
-                    return true;
-                }
-            },
-        );
+        return new CardFactory(new MockCardRegistry([
+            DummyCard::class => DummyCard::class,
+        ]));
     }
 }
