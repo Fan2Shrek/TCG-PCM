@@ -35,4 +35,9 @@ final class CardRuntimeMap
     {
         return $this->cardFactory->create($cardId);
     }
+
+    public function clear(): void
+    {
+        $this->map = [];
+    }
 }
