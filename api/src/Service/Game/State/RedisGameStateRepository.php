@@ -8,9 +8,7 @@ use App\Entity\Room;
 use App\Game\State\GameState;
 use App\Service\Game\GameStateRebuilder;
 use App\Service\Redis\RedisClient;
-use Symfony\Component\DependencyInjection\Attribute\WhenNot;
 
-#[WhenNot('test')]
 final class RedisGameStateRepository implements GameStateRepositoryInterface
 {
     public function __construct(

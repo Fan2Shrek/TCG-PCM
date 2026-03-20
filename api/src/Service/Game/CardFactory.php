@@ -14,7 +14,7 @@ final class CardFactory implements CardFactoryInterface
 {
     public function __construct(
         private CardRegistryInterface $cardRegistry,
-        private CacheInterface $cache,
+        private ?CacheInterface $cache = null,
     ) {}
 
     public function create(string $cardId): AbstractCard
@@ -28,7 +28,7 @@ final class CardFactory implements CardFactoryInterface
 
         $card->setState($state);
 
-        if ($card instanceof ComputedCardInterface) {
+        if ($card instanceof ComputedCardInterface && $this->cache) {
             $value = $this->cache->get(sha1($card::class), static function (CacheItemInterface $item) use ($card) {
                 $item->expiresAfter(60 * 60);
 

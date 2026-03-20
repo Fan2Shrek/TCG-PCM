@@ -15,7 +15,6 @@ use App\Service\RoomStarter;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class RoomStarterTest extends TestCase
 {
@@ -104,26 +103,12 @@ final class RoomStarterTest extends TestCase
 
     private function getSut(): RoomStarter
     {
-        return new RoomStarter(new CardFactory(
-            new MockCardRegistry([
-                DummyCard::class => DummyCard::class,
-                'other_card' => DummyCard::class,
-                DummyCharacterCard::class => DummyCharacterCard::class,
-                DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-            ]),
-            new class implements CacheInterface {
-                public function get(string $name, callable $callable, ?float $beta = null, ?array &$metadata = null): mixed
-                {
-                    return $callable();
-                }
-
-                public function delete(string $key): bool
-                {
-                    // no-op
-                    return true;
-                }
-            },
-        ));
+        return new RoomStarter(new CardFactory(new MockCardRegistry([
+            DummyCard::class => DummyCard::class,
+            'other_card' => DummyCard::class,
+            DummyCharacterCard::class => DummyCharacterCard::class,
+            DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+        ])));
     }
 }
 

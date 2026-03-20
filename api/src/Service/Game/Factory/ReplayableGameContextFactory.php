@@ -6,9 +6,7 @@ namespace App\Service\Game\Factory;
 
 use App\Game\GameContext;
 use App\Game\State\GameState;
-use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-#[Exclude]
 final class ReplayableGameContextFactory implements GameContextFactoryInterface
 {
     /**
