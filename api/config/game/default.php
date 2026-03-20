@@ -41,6 +41,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service('game.card_factory')
             ])
+            ->tag('kernel.reset', ['method' => 'clear'])
 
         ->set('game.game_context_factory', GameContextFactory::class)
         ->alias(GameContextFactoryInterface::class, 'game.game_context_factory')
