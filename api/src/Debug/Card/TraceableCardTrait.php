@@ -160,6 +160,20 @@ trait TraceableCardTrait
         $this->stopwatch->stop($id);
     }
 
+    public function onCardDeath(AbstractCard $card, GameContext $gameContext): void
+    {
+        if (!$this->card instanceof CardAwareInterface) {
+            return;
+        }
+
+        $this->methodCalled[] = __METHOD__;
+        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+
+        $this->card->onCardDeath($card, $gameContext);
+
+        $this->stopwatch->stop($id);
+    }
+
     public function getCost(): int
     {
         return $this->card->getCost();

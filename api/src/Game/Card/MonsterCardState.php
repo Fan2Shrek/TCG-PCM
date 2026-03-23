@@ -11,7 +11,7 @@ final readonly class MonsterCardState extends CardState
     /**
      * @param EffectState[] $effects
      */
-    private function __construct(
+    public function __construct(
         string $instanceId,
         string $templateId,
         string $ownerId,

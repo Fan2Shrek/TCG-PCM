@@ -12,6 +12,7 @@ use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 abstract class CardTestCase extends TestCase
@@ -56,6 +57,11 @@ abstract class CardTestCase extends TestCase
     protected function createPlayerState(string $id): PlayerState
     {
         return new PlayerState(new Player($id, 'Player 1', 67), 30, 30, '', [], [], 0, new PlayArea());
+    }
+
+    protected function createStubCard(): AbstractCard&Stub
+    {
+        return $this->createStub(AbstractCard::class);
     }
 }
 
