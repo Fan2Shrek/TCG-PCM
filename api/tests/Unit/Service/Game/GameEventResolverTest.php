@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Game;
 
-use App\Entity\Deck;
-use App\Entity\Room;
-use App\Entity\User;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Monster\RedBloonsMonsterCard;
+use App\Game\Card\MonsterCardState;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\GameContext;
@@ -25,14 +24,20 @@ use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\GameEventApplier;
 use App\Service\Game\GameEventApplierInterface;
 use App\Service\Game\GameEventResolver;
-use App\Service\Game\State\GameEventRepositoryInterface;
-use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
+use App\Tests\Unit\Fixtures\SpyAwareCard;
+use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\TestCase;
 
 final class GameEventResolverTest extends TestCase
 {
+    #[After]
+    public function clean(): void
+    {
+        SpyAwareCard::reset();
+    }
+
     public function testCardPlayWithNoMoney()
     {
         self::expectException(NotEnoughCoinsException::class);
@@ -168,6 +173,83 @@ final class GameEventResolverTest extends TestCase
         self::assertCount(4, $events);
     }
 
+    public function testPropagateWithCardDeath()
+    {
+        $ger = $this->getSut();
+        $gameState = new GameState(
+            new PlayerState(new Player('1', 'Player 1'), 10, 10, 'player1', [], [], 0, new PlayArea()),
+            new PlayerState(
+                new Player('2', 'Player 2'),
+                10,
+                10,
+                'player1',
+                [],
+                [],
+                0,
+                new PlayArea([], [
+                    'bloons',
+                ]),
+            ),
+            0,
+            0,
+            null,
+            [
+                'bloons' => new MonsterCardState('bloons', 'Redbloons', '1', 1),
+                'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
+            ],
+        );
+
+        $event = new GameEvent(0, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'bloons',
+            'attackerId' => 'attacker',
+        ]);
+
+        $events = $ger->resolve($event, $gameState)->events;
+
+        self::assertCount(3, $events);
+        $lastEvent = array_pop($events);
+        self::assertSame(GameEventTypeEnum::MONSTER_DIED, $lastEvent->type);
+    }
+
+    public function testPropagateWithCardDeathAndDeathCardAware()
+    {
+        $ger = $this->getSut();
+        $gameState = new GameState(
+            new PlayerState(new Player('1', 'Player 1'), 10, 10, 'player1', [], [], 0, new PlayArea()),
+            new PlayerState(
+                new Player('2', 'Player 2'),
+                10,
+                10,
+                'player1',
+                [],
+                [],
+                0,
+                new PlayArea([
+                    'spy-aware',
+                ], [
+                    'bloons',
+                ]),
+            ),
+            0,
+            0,
+            null,
+            [
+                'bloons' => new MonsterCardState('bloons', 'Redbloons', '1', 1),
+                'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
+                'spy-aware' => new CardState('spy-aware', SpyAwareCard::class, '2'),
+            ],
+        );
+
+        $event = new GameEvent(0, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'bloons',
+            'attackerId' => 'attacker',
+        ]);
+
+        $events = $ger->resolve($event, $gameState)->events;
+
+        self::assertCount(1, SpyAwareCard::$calls);
+    }
+
     private function createGameState(): GameState
     {
         $player1State = new PlayerState(
@@ -204,18 +286,6 @@ final class GameEventResolverTest extends TestCase
         ]);
     }
 
-    private function createRoom(): Room
-    {
-        $owner = $this->createStub(User::class);
-        $deck = new Deck($owner, 'test', DummyCharacterCard::class, array_fill(0, 10, DummyCard::class));
-        $room = new Room($owner);
-        $room->setOpponent($this->createStub(User::class));
-        $room->setOwnerDeck($deck);
-        $room->setOpponentDeck($deck);
-
-        return $room;
-    }
-
     private function getSut(bool $fakeGEA = false): GameEventResolver
     {
         $gea = $fakeGEA
@@ -236,44 +306,12 @@ final class GameEventResolverTest extends TestCase
                 DummyCard::class => DummyCard::class,
                 'other_card' => DummyCard::class,
                 SpyCard::class => SpyCard::class,
+                'Redbloons' => RedBloonsMonsterCard::class,
+                SpyAwareCard::class => SpyAwareCard::class,
             ]))),
             new GameContextFactory(),
             $gea,
         );
-    }
-}
-
-class SpyGameStateRepository implements GameStateRepositoryInterface
-{
-    public function __construct(
-        public ?GameState $gameState = null,
-    ) {}
-
-    public function save(GameState $gameContext, Room $room): void
-    {
-        $this->gameState = $gameContext;
-    }
-
-    public function get(Room $room): GameState
-    {
-        return $this->gameState;
-    }
-}
-
-class InMemoryGameEventRepository implements GameEventRepositoryInterface
-{
-    public function __construct(
-        public array $memory = [],
-    ) {}
-
-    public function save(GameEvent $gameEvent, string $roomId): GameEvent
-    {
-        return $this->memory[] = $gameEvent;
-    }
-
-    public function getEventsSince(?int $lastEventId, string $roomId): array
-    {
-        return array_filter($this->memory, static fn(GameEvent $event) => $event->id > $lastEventId);
     }
 }
 

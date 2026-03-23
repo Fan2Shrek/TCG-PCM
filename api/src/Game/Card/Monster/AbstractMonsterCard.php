@@ -36,8 +36,18 @@ abstract class AbstractMonsterCard extends AbstractCard
         // no-op
     }
 
+    public function onMonsterDeath(GameContext $context): void
+    {
+        // no-op
+    }
+
     public function canAttack(): bool
     {
         return $this->canAttack;
+    }
+
+    public function getcurrentHealthPoints(): int
+    {
+        return $this->currentHealthPoints;
     }
 }

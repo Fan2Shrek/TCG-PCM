@@ -40,19 +40,25 @@ class GameEventResolver
 
         // @ŧodo modify this if we want to do depth events resolution instead of breadth
         foreach ($firstLevelEvents as $event) {
+            // First we apply the first level event
             $state = $this->gameEventApplier->apply($event, $state);
+
+            // Then we calculate systems events just in case
+            $systemEvents = $this->generateSystemsEvent($state);
+            $state = $this->gameEventApplier->applyMultiple($systemEvents, $state);
+            $allEvents = array_merge($allEvents, $systemEvents);
+
+            // Then we process aware cards
             $allEvents = array_merge($allEvents, $events = $this->collectEventsFromAwareCards($event, $state));
             $state = $this->gameEventApplier->applyMultiple($events, $state);
         }
-
-        $postResolutionEvents = $this->generateSystemsEvent($state);
-        $this->gameEventApplier->applyMultiple($postResolutionEvents, $state);
-        $allEvents = array_merge($allEvents, $postResolutionEvents);
 
         return new ResolutionResult($allEvents, $state);
     }
 
     /**
+     * This method generates system events that should be checked after each event resolution, such as player death, monster death, etc.
+     *
      * @return GameEvent[]
      */
     private function generateSystemsEvent(GameState $state): array
@@ -81,7 +87,7 @@ class GameEventResolver
                 continue;
             }
 
-            if ($card->getHealPoints() <= 0) {
+            if ($card->getcurrentHealthPoints() <= 0) {
                 $events[] = GameEvent::game(GameEventTypeEnum::MONSTER_DIED, [
                     'playerId' => $cardState->ownerId,
                     'cardId' => $monsterCardId,
@@ -89,7 +95,12 @@ class GameEventResolver
             }
         }
 
-        return $events;
+        $subEvents = [];
+        foreach ($events as $deathEvent) {
+            $subEvents = array_merge($subEvents, $this->generateReactions($deathEvent, $state));
+        }
+
+        return array_merge($events, $subEvents);
     }
 
     /**
@@ -125,6 +136,9 @@ class GameEventResolver
             case GameEventTypeEnum::ATTACK:
                 $events = $this->doGenerateReactionsForAttack($event, $state);
                 break;
+            case GameEventTypeEnum::PLAYER_DIED:
+            case GameEventTypeEnum::MONSTER_DIED:
+                $events = $this->doGenerareReactionsForDeath($event, $state);
             default:
                 break;
         }
@@ -242,6 +256,46 @@ class GameEventResolver
     /**
      * @return GameEvent[]
      */
+    private function doGenerareReactionsForDeath(GameEvent $event, GameState $state): array
+    {
+        $events = [];
+
+        if (GameEventTypeEnum::MONSTER_DIED === $event->type) {
+            $cardId = $event->data['cardId'] ?? null;
+
+            if (!$cardId || !\is_string($cardId)) {
+                throw new \LogicException('cardId is required for MONSTER_DIED event');
+            }
+
+            if (!($cardState = $state->getCardState($cardId))) {
+                throw new \LogicException('Card state not found for cardId '.$cardId);
+            }
+
+            $card = $this->cardRuntimeMap->getByState($cardState);
+
+            if (!$card instanceof AbstractMonsterCard) {
+                throw new \LogicException('Card with id '.$cardId.' is not a monster card');
+            }
+
+            if (!($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+                throw new \LogicException('No playerId found');
+            }
+
+            $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
+            $card->onMonsterDeath($ctx);
+
+            $events = array_merge($ctx->flushEvents(), $this->collectEventsFromAwareCards($event, $state));
+        }
+
+        // @ŧodo see if we have effect on player death
+        // like prevent death...
+
+        return $events;
+    }
+
+    /**
+     * @return GameEvent[]
+     */
     private function collectEventsFromAwareCards(GameEvent $event, GameState $state): array
     {
         $events = [];
@@ -296,6 +350,20 @@ class GameEventResolver
 
                 foreach ($cards as $card) {
                     $card->onCardPlayed($playedCard, $ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+                break;
+            case GameEventTypeEnum::MONSTER_DIED:
+                $cards = $this->getCardAwareCards($state);
+                $cardId = $event->data['cardId'] ?? null;
+                if (!\is_string($cardId)) {
+                    throw new \LogicException('cardId is required for CARD_DRAWN event');
+                }
+                $state = $state->getCardState($cardId) ?? throw new \LogicException('Card state not found for cardId '.$cardId);
+                $playedCard = $this->cardRuntimeMap->getByState($state);
+
+                foreach ($cards as $card) {
+                    $card->onCardDeath($playedCard, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
                 break;
