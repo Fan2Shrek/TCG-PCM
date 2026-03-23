@@ -1,6 +1,7 @@
 monolog:
     channels:
         - deprecation
+        - game
 
 when@dev:
     monolog:
@@ -9,7 +10,12 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event"]
+                channels: ["!event, !game"]
+            game:
+                type: stream
+                path: "%kernel.logs_dir%/game_%kernel.environment%.log"
+                level: debug
+                channels: game
             console:
                 type: console
                 process_psr_3_messages: false
@@ -32,6 +38,11 @@ when@test:
 when@prod:
     monolog:
         handlers:
+            game:
+                type: stream
+                path: "%kernel.logs_dir%/game_%kernel.environment%.log"
+                level: error
+                channels: game
             main:
                 type: fingers_crossed
                 action_level: error
