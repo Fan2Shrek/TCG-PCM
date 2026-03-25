@@ -70,10 +70,12 @@ return static function (ContainerConfigurator $container): void {
 
         ->set('game.game_state_repository', DoctrineGameStateRepository::class)
             ->autowire(true)
+        ->tag('app.deploy', ['method' => 'deleteAll'])
         ->alias(GameStateRepositoryInterface::class, 'game.game_state_repository')
 
         ->set('game.game_event_repository', DoctrineGameEventRepository::class)
             ->autowire(true)
+        ->tag('app.deploy', ['method' => 'deleteAll'])
         ->alias(GameEventRepositoryInterface::class, 'game.game_event_repository')
 
         ->set('game.game_state_rebuilder', GameStateRebuilder::class)

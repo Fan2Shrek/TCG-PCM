@@ -3,13 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Room;
+use App\Interface\DeployAwareInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Room>
  */
-class RoomRepository extends ServiceEntityRepository
+class RoomRepository extends ServiceEntityRepository implements DeployAwareInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -23,5 +24,14 @@ class RoomRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function onDeploy(): void
+    {
+        $this
+            ->createQueryBuilder('r')
+            ->delete()
+            ->getQuery()
+            ->execute();
     }
 }

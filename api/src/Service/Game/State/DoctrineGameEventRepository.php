@@ -30,6 +30,11 @@ final class DoctrineGameEventRepository implements GameEventRepositoryInterface
         return array_map($this->entityToGameEvent(...), $gameEventEntities);
     }
 
+    public function deleteAll(): void
+    {
+        $this->gameEventRepository->deleteAll();
+    }
+
     private function entityToGameEvent(GameEventEntity $gameEvent): GameEvent
     {
         return new GameEvent($gameEvent->getId(), $gameEvent->getType(), GameEvent::PLAYER_EVENT, $gameEvent->getData());

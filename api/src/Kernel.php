@@ -2,8 +2,10 @@
 
 namespace App;
 
+use App\DependencyInjection\DeployPass;
 use App\DependencyInjection\UseRedisGameStateRepositoryPass;
 use App\Game\Badge\Handler\BadgeHandlerInterface;
+use App\Interface\DeployAwareInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Resources\MockHub;
 use App\Utils\KillSwitch;
@@ -43,6 +45,9 @@ class Kernel extends BaseKernel
         $container->registerForAutoconfiguration(BadgeHandlerInterface::class)->addTag('app.badge_handler');
 
         $container->addCompilerPass(new UseRedisGameStateRepositoryPass());
+        $container->addCompilerPass(new DeployPass());
+
+        $container->registerForAutoconfiguration(DeployAwareInterface::class)->addTag('app.deploy', ['method' => 'onDeploy']);
 
         $container
             ->register('kernel.get_feature', \Closure::class)
