@@ -46,6 +46,15 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         return $lastState;
     }
 
+    public function deleteAll(): void
+    {
+        if (method_exists($this->decoratedRepository, 'deleteAll')) {
+            $this->decoratedRepository->deleteAll();
+        }
+
+        $this->redisClient->flushAll();
+    }
+
     private function buildGameStateFromEvents(GameState $gameState, Room $room): GameState
     {
         $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room->getId()->toString());

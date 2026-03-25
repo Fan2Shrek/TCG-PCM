@@ -41,4 +41,9 @@ class RedisClient
 
         $this->connection->set($key, $data);
     }
+
+    public function flushAll(): void
+    {
+        $this->connection->flushAll();
+    }
 }

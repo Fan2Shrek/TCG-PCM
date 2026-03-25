@@ -33,4 +33,9 @@ final class DoctrineGameStateRepository implements GameStateRepositoryInterface
 
         return $intialGameState?->toGameState();
     }
+
+    public function deleteAll(): void
+    {
+        $this->initialGameStateRepository->deleteAll();
+    }
 }

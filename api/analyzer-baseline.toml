@@ -1,6 +1,12 @@
 variant = "loose"
 
 [[issues]]
+file = "src/Command/DeployCommand.php"
+code = "string-member-selector"
+message = "This member selector uses a non-literal string type (`string`); its specific value cannot be statically determined."
+count = 1
+
+[[issues]]
 file = "src/Command/ImportGameReplayCommand.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Entity\Room::setopponentdeck` is possibly `null`, but parameter type `App\Entity\Deck` does not accept it.'

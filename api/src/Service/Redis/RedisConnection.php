@@ -34,4 +34,9 @@ final class RedisConnection
     {
         $this->connection->del($key);
     }
+
+    public function flushAll(): void
+    {
+        $this->connection->flushAll();
+    }
 }
