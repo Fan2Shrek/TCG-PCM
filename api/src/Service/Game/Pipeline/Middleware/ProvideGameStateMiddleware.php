@@ -22,6 +22,10 @@ final class ProvideGameStateMiddleware implements GameMiddlewareInterface
         $action = $gamePipelineContext->getAction();
         $gameState = $this->gameStateRepository->get($action->gameId);
 
+        if (!$gameState) {
+            throw new \LogicException('Game state not found for game ID: '.$action->gameId);
+        }
+
         $gamePipelineContext->setGameState($gameState);
 
         return $stack->next()->handle($gamePipelineContext, $stack);

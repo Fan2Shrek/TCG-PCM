@@ -77,10 +77,10 @@ final class RedisGameStateRepositoryTest extends TestCase
         $repository = new InMemoryGameStateRepository();
 
         if ($initialGameState) {
-            $repository->save($initialGameState, $room);
+            $repository->save($initialGameState, (string) spl_object_id($room));
         }
 
-        $repository->save($gameState, $room);
+        $repository->save($gameState, (string) spl_object_id($room));
         $redisClient = $this->createStub(RedisClient::class);
         $redisClient->method('get')->willReturn(null);
         $gameEventRepository = $this->createStub(GameEventRepositoryInterface::class);
@@ -112,13 +112,13 @@ class InMemoryGameStateRepository implements GameStateRepositoryInterface
 {
     private array $storage = [];
 
-    public function save(GameState $gameContext, Room $room): void
+    public function save(GameState $gameContext, string $room): void
     {
-        $this->storage[spl_object_id($room)] = $gameContext;
+        $this->storage[$room] = $gameContext;
     }
 
-    public function get(Room $room): GameState
+    public function get(string $room): GameState
     {
-        return $this->storage[spl_object_id($room)] ?? throw new \RuntimeException('Game State not found.');
+        return $this->storage[$room] ?? throw new \RuntimeException('Game State not found.');
     }
 }
