@@ -23,7 +23,7 @@ final class GameEventPublisher
     /**
      * @param GameEvent[] $events
      */
-    public function publish(array $events, GameState $state, Room $room): void
+    public function publish(array $events, GameState $state, string $room): void
     {
         $roomId = $this->getId($room);
 
@@ -85,8 +85,8 @@ final class GameEventPublisher
         ];
     }
 
-    private function getId(Room $room): string
+    private function getId(string $room): string
     {
-        return \sprintf('game/%s', $room->getId());
+        return \sprintf('game/%s', $room);
     }
 }

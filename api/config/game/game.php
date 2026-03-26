@@ -15,6 +15,14 @@ use App\Service\Game\GameEventResolver;
 use App\Service\Game\GameInitializer;
 use App\Service\Game\GameStateConverter;
 use App\Service\Game\GameStateRebuilder;
+use App\Service\Game\Pipeline\GamePipeline;
+use App\Service\Game\Pipeline\Middleware\ConvertActionToEventMiddleware;
+use App\Service\Game\Pipeline\Middleware\ExceptionMiddleware;
+use App\Service\Game\Pipeline\Middleware\ProvideGameStateMiddleware;
+use App\Service\Game\Pipeline\Middleware\PublishEventMiddleware;
+use App\Service\Game\Pipeline\Middleware\ResolveEventMiddleware;
+use App\Service\Game\Pipeline\Middleware\SaveGameEventsMiddleware;
+use App\Service\Game\Pipeline\Middleware\ValidateActionMiddleware;
 use App\Service\Game\State\DoctrineGameEventRepository;
 use App\Service\Game\State\DoctrineGameStateRepository;
 use App\Service\Game\State\GameEventRepositoryInterface;
@@ -83,5 +91,41 @@ return static function (ContainerConfigurator $container): void {
                 service('game.event_resolver'),
             ])
         ->alias(GameStateRebuilder::class, 'game.game_state_rebuilder')
+
+        ->set('game.pipeline', GamePipeline::class)
+            ->args([
+                tagged_iterator('game.pipeline_middleware'),
+            ])
+        ->alias(GamePipeline::class, 'game.pipeline')
+
+        // Middlewares
+        ->set('game.pipeline.middleware.exception', ExceptionMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 900])
+            ->tag('monolog.logger', ['channel' => 'game'])
+            ->call('setLogger', [service('logger')->ignoreOnInvalid()])
+
+        ->set('game.pipeline.middleware.provide_game_state', ProvideGameStateMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 500])
+            ->args([
+                service('game.game_state_repository'),
+            ])
+
+        ->set('game.pipeline.middleware.validate_action', ValidateActionMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 300])
+
+        ->set('game.pipeline.middleware.convert_action', ConvertActionToEventMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 150])
+
+        ->set('game.pipeline.middleware.resolve_event', ResolveEventMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 0])
+            ->args([
+                service('game.event_resolver'),
+            ])
+
+        ->set('game.pipeline.middleware.save_events', SaveGameEventsMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => -10])
+            ->args([
+                service('game.game_event_repository'),
+            ])
     ;
 };

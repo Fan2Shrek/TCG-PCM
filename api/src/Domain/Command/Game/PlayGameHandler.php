@@ -33,7 +33,12 @@ final class PlayGameHandler
         }
 
         $room = $command->getCurrentResource();
-        $action = new PlayerAction((string) $user->getId(), $command->actionId, $command->payload);
+
+        if (!$room || !$room->getId()) {
+            throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'Room not found');
+        }
+
+        $action = new PlayerAction((string) $user->getId(), $command->actionId, (string) $room->getId(), $command->payload);
 
         $this->gamePipeline->start($action);
 

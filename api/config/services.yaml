@@ -28,6 +28,10 @@ services:
         arguments:
             $redisDsn: '%env(string:REDIS_DSN)%'
 
+    App\Service\PublishEventMiddleware:
+        tags:
+            - { name: 'game.pipeline_middleware', priority: -100 }
+
 when@test:
     services:
         App\Tests\Resources\DoctrineCollector:

@@ -9,6 +9,7 @@ use App\Service\Game\Pipeline\Middleware\GameMiddlewareInterface;
 
 class GamePipelineMiddlewareStack implements GameMiddlewareInterface, GamePipelineStackInterface
 {
+    private bool $started = false;
     /**
      * @var \Generator<GameMiddlewareInterface, void, mixed, mixed> $generator
      */
@@ -17,16 +18,17 @@ class GamePipelineMiddlewareStack implements GameMiddlewareInterface, GamePipeli
     public function __construct(iterable $middlewares)
     {
         $this->generator = (static function () use ($middlewares) {
-            foreach ($middlewares as $middleware) {
-                yield $middleware;
-            }
+            yield from $middlewares;
         })();
     }
 
     public function next(): GameMiddlewareInterface
     {
-        $this->generator->next();
-        dump($this->generator->current()::class);
+        if (!$this->started) {
+            $this->started = true;
+        } else {
+            $this->generator->next();
+        }
 
         if (!$this->generator->valid()) {
             return $this;

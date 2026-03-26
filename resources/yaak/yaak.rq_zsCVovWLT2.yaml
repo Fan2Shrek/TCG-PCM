@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_zsCVovWLT2
 createdAt: 2026-03-03T15:16:11.070057396
-updatedAt: 2026-03-06T13:32:19.202620813
+updatedAt: 2026-03-26T11:34:51.838549728
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_JLpCFxuyh2
 authentication: {}
 authenticationType: null
 body:
-  text: |
+  text: |-
     {
       "actionId": "end_turn"
     }
