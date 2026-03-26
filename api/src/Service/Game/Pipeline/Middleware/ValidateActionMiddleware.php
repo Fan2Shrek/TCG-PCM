@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Game\Pipeline\Middleware;
 
+use App\Game\Exception\CardNotInHandException;
 use App\Game\Exception\GameAlreadyFinishedException;
 use App\Game\Exception\NotYourTurnException;
 use App\Game\Exception\UnknowActionException;
@@ -34,7 +35,11 @@ final class ValidateActionMiddleware implements GameMiddlewareInterface
         if (\in_array($action->actionId, [PlayerAction::PLAY_CARD, PlayerAction::ATTACK], true)) {
             $cardId = $action->payload['cardId'] ?? null;
 
-            if (!$cardId || !$state->getCardState($cardId)) {
+            if (!$state->getCurrentPlayerState()->hasCardInHand((string) $cardId)) {
+                throw new CardNotInHandException($state->getCurrentPlayerState()->player, (string) $cardId);
+            }
+
+            if (!$cardId || !\is_string($cardId) || !$state->getCardState($cardId)) {
                 throw new \LogicException('Invalid card ID');
             }
         }

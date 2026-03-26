@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Api\DTO\GameStateDTO;
-use App\Entity\Room;
 use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;

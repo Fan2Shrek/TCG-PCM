@@ -27,6 +27,7 @@ final class ExceptionMiddlewareTest extends TestCase
         try {
             $sut->handle($gamePipelineContext, new GamePipelineMiddlewareStack([new ThrowErrorMiddleware()]));
         } catch (\Exception) {
+            // @mago-expect lint:no-empty-catch-clause we ignore this
         }
     }
 

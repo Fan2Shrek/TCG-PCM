@@ -51,16 +51,14 @@ final class ValidateActionMiddlewareTest extends TestCase
         self::expectException(\LogicException::class);
 
         $sut = $this->getSut();
-        $gpc = new GamePipelineContext(new PlayerAction('1', PlayerAction::PLAY_CARD, 'gameId', ['cardId' => 'invalidCardId']));
+        $gpc = new GamePipelineContext(new PlayerAction('1', PlayerAction::PLAY_CARD, 'gameId', ['cardId' => 'cardId']));
         $state = new GameState(
             new PlayerState(new Player('1', 'otherUsername'), 1, 1, '', ['cardId'], [], 0, new PlayArea()),
             new PlayerState(new Player('2', 'otherUsername'), 1, 1, '', [], [], 0, new PlayArea()),
             null,
             0,
             '1',
-            [
-                'cardId' => '',
-            ],
+            [],
         );
         $gpc->setGameState($state);
 

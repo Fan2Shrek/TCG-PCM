@@ -40,8 +40,8 @@ final class ConvertActionToEventMiddleware implements GameMiddlewareInterface
     {
         $card = $action->payload['cardId'] ?? null;
 
-        if (!$state->getCurrentPlayerState()->hasCardInHand($card)) {
-            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $card);
+        if (!\is_string($card)) {
+            throw new \InvalidArgumentException('cardId is required in payload and must be a string');
         }
 
         return GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [

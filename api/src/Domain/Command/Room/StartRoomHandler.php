@@ -38,7 +38,7 @@ final class StartRoomHandler
         $gameState = $this->roomStarter->startRoom($room);
         $result = $this->gameInitializer->startGame($gameState);
 
-        $this->gameStateRepository->save($result->state, $room);
+        $this->gameStateRepository->save($result->state, (string) $room->getId());
 
         // maybe dispatch events
     }

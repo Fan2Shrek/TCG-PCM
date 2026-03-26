@@ -18,12 +18,9 @@ final class GamePipeline
 
     public function start(PlayerAction $action): void
     {
-        dump(iterator_to_array($this->middlewares));
         $stack = new GamePipelineMiddlewareStack($this->middlewares);
         $ctx = new GamePipelineContext($action);
 
-        $finalCtx = $stack->next()->handle($ctx, $stack);
-
-        dd($finalCtx);
+        $stack->next()->handle($ctx, $stack);
     }
 }

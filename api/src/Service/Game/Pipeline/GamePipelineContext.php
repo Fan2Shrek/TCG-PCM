@@ -26,7 +26,7 @@ final class GamePipelineContext
         return $this->action;
     }
 
-    public function setGameState(mixed $gameState): void
+    public function setGameState(GameState $gameState): void
     {
         $this->gameState = $gameState;
     }

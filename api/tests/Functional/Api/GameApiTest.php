@@ -45,7 +45,7 @@ final class GameApiTest extends FunctionalTestCase
         $this->post($this->getUri(self::PLAY_URL, ['id' => $gameState->getId()]), [
             'actionId' => 'play_card',
             'payload' => [
-                'cardId' => 'no_card',
+                'cardId' => 'card_test',
             ],
         ]);
 

@@ -7,7 +7,6 @@ namespace App\Service;
 use App\Service\Game\Pipeline\GamePipelineContext;
 use App\Service\Game\Pipeline\GamePipelineStackInterface;
 use App\Service\Game\Pipeline\Middleware\GameMiddlewareInterface;
-use App\Service\GameEventPublisher;
 
 final class PublishEventMiddleware implements GameMiddlewareInterface
 {
