@@ -31,7 +31,7 @@ final class GameProvider implements ProviderInterface
             throw new NotFoundHttpException();
         }
 
-        if (!($gameState = $this->gameStateRepository->get($room))) {
+        if (!($gameState = $this->gameStateRepository->get((string) $room->getId()))) {
             throw new NotFoundHttpException();
         }
 

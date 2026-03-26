@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Game\State;
 
-use App\Entity\Room;
 use App\Game\State\GameState;
 use App\Service\Game\GameStateRebuilder;
 use App\Service\Redis\RedisClient;
@@ -18,13 +17,13 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         private GameStateRebuilder $gameStateRebuilder,
     ) {}
 
-    public function save(GameState $gameState, Room $room): void
+    public function save(GameState $gameState, string $room): void
     {
         $this->decoratedRepository->save($gameState, $room);
         $this->redisClient->set($this->getRedisKey($room), $gameState);
     }
 
-    public function get(Room $room): ?GameState
+    public function get(string $room): ?GameState
     {
         $gameState = $this->redisClient->get($this->getRedisKey($room), GameState::class);
 
@@ -55,9 +54,9 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         $this->redisClient->flushAll();
     }
 
-    private function buildGameStateFromEvents(GameState $gameState, Room $room): GameState
+    private function buildGameStateFromEvents(GameState $gameState, string $room): GameState
     {
-        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room->getId()->toString());
+        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room);
 
         if ([] === $events) {
             return $gameState;
@@ -66,8 +65,8 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         return $this->gameStateRebuilder->rebuild($gameState, $events);
     }
 
-    private function getRedisKey(Room $room): string
+    private function getRedisKey(string $room): string
     {
-        return 'game_state'.(string) $room->getId();
+        return 'game_state'.$room;
     }
 }

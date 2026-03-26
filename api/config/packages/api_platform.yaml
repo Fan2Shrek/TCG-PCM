@@ -9,3 +9,5 @@ api_platform:
         collectDenormalizationErrors: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+    exception_to_status:
+        App\Game\Exception\GameException: 400

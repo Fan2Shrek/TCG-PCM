@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Game\State;
 
 use App\Entity\Game\InitialGameState;
-use App\Entity\Room;
 use App\Game\State\GameState;
 use App\Repository\Game\InitialGameStateRepository;
 
@@ -15,11 +14,11 @@ final class DoctrineGameStateRepository implements GameStateRepositoryInterface
         private InitialGameStateRepository $initialGameStateRepository,
     ) {}
 
-    public function save(GameState $gameState, Room $room): void
+    public function save(GameState $gameState, string $room): void
     {
         $gameState = InitialGameState::createFromRoomAndGameState($room, $gameState);
 
-        if ($this->initialGameStateRepository->count(['id' => $room->getId()->toString()])) {
+        if ($this->initialGameStateRepository->count(['id' => $room])) {
             // Initial game state already exists for this room, we don't want to override it
             return;
         }
@@ -27,9 +26,9 @@ final class DoctrineGameStateRepository implements GameStateRepositoryInterface
         $this->initialGameStateRepository->save($gameState);
     }
 
-    public function get(Room $room): ?GameState
+    public function get(string $room): ?GameState
     {
-        $intialGameState = $this->initialGameStateRepository->find($room->getId()->toString());
+        $intialGameState = $this->initialGameStateRepository->find($room);
 
         return $intialGameState?->toGameState();
     }

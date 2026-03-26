@@ -28,7 +28,7 @@ class Kernel extends BaseKernel
         $this->defaultConfigureContainer($container, $loader, $builder);
         $gameConfigDir = $this->getConfigDir().'/game';
 
-        $loader->load($gameConfigDir.'/default.php');
+        $loader->load($gameConfigDir.'/game.php');
 
         if ($builder->hasParameter('kernel.debug') && $builder->getParameter('kernel.debug')) {
             $loader->load($gameConfigDir.'/debug.php');
@@ -43,11 +43,10 @@ class Kernel extends BaseKernel
     public function build(ContainerBuilder $container): void
     {
         $container->registerForAutoconfiguration(BadgeHandlerInterface::class)->addTag('app.badge_handler');
+        $container->registerForAutoconfiguration(DeployAwareInterface::class)->addTag('app.deploy', ['method' => 'onDeploy']);
 
         $container->addCompilerPass(new UseRedisGameStateRepositoryPass());
         $container->addCompilerPass(new DeployPass());
-
-        $container->registerForAutoconfiguration(DeployAwareInterface::class)->addTag('app.deploy', ['method' => 'onDeploy']);
 
         $container
             ->register('kernel.get_feature', \Closure::class)

@@ -51,7 +51,7 @@ final class ImportGameReplayCommand
 
         $this->roomRepository->save($room);
 
-        $this->gameStateRepository->save($gameState, $room);
+        $this->gameStateRepository->save($gameState, (string) $room->getId());
 
         foreach ($data['events'] as $gameEvent) {
             $this->gameEventRepository->save($gameEvent, (string) $room->getId());

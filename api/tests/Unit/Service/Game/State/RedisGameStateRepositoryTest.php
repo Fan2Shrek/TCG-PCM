@@ -25,7 +25,7 @@ final class RedisGameStateRepositoryTest extends TestCase
         $room = $this->createStub(Room::class);
         $testableGameManager = new TestableGameStateRebuilder();
         $sut = $this->createSut($testableGameManager, $room, $gameState, [$gameEvent]);
-        $sut->get($room);
+        $sut->get((string) spl_object_id($room));
 
         self::assertNotEmpty($testableGameManager->receivedEvents);
         self::assertSame([$gameState], $testableGameManager->receivedGameState);
@@ -44,7 +44,7 @@ final class RedisGameStateRepositoryTest extends TestCase
         $testableGameManager = new TestableGameStateRebuilder();
         $allEvents = array_merge($events, [$gameEvent]);
         $sut = $this->createSut($testableGameManager, $room, $gameState, $allEvents);
-        $sut->get($room);
+        $sut->get((string) spl_object_id($room));
 
         self::assertSame(1, $testableGameManager->callCount);
         self::assertSame(array_merge($events, [$gameEvent]), $testableGameManager->receivedEvents);
@@ -62,7 +62,7 @@ final class RedisGameStateRepositoryTest extends TestCase
         $testableGameManager = new TestableGameStateRebuilder();
         $allEvents = array_merge($events, [$gameEvent]);
         $sut = $this->createSut($testableGameManager, $room, $gameState, $allEvents, $gameState);
-        $sut->get($room);
+        $sut->get((string) spl_object_id($room));
 
         self::expectNotToPerformAssertions();
     }
@@ -77,10 +77,10 @@ final class RedisGameStateRepositoryTest extends TestCase
         $repository = new InMemoryGameStateRepository();
 
         if ($initialGameState) {
-            $repository->save($initialGameState, $room);
+            $repository->save($initialGameState, (string) spl_object_id($room));
         }
 
-        $repository->save($gameState, $room);
+        $repository->save($gameState, (string) spl_object_id($room));
         $redisClient = $this->createStub(RedisClient::class);
         $redisClient->method('get')->willReturn(null);
         $gameEventRepository = $this->createStub(GameEventRepositoryInterface::class);
@@ -112,13 +112,13 @@ class InMemoryGameStateRepository implements GameStateRepositoryInterface
 {
     private array $storage = [];
 
-    public function save(GameState $gameContext, Room $room): void
+    public function save(GameState $gameContext, string $room): void
     {
-        $this->storage[spl_object_id($room)] = $gameContext;
+        $this->storage[$room] = $gameContext;
     }
 
-    public function get(Room $room): GameState
+    public function get(string $room): GameState
     {
-        return $this->storage[spl_object_id($room)] ?? throw new \RuntimeException('Game State not found.');
+        return $this->storage[$room] ?? throw new \RuntimeException('Game State not found.');
     }
 }

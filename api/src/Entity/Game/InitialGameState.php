@@ -6,7 +6,6 @@ namespace App\Entity\Game;
 
 use App\Doctrine\Type\CardListType;
 use App\Doctrine\Type\PlayerStateType;
-use App\Entity\Room;
 use App\Game\Card\CardState;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
@@ -83,9 +82,9 @@ class InitialGameState
         return $this->cards;
     }
 
-    public static function createFromRoomAndGameState(Room $room, GameState $gameState): self
+    public static function createFromRoomAndGameState(string $room, GameState $gameState): self
     {
-        return new self($room->getId()->toString(), $gameState->seed, $gameState->player1, $gameState->player2, $gameState->cards);
+        return new self($room, $gameState->seed, $gameState->player1, $gameState->player2, $gameState->cards);
     }
 
     public function toGameState(): GameState

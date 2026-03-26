@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Api\DTO\GameStateDTO;
-use App\Entity\Room;
 use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -23,7 +22,7 @@ final class GameEventPublisher
     /**
      * @param GameEvent[] $events
      */
-    public function publish(array $events, GameState $state, Room $room): void
+    public function publish(array $events, GameState $state, string $room): void
     {
         $roomId = $this->getId($room);
 
@@ -85,8 +84,8 @@ final class GameEventPublisher
         ];
     }
 
-    private function getId(Room $room): string
+    private function getId(string $room): string
     {
-        return \sprintf('game/%s', $room->getId());
+        return \sprintf('game/%s', $room);
     }
 }
