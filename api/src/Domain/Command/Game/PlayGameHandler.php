@@ -7,6 +7,7 @@ namespace App\Domain\Command\Game;
 use App\Game\Exception\GameException;
 use App\Game\PlayerAction;
 use App\Service\Auth\CurrentUserProviderInterface;
+use App\Service\Game\Pipeline\GamePipeline;
 use App\Service\PlayerActionHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,7 @@ final class PlayGameHandler
         private CurrentUserProviderInterface $currentUserProvider,
         private PlayerActionHandler $playerActionHandler,
         private LoggerInterface $gameLogger,
+        private GamePipeline $gamePipeline,
     ) {}
 
     public function __invoke(PlayGameCommand $command): void
@@ -32,6 +34,10 @@ final class PlayGameHandler
 
         $room = $command->getCurrentResource();
         $action = new PlayerAction((string) $user->getId(), $command->actionId, $command->payload);
+
+        $this->gamePipeline->start($action);
+
+        return;
 
         try {
             $this->playerActionHandler->handle($action, $room);
