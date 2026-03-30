@@ -15,7 +15,7 @@ final class TraceablePassiveCard extends AbstractPassiveCard implements TurnAwar
     /** @use TraceableCardTrait<AbstractPassiveCard> */
     use TraceableCardTrait;
 
-    public static function create(AbstractPassiveCard $card, Stopwatch $stopwatch): static
+    public static function create(parent $card, Stopwatch $stopwatch): static
     {
         $traceableCard = new static();
         $traceableCard->card = $card;

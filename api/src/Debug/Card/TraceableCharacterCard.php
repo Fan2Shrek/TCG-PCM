@@ -14,7 +14,7 @@ final class TraceableCharacterCard extends AbstractCharacterCard implements Turn
     /** @use TraceableCardTrait<AbstractCharacterCard> */
     use TraceableCardTrait;
 
-    public static function create(AbstractCharacterCard $card, Stopwatch $stopwatch): static
+    public static function create(parent $card, Stopwatch $stopwatch): static
     {
         $traceableCard = new static();
         $traceableCard->card = $card;

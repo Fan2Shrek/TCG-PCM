@@ -26,6 +26,12 @@ count = 1
 
 [[issues]]
 file = "src/Command/UpdateCardListCommand.php"
+code = "no-value"
+message = "Argument #2 passed to function `sprintf` has type `never`, meaning it cannot produce a value."
+count = 1
+
+[[issues]]
+file = "src/Command/UpdateCardListCommand.php"
 code = "possibly-false-iterator"
 message = "Expression being iterated (type `false|list<non-empty-string>`) might be `false` at runtime."
 count = 1
@@ -145,6 +151,12 @@ message = 'Invalid argument type for argument #2 of `app\game\card\effect\effect
 count = 1
 
 [[issues]]
+file = "src/Service/Game/GameEventResolver.php"
+code = "mixed-operand"
+message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
+count = 1
+
+[[issues]]
 file = "src/Service/Game/GameStateRebuilder.php"
 code = "less-specific-nested-return-statement"
 message = '''Returned type `array{}|non-empty-list<mixed>` is less specific than the declared return type `array<array-key, float|int|string>` for function `app\service\game\gamestaterebuilder::filterrandomevents` due to nested 'mixed'.'''
@@ -153,7 +165,7 @@ count = 1
 [[issues]]
 file = "src/Service/Game/Pipeline/GamePipelineMiddlewareStack.php"
 code = "mixed-property-type-coercion"
-message = 'A value with a less specific type `mixed` is being assigned to property `$$generator` (Generator<App\Service\Game\Pipeline\Middleware\GameMiddlewareInterface, void, mixed, mixed>).'
+message = 'A value with a less specific type `Generator<mixed, mixed, mixed, void>` is being assigned to property `$$generator` (Generator<App\Service\Game\Pipeline\Middleware\GameMiddlewareInterface, void, mixed, mixed>).'
 count = 1
 
 [[issues]]

@@ -1,3 +1,4 @@
 api/resources/cards_list.php linguist-generated -diff
+api/config/reference.php linguist-generated -diff
 api/tests/GameReplay/resources/** linguist-generated -diff
 resources/yaak/** linguist-generated -diff
