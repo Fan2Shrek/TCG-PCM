@@ -5,6 +5,8 @@ import { GameContext } from "@/context/GameContext";
 import { GameState } from "@/lib/game/type/gameState";
 import { useContext } from "react";
 import CardsHand from "../CardsHand";
+import Bar from "@/components/atoms/bar";
+import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 
 export default () => {
   const { game, getCardById } = useContext(GameContext);
@@ -18,6 +20,7 @@ export default () => {
 
   return (
     <div className="flex flex-col h-screen bg-green-900 text-white">
+	  <PlayerHealthBar health={p2.healthPoints} maxHealth={p2.maxHealthPoints} />
       <div className="flex justify-center p-4 border-b border-green-700">
         <PlayerPanel player={p2} />
       </div>
@@ -42,6 +45,7 @@ export default () => {
         <div className="flex gap-2 mt-4 justify-center">
 		  <CardsHand cards={game.player1.hand.map((cardId) => getCardById(cardId))} />
         </div>
+		<PlayerHealthBar health={p1.healthPoints} maxHealth={p1.maxHealthPoints} />
       </div>
     </div>
   );
