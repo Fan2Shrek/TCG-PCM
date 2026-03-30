@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Game\Pipeline\Middleware;
 
-use App\Game\State\GameState;
 use App\Service\Game\Pipeline\GamePipelineContext;
 use App\Service\Game\Pipeline\GamePipelineStackInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;

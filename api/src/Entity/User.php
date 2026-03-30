@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Inventory\Inventory;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -46,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $decks;
+
+    #[ORM\OneToOne(mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Inventory $inventory;
 
     public function __construct(string $username)
     {
@@ -183,8 +187,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeDeck(Deck $deck): static
     {
-        if ($this->decks->removeElement($deck)) {
-        }
+        $this->decks->removeElement($deck);
+
+        return $this;
+    }
+
+    public function getInventory(): ?Inventory
+    {
+        return $this->inventory;
+    }
+
+    public function setInventory(Inventory $inventory): static
+    {
+        $this->inventory = $inventory;
 
         return $this;
     }
