@@ -95,9 +95,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $id = $this->getId().'.play';
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id, self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onCardPlace($gameContext);
 
@@ -110,8 +109,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onTurnStart($gameContext);
 
@@ -124,8 +123,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onTurnEnd($gameContext);
 
@@ -138,8 +137,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onCardPlayed($card, $gameContext);
 
@@ -152,8 +151,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onCardDrawn($cardId, $gameContext);
 
@@ -166,8 +165,8 @@ trait TraceableCardTrait
             return;
         }
 
-        $this->methodCalled[] = __METHOD__;
-        $this->stopwatch->start($id = $this->getEventName(__METHOD__), self::STOPWATCH_CATEGORY);
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onCardDeath($card, $gameContext);
 
@@ -186,6 +185,6 @@ trait TraceableCardTrait
 
     private function getEventName(string $method): string
     {
-        return \sprintf('%s.%s', $this->getId(), $method);
+        return \sprintf('%s.%s (%d)', $this->getId(), $method, count($this->methodCalled) + 1);
     }
 }

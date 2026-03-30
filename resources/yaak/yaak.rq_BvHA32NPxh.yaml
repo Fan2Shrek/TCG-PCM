@@ -2,16 +2,13 @@ type: http_request
 model: http_request
 id: rq_BvHA32NPxh
 createdAt: 2026-03-03T15:24:32.060876122
-updatedAt: 2026-03-05T22:08:18.736479730
+updatedAt: 2026-03-30T13:32:22.013019631
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_XqjkG6pswj
 authentication: {}
 authenticationType: null
 body:
-  text: |
-    {
-      "actionId": "end_turn"
-    }
+  text: "{\n  \"actionId\": \"end_turn\"\n}\n  "
 bodyType: application/json
 description: ''
 headers:
