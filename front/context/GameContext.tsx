@@ -64,6 +64,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 		  playArea: e.partialState.playArea
 		};
 
+
 		setGame((prevGame: GameState) => ({
 		  ...prevGame,
 		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,

@@ -87,7 +87,7 @@ class GameEventResolver
                 continue;
             }
 
-            if ($card->getcurrentHealthPoints() <= 0) {
+            if ($card->getCurrentHealthPoints() <= 0) {
                 $events[] = GameEvent::game(GameEventTypeEnum::MONSTER_DIED, [
                     'playerId' => $cardState->ownerId,
                     'cardId' => $monsterCardId,

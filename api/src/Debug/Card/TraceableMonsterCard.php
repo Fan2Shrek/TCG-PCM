@@ -46,6 +46,11 @@ final class TraceableMonsterCard extends AbstractMonsterCard
         return $this->card->canAttack();
     }
 
+    public function getCurrentHealthPoints(): int
+    {
+        return $this->card->getCurrentHealthPoints();
+    }
+
     public static function create(AbstractMonsterCard $card, Stopwatch $stopwatch): self
     {
         $traceableCard = new static();
