@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
+  --color-primary: var(--mauve);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -14,7 +15,8 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
+    --mauve: #A40353;
+    --background: #e0c9c9;
     --foreground: #171717;
     --aspect-card: 5/7;
     --spacing-card-sm: 8rem;
@@ -25,9 +27,6 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
-
       --foil-sheen: linear-gradient(
       -45deg,
       #000 15%,
@@ -51,6 +50,10 @@
 @layer components {
   .rotate-y-180 {
     transform: rotateY(90deg);
+  }
+
+  .inner-shadow {
+    box-shadow: inset 0 0  4px rgba(0, 0, 0, 0.2);
   }
 
   .bg-glare-effect {

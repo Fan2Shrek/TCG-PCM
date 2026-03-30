@@ -1,4 +1,4 @@
-import Image from './image';
+import Image from './Image';
 import { CardLayer } from '../types/card';
 import CardFoil from './CardFoil';
 import HoloFoil from './HoloFoil';
