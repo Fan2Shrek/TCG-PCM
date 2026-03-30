@@ -6,6 +6,7 @@ use App\Debug\Card\TraceableCardFactory;
 use App\Debug\GameContext\TraceableGameContextFactory;
 use App\Debug\GameDataCollector;
 use App\Debug\TraceableGameEventApplier;
+use App\Debug\TraceableGameMiddleware;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -33,6 +34,11 @@ return static function (ContainerConfigurator $container): void {
             'template' => 'debug/game_events.html.twig',
             'id' => 'game',
             'priority' => 25,
+        ])
+        ->set('debug.game.pipeline.middleware_trace', TraceableGameMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => 1000])
+        ->args([
+            service('debug.stopwatch')
         ])
     ;
 };
