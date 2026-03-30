@@ -6,6 +6,7 @@ namespace App\Entity\Inventory;
 
 use App\Repository\Inventory\CardInventoryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: CardInventoryRepository::class)]
 final class CardInventory
@@ -36,6 +37,7 @@ final class CardInventory
         return $this->id;
     }
 
+    #[Ignore]
     public function getInventory(): Inventory
     {
         return $this->inventory;
