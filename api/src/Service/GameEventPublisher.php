@@ -55,7 +55,9 @@ final class GameEventPublisher
         $eventPlayerId = $event->data['playerId'] ?? null;
 
         if (!$eventPlayerId) {
-            return [];
+            return [
+                'type' => $event->type,
+            ];
         }
 
         $newHand = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->hand : $player1DTO->player2->hand;
