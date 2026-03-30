@@ -21,6 +21,8 @@ use App\Service\Game\Pipeline\Middleware\ExceptionMiddleware;
 use App\Service\Game\Pipeline\Middleware\ProvideGameStateMiddleware;
 use App\Service\Game\Pipeline\Middleware\ResolveEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\SaveGameEventsMiddleware;
+use App\Service\Game\Pipeline\Middleware\SaveGameStateMiddleware;
+use App\Service\Game\Pipeline\Middleware\SaveStateMiddleware;
 use App\Service\Game\Pipeline\Middleware\ValidateActionMiddleware;
 use App\Service\Game\State\DoctrineGameEventRepository;
 use App\Service\Game\State\DoctrineGameStateRepository;
@@ -134,6 +136,11 @@ return static function (ContainerConfigurator $container): void {
             ->tag('game.pipeline_middleware', ['priority' => -10])
             ->args([
                 service('game.game_event_repository'),
+            ])
+        ->set('game.pipeline.middleware.save_state', SaveGameStateMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => -100])
+            ->args([
+                service('game.game_state_repository'),
             ])
     ;
 };
