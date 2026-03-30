@@ -58,6 +58,7 @@ class TraceableGamePipelineStack implements GamePipelineStackInterface
     {
         if ($this->currentEvent) {
             $this->stopwatch->stop($this->currentEvent);
+            $this->currentEvent = null;
         }
     }
 }
