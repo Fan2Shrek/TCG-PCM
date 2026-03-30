@@ -23,7 +23,10 @@ final class SaveGameEventsMiddlewareTest extends TestCase
     public function testHandle()
     {
         $repo = $this->createMock(GameEventRepositoryInterface::class);
-        $repo->expects(self::exactly(2))->method('save')->willReturn(new GameEvent(1, GameEventTypeEnum::CARD_PLAYED, '', []));
+        $repo
+            ->expects(self::exactly(2))
+            ->method('save')
+            ->willReturn(new GameEvent(1, GameEventTypeEnum::CARD_PLAYED, '', []));
         $middleware = new SaveGameEventsMiddleware($repo);
         $gpc = new GamePipelineContext(new PlayerAction('', '', 'gameId', []));
         $result = new ResolutionResult(

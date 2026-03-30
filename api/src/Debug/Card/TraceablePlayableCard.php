@@ -14,7 +14,7 @@ final class TraceablePlayableCard extends AbstractPlayableCard implements Comput
     /** @use TraceableCardTrait<AbstractPlayableCard> */
     use TraceableCardTrait;
 
-    public static function create(AbstractPlayableCard $card, Stopwatch $stopwatch): static
+    public static function create(parent $card, Stopwatch $stopwatch): static
     {
         $traceableCard = new static();
         $traceableCard->card = $card;

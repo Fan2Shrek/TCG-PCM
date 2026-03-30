@@ -137,7 +137,11 @@ final class RoomApiTest extends FunctionalTestCase
     protected function createUser(?string $username = null, ?string $password = null): User
     {
         $user = new User($username ?? 'test');
-        $user->setPassword(self::getContainer()->get('security.password_hasher')->hashPassword($user, $password ?? 'password'));
+        $user->setPassword(
+            self::getContainer()
+                ->get('security.password_hasher')
+                ->hashPassword($user, $password ?? 'password'),
+        );
         $deck = new Deck($user, 'test deck', '');
         $deck->setCharacterCard(new PierrotCard()->getId());
         $user->addDeck($deck);
