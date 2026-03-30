@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_4bDVn7Dud4
+createdAt: 2026-03-30T18:59:28.537758588
+updatedAt: 2026-03-30T18:59:50.059189155
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_xTCxBgCVWJ
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Get inventory
+sortPriority: 2000.0
+url: ${[ host ]}/api/inventory
+urlParameters: []

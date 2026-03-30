@@ -192,7 +192,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getInventory(): ?Inventory
+    public function getInventory(): Inventory
     {
         return $this->inventory;
     }
