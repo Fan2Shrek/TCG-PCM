@@ -10,14 +10,14 @@ use App\Game\State\PlayerState;
 use App\Service\Game\Pipeline\GamePipelineContext;
 use App\Service\Game\Pipeline\GamePipelineMiddlewareStack;
 use App\Service\Game\Pipeline\Middleware\ProvideGameStateMiddleware;
-use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Service\Game\State\GameStateProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ProvideStateMiddlewareTest extends TestCase
 {
     public function testProvideState()
     {
-        $repo = $this->createMock(GameStateRepositoryInterface::class);
+        $repo = $this->createMock(GameStateProvider::class);
         $repo
             ->expects(self::once())
             ->method('get')

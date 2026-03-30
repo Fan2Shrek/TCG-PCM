@@ -19,13 +19,13 @@ use App\Service\Game\Pipeline\GamePipeline;
 use App\Service\Game\Pipeline\Middleware\ConvertActionToEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\ExceptionMiddleware;
 use App\Service\Game\Pipeline\Middleware\ProvideGameStateMiddleware;
-use App\Service\Game\Pipeline\Middleware\PublishEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\ResolveEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\SaveGameEventsMiddleware;
 use App\Service\Game\Pipeline\Middleware\ValidateActionMiddleware;
 use App\Service\Game\State\DoctrineGameEventRepository;
 use App\Service\Game\State\DoctrineGameStateRepository;
 use App\Service\Game\State\GameEventRepositoryInterface;
+use App\Service\Game\State\GameStateProvider;
 use App\Service\Game\State\GameStateRepositoryInterface;
 
 return static function (ContainerConfigurator $container): void {
@@ -86,6 +86,14 @@ return static function (ContainerConfigurator $container): void {
         ->tag('app.deploy', ['method' => 'deleteAll'])
         ->alias(GameEventRepositoryInterface::class, 'game.game_event_repository')
 
+        ->set('game.game_state_provider', GameStateProvider::class)
+            ->args([
+                service('game.game_state_repository'),
+                service('game.game_event_repository'),
+                service('game.game_state_rebuilder'),
+            ])
+        ->alias(GameStateProvider::class, 'game.game_state_provider')
+
         ->set('game.game_state_rebuilder', GameStateRebuilder::class)
             ->args([
                 service('game.event_resolver'),
@@ -107,7 +115,7 @@ return static function (ContainerConfigurator $container): void {
         ->set('game.pipeline.middleware.provide_game_state', ProvideGameStateMiddleware::class)
             ->tag('game.pipeline_middleware', ['priority' => 500])
             ->args([
-                service('game.game_state_repository'),
+                service('game.game_state_provider'),
             ])
 
         ->set('game.pipeline.middleware.validate_action', ValidateActionMiddleware::class)

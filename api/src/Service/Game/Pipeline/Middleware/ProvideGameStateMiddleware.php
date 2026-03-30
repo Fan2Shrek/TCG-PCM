@@ -6,21 +6,18 @@ namespace App\Service\Game\Pipeline\Middleware;
 
 use App\Service\Game\Pipeline\GamePipelineContext;
 use App\Service\Game\Pipeline\GamePipelineStackInterface;
-use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Service\Game\State\GameStateProvider;
 
-/**
- * Maybe this middleware should handle the up to date state logic
- */
 final class ProvideGameStateMiddleware implements GameMiddlewareInterface
 {
     public function __construct(
-        private GameStateRepositoryInterface $gameStateRepository,
+        private GameStateProvider $GameStateProvider,
     ) {}
 
     public function handle(GamePipelineContext $gamePipelineContext, GamePipelineStackInterface $stack): GamePipelineContext
     {
         $action = $gamePipelineContext->getAction();
-        $gameState = $this->gameStateRepository->get($action->gameId);
+        $gameState = $this->GameStateProvider->get($action->gameId);
 
         if (!$gameState) {
             throw new \LogicException('Game state not found for game ID: '.$action->gameId);
