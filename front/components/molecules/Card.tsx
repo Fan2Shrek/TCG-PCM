@@ -41,6 +41,7 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
 
   return (
     <div
+	  id={card?.instanceId}
       className={`relative rounded-xl aspect-card ${cardSizeInfo} transform-3d will-change-transform user-select-none${className ?? ''}`}
       style={
         {

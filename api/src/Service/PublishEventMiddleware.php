@@ -16,11 +16,10 @@ final class PublishEventMiddleware implements GameMiddlewareInterface
 
     public function handle(GamePipelineContext $gamePipelineContext, GamePipelineStackInterface $stack): GamePipelineContext
     {
-        $events = $gamePipelineContext->getResolutionResult()->events;
-        $state = $gamePipelineContext->getGameState();
+        $resolution = $gamePipelineContext->getResolutionResult();
         $gameId = $gamePipelineContext->getAction()->gameId;
 
-        $this->gameEventPublisher->publish($events, $state, $gameId);
+        $this->gameEventPublisher->publish($resolution->events, $resolution->state, $gameId);
 
         return $stack->next()->handle($gamePipelineContext, $stack);
     }

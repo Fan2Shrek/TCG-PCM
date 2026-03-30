@@ -46,7 +46,7 @@ abstract class AbstractMonsterCard extends AbstractCard
         return $this->canAttack;
     }
 
-    public function getcurrentHealthPoints(): int
+    public function getCurrentHealthPoints(): int
     {
         return $this->currentHealthPoints;
     }
