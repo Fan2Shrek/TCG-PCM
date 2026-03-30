@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Game\State;
 
 use App\Game\State\GameState;
-use App\Service\Game\GameStateRebuilder;
 use App\Service\Redis\RedisClient;
 
 final class RedisGameStateRepository implements GameStateRepositoryInterface
@@ -13,8 +12,6 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
     public function __construct(
         private RedisClient $redisClient,
         private GameStateRepositoryInterface $decoratedRepository,
-        private GameEventRepositoryInterface $gameEventRepository,
-        private GameStateRebuilder $gameStateRebuilder,
     ) {}
 
     public function save(GameState $gameState, string $room): void
@@ -30,19 +27,14 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         if (!$gameState instanceof GameState) {
             $gameState = $this->decoratedRepository->get($room);
 
-            if (!$gameState) {
+            if ($gameState === null) {
                 return null;
             }
         }
 
-        $previousEventId = $gameState->lastEventId;
-        $lastState = $this->buildGameStateFromEvents($gameState, $room);
+        $this->redisClient->set($this->getRedisKey($room), $gameState);
 
-        if ($previousEventId !== $lastState->lastEventId) {
-            $this->redisClient->set($this->getRedisKey($room), $lastState);
-        }
-
-        return $lastState;
+        return $gameState;
     }
 
     public function deleteAll(): void
@@ -52,17 +44,6 @@ final class RedisGameStateRepository implements GameStateRepositoryInterface
         }
 
         $this->redisClient->flushAll();
-    }
-
-    private function buildGameStateFromEvents(GameState $gameState, string $room): GameState
-    {
-        $events = $this->gameEventRepository->getEventsSince($gameState->lastEventId, $room);
-
-        if ([] === $events) {
-            return $gameState;
-        }
-
-        return $this->gameStateRebuilder->rebuild($gameState, $events);
     }
 
     private function getRedisKey(string $room): string

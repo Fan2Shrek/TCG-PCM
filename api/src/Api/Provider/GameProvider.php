@@ -10,7 +10,7 @@ use App\Game\State\GameState;
 use App\Repository\RoomRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\GameStateConverter;
-use App\Service\Game\State\GameStateRepositoryInterface;
+use App\Service\Game\State\GameStateProvider;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -20,9 +20,9 @@ final class GameProvider implements ProviderInterface
 {
     public function __construct(
         private RoomRepository $roomRepository,
-        private GameStateRepositoryInterface $gameStateRepository,
         private CurrentUserProviderInterface $currentUserProvider,
         private GameStateConverter $gameStateConverter,
+        private GameStateProvider $gameStateProvider,
     ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object
@@ -31,7 +31,7 @@ final class GameProvider implements ProviderInterface
             throw new NotFoundHttpException();
         }
 
-        if (!($gameState = $this->gameStateRepository->get((string) $room->getId()))) {
+        if (!($gameState = $this->gameStateProvider->get((string) $room->getId()))) {
             throw new NotFoundHttpException();
         }
 
