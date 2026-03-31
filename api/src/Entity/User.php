@@ -4,7 +4,9 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 use App\Api\Provider\UserProvider;
+use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Entity\Inventory\Inventory;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,8 +20,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[ApiResource(operations: [
-    new Get(uriTemplate: '/user', provider: UserProvider::class),
-
+    new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
+    new Post(
+        uriTemplate: '/user/generate_booster_tokens',
+        messenger: 'input',
+        input: GenerateBoosterTokensCommand::class,
+        status: 200,
+    )
 ])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

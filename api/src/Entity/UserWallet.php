@@ -2,28 +2,13 @@
 
 namespace App\Entity;
 
-use App\Api\Provider\UserWalletProvider;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Repository\UserWalletRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserWalletRepository::class)]
-#[ApiResource(operations: [
-    new Get(
-        uriTemplate: '/user_wallet',
-        provider: UserWalletProvider::class,
-    ),
-    new Post(
-        uriTemplate: '/user_wallet/generate_booster_tokens',
-        messenger: 'input',
-        input: GenerateBoosterTokensCommand::class,
-        status: 200,
-    )
-])]
+#[ApiResource(operations: [])]
 class UserWallet
 {
     #[ORM\Id]

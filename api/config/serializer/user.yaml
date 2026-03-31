@@ -8,6 +8,12 @@ App\Entity\User:
         inventory:
             groups:
                 - api:inventory:read
+        userInfo:
+            groups:
+                - api:user:read
+        userWallet:
+            groups:
+                - api:user:read
         userIdentifier:
             ignore: true
         roles:
@@ -18,3 +24,15 @@ App\Entity\User:
             ignore: true
         decks:
             ignore: true
+
+App\Entity\UserInfo:
+    attributes:
+        lastBoosterAt:
+            groups:
+                - api:user:read
+
+App\Entity\UserWallet:
+    attributes:
+        boosterTokens:
+            groups:
+                - api:user:read

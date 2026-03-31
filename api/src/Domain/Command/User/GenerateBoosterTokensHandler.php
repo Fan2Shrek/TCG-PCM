@@ -6,7 +6,9 @@ namespace App\Domain\Command\User;
 
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\User\UserGenerateBoosterTokens;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 final class GenerateBoosterTokensHandler{
 
     public function __construct(
@@ -14,9 +16,12 @@ final class GenerateBoosterTokensHandler{
         private CurrentUserProviderInterface $currentUserProvider,
     ) {}
 
-    public function __invoke(GenerateBoosterTokensCommand $generate): int
+    public function __invoke(GenerateBoosterTokensCommand $generate): array
     {
         $user = $this->currentUserProvider->getCurrentUser();
-        return $this->userGenerateBoosterTokens->generate($user);
+
+        return [
+            'tokens' => $this->userGenerateBoosterTokens->generate($user),
+        ];
     }
 }
