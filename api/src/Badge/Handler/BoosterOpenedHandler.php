@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Game\Badge\Handler;
+namespace App\Badge\Handler;
 
 use App\Enum\BadgeEnum;
 

@@ -9,10 +9,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    _instanceof:
-        App\Game\Badge\Handler\BadgeHandlerInterface:
-            tags: ['app.badge_handler']
-
     App\:
         resource: '../src/'
         exclude:

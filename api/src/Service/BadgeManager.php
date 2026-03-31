@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Badge\BadgeEventInterface;
+use App\Badge\Handler\BadgeHandlerInterface;
 use App\Entity\UserBadge;
 use App\Enum\BadgeEnum;
-use App\Game\Badge\BadgeEventInterface;
-use App\Game\Badge\Handler\BadgeHandlerInterface;
 use App\Repository\UserBadgeRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 
@@ -26,7 +26,7 @@ final class BadgeManager
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
-        $badgeKey = $event::geBadgeKey();
+        $badgeKey = $event::getBadgeKey();
         $handler = $this->getHandlerForKey($badgeKey);
 
         if (!($userBadge = $this->userBadgeRepository->findByUserAndBadge($user, $badgeKey))) {

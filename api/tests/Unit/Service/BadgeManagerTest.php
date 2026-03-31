@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Badge\BadgeEventInterface;
+use App\Badge\Handler\BadgeHandlerInterface;
 use App\Entity\UserBadge;
 use App\Enum\BadgeEnum;
-use App\Game\Badge\BadgeEventInterface;
-use App\Game\Badge\Handler\BadgeHandlerInterface;
 use App\Repository\UserBadgeRepository;
 use App\Service\BadgeManager;
 use App\Tests\Resources\DummyCurrentUserProvider;
@@ -33,7 +33,7 @@ final class BadgeManagerTest extends TestCase
         $badgeManager = $this->getBadgeManager([$handler]);
 
         $badgeManager->handleFromEvent(new class implements BadgeEventInterface {
-            public static function geBadgeKey(): BadgeEnum
+            public static function getBadgeKey(): BadgeEnum
             {
                 return BadgeEnum::GamePlayed;
             }
@@ -65,7 +65,7 @@ class SpyBadgeHandler implements BadgeHandlerInterface
 
 class DummyEvent implements BadgeEventInterface
 {
-    public static function geBadgeKey(): BadgeEnum
+    public static function getBadgeKey(): BadgeEnum
     {
         return BadgeEnum::OpenedBooster;
     }

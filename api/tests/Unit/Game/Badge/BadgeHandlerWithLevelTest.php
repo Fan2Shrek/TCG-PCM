@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Badge;
 
+use App\Badge\BadgeEventInterface;
+use App\Badge\Handler\AbstractBadgeWithLevelHandler;
 use App\Entity\User;
 use App\Entity\UserBadge;
 use App\Enum\BadgeEnum;
-use App\Game\Badge\Handler\AbstractBadgeWithLevelHandler;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -18,8 +19,8 @@ final class BadgeHandlerWithLevelTest extends TestCase
         $handler = new DummyLevelHandler();
         $userBadge = new UserBadge(new User('', ''), BadgeEnum::OpenedBooster);
         $userBadge->setScore(5);
-        $event = new class implements \App\Game\Badge\BadgeEventInterface {
-            public static function geBadgeKey(): BadgeEnum
+        $event = new class implements BadgeEventInterface {
+            public static function getBadgeKey(): BadgeEnum
             {
                 return BadgeEnum::OpenedBooster;
             }

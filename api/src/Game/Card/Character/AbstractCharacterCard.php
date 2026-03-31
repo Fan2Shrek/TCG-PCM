@@ -6,7 +6,6 @@ namespace App\Game\Card\Character;
 
 use App\Enum\CardRarityEnum;
 use App\Game\AbstractCard;
-use Symfony\Component\Serializer\Attribute\Ignore;
 
 abstract class AbstractCharacterCard extends AbstractCard
 {
@@ -14,7 +13,6 @@ abstract class AbstractCharacterCard extends AbstractCard
 
     abstract public function getHealthPoints(): int;
 
-    #[Ignore]
     public function getCost(): int
     {
         throw new \LogicException('Character cards do not have a cost');
