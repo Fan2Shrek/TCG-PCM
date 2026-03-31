@@ -1,4 +1,5 @@
-import Bar from "@/components/atoms/bar";
+import ProgressBar from "@/components/atoms/dailyBoosters/ProgressBar";
+import { useMemo } from "react";
 
 type Props = {
   health: number;
@@ -6,9 +7,11 @@ type Props = {
 }
 
 export default ({ health, maxHealth }: Props) => {
+  const progress = useMemo(() => health/maxHealth * 100, [health, maxHealth]);
+
   return (
 	  <div>
-		<Bar value={health} total={maxHealth} text={`${health} / ${maxHealth}`} />
+		<ProgressBar progress={progress} text={`${health} / ${maxHealth}`} />
 	  </div>
 	);
 }

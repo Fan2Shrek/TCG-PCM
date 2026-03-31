@@ -25,11 +25,11 @@ final class TraceablePlayableCard extends AbstractPlayableCard implements Comput
 
     public function play(GameContext $context, array $data = []): void
     {
-        $this->stopwatch->start($this->getEventName('play'), self::STOPWATCH_CATEGORY);
+        $this->stopwatch->start($id = $this->getEventName('play'), self::STOPWATCH_CATEGORY);
 
         $this->methodCalled[] = __METHOD__;
         $this->card->play($context, $data);
 
-        $this->stopwatch->stop($this->getEventName('play'));
+        $this->stopwatch->stop($id);
     }
 }

@@ -1,10 +1,10 @@
-
 type ProgressBarProps = {
   progress: number
-  className?: string
+  className?: string,
+  text?: string;
 };
 
-export default ({ progress, className }: ProgressBarProps) => {
+export default ({ progress, className, text }: ProgressBarProps) => {
 
   const clamped = Math.max(0, Math.min(100, progress));
 
@@ -22,6 +22,12 @@ export default ({ progress, className }: ProgressBarProps) => {
   return (
     <div className={`h-4 w-full bg-gray-300 rounded-full border border-white overflow-hidden drop-shadow-lg inner-shadow ${className || ''}`}>
         <div className={`rounded-full h-full`} style={{ width: `${progress}%`, backgroundColor: `${color}` }}></div>
+
+		{text && (
+			<div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-black">
+				{text}
+			</div>
+		)}
     </div>
   );
 }
