@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import api from "../../lib/api/api";
+import api from "../../../lib/api/api";
 import Card from "@/components/molecules/Card";
 import InteractiveCard from "@/components/molecules/InteractiveCard";
 
