@@ -17,7 +17,7 @@ const menuItems: MenuItemType[] = [
   {
     label: "Collection",
     icon: <AiOutlineFolderOpen />,
-    linkTo: "/collection",
+    linkTo: "/inventory",
   },
   {
     label: "Arene",

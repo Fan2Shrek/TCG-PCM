@@ -57,8 +57,8 @@ final class UserApiTest extends FunctionalTestCase
     public function testGetInventoryReturnsCards()
     {
         $inv = ThereIs::anInventory()
-            ->withCard('card1', 2)
-            ->withCard('card2')
+            ->withCard('D6', 2)
+            ->withCard('Pierrot')
             ->build();
         $user = ThereIs::anUser()->withInventory($inv)->build();
         $this->client->loginUser($user);
@@ -67,9 +67,9 @@ final class UserApiTest extends FunctionalTestCase
         $content = $response->toArray();
 
         self::assertCount(2, $content['cards']);
-        self::assertSame('card1', $content['cards'][0]['card']);
+        self::assertSame('D6', $content['cards'][0]['card']['name']);
         self::assertSame(2, $content['cards'][0]['quantity']);
-        self::assertSame('card2', $content['cards'][1]['card']);
+        self::assertSame('Pierrot', $content['cards'][1]['card']['name']);
         self::assertSame(1, $content['cards'][1]['quantity']);
     }
 }

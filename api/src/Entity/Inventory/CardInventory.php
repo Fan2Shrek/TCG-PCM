@@ -41,7 +41,7 @@ final class CardInventory
         return $this->inventory;
     }
 
-    public function getCard(): ?string
+    public function getCard(): string
     {
         return $this->card;
     }
