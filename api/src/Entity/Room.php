@@ -16,13 +16,19 @@ use App\Repository\RoomRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
     new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
 
-    new Post(uriTemplate: '/rooms/create', messenger: 'input', input: CreateRoomCommand::class, condition: "is_enable('create_room')", status: 201),
+    new Post(
+        uriTemplate: '/rooms/create',
+        messenger: 'input',
+        normalizationContext: ['groups' => 'api:room:create'],
+        input: CreateRoomCommand::class,
+        condition: "is_enable('create_room')",
+        status: 201,
+    ),
     new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
     new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/change_deck', messenger: 'input', input: ChangeDeckCommand::class, status: 204),
@@ -95,7 +101,6 @@ class Room
         return $this;
     }
 
-    #[Ignore]
     public function getOwnerDeck(): Deck
     {
         return $this->ownerDeck;
@@ -108,7 +113,6 @@ class Room
         return $this;
     }
 
-    #[Ignore]
     public function getOpponentDeck(): ?Deck
     {
         return $this->opponentDeck;

@@ -1,0 +1,4 @@
+App\Game\Card\MonsterCard:
+    attributes:
+        cost:
+            ignore: true
