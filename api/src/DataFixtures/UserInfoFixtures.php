@@ -8,8 +8,8 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class UserInfoFixtures extends AbstractFixtures implements DependentFixtureInterface
 {
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         parent::__construct(UserInfo::class);
     }
 
@@ -17,7 +17,7 @@ class UserInfoFixtures extends AbstractFixtures implements DependentFixtureInter
     {
         yield [
             'user' => $this->getReference('User_1', User::class),
-            'lastBoosterAt' => new \DateTimeImmutable("-1 day"),
+            'lastBoosterAt' => new \DateTimeImmutable('-1 day'),
         ];
 
         yield [

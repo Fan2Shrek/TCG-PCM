@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\User;
 
 use App\Entity\User;
@@ -10,8 +11,8 @@ class UserGenerateBoosterTokens
     private const BOOSTER_TOKEN_INTERVAL_HOURS = 12;
 
     public function __construct(
-        private EntityManagerInterface $entityManager)
-    {}
+        private EntityManagerInterface $entityManager,
+    ) {}
 
     public function generate(User $user): int
     {
@@ -20,12 +21,14 @@ class UserGenerateBoosterTokens
         $userInfo = $user->getUserInfo();
 
         $interval = $userInfo->getLastBoosterAt()->diff($now);
-        $hours = ($interval->days * 24) + $interval->h;
+        $hours = ($interval->days ? $interval->days : 0) * 24 + $interval->h;
         $totalTokens = min(floor($hours / self::BOOSTER_TOKEN_INTERVAL_HOURS) + $userWallet->getBoosterTokens(), self::MAX_BOOSTER_TOKENS);
+        $totalTokens = (int) round($totalTokens, 0);
+        /** @var int $leftoverTime */
         $leftoverTime = $hours % self::BOOSTER_TOKEN_INTERVAL_HOURS;
 
         $userWallet->setBoosterTokens($totalTokens);
-        $userInfo->setLastBoosterAt($now->sub(new \DateInterval('PT' . $leftoverTime . 'H')));
+        $userInfo->setLastBoosterAt($now->sub(new \DateInterval('PT'.$leftoverTime.'H')));
 
         $this->entityManager->flush();
 

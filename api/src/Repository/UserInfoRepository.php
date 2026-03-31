@@ -30,7 +30,6 @@ class UserInfoRepository extends ServiceEntityRepository
     //            ->getResult()
     //        ;
     //    }
-
     //    public function findOneBySomeField($value): ?UserInfo
     //    {
     //        return $this->createQueryBuilder('u')

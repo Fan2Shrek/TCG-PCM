@@ -8,8 +8,8 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class UserWalletFixtures extends AbstractFixtures implements DependentFixtureInterface
 {
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         parent::__construct(UserWallet::class);
     }
 

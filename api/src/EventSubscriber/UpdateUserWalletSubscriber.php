@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 final class UpdateUserWalletSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private UserGenerateBoosterTokens $userGenerateBoosterTokens
+        private UserGenerateBoosterTokens $userGenerateBoosterTokens,
     ) {}
 
     public static function getSubscribedEvents(): array

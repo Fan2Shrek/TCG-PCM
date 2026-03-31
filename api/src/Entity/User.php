@@ -15,18 +15,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[ApiResource(operations: [
     new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
-    new Post(
-        uriTemplate: '/user/generate_booster_tokens',
-        messenger: 'input',
-        input: GenerateBoosterTokensCommand::class,
-        status: 200,
-    )
+    new Post(uriTemplate: '/user/generate_booster_tokens', messenger: 'input', input: GenerateBoosterTokensCommand::class, status: 200),
 ])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

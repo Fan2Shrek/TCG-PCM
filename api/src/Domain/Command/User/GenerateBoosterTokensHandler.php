@@ -9,8 +9,8 @@ use App\Service\User\UserGenerateBoosterTokens;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class GenerateBoosterTokensHandler{
-
+final class GenerateBoosterTokensHandler
+{
     public function __construct(
         private UserGenerateBoosterTokens $userGenerateBoosterTokens,
         private CurrentUserProviderInterface $currentUserProvider,

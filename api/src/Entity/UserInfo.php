@@ -21,11 +21,11 @@ class UserInfo
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    public function __construct(\DateTimeImmutable $lastBoosterAt, User $user)
+    public function __construct(User $user)
     {
         $this->id = $user->getId();
-        $this->lastBoosterAt = $lastBoosterAt;
         $this->user = $user;
+        $this->lastBoosterAt = new \DateTimeImmutable();
     }
 
     public function getId(): int
@@ -33,7 +33,7 @@ class UserInfo
         return $this->id;
     }
 
-    public function getLastBoosterAt(): ?\DateTimeImmutable
+    public function getLastBoosterAt(): \DateTimeImmutable
     {
         return $this->lastBoosterAt;
     }
