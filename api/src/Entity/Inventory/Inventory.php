@@ -10,7 +10,6 @@ use App\Repository\Inventory\InventoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: InventoryRepository::class)]
 #[ApiResource(operations: [
@@ -44,7 +43,6 @@ class Inventory
         return $this->id;
     }
 
-    #[Ignore]
     public function getOwner(): User
     {
         return $this->owner;

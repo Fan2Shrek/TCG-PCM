@@ -1,0 +1,8 @@
+App\Entity\Room:
+    attributes:
+        id:
+            groups:
+                - api:room:create
+        owner:
+            groups:
+                - api:room:create

@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -75,14 +74,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[Ignore]
     public function getUserIdentifier(): string
     {
         // @mago-ignore analyse:invalid-return-statement
         return $this->username;
     }
 
-    #[Ignore]
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -102,7 +99,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[Ignore]
     public function getPassword(): ?string
     {
         return $this->password;
@@ -139,7 +135,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, UserBadge>
      */
-    #[Ignore]
     public function getUserBadges(): Collection
     {
         return $this->userBadges;
@@ -170,7 +165,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Deck>
      */
-    #[Ignore]
     public function getDecks(): Collection
     {
         return $this->decks;

@@ -1,0 +1,20 @@
+App\Entity\User:
+    attributes:
+        username:
+            groups:
+                - default
+                - api:user:read
+                - api:room:create
+        inventory:
+            groups:
+                - api:inventory:read
+        userIdentifier:
+            ignore: true
+        roles:
+            ignore: true
+        password:
+            ignore: true
+        userBadges:
+            ignore: true
+        decks:
+            ignore: true

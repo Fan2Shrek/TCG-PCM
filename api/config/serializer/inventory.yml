@@ -1,0 +1,4 @@
+App\Entity\Inventory\Inventory:
+    attributes:
+        owner:
+            ignore: true
