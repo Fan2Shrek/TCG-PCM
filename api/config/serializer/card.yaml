@@ -1,4 +1,9 @@
-App\Game\Card\MonsterCard:
+App\Game\AbstractCard:
+    attributes:
+        rarity:
+            ignore: true
+
+App\Game\Card\Character\AbstractCharacterCard:
     attributes:
         cost:
             ignore: true

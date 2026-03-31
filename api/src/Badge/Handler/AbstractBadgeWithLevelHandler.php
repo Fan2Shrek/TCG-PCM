@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Game\Badge\Handler;
+namespace App\Badge\Handler;
 
+use App\Badge\BadgeEventInterface;
 use App\Entity\UserBadge;
-use App\Game\Badge\BadgeEventInterface;
 
 abstract class AbstractBadgeWithLevelHandler implements BadgeHandlerInterface
 {

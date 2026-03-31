@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Badge\BadgeEventInterface;
 use App\Event\Badge\BoosterOpenedEvent;
-use App\Game\Badge\BadgeEventInterface;
 use App\Service\BadgeManager;
 use Symfony\Component\DependencyInjection\Attribute\WhenNot;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

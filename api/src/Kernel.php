@@ -2,9 +2,9 @@
 
 namespace App;
 
+use App\Badge\Handler\BadgeHandlerInterface;
 use App\DependencyInjection\DeployPass;
 use App\DependencyInjection\UseRedisGameStateRepositoryPass;
-use App\Game\Badge\Handler\BadgeHandlerInterface;
 use App\Interface\DeployAwareInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Resources\MockHub;
