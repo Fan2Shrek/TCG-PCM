@@ -42,6 +42,11 @@ final class MakeCard extends AbstractMaker
         return 'make:card';
     }
 
+    public static function getCommandDescription(): string
+    {
+        return 'Creates a new card class';
+    }
+
     public function configureCommand(Command $command, InputConfiguration $inputConfig)
     {
         $command
@@ -56,7 +61,7 @@ final class MakeCard extends AbstractMaker
 
     public function configureDependencies(DependencyBuilder $dependencies) {}
 
-    public function interact(InputInterface $input, ConsoleStyle $io, Command $command)
+    public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
         if (!($name = $input->getArgument('name'))) {
             $name = $io->ask('Enter a card name', validator: Validator::notBlank(...));
