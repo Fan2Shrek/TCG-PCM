@@ -1,11 +1,13 @@
 import { AuthResource } from "./resources/AuthResource";
 import { BoosterResource } from "./resources/BoosterResource";
 import { GameResource } from "./resources/GameResource";
+import { UserResource } from "./resources/UserResource";
 
 export class ApiClient {
 	auth: AuthResource;
   	booster: BoosterResource;
 	game: GameResource;
+	user: UserResource;
 
 	constructor(
 	  private baseUrl: string,
@@ -15,6 +17,7 @@ export class ApiClient {
 		this.auth = new AuthResource(this);
 		this.booster = new BoosterResource(this);
 		this.game = new GameResource(this);
+		this.user = new UserResource(this);
 	}
 
 	async request<T>(endpoint: string, options?: RequestInit): Promise<T> {

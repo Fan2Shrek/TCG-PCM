@@ -23,7 +23,6 @@ export default ({ params }: { params: Promise<{ id: string }> }) =>  {
 	return <div>Loading</div>
   }
 
-
   return (
 	<GameProvider gameId={id} game={ game }>
 	  <GameBoard/>

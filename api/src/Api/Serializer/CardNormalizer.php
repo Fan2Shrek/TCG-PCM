@@ -22,6 +22,7 @@ final class CardNormalizer implements NormalizerInterface
 
         return [
             'name' => $card->getName(),
+            'description' => $card->getDescription(),
             'rarity' => $card::$rarity,
             'serie' => $card::$serie,
             'image' => $card->getImage(),

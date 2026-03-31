@@ -33,7 +33,7 @@ const CardFront = ({ layers, tilt, isHovering }: CardFrontProps) => (
             src={layer.src}
             alt={layer.alt ?? `layer-${i}`}
             fill
-            className={`object-cover ${!isHovering ? 'transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]' : ''}`}
+            className={`object-cover ${!isHovering ? 'transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]' : ''} z-0`}
             style={{
               transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
             }}
