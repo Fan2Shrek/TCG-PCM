@@ -1,7 +1,7 @@
 'use client'
 
 import { use, useEffect, useState } from 'react'
-import api from "../../../lib/api/api";
+import api from "../../../../lib/api/api";
 import { GameState } from '@/lib/game/type/gameState';
 import GameBoard from '@/components/organisms/game/GameBoard';
 import { GameContext, GameProvider } from '@/context/GameContext';
