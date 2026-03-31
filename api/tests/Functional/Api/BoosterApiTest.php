@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Api;
 
+use App\Entity\Inventory\Inventory;
 use App\Tests\Functional\FunctionalTestCase;
+use App\Tests\Resources\Fixtures\ThereIs;
 
 final class BoosterApiTest extends FunctionalTestCase
 {
@@ -12,13 +14,28 @@ final class BoosterApiTest extends FunctionalTestCase
 
     public function testSuccessfulBoosterOpen(): void
     {
+        $user = ThereIs::anUser()->build();
+        $this->client->loginUser($user);
         $this->post(self::URI);
 
         $response = $this->client->getResponse();
-        $this->assertSame(200, $response->getStatusCode());
+        self::assertResponseIsSuccessful();
 
         $data = json_decode($response->getContent() ?? '', true);
-        $this->assertArrayHasKey('cards', $data);
-        $this->assertCount(5, $data['cards']);
+        self::assertArrayHasKey('cards', $data);
+        self::assertCount(5, $data['cards']);
+    }
+
+    public function testOpenBoosterAddedToInventory(): void
+    {
+        $user = ThereIs::anUser()->build();
+        $this->client->loginUser($user);
+        $this->post(self::URI);
+
+        $this->client->getResponse();
+
+        $inventory = $this->getEM()->getRepository(Inventory::class)->find($user->getId());
+
+        self::assertNotCount(0, $inventory->getCards());
     }
 }

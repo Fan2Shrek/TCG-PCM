@@ -57,4 +57,20 @@ final class CardInventory
 
         return $this;
     }
+
+    public function incrementQuantity(): static
+    {
+        ++$this->quantity;
+
+        return $this;
+    }
+
+    public function decrementQuantity(): static
+    {
+        if ($this->quantity > 0) {
+            --$this->quantity;
+        }
+
+        return $this;
+    }
 }
