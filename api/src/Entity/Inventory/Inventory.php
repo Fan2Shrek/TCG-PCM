@@ -71,4 +71,9 @@ class Inventory
 
         return $this;
     }
+
+    public function findCardByCardId(string $cardId): ?CardInventory
+    {
+        return $this->cards->findFirst(static fn(int $_, CardInventory $card) => $card->getCard() === $cardId);
+    }
 }

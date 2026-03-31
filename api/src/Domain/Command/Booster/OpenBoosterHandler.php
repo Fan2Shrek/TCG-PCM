@@ -7,6 +7,7 @@ namespace App\Domain\Command\Booster;
 use App\Domain\Model\Booster;
 use App\Event\Badge\BoosterOpenedEvent;
 use App\Service\BoosterGenerator;
+use App\Service\InventoryUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -16,12 +17,17 @@ final class OpenBoosterHandler
     public function __construct(
         private BoosterGenerator $boosterGenerator,
         private EventDispatcherInterface $eventDispatcher,
+        private InventoryUpdater $inventoryUpdater,
     ) {}
 
     public function __invoke(OpenBoosterCommand $command): Booster
     {
         $this->eventDispatcher->dispatch(new BoosterOpenedEvent());
 
-        return $this->boosterGenerator->generateBooster();
+        $booster = $this->boosterGenerator->generateBooster();
+
+        $this->inventoryUpdater->addCards($booster->getCards());
+
+        return $booster;
     }
 }
