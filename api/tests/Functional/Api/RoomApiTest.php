@@ -134,7 +134,7 @@ final class RoomApiTest extends FunctionalTestCase
         self::assertResponseStatusCodeSame(400);
     }
 
-    protected function createUser(?string $username = null, ?string $password = null): User
+    protected function createUser(?string $username = null, ?string $password = null, bool $withWallet = false): User
     {
         $user = new User($username ?? 'test');
         $user->setPassword(

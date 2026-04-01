@@ -17,12 +17,12 @@ class UserInfoFixtures extends AbstractFixtures implements DependentFixtureInter
     {
         yield [
             'user' => $this->getReference('User_1', User::class),
-            'lastBoosterAt' => new \DateTimeImmutable('-1 day'),
+            'lastBoosterTokensAt' => new \DateTimeImmutable('-1 day'),
         ];
 
         yield [
             'user' => $this->getReference('User_2', User::class),
-            'lastBoosterAt' => new \DateTimeImmutable(),
+            'lastBoosterTokensAt' => new \DateTimeImmutable(),
         ];
     }
 

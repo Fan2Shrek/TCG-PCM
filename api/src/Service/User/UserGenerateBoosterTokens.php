@@ -20,7 +20,7 @@ class UserGenerateBoosterTokens
         $userWallet = $user->getUserWallet();
         $userInfo = $user->getUserInfo();
 
-        $interval = $userInfo->getLastBoosterAt()->diff($now);
+        $interval = $userInfo->getLastBoosterTokensAt()->diff($now);
         $hours = ($interval->days ? $interval->days : 0) * 24 + $interval->h;
         $totalTokens = min(floor($hours / self::BOOSTER_TOKEN_INTERVAL_HOURS) + $userWallet->getBoosterTokens(), self::MAX_BOOSTER_TOKENS);
         $totalTokens = (int) round($totalTokens, 0);
@@ -28,7 +28,7 @@ class UserGenerateBoosterTokens
         $leftoverTime = $hours % self::BOOSTER_TOKEN_INTERVAL_HOURS;
 
         $userWallet->setBoosterTokens($totalTokens);
-        $userInfo->setLastBoosterAt($now->sub(new \DateInterval('PT'.$leftoverTime.'H')));
+        $userInfo->setLastBoosterTokensAt($now->sub(new \DateInterval('PT'.$leftoverTime.'H')));
 
         $this->entityManager->flush();
 

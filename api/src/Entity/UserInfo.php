@@ -15,7 +15,7 @@ class UserInfo
     private int $id;
 
     #[ORM\Column]
-    private \DateTimeImmutable $lastBoosterAt;
+    private \DateTimeImmutable $lastBoosterTokensAt;
 
     #[ORM\OneToOne(inversedBy: 'userInfo', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -25,7 +25,7 @@ class UserInfo
     {
         $this->id = $user->getId();
         $this->user = $user;
-        $this->lastBoosterAt = new \DateTimeImmutable();
+        $this->lastBoosterTokensAt = new \DateTimeImmutable();
     }
 
     public function getId(): int
@@ -33,14 +33,14 @@ class UserInfo
         return $this->id;
     }
 
-    public function getLastBoosterAt(): \DateTimeImmutable
+    public function getLastBoosterTokensAt(): \DateTimeImmutable
     {
-        return $this->lastBoosterAt;
+        return $this->lastBoosterTokensAt;
     }
 
-    public function setLastBoosterAt(\DateTimeImmutable $lastBoosterAt): static
+    public function setLastBoosterTokensAt(\DateTimeImmutable $lastBoosterTokensAt): static
     {
-        $this->lastBoosterAt = $lastBoosterAt;
+        $this->lastBoosterTokensAt = $lastBoosterTokensAt;
 
         return $this;
     }

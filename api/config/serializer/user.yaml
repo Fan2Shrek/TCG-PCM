@@ -27,7 +27,7 @@ App\Entity\User:
 
 App\Entity\UserInfo:
     attributes:
-        lastBoosterAt:
+        lastBoosterTokensAt:
             groups:
                 - api:user:read
 

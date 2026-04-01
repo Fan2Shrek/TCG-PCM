@@ -54,7 +54,7 @@ abstract class FunctionalTestCase extends ApiTestCase
         return static::getContainer()->get('doctrine.orm.default_entity_manager');
     }
 
-    protected function createUser(?string $username = null, ?string $password = null): User
+    protected function createUser(?string $username = null, ?string $password = null, bool $withSubEntities = false): User
     {
         $user = new User($username ?? 'test');
         $user->setPassword(
@@ -64,6 +64,11 @@ abstract class FunctionalTestCase extends ApiTestCase
         );
         $this->getEm()->persist($user);
         $this->getEm()->flush();
+
+        if ($withSubEntities) {
+            ThereIs::aUserWallet()->for($user)->build();
+            ThereIs::aUserInfo()->for($user)->build();
+        }
 
         return $user;
     }
