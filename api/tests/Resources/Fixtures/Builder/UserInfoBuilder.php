@@ -6,7 +6,7 @@ namespace App\Tests\Resources\Fixtures\Builder;
 
 use App\Entity\User;
 use App\Entity\UserInfo;
-use App\Entity\UserWallet;
+
 use App\Tests\Resources\Fixtures\ThereIs;
 
 /**

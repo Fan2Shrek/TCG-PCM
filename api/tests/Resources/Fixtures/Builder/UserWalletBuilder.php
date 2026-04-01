@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Resources\Fixtures\Builder;
 
-use App\Entity\Inventory\Inventory;
+
 use App\Entity\User;
 use App\Entity\UserWallet;
 use App\Tests\Resources\Fixtures\ThereIs;
