@@ -21,7 +21,7 @@ class UserGenerateBoosterTokens
         $userInfo = $user->getUserInfo();
 
         $interval = $userInfo->getLastBoosterTokensAt()->diff($now);
-        $hours = ($interval->days ? $interval->days : 0) * 24 + $interval->h;
+        $hours = (($interval->days ? $interval->days : 0) * 24) + $interval->h;
         $totalTokens = min(floor($hours / self::BOOSTER_TOKEN_INTERVAL_HOURS) + $userWallet->getBoosterTokens(), self::MAX_BOOSTER_TOKENS);
         $totalTokens = (int) round($totalTokens, 0);
         /** @var int $leftoverTime */

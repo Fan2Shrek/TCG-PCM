@@ -13,6 +13,7 @@ final class UserApiTest extends FunctionalTestCase
     private const LOGIN_URI = '/api/login_check';
     private const INVENTORY_URI = '/api/inventory';
     private const CURRENT_USER_URI = '/api/user';
+
     private UserGenerateBoosterTokens $userGenerateBoosterTokens;
 
     public function setUp(): void
@@ -21,7 +22,6 @@ final class UserApiTest extends FunctionalTestCase
 
         $this->userGenerateBoosterTokens = static::getContainer()->get(UserGenerateBoosterTokens::class);
     }
-
 
     public function testLogin()
     {
@@ -97,10 +97,7 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testGetCurrentUserTokens()
     {
-        $user = ThereIs::anUser()
-            ->withBoosterTokens(100)
-            ->build()
-        ;
+        $user = ThereIs::anUser()->withBoosterTokens(100)->build();
         $this->client->loginUser($user);
 
         $response = $this->get(static::CURRENT_USER_URI);
@@ -108,11 +105,15 @@ final class UserApiTest extends FunctionalTestCase
 
         self::assertSame(100, $content['userWallet']['boosterTokens']);
     }
+
     public function testGenerateBoosterTokens()
     {
         $date = new \DateTimeImmutable();
         $twoDaysAgo = $date->modify('-2 days');
-        $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($twoDaysAgo)->build();
+        $user = ThereIs::anUser()
+            ->withBoosterTokens(0)
+            ->withLastBoosterTokensAt($twoDaysAgo)
+            ->build();
 
         $this->userGenerateBoosterTokens->generate($user);
 
@@ -125,7 +126,10 @@ final class UserApiTest extends FunctionalTestCase
         $daysAgo = $date->modify('-2 days -5 hours');
         $hoursAgo = $date->modify('-5 hours');
 
-        $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($daysAgo)->build();
+        $user = ThereIs::anUser()
+            ->withBoosterTokens(0)
+            ->withLastBoosterTokensAt($daysAgo)
+            ->build();
 
         $this->userGenerateBoosterTokens->generate($user);
 
@@ -135,7 +139,10 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testGenerateBoosterTokensNotAboveCap()
     {
-        $user = ThereIs::anUser()->withBoosterTokens(3)->withLastBoosterTokensAt(new \DateTimeImmutable("2023-01-01"))->build();
+        $user = ThereIs::anUser()
+            ->withBoosterTokens(3)
+            ->withLastBoosterTokensAt(new \DateTimeImmutable('2023-01-01'))
+            ->build();
 
         $this->userGenerateBoosterTokens->generate($user);
 
