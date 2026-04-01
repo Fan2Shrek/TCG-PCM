@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use App\Api\Provider\UserProvider;
+use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Entity\Inventory\Inventory;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +18,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[ApiResource(operations: [
+    new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
+    new Post(uriTemplate: '/user/generate_booster_tokens', messenger: 'input', input: GenerateBoosterTokensCommand::class, status: 200),
+])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -46,6 +55,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $decks;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePicturePath = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private UserWallet $userWallet;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private UserInfo $userInfo;
 
     #[ORM\OneToOne(mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Inventory $inventory;
@@ -194,6 +212,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setInventory(Inventory $inventory): static
     {
         $this->inventory = $inventory;
+
+        return $this;
+    }
+
+    public function getProfilePicturePath(): ?string
+    {
+        return $this->profilePicturePath;
+    }
+
+    public function setProfilePicturePath(?string $profilePicturePath): static
+    {
+        $this->profilePicturePath = $profilePicturePath;
+
+        return $this;
+    }
+
+    public function getUserWallet(): UserWallet
+    {
+        return $this->userWallet;
+    }
+
+    public function setUserWallet(UserWallet $userWallet): static
+    {
+        $this->userWallet = $userWallet;
+
+        return $this;
+    }
+
+    public function getUserInfo(): UserInfo
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(UserInfo $userInfo): static
+    {
+        $this->userInfo = $userInfo;
 
         return $this;
     }

@@ -10,6 +10,8 @@ use App\Tests\Resources\Fixtures\Builder\Inventory\CardInventoryBuilder;
 use App\Tests\Resources\Fixtures\Builder\Inventory\InventoryBuilder;
 use App\Tests\Resources\Fixtures\Builder\RoomBuilder;
 use App\Tests\Resources\Fixtures\Builder\UserBuilder;
+use App\Tests\Resources\Fixtures\Builder\UserInfoBuilder;
+use App\Tests\Resources\Fixtures\Builder\UserWalletBuilder;
 use Psr\Container\ContainerInterface;
 
 abstract /* static */ class ThereIs
@@ -44,6 +46,16 @@ abstract /* static */ class ThereIs
     public static function anUser(): UserBuilder
     {
         return new UserBuilder(self::$container);
+    }
+
+    public static function aUserInfo(): UserInfoBuilder
+    {
+        return new UserInfoBuilder(self::$container);
+    }
+
+    public static function aUserWallet(): UserWalletBuilder
+    {
+        return new UserWalletBuilder(self::$container);
     }
 
     public static function setContainer(ContainerInterface $container): void

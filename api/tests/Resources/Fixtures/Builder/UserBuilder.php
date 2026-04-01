@@ -16,20 +16,46 @@ final class UserBuilder extends AbstractBuilder
     protected static array $usedIds = [];
 
     private Inventory $inventory;
+    private int $boosterTokens = 0;
+    private \DateTimeImmutable $lastBoosterTokensAt;
 
     public function build(): object
     {
         $user = parent::build();
+        $this->lastBoosterTokensAt ??= new \DateTimeImmutable();
 
         $this->inventory ??= ThereIs::anInventory()->for($user)->build();
         $user->setInventory($this->inventory);
-
+        $userWallet = ThereIs::aUserWallet()
+            ->for($user)
+            ->withBoosterTokens($this->boosterTokens)
+            ->build();
+        $user->setUserWallet($userWallet);
+        $userInfo = ThereIs::aUserInfo()
+            ->for($user)
+            ->withLastBoosterTokensAt($this->lastBoosterTokensAt)
+            ->build();
+        $user->setUserInfo($userInfo);
         return $user;
     }
 
     public function withInventory(Inventory $inventory): self
     {
         $this->inventory = $inventory;
+
+        return $this;
+    }
+
+    public function withBoosterTokens(int $boosterTokens): self
+    {
+        $this->boosterTokens = $boosterTokens;
+
+        return $this;
+    }
+
+    public function withLastBoosterTokensAt(\DateTimeImmutable $lastBoosterTokensAt): self
+    {
+        $this->lastBoosterTokensAt = $lastBoosterTokensAt;
 
         return $this;
     }

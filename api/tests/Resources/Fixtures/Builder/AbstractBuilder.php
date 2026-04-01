@@ -17,6 +17,8 @@ abstract class AbstractBuilder
      */
     protected object $entity;
 
+    protected bool $built = false;
+
     public function __construct(
         protected ContainerInterface $container,
     ) {}
@@ -26,7 +28,11 @@ abstract class AbstractBuilder
      */
     public function build(): object
     {
+        if ($this->built) {
+            return $this->entity;
+        }
         $this->doBuild();
+        $this->built = true;
 
         $this->getEm()->persist($this->entity);
         $this->getEm()->flush();
