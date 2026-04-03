@@ -16,7 +16,9 @@ final class BoosterApiTest extends FunctionalTestCase
     {
         $user = ThereIs::anUser()->build();
         $this->client->loginUser($user);
-        $this->post(self::URI);
+        $this->post(self::URI, [
+            'type' => 'default',
+        ]);
 
         $response = $this->client->getResponse();
         self::assertResponseIsSuccessful();
@@ -30,7 +32,9 @@ final class BoosterApiTest extends FunctionalTestCase
     {
         $user = ThereIs::anUser()->build();
         $this->client->loginUser($user);
-        $this->post(self::URI);
+        $this->post(self::URI, [
+            'type' => 'default',
+        ]);
 
         $this->client->getResponse();
 

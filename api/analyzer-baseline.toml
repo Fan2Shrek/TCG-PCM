@@ -133,6 +133,18 @@ message = 'Could not infer a precise return type for function `app\repository\us
 count = 1
 
 [[issues]]
+file = "src/Service/Booster/BoosterGenerator.php"
+code = "unsafe-instantiation"
+message = 'Potentially unsafe instantiation: `class-string<App\Service\Booster\Types\BoosterInterface>` may contain the interface `App\Service\Booster\Types\BoosterInterface` itself, which cannot be instantiated.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/CardRegistry.php"
+code = "impossible-type-comparison"
+message = 'Impossible condition: variable `$type` (type `class-string`) can never be `App\Game\AbstractCard`.'
+count = 1
+
+[[issues]]
 file = "src/Service/Game/CardRegistry.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\service\game\cardregistry::getcardslist`. Saw type `mixed`.'

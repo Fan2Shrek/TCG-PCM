@@ -6,7 +6,7 @@ namespace App\Domain\Command\Booster;
 
 use App\Domain\Model\Booster;
 use App\Event\Badge\BoosterOpenedEvent;
-use App\Service\BoosterGenerator;
+use App\Service\Booster\BoosterGenerator;
 use App\Service\InventoryUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -24,7 +24,7 @@ final class OpenBoosterHandler
     {
         $this->eventDispatcher->dispatch(new BoosterOpenedEvent());
 
-        $booster = $this->boosterGenerator->generateBooster();
+        $booster = $this->boosterGenerator->generateBooster($command->type);
 
         $this->inventoryUpdater->addCards($booster->getCards());
 

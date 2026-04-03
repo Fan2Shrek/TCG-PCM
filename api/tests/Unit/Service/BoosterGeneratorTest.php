@@ -7,8 +7,10 @@ namespace App\Tests\Unit\Service;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Game\AbstractCard;
+use App\Game\Card\Character\PierrotCard;
 use App\Game\GameContext;
-use App\Service\BoosterGenerator;
+use App\Service\Booster\BoosterGenerator;
+use App\Service\Booster\BoosterRegistry;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\TestCase;
 
@@ -16,11 +18,11 @@ final class BoosterGeneratorTest extends TestCase
 {
     public function testGenerateBooster(): void
     {
-        $BoosterGenerator = new TestableBoosterGenerator();
+        $boosterGenerator = new TestableBoosterGenerator();
 
-        $booster = $BoosterGenerator->generateBooster();
+        $booster = $boosterGenerator->generateBooster();
 
-        self::assertCount(1, $booster->getCards());
+        self::assertCount(5, $booster->getCards());
     }
 
     public function testRarity(): void
@@ -37,33 +39,17 @@ final class BoosterGeneratorTest extends TestCase
         self::assertInstanceOf(LegendaryCardStub::class, $booster->getCards()[0]);
     }
 
-    public function testSet(): void
-    {
-        $BoosterGenerator = new class extends TestableBoosterGenerator {
-            protected const BOOSTER_SIZE = 1;
-        };
-
-        $booster = $BoosterGenerator->generateBooster(CardSetEnum::BTD6);
-
-        self::assertCount(1, $booster->getCards());
-    }
-
     public function testSize(): void
     {
-        $BoosterGenerator = new class extends TestableBoosterGenerator {
-            protected const BOOSTER_SIZE = 2;
-        };
+        $boosterGenerator = new TestableBoosterGenerator();
+        $booster = $boosterGenerator->generateBooster('big');
 
-        $booster = $BoosterGenerator->generateBooster();
-
-        $this->assertCount(2, $booster->getCards());
+        self::assertCount(7, $booster->getCards());
     }
 }
 
 class TestableBoosterGenerator extends BoosterGenerator
 {
-    protected const BOOSTER_SIZE = 1;
-
     protected const RARITY_PROBABILITIES = [
         CardRarityEnum::LEGENDARY->value => 0.5,
         CardRarityEnum::COMMON->value => 0.5,
@@ -71,7 +57,7 @@ class TestableBoosterGenerator extends BoosterGenerator
 
     public function __construct()
     {
-        parent::__construct(new MockCardRegistry($this->getCardsList()));
+        parent::__construct(new MockCardRegistry($this->getCardsList()), new BoosterRegistry());
     }
 
     public function getCardsList(): array
@@ -79,6 +65,7 @@ class TestableBoosterGenerator extends BoosterGenerator
         return [
             CommonCardStub::class => CommonCardStub::class,
             LegendaryCardStub::class => LegendaryCardStub::class,
+            PierrotCard::class => PierrotCard::class,
         ];
     }
 }
