@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Fixtures;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\GameContext;
 
-final class DummyCard extends AbstractPlayableCard
+class DummyCard extends AbstractPlayableCard
 {
     public function getName(): string
     {
