@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\Booster;
 
 use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
-use App\Enum\CardSetEnum;
+use App\Service\Booster\Types\BoosterInterface;
 use App\Service\Game\CardRegistryInterface;
 
 class BoosterGenerator
 {
-    protected const BOOSTER_SIZE = 5;
-
     /**
      * @var array<string, float>
      */
@@ -24,22 +22,27 @@ class BoosterGenerator
         CardRarityEnum::LEGENDARY->value => 0.005,
     ];
 
-    /**
-     * @var array<string, string[]>
-     */
-    private array $cardCache = [];
-
     public function __construct(
         private CardRegistryInterface $cardRegistry,
+        private BoosterRegistry $boosterRegistry,
     ) {}
 
-    public function generateBooster(?CardSetEnum $serie = null): Booster
+    public function generateBooster(?string $boosterType = null): Booster
     {
+        $boosterType ??= 'default';
+        $boosterClass = $this->boosterRegistry->getBoosterType($boosterType);
+
+        if (!is_subclass_of($boosterClass, BoosterInterface::class, true) || !class_exists($boosterClass)) {
+            throw new \InvalidArgumentException(\sprintf('Booster type "%s" must implement BoosterInterface.', $boosterType));
+        }
+
+        $booster = new $boosterClass();
         $boosterCards = [];
 
-        for ($i = 0; $i < static::BOOSTER_SIZE; $i++) {
+        for ($i = 0; $i < $booster->getCapacity(); $i++) {
             $rarity = $this->getRandomRarity();
-            $availableCards = $this->getForRarityAndSet($rarity, $serie);
+            $criterias = $booster->getCardsCriteria();
+            $availableCards = $this->getCardsFromCriteria(array_merge($criterias, ['rarity' => $rarity]));
             if ([] === $availableCards) {
                 $i--;
                 continue;
@@ -67,13 +70,11 @@ class BoosterGenerator
         return CardRarityEnum::COMMON;
     }
 
-    private function getForRarityAndSet(CardRarityEnum $rarity, ?CardSetEnum $serie): array
+    /**
+     * @param array<string, mixed> $criteria
+     */
+    private function getCardsFromCriteria(array $criteria): array
     {
-        $cacheKey = \sprintf('%s_%s', $rarity->value, $serie->value ?? 'any');
-
-        return $this->cardCache[$cacheKey] ??= $this->cardRegistry->getAllBy([
-            'rarity' => $rarity,
-            'serie' => $serie,
-        ]);
+        return $this->cardRegistry->getAllBy($criteria);
     }
 }
