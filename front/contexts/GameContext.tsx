@@ -5,14 +5,7 @@ import { GameEvent } from "@/lib/game/type/gameEvent";
 import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
 
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
 import { getCurrentUser } from "@/lib/utils";
 
@@ -51,11 +44,7 @@ export const GameContext = createContext<GameContextType>({
   getCardById: () => undefined,
 });
 
-export const GameProvider = ({
-  children,
-  gameId,
-  game: initialGame,
-}: Props) => {
+export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
   const [game, setGame] = useState<GameState | null>(initialGame || null);
   const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
   const gameRef = useRef<GameState | null>(initialGame || null);
@@ -66,22 +55,12 @@ export const GameProvider = ({
   const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
-    setAnnouncements((current: GameAnnouncement[]) => [
-      ...current,
-      { id, ...announcement },
-    ]);
+    setAnnouncements((current: GameAnnouncement[]) => [...current, { id, ...announcement }]);
 
     const timeoutId = window.setTimeout(() => {
-      setAnnouncements((current: GameAnnouncement[]) =>
-        current.filter(
-          (announcement: GameAnnouncement) => announcement.id !== id,
-        ),
-      );
+      setAnnouncements((current: GameAnnouncement[]) => current.filter((announcement: GameAnnouncement) => announcement.id !== id));
 
-      timeoutRefs.current = timeoutRefs.current.filter(
-        (currentTimeoutId: ReturnType<typeof setTimeout>) =>
-          currentTimeoutId !== timeoutId,
-      );
+      timeoutRefs.current = timeoutRefs.current.filter((currentTimeoutId: ReturnType<typeof setTimeout>) => currentTimeoutId !== timeoutId);
     }, 2200);
 
     timeoutRefs.current.push(timeoutId);
@@ -89,9 +68,7 @@ export const GameProvider = ({
 
   useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) =>
-        window.clearTimeout(timeoutId),
-      );
+      timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) => window.clearTimeout(timeoutId));
       timeoutRefs.current = [];
     };
   }, []);
@@ -126,16 +103,9 @@ export const GameProvider = ({
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-  const getPlayerKey = (
-    state: GameState,
-    playerId: string,
-  ): "player1" | "player2" =>
-    state.player1.player.id === playerId ? "player1" : "player2";
+  const getPlayerKey = (state: GameState, playerId: string): "player1" | "player2" => (state.player1.player.id === playerId ? "player1" : "player2");
 
-  const animate = (
-    state: GameState,
-    event: GameEvent,
-  ): AnnouncementPayload | null => {
+  const animate = (state: GameState, event: GameEvent): AnnouncementPayload | null => {
     if (event.type === GameEventType.DICE_ROLLED) {
       if (!event.data.faces) return null;
       const rollValue = event.data.result;
@@ -258,11 +228,9 @@ export const GameProvider = ({
         if (event.type === GameEventType.CARD_DISCARDED) {
           console.log(cardId, player.playArea);
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
-            nextPlayer.playArea.monsterCards =
-              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
-            nextPlayer.playArea.passiveCards =
-              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.passiveCards = nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
           }
 
           return {
@@ -279,14 +247,8 @@ export const GameProvider = ({
           [playerKey]: {
             ...nextPlayer,
             playArea: {
-              passiveCards:
-                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA
-                  ? [...player.playArea.passiveCards, cardId]
-                  : player.playArea.passiveCards,
-              monsterCards:
-                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA
-                  ? [...player.playArea.monsterCards, cardId]
-                  : player.playArea.monsterCards,
+              passiveCards: event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+              monsterCards: event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
             },
           },
           cards: {

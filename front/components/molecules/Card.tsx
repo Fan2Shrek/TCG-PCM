@@ -21,15 +21,7 @@ export type CardViewProps = {
   className?: string;
 };
 
-const Card = ({
-  card,
-  size = CardSize.MD,
-  tilt,
-  glare,
-  isHovering,
-  style,
-  className,
-}: CardViewProps) => {
+const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, className }: CardViewProps) => {
   const cardSizeInfo = CardSizeMap[size];
 
   const appliedTilt = tilt ?? DEFAULT_TILT;
@@ -66,20 +58,11 @@ const Card = ({
         } as React.CSSProperties
       }
     >
-      <CardFront
-        layers={tempCardLayers}
-        tilt={appliedTilt}
-        glare={appliedGlare}
-        isHovering={!!isHovering}
-      />
+      <CardFront layers={tempCardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
       <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
-      <p className="text-center absolute text-black">{card?.name}</p>
-      {card?.description && (
-        <p className="text-center absolute text-black top-40">
-          {convertDescriptions(card?.description)}
-        </p>
-      )}
+      <p className='text-center absolute text-black'>{card?.name}</p>
+      {card?.description && <p className='text-center absolute text-black top-40'>{convertDescriptions(card?.description)}</p>}
     </div>
   );
 };
