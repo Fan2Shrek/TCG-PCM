@@ -16,7 +16,7 @@ final class BigBooster implements BoosterInterface
     public function getCardsCriteria(): array
     {
         return [
-            CardSetEnum::ORIGINAL,
+            'serie' => CardSetEnum::ORIGINAL,
         ];
     }
 }

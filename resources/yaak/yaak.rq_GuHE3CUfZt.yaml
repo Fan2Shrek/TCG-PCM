@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_GuHE3CUfZt
 createdAt: 2026-02-19T16:38:57.970082099
-updatedAt: 2026-04-03T10:14:04.768681364
+updatedAt: 2026-04-03T13:05:19.913493111
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_TqpmpxSA2q
 authentication: {}
@@ -10,7 +10,7 @@ authenticationType: null
 body:
   text: |-
     {
-      "type": "character"
+      "type": "big"
     }
 bodyType: application/json
 description: ''

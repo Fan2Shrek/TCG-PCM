@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Api;
 
 use App\Entity\Inventory\Inventory;
+use App\Entity\UserWallet;
 use App\Tests\Functional\FunctionalTestCase;
 use App\Tests\Resources\Fixtures\ThereIs;
 
@@ -41,5 +42,33 @@ final class BoosterApiTest extends FunctionalTestCase
         $inventory = $this->getEM()->getRepository(Inventory::class)->find($user->getId());
 
         self::assertNotCount(0, $inventory->getCards());
+    }
+
+    public function testOpenBoosterWithoutToken(): void
+    {
+        $user = ThereIs::anUser()->withBoosterTokens(0)->build();
+        $this->client->loginUser($user);
+        $this->post(self::URI, [
+            'type' => 'default',
+        ]);
+
+        $this->client->getResponse();
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testOpenBoosterRemoveToken(): void
+    {
+        $user = ThereIs::anUser()->withBoosterTokens(1)->build();
+        $this->client->loginUser($user);
+        $this->post(self::URI, [
+            'type' => 'default',
+        ]);
+
+        $this->client->getResponse();
+
+        $wallet = $this->getEM()->getRepository(UserWallet::class)->find($user->getId());
+
+        self::assertSame(0, $wallet->getBoosterTokens());
     }
 }

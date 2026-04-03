@@ -57,4 +57,9 @@ class UserWallet
 
         return $this;
     }
+
+    public function removeBoosterToken(int $amount): void
+    {
+        $this->boosterTokens = max(0, $this->boosterTokens - $amount);
+    }
 }
