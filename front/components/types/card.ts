@@ -1,12 +1,13 @@
 export type BasicCard = {
-	name: string;
-	description: string;
-	image: string;
-	rarity: string;
-	set: string;
-	instanceId: string;
-	effects: any;
-}
+  name: string;
+  description: string;
+  image: string;
+  rarity: string;
+  set: string;
+  instanceId: string;
+  effects: any;
+  isActive: boolean;
+};
 
 export type CardLayer = {
   src: string;
@@ -30,19 +31,19 @@ export type CardWithPosition = {
   x: number;
   y: number;
   rotation: number;
-}
+};
 
-export type CardSize = 'sm' | 'md' | 'lg' | 'xl';
+export type CardSize = "sm" | "md" | "lg" | "xl";
 
 export const CardSizeMap: Record<CardSize, string> = {
-  sm: 'w-card-sm',
-  md: 'w-card-md',
-  lg: 'w-card-lg',
-  xl: 'w-card-xl',
+  sm: "w-card-sm",
+  md: "w-card-md",
+  lg: "w-card-lg",
+  xl: "w-card-xl",
 };
 
 export enum foilEffects {
-  HOLO = 'Holographic',
-  RAINBOW = 'Rainbow',
-  GOLDEN = 'Golden',
+  HOLO = "Holographic",
+  RAINBOW = "Rainbow",
+  GOLDEN = "Golden",
 }

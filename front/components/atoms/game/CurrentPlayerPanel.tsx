@@ -6,10 +6,9 @@ import PlayerStats from "@/components/molecules/game/PlayerStats";
 type Props = {
   player: any;
   selectedAttackerId: string | null;
-  asOpponent?: boolean;
 };
 
-export default ({ player, asOpponent = false, selectedAttackerId }: Props) => {
+export default ({ player, selectedAttackerId }: Props) => {
   const { getCardById } = useContext(GameContext);
 
   const playerCard = getCardById(player.characterCardId);
@@ -17,40 +16,27 @@ export default ({ player, asOpponent = false, selectedAttackerId }: Props) => {
   return (
     <>
       <div className="mt-3 text-center text-sm text-white/70">
-        {selectedAttackerId && !asOpponent
+        {selectedAttackerId
           ? "Choisis une cible pour attaquer"
           : "Choisis un monstre pour attaquer"}
       </div>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full p-4">
-        {!asOpponent && playerCard && (
+        {playerCard && (
           <div className="col-start-1 justify-self-start">
             <PlayerStats
               playerCard={playerCard}
               health={player.healthPoints}
               maxHealth={player.maxHealthPoints}
-              asOpponent={asOpponent}
+              asOpponent={false}
             />
           </div>
         )}
 
-        {!asOpponent && (
-          <div className="col-start-2 justify-self-center">
-            <CardsHand
-              cards={player.hand.map((cardId: string) => getCardById(cardId))}
-            />
-          </div>
-        )}
-
-        {asOpponent && playerCard && (
-          <div className="col-start-3 justify-self-end">
-            <PlayerStats
-              playerCard={playerCard}
-              health={player.healthPoints}
-              maxHealth={player.maxHealthPoints}
-              asOpponent={asOpponent}
-            />
-          </div>
-        )}
+        <div className="col-start-2 justify-self-center">
+          <CardsHand
+            cards={player.hand.map((cardId: string) => getCardById(cardId))}
+          />
+        </div>
       </div>
     </>
   );

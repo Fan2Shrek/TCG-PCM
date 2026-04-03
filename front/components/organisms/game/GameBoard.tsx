@@ -1,5 +1,4 @@
 import PlayerPanel from "@/components/atoms/game/PlayerPanel";
-import BoardRow from "@/components/molecules/game/BoardRow";
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
@@ -7,6 +6,7 @@ import { emitter } from "@/lib/eventBus";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import CardsHand from "../CardsHand";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
+import GameMainArea from "./GameMainArea";
 
 export default () => {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
@@ -121,11 +121,7 @@ export default () => {
         </div>
       )}
 
-      <PlayerHealthBar
-        health={opponentState.healthPoints}
-        maxHealth={opponentState.maxHealthPoints}
-      />
-      <div className="flex justify-center p-4 border-b border-green-700">
+      <div className="absolute top-0 w-full z-10 pointer-events-auto">
         <button
           type="button"
           onClick={() => handleAttackTarget(opponentState.player.id)}
@@ -137,54 +133,20 @@ export default () => {
         </button>
       </div>
 
-      <div
-        ref={playBoxRef}
-        className="flex flex-1 flex-col items-center justify-center gap-6"
-      >
-        <BoardRow
-          title="Player 2 Monsters"
-          cards={opponentState.playArea.monsterCards}
-          clickable={!!selectedAttackerId}
-          onCardClick={handleAttackTarget}
-        />
-        <BoardRow
-          title="Player 2 Passive"
-          cards={opponentState.playArea.passiveCards}
-        />
-
-        <BoardRow
-          title="Player 1 Monsters"
-          cards={currentState.playArea.monsterCards}
-          clickable
-          onCardClick={handleSelectAttacker}
-          selectedCardId={selectedAttackerId}
-          isCardDisabled={(cardId) => getCardById(cardId)?.isActive === false}
-        />
-        <BoardRow
-          title="Player 1 Passive"
-          cards={currentState.playArea.passiveCards}
+      <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
+        <GameMainArea
+          game={game}
+          selectedAttackerId={selectedAttackerId}
+          onSelectAttacker={handleSelectAttacker}
+          onSelectTarget={handleAttackTarget}
+          getCardById={getCardById}
         />
       </div>
 
-      <div className="border-t border-green-700 p-4">
-        <PlayerPanel player={currentState} />
-
-        <div className="mt-3 text-center text-sm text-white/70">
-          {selectedAttackerId
-            ? "Choisis une cible pour attaquer"
-            : "Choisis un monstre pour attaquer"}
-        </div>
-
-        <div className="flex gap-2 mt-4 justify-center">
-          <CardsHand
-            cards={currentState.hand.map((cardId: string) =>
-              getCardById(cardId),
-            )}
-          />
-        </div>
-        <PlayerHealthBar
-          health={currentState.healthPoints}
-          maxHealth={currentState.maxHealthPoints}
+      <div className="absolute bottom-0 w-full px-4 z-10 pointer-events-auto">
+        <CurrentPlayerPanel
+          player={currentState}
+          selectedAttackerId={selectedAttackerId}
         />
       </div>
       {connectedPlayer == game.currentPlayer && (
