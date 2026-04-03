@@ -16,7 +16,7 @@ final class UserBuilder extends AbstractBuilder
     protected static array $usedIds = [];
 
     private Inventory $inventory;
-    private int $boosterTokens = 0;
+    private int $boosterTokens = 1;
     private \DateTimeImmutable $lastBoosterTokensAt;
 
     public function build(): object

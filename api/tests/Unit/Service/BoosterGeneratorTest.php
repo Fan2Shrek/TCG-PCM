@@ -99,7 +99,6 @@ class CommonCardStub extends AbstractCard
 class LegendaryCardStub extends AbstractCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
-    public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     public function getId(): string
     {
