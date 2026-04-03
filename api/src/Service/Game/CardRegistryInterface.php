@@ -16,4 +16,6 @@ interface CardRegistryInterface
      * @return string[]
      */
     public function getAllBy(array $criteria): array;
+
+    public function has(string $cardId): bool;
 }

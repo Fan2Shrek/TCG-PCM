@@ -69,6 +69,13 @@ class CardRegistry implements CardRegistryInterface
         return $cards;
     }
 
+    public function has(string $cardId): bool
+    {
+        $this->loadCards();
+
+        return isset($this->cards[$cardId]);
+    }
+
     /**
      * @return array<string, class-string<AbstractCard>>
      */
