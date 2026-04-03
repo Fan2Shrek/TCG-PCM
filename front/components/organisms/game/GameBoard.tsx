@@ -1,7 +1,7 @@
 import PlayerPanel from "@/components/atoms/game/PlayerPanel";
 import BoardRow from "@/components/molecules/game/BoardRow";
-import { GameContext } from "@/context/GameContext";
-import type { GameAnnouncement } from "@/context/GameContext";
+import { GameContext } from "@/contexts/GameContext";
+import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";

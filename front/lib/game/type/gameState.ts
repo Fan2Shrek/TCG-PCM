@@ -27,7 +27,7 @@ type PlayArea = {
 	monsterCards: string[];
 }
 
-type CardState = {
+export type CardState = {
 	instanceId: string;
 	effects: EffectState[];
 	values: any;

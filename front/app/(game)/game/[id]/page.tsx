@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react'
 import api from "../../../../lib/api/api";
 import { GameState } from '@/lib/game/type/gameState';
 import GameBoard from '@/components/organisms/game/GameBoard';
-import { GameContext, GameProvider } from '@/context/GameContext';
+import { GameProvider } from '@/contexts/GameContext';
 
 export default ({ params }: { params: Promise<{ id: string }> }) =>  {
   const { id } = use(params)
@@ -13,7 +13,7 @@ export default ({ params }: { params: Promise<{ id: string }> }) =>  {
 
   useEffect(() => {
 	const fetchGame = async () => {
-	  return await api.game.getGame(id)
+	  return await api.game.getGame(id) as GameState;
 	};
 
 	fetchGame().then((data) => {

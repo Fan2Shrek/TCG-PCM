@@ -4,7 +4,7 @@ import React from "react";
 import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
-import { CardModel, CardSizeMap, CardSize, CardLayer } from "../types/card";
+import { CardSizeMap, CardSize, BasicCard } from "../types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "../utils/cardUtils";
 import { getImage } from "@/lib/api/api";
 

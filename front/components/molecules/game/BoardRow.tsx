@@ -1,4 +1,4 @@
-import { GameContext } from "@/context/GameContext";
+import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
 import Card from "../Card";
 

@@ -1,8 +1,8 @@
-import { BasicCard } from '@/components/types/card';
-import useMercure from '@/hook/useMercure';
-import { GameEventType } from '@/lib/game/type/eventType';
-import { GameEvent } from '@/lib/game/type/gameEvent';
-import { GameState } from '@/lib/game/type/gameState';
+import { BasicCard } from "@/components/types/card";
+import useMercure from "@/hooks/useMercure";
+import { GameEventType } from "@/lib/game/type/eventType";
+import { GameEvent } from "@/lib/game/type/gameEvent";
+import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
 
 import {
@@ -13,8 +13,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { PlayerActionType } from '@/lib/game/type/playerAction';
-import { getCurrentUser } from '@/lib/utils';
+import { PlayerActionType } from "@/lib/game/type/playerAction";
+import { getCurrentUser } from "@/lib/utils";
 
 export type AnnouncementTone = "neutral" | "positive" | "negative";
 
@@ -46,17 +46,24 @@ type Props = {
   game?: GameState | null;
 };
 
-export const GameContext = createContext<GameContextType>();
+export const GameContext = createContext<GameContextType>({
+  game: null,
+  getCardById: () => undefined,
+});
 
-export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
-	const [game, setGame] = useState<GameState | null>(initialGame || null);
-	const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
-	const gameRef = useRef<GameState | null>(initialGame || null);
-	const announcementIdRef = useRef(0);
+export const GameProvider = ({
+  children,
+  gameId,
+  game: initialGame,
+}: Props) => {
+  const [game, setGame] = useState<GameState | null>(initialGame || null);
+  const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
+  const gameRef = useRef<GameState | null>(initialGame || null);
+  const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
-	const currentUser = getCurrentUser();
+  const currentUser = getCurrentUser();
 
-	const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
+  const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
     setAnnouncements((current: GameAnnouncement[]) => [
@@ -80,7 +87,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     timeoutRefs.current.push(timeoutId);
   }, []);
 
-	useEffect(() => {
+  useEffect(() => {
     return () => {
       timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) =>
         window.clearTimeout(timeoutId),
@@ -89,7 +96,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     };
   }, []);
 
-	const getCardById = useCallback(
+  const getCardById = useCallback(
     (cardId: string): BasicCard | undefined => {
       if (!game) {
         return undefined;
@@ -100,7 +107,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     [game],
   );
 
-	const playCard = async (cardId: string) => {
+  const playCard = async (cardId: string) => {
     try {
       await api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
     } catch (error) {
@@ -111,21 +118,21 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	const attack = (cardId: string, targetId: string) => {
+  const attack = (cardId: string, targetId: string) => {
     api.game.play(gameId, PlayerActionType.ATTACK, { cardId, targetId });
   };
 
-	const endTurn = () => {
+  const endTurn = () => {
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-	const getPlayerKey = (
+  const getPlayerKey = (
     state: GameState,
     playerId: string,
   ): "player1" | "player2" =>
     state.player1.player.id === playerId ? "player1" : "player2";
 
-	const animate = (
+  const animate = (
     state: GameState,
     event: GameEvent,
   ): AnnouncementPayload | null => {
@@ -192,7 +199,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	const applyView = (state: GameState, event: GameEvent): GameState => {
+  const applyView = (state: GameState, event: GameEvent): GameState => {
     if (!event.view) return state;
     console.log(event);
 
@@ -339,7 +346,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	useMercure(
+  useMercure(
     `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${currentUser?.username === game?.player1.player.name ? "1" : "2"}`, // @todo change
     {
       game_events: (e: { events: GameEvent[] }) => {
@@ -368,11 +375,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     },
   );
 
-	useEffect(() => {
+  useEffect(() => {
     gameRef.current = game;
   }, [game]);
 
-	return (
+  return (
     <GameContext.Provider
       value={{
         game,
@@ -384,4 +391,4 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       {children}
     </GameContext.Provider>
   );
-}
+};
