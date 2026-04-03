@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Booster\Types;
 
+use App\Enum\CardSetEnum;
+
 final class BigBooster implements BoosterInterface
 {
     public function getCapacity(): int
@@ -13,6 +15,8 @@ final class BigBooster implements BoosterInterface
 
     public function getCardsCriteria(): array
     {
-        return [];
+        return [
+            CardSetEnum::ORIGINAL,
+        ];
     }
 }
