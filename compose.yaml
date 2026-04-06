@@ -29,7 +29,7 @@ services:
   front:
     build:
       context: ./front
-      target: dev
+      target: ${DOCKER_TARGET:-dev}
     ports:
       - "3000:3000"
     working_dir: /app
