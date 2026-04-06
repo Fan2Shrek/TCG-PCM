@@ -16,7 +16,15 @@ COPY . .
 CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
 
 FROM deps AS builder
+
 COPY . .
+
+ARG API_URL
+ENV NEXT_PUBLIC_API_URL=${API_URL}
+
+ARG MERCURE_URL
+ENV NEXT_PUBLIC_MERCURE_URL=${MERCURE_URL}
+
 RUN npm run build
 
 # =========================

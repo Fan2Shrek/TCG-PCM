@@ -58,7 +58,7 @@ const token =
     : null;
 
 const client = new ApiClient(
-  process.env.NEXT_API_URL || 'http://localhost:8000/api',
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
   token,
 );
 

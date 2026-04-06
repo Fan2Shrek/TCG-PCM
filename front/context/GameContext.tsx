@@ -34,7 +34,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   );
 
   useMercure(
-	`http://localhost:8080/.well-known/mercure?topic=game/${gameId}`, // @todo change
+	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`, // @todo change
 	{
 	  [GameEventType.CARD_DRAWN]: (e: GameEvent) => {
 		if (!game) return;
