@@ -1,3 +1,6 @@
+# =========================
+# BASE
+# =========================
 FROM php:8.5.2-fpm-alpine AS base
 
 RUN apk add --no-cache \
@@ -65,9 +68,5 @@ COPY . /app
 
 RUN php bin/console cache:clear \
  && php bin/console cache:warmup
-
-RUN chown -R app:app /app
-
-USER app
 
 CMD ["multirun", "php-fpm -R -F", "nginx -g 'daemon off;'"]

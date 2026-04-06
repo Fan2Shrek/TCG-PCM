@@ -1,3 +1,6 @@
+# =========================
+# BASE
+# =========================
 FROM node:20-alpine AS base
 WORKDIR /app
 
@@ -5,6 +8,9 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# =========================
+# DEV
+# =========================
 FROM deps AS dev
 COPY . .
 CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
@@ -13,6 +19,9 @@ FROM deps AS builder
 COPY . .
 RUN npm run build
 
+# =========================
+# PROD
+# =========================
 FROM node:20-alpine AS prod
 WORKDIR /app
 
