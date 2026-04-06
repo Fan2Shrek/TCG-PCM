@@ -2,7 +2,7 @@ services:
   php:
     build:
       context: ./api
-      target: dev
+      target: ${DOCKER_TARGET:-dev}
     ports:
       - "8000:80"
     working_dir: /app
