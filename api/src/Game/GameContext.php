@@ -154,6 +154,11 @@ class GameContext
         return $this->state->player1->player->id === $playerId ? $this->state->player2->player->id : $this->state->player1->player->id;
     }
 
+    public function getOpponentState(): PlayerState
+    {
+        return $this->state->currentPlayer === $this->state->player1->player->id ? $this->state->player2 : $this->state->player1;
+    }
+
     public function lastActionHasBeenPrevented(): bool
     {
         return array_last($this->events)?->type === GameEventTypeEnum::CARD_ACTION_PREVENTED;
