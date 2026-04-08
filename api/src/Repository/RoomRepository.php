@@ -28,10 +28,6 @@ class RoomRepository extends ServiceEntityRepository implements DeployAwareInter
 
     public function onDeploy(): void
     {
-        $this
-            ->createQueryBuilder('r')
-            ->delete()
-            ->getQuery()
-            ->execute();
+        $this->createQueryBuilder('r')->delete()->getQuery()->execute();
     }
 }

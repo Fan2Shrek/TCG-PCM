@@ -29,10 +29,6 @@ class InitialGameStateRepository extends ServiceEntityRepository
 
     public function deleteAll(): void
     {
-        $this
-            ->createQueryBuilder('i')
-            ->delete()
-            ->getQuery()
-            ->execute();
+        $this->createQueryBuilder('i')->delete()->getQuery()->execute();
     }
 }

@@ -73,7 +73,7 @@ class CardRegistry implements CardRegistryInterface
     {
         $this->loadCards();
 
-        return isset($this->cards[$cardId]);
+        return null !== $this->cards[$cardId] ?? null;
     }
 
     /**

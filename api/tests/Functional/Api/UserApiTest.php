@@ -67,10 +67,7 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testGetInventoryReturnsCards()
     {
-        $inv = ThereIs::anInventory()
-            ->withCard('D6', 2)
-            ->withCard('Pierrot')
-            ->build();
+        $inv = ThereIs::anInventory()->withCard('D6', 2)->withCard('Pierrot')->build();
         $user = ThereIs::anUser()->withInventory($inv)->build();
         $this->client->loginUser($user);
 
@@ -110,10 +107,7 @@ final class UserApiTest extends FunctionalTestCase
     {
         $date = new \DateTimeImmutable();
         $twoDaysAgo = $date->modify('-2 days');
-        $user = ThereIs::anUser()
-            ->withBoosterTokens(0)
-            ->withLastBoosterTokensAt($twoDaysAgo)
-            ->build();
+        $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($twoDaysAgo)->build();
 
         $this->userGenerateBoosterTokens->generate($user);
 
@@ -126,10 +120,7 @@ final class UserApiTest extends FunctionalTestCase
         $daysAgo = $date->modify('-2 days -5 hours');
         $hoursAgo = $date->modify('-5 hours');
 
-        $user = ThereIs::anUser()
-            ->withBoosterTokens(0)
-            ->withLastBoosterTokensAt($daysAgo)
-            ->build();
+        $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($daysAgo)->build();
 
         $this->userGenerateBoosterTokens->generate($user);
 

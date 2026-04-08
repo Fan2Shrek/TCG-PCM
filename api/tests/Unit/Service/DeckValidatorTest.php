@@ -212,7 +212,7 @@ final class DeckValidatorTest extends TestCase
 
     private function setupCardRegistryWithRarities(array $cardRarityMap): void
     {
-        $this->cardRegistry->method('has')->willReturnCallback(static fn($card) => isset($cardRarityMap[$card]));
+        $this->cardRegistry->method('has')->willReturnCallback(static fn($card) => null !== $cardRarityMap[$card] ?? null);
 
         $this->cardRegistry
             ->method('getCardTemplateById')

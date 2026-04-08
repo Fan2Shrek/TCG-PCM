@@ -42,10 +42,6 @@ class GameEventRepository extends ServiceEntityRepository
 
     public function deleteAll(): void
     {
-        $this
-            ->createQueryBuilder('e')
-            ->delete()
-            ->getQuery()
-            ->execute();
+        $this->createQueryBuilder('e')->delete()->getQuery()->execute();
     }
 }

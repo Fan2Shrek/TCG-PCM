@@ -90,10 +90,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testStartRoomSuccess()
     {
-        $room = ThereIs::aRoom()
-            ->withOwner($this->currentUser)
-            ->withOpponent()
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->withOpponent()->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -102,10 +99,7 @@ final class RoomApiTest extends FunctionalTestCase
 
     public function testGameStateInserted()
     {
-        $room = ThereIs::aRoom()
-            ->withOwner($this->currentUser)
-            ->withOpponent()
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($this->currentUser)->withOpponent()->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -115,10 +109,7 @@ final class RoomApiTest extends FunctionalTestCase
     public function testStartRoomFailedIfNotOwner()
     {
         $user = ThereIs::anUser()->build();
-        $room = ThereIs::aRoom()
-            ->withOwner($user)
-            ->withOpponent()
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($user)->withOpponent()->build();
 
         $this->post($this->getUri(self::START_URI, ['id' => (string) $room->getId()]));
 
@@ -177,10 +168,7 @@ final class RoomApiTest extends FunctionalTestCase
     public function testChangeDeckAsOpponent()
     {
         $owner = $this->createUser('opponent');
-        $room = ThereIs::aRoom()
-            ->withOwner($owner)
-            ->withOpponent($this->currentUser)
-            ->build();
+        $room = ThereIs::aRoom()->withOwner($owner)->withOpponent($this->currentUser)->build();
 
         $deck = $this->currentUser->getDecks()[0];
 

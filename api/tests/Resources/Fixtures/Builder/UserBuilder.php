@@ -26,15 +26,9 @@ final class UserBuilder extends AbstractBuilder
 
         $this->inventory ??= ThereIs::anInventory()->for($user)->build();
         $user->setInventory($this->inventory);
-        $userWallet = ThereIs::aUserWallet()
-            ->for($user)
-            ->withBoosterTokens($this->boosterTokens)
-            ->build();
+        $userWallet = ThereIs::aUserWallet()->for($user)->withBoosterTokens($this->boosterTokens)->build();
         $user->setUserWallet($userWallet);
-        $userInfo = ThereIs::aUserInfo()
-            ->for($user)
-            ->withLastBoosterTokensAt($this->lastBoosterTokensAt)
-            ->build();
+        $userInfo = ThereIs::aUserInfo()->for($user)->withLastBoosterTokensAt($this->lastBoosterTokensAt)->build();
         $user->setUserInfo($userInfo);
         return $user;
     }
