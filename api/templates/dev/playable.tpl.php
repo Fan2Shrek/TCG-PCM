@@ -11,16 +11,6 @@ namespace <?= $class_data->getNamespace(); ?>;
         return '<?= $id; ?>';
     }
 
-    public function getName(): string
-    {
-        return '<?= $name; ?>';
-    }
-
-    public function getDescription(): string
-    {
-        return 'TODO: <?= $name; ?> description';
-    }
-
     public function getAttack(): int
     {
         return $this->getValue(self::ATTACK, true);
