@@ -50,6 +50,14 @@ return [
             'name' => "I'm Still Standing",
             'description' => 'Lorsque le joueur meurt, il revient à la vie avec {{value}}% de ses PV max.',
         ],
+        'Justice' => [
+            'name' => 'Justice',
+            'description' => 'Faites piocher au joueur actuel autant de cartes que le nombre de cartes dans la main de l\'autre joueur.',
+        ],
+        'ConsolationPrice' => [
+            'name' => 'Prix de consolation',
+            'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
+        ],
     ],
     // Effects
     'effects' => [

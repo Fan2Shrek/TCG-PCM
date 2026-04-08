@@ -14,16 +14,6 @@ final class JusticeCard extends AbstractPlayableCard
         return 'Justice';
     }
 
-    public function getName(): string
-    {
-        return 'Justice';
-    }
-
-    public function getDescription(): string
-    {
-        return 'Make current player draw has many cards equal to the number of cards in other player hand.';
-    }
-
     public function play(GameContext $context, array $data = []): void
     {
         $currentCount = count($context->getCurrentPlayerState()->hand);
