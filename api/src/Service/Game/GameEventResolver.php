@@ -9,6 +9,7 @@ use App\Game\AbstractCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
 use App\Game\Card\Interface\CardAwareInterface;
+use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Exception\CardCannotAttackExpcetion;
@@ -260,6 +261,10 @@ class GameEventResolver
     {
         $events = [];
 
+        if (GameEventTypeEnum::PLAYER_DIED === $event->type) {
+            return $this->collectEventsFromAwareCards($event, $state);
+        }
+
         if (GameEventTypeEnum::MONSTER_DIED === $event->type) {
             $cardId = $event->data['cardId'] ?? null;
 
@@ -286,9 +291,6 @@ class GameEventResolver
 
             $events = array_merge($ctx->flushEvents(), $this->collectEventsFromAwareCards($event, $state));
         }
-
-        // @ŧodo see if we have effect on player death
-        // like prevent death...
 
         return $events;
     }
@@ -354,7 +356,7 @@ class GameEventResolver
                 }
                 break;
             case GameEventTypeEnum::MONSTER_DIED:
-                $cards = $this->getCardAwareCards($state);
+                $cards = $this->getDeathAwareCards($state);
                 $cardId = $event->data['cardId'] ?? null;
                 if (!\is_string($cardId)) {
                     throw new \LogicException('cardId is required for CARD_DRAWN event');
@@ -364,6 +366,17 @@ class GameEventResolver
 
                 foreach ($cards as $card) {
                     $card->onCardDeath($playedCard, $ctx);
+                    $events = array_merge($events, $ctx->flushEvents());
+                }
+                break;
+            case GameEventTypeEnum::PLAYER_DIED:
+                $cards = $this->getDeathAwareCards($state);
+                $playerId = $event->data['playerId'] ?? null;
+                if (!\is_string($playerId)) {
+                    throw new \LogicException('cardId is required for PLAYER_DIED event');
+                }
+                foreach ($cards as $card) {
+                    $card->onPlayerDeath($ctx, $playerId);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
                 break;
@@ -407,6 +420,24 @@ class GameEventResolver
 
         foreach ($this->getAllActiveCards($gameState) as $card) {
             if (!$card instanceof CardAwareInterface) {
+                continue;
+            }
+
+            $cards[] = $card;
+        }
+
+        return $cards;
+    }
+
+    /**
+     * @return array<AbstractCard&DeathAwareInterface>
+     */
+    private function getDeathAwareCards(GameState $gameState): array
+    {
+        $cards = [];
+
+        foreach ($this->getAllActiveCards($gameState) as $card) {
+            if (!$card instanceof DeathAwareInterface) {
                 continue;
             }
 

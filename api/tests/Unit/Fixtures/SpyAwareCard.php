@@ -7,10 +7,11 @@ namespace App\Tests\Unit\Fixtures;
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\CardAwareInterface;
+use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\GameContext;
 
-final class SpyAwareCard extends AbstractPassiveCard implements CardAwareInterface, TurnAwareInterface
+final class SpyAwareCard extends AbstractPassiveCard implements CardAwareInterface, TurnAwareInterface, DeathAwareInterface
 {
     public static $calls = [];
 
@@ -30,6 +31,11 @@ final class SpyAwareCard extends AbstractPassiveCard implements CardAwareInterfa
     }
 
     public function onCardDeath(AbstractCard $cardId, GameContext $gameContext): void
+    {
+        self::$calls[] = __METHOD__;
+    }
+
+    public function onPlayerDeath(GameContext $gameContext, string $deadPlayerId): void
     {
         self::$calls[] = __METHOD__;
     }

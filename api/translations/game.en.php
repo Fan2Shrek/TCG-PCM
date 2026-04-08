@@ -46,6 +46,10 @@ return [
             'name' => 'Placenta',
             'description' => 'Heal {{value}} HP at the start of each turn.',
         ],
+        'ImStillStanding' => [
+            'name' => "I'm Still Standing",
+            'description' => 'When the player dies, he comes back to life with {{value}}% of his max HP.',
+        ],
     ],
     // Effects
     'effects' => [

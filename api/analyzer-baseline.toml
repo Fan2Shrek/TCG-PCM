@@ -63,6 +63,12 @@ count = 1
 [[issues]]
 file = "src/Debug/Card/TraceableCardTrait.php"
 code = "non-existent-method"
+message = 'Method `onplayerdeath` does not exist on type `App\Game\AbstractCard`.'
+count = 1
+
+[[issues]]
+file = "src/Debug/Card/TraceableCardTrait.php"
+code = "non-existent-method"
 message = 'Method `onturnend` does not exist on type `App\Game\AbstractCard`.'
 count = 1
 
@@ -107,6 +113,18 @@ file = "src/Game/Card/Character/StonksCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\GameContext::iscurrentplayer` is possibly `null`, but parameter type `string` does not accept it.'
 count = 2
+
+[[issues]]
+file = "src/Game/Card/ImStillStandingCard.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Game\GameContext::discardcard` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/ImStillStandingCard.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
 
 [[issues]]
 file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
