@@ -50,6 +50,14 @@ return [
             'name' => "I'm Still Standing",
             'description' => 'When the player dies, he comes back to life with {{value}}% of his max HP.',
         ],
+        'Justice' => [
+            'name' => 'Justice',
+            'description' => 'Make current player draw has many cards equal to the number of cards in other player hand.',
+        ],
+        'ConsolationPrice' => [
+            'name' => 'Consolation Price',
+            'description' => 'Each monster death grans {{value}} gold to the player.',
+        ],
     ],
     // Effects
     'effects' => [

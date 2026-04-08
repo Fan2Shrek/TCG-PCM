@@ -21,14 +21,9 @@ final class ConsolationPricesCard extends AbstractPassiveCard implements DeathAw
         return 'consolation_prices';
     }
 
-    public function getName(): string
-    {
-        return 'Consolation Prices';
-    }
-
     public function getDescription(): string
     {
-        return GameUtils::formatDescription('Each monster death grans {{value}} gold to the player.', ['value' => $this->getValue(self::COINS_PER_DEATH)]);
+        return GameUtils::formatDescription(parent::getDescription(), ['value' => $this->getValue(self::COINS_PER_DEATH)]);
     }
 
     public function onCardDeath(AbstractCard $card, GameContext $gameContext): void
