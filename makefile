@@ -36,6 +36,7 @@ setup-tests:
 	$(MAKE) dbReset env=test
 
 tests:
+	@$(PHP) rm -rf var/cache/test
 	$(PHP) bin/phpunit
 
 tests-coverage:

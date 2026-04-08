@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends ApiTestCase
     {
         $this->client = self::createClient([], [
             'headers' => [
-                'Accept-Language' => 'fr',
+                'Accept-Language' => 'en',
                 'Accept' => 'application/json',
             ],
         ]);

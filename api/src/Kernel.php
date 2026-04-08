@@ -5,6 +5,7 @@ namespace App;
 use App\Badge\Handler\BadgeHandlerInterface;
 use App\DependencyInjection\DeployPass;
 use App\DependencyInjection\UseRedisGameStateRepositoryPass;
+use App\Game\GameUtils;
 use App\Interface\DeployAwareInterface;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Resources\MockHub;
@@ -57,5 +58,12 @@ class Kernel extends BaseKernel
             ->addTag('routing.expression_language_function', [
                 'function' => 'is_enable',
             ]);
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        GameUtils::setContainer($this->container);
     }
 }

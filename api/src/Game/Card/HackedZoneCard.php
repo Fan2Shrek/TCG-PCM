@@ -23,11 +23,6 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
         return 'HackedZone';
     }
 
-    public function getName(): string
-    {
-        return 'Hacked zone';
-    }
-
     public function getImage(): string
     {
         return 'https://m.media-amazon.com/images/I/71I-l6f6OaL._AC_SX569_.jpg';
@@ -35,7 +30,7 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
 
     public function getDescription(): string
     {
-        return GameUtils::formatDescription('Apply {{effect}} to all cards in both side', [
+        return GameUtils::formatDescription(parent::getDescription(), [
             'effect' => CardEffectEnum::HACKED,
         ]);
     }

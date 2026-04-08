@@ -2,7 +2,9 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    enabled_locales: []
+    default_locale: en
+    enabled_locales: ['en', 'fr']
+    set_locale_from_accept_language: true
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true

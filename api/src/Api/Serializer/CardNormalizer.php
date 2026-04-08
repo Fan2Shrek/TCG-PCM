@@ -7,9 +7,14 @@ namespace App\Api\Serializer;
 use App\Game\AbstractCard;
 use ArrayObject;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class CardNormalizer implements NormalizerInterface
 {
+    public function __construct(
+        private TranslatorInterface $translator,
+    ) {}
+
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof AbstractCard;
@@ -23,7 +28,7 @@ final class CardNormalizer implements NormalizerInterface
         return [
             'name' => $card->getName(),
             'description' => $card->getDescription(),
-            'rarity' => $card::$rarity,
+            'rarity' => $card::$rarity->label()->trans($this->translator),
             'serie' => $card::$serie,
             'image' => $card->getImage(),
         ];

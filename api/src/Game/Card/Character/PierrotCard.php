@@ -26,11 +26,6 @@ final class PierrotCard extends AbstractCharacterCard implements TurnAwareInterf
         return 3300;
     }
 
-    public function getName(): string
-    {
-        return 'Pierrot';
-    }
-
     public function onTurnAction(GameContext $gameContext): void
     {
         $cardId = $gameContext->getOneRandomCard($gameContext->getOtherPlayerId($this->ownerId));
@@ -40,7 +35,7 @@ final class PierrotCard extends AbstractCharacterCard implements TurnAwareInterf
 
     public function getDescription(): string
     {
-        return GameUtils::formatDescription('{{effect}} {{value1}} card every {{value2}} turns.', [
+        return GameUtils::formatDescription(parent::getDescription(), [
             'effect' => CardEffectEnum::TORNED,
             'value1' => 1,
             'value2' => $this->getTurnDelay(),
