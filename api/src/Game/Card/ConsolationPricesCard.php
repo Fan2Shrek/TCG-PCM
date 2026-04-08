@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Game\Card;
 
 use App\Game\AbstractCard;
-use App\Game\Card\Interface\CardAwareInterface;
-use App\Game\Card\Trait\CardAwareTrait;
+use App\Game\Card\Interface\DeathAwareInterface;
+use App\Game\Card\Trait\DeathAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
-final class ConsolationPricesCard extends AbstractPassiveCard implements CardAwareInterface
+final class ConsolationPricesCard extends AbstractPassiveCard implements DeathAwareInterface
 {
-    use CardAwareTrait;
+    use DeathAwareTrait;
 
     private const int COINS_PER_DEATH = 1;
 

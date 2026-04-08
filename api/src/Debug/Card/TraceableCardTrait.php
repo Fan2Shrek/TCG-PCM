@@ -10,6 +10,7 @@ use App\Game\Card\CardState;
 use App\Game\Card\EffectCollection;
 use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\ComputedCardInterface;
+use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\GameContext;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -161,7 +162,7 @@ trait TraceableCardTrait
 
     public function onCardDeath(AbstractCard $card, GameContext $gameContext): void
     {
-        if (!$this->card instanceof CardAwareInterface) {
+        if (!$this->card instanceof DeathAwareInterface) {
             return;
         }
 
@@ -169,6 +170,20 @@ trait TraceableCardTrait
         $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
         $this->card->onCardDeath($card, $gameContext);
+
+        $this->stopwatch->stop($id);
+    }
+
+    public function onPlayerDeath(GameContext $gameContext, string $deadPlayerId): void
+    {
+        if (!$this->card instanceof DeathAwareInterface) {
+            return;
+        }
+
+        $this->methodCalled[] = __FUNCTION__;
+        $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
+
+        $this->card->onPlayerDeath($gameContext, $deadPlayerId);
 
         $this->stopwatch->stop($id);
     }

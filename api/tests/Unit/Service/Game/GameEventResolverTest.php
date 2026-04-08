@@ -250,6 +250,45 @@ final class GameEventResolverTest extends TestCase
         self::assertCount(1, SpyAwareCard::$calls);
     }
 
+    public function testPropagateWithPlayerDeath()
+    {
+        $ger = $this->getSut();
+        $gameState = new GameState(
+            new PlayerState(new Player('1', 'Player 1'), 10, 10, 'player1', [], [], 0, new PlayArea()),
+            new PlayerState(
+                new Player('2', 'Player 2'),
+                1,
+                10,
+                'player1',
+                [],
+                [],
+                0,
+                new PlayArea([
+                    'spy-aware',
+                ], [
+                    'bloons',
+                ]),
+            ),
+            0,
+            0,
+            null,
+            [
+                'bloons' => new MonsterCardState('bloons', 'Redbloons', '1', 1),
+                'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
+                'spy-aware' => new CardState('spy-aware', SpyAwareCard::class, '2'),
+            ],
+        );
+
+        $event = new GameEvent(0, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, [
+            'targetId' => '2',
+            'attackerId' => 'attacker',
+        ]);
+
+        $events = $ger->resolve($event, $gameState)->events;
+
+        self::assertCount(1, SpyAwareCard::$calls);
+    }
+
     private function createGameState(): GameState
     {
         $player1State = new PlayerState(

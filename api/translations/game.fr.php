@@ -46,6 +46,10 @@ return [
             'name' => 'Placenta',
             'description' => 'Soigne {{value}} PV au début de chaque tour.',
         ],
+        'ImStillStanding' => [
+            'name' => "I'm Still Standing",
+            'description' => 'Lorsque le joueur meurt, il revient à la vie avec {{value}}% de ses PV max.',
+        ],
     ],
     // Effects
     'effects' => [
