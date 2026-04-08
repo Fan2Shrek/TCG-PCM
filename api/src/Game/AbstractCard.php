@@ -40,9 +40,15 @@ abstract class AbstractCard
         return $this->ownerId ?? null;
     }
 
-    abstract public function getName(): string;
+    public function getName(): string
+    {
+        return GameUtils::t(\sprintf('card.%s.name', $this->getId()));
+    }
 
-    abstract public function getDescription(): string;
+    public function getDescription(): string
+    {
+        return GameUtils::t(\sprintf('card.%s.description', $this->getId()));
+    }
 
     public function getImage(): string
     {

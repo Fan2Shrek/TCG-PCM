@@ -24,14 +24,9 @@ final class SpicyD6Card extends AbstractPlayableCard
         return 'https://www.shutterstock.com/image-photo/red-die-on-white-six-260nw-27724336.jpg';
     }
 
-    public function getName(): string
-    {
-        return 'Spicy D6';
-    }
-
     public function getDescription(): string
     {
-        return GameUtils::formatDescription('Roll a six-sided dice and does {{value}} time that many damage', [
+        return GameUtils::formatDescription(parent::getDescription(), [
             'value' => $this->getValue(self::DAMAGE_MULTIPLIER, true),
         ]);
     }

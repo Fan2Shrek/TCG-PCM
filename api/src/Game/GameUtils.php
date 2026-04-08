@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Game;
 
 use App\Enum\CardEffectEnum;
+use Psr\Container\ContainerInterface;
 
 final class GameUtils
 {
+    private static ContainerInterface $container;
+
     public const array MARKUPS = [
         'effect',
         'value',
@@ -32,7 +35,7 @@ final class GameUtils
                 preg_match('/^([a-zA-Z_]+)/', $key, $baseMatch);
                 $tag = $baseMatch[1];
 
-                return sprintf('<%s>%s</%s>', $tag, self::formatValue($tag, $value), $tag);
+                return \sprintf('<%s>%s</%s>', $tag, self::formatValue($tag, $value), $tag);
             },
             $description,
         );
@@ -40,10 +43,20 @@ final class GameUtils
         return $result ?? throw new \LogicException('Failed to format description');
     }
 
+    public static function t(string $msg): string
+    {
+        return self::$container->get('translator')->trans($msg, [], 'game');
+    }
+
+    public static function setContainer(ContainerInterface $container): void
+    {
+        self::$container = $container;
+    }
+
     private static function formatValue(string $type, mixed $value): string
     {
         return match ($type) {
-            'effect' => $value instanceof CardEffectEnum ? strtoupper($value->value) : (string) $value,
+            'effect' => $value instanceof CardEffectEnum ? self::t(\sprintf('effects.%s.name', $value->value)) : (string) $value,
             default => (string) $value,
         };
     }

@@ -19,11 +19,6 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
         return 'Stonks';
     }
 
-    public function getName(): string
-    {
-        return 'Stonks';
-    }
-
     public function getImg(): string
     {
         return 'https://lapasseduvent.com/wp-content/uploads/2022/08/meme-stonks.jpg';
@@ -36,7 +31,7 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
 
     public function getDescription(): string
     {
-        return GameUtils::formatDescription('Gains {{value}} coins at the start of each turn. Also, at the end of each turn, gain {{value2}}% of your current coins as interest (up to {{const}} coins).', [
+        return GameUtils::formatDescription(parent::getDescription(), [
             'value' => $this->getValue(self::COINS_BONUS, true),
             'value2' => $this->getValue(self::COINS_INTEREST_POURCENT, true),
             'const' => self::COINS_INTEREST_MAX,
