@@ -275,6 +275,22 @@ final class GameEventApplierTest extends TestCase
         self::assertCount(1, $newState->getPlayer('player1')->discardPile);
     }
 
+    public function testCardGenerated()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_GENERATED, GameEvent::GAME_EVENT, [
+            'playerId' => 'player1',
+            'cardTemplateId' => 'monster',
+        ]);
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(1, $newState->getPlayer('player1')->hand);
+        self::assertCount(2, $newState->cards);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(new MockCardRegistry($cards), new GameContextFactory());

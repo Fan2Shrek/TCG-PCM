@@ -58,6 +58,14 @@ return [
             'name' => 'Prix de consolation',
             'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
         ],
+        'ViciousBee' => [
+            'name' => 'Abeille Vicieuse',
+            'description' => 'A sa mort, donne une <card>ViciousStinger</card>.',
+        ],
+        'ViciousStinger' => [
+            'name' => 'Dard Vicieux',
+            'description' => 'Applique un buff de dégâts à une carte.',
+        ],
     ],
     // Effects
     'effects' => [
