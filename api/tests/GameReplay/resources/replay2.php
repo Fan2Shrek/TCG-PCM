@@ -1,6 +1,6 @@
-    <?php
+<?php
 
-    return
+return
 \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
     $o = [
         clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['App\\Game\\State\\GameState'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('App\\Game\\State\\GameState')),

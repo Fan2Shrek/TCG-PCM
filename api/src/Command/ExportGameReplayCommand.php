@@ -99,9 +99,9 @@ final class ExportGameReplayCommand
         $filePath = \sprintf('%s/%s.php', $folder, $fileName);
 
         $content = <<<EOF
-                <?php
+            <?php
 
-                return
+            return
 
             EOF;
 
