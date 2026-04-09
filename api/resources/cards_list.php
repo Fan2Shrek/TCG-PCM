@@ -13,7 +13,9 @@ return [
 	'ImStillStanding' => Card\ImStillStandingCard::class,
 	'Justice' => Card\JusticeCard::class,
 	'Redbloons' => Card\Monster\RedBloonsMonsterCard::class,
+	'ViciousBee' => Card\Monster\ViciousBeeCard::class,
 	'PierreSaidNoMonsterZone' => Card\PierreSaidNoMonsterZone::class,
 	'Placenta' => Card\PlacentaCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
+	'ViciousStinger' => Card\ViciousStingerCard::class,
 ];

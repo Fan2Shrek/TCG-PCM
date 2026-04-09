@@ -183,4 +183,11 @@ class GameContext
 
         $this->pushGameEvent(GameEventTypeEnum::COINS_GAINED, ['playerId' => $playerId, 'amount' => $amount]);
     }
+
+    public function giveCard(string $cardId, ?string $playerId = null): void
+    {
+        $playerId ??= $this->playerId;
+
+        $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardId' => $cardId]);
+    }
 }

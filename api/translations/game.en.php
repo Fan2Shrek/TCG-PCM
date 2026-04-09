@@ -58,6 +58,14 @@ return [
             'name' => 'Consolation Price',
             'description' => 'Each monster death grans {{value}} gold to the player.',
         ],
+        'ViciousBee' => [
+            'name' => 'Vicious Bee',
+            'description' => 'When kill, give a <card>ViciousStinger</card>',
+        ],
+        'ViciousStinger' => [
+            'name' => 'Vicious Stinger',
+            'description' => 'Give <effect>DMGBoost</effect> to one monster',
+        ],
     ],
     // Effects
     'effects' => [

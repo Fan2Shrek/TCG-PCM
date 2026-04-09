@@ -32,6 +32,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::UPDATE_CARD_STATE => $this->applyCardStateUpdate($event, $gameState),
             GameEventTypeEnum::MONSTER_DIED => $this->applyMonsterDied($event, $gameState),
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
+            GameEventTypeEnum::CARD_GENERATED => $this->applyCardGenerated($event, $gameState),
             GameEventTypeEnum::PLAYER_DIED,
             GameEventTypeEnum::ATTACK,
             GameEventTypeEnum::CARD_RUNTIME_VALUE,
@@ -364,5 +365,24 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $player->withDiscardedCard($cardId);
 
         return $state->withUpdatedPlayer($player);
+    }
+
+    private function applyCardGenerated(GameEvent $event, GameState $state): GameState
+    {
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('CardGenerated requires a playerId');
+        }
+
+        if (null === ($cardTemplateId = $event->data['cardTemplateId'] ?? null) || !\is_string($cardTemplateId)) {
+            throw new \LogicException('CardGenerated requires a cardId');
+        }
+
+        // @ŧodo refact one day
+        $cardState = new CardState(uniqid('gen_', true), $cardTemplateId, $playerId);
+        $player = $state->getPlayer($playerId);
+        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $cardState->instanceId], $player->drawPile);
+        $state = $state->withUpdatedPlayer($newPlayer);
+
+        return $state->addCard($cardState);
     }
 }

@@ -34,6 +34,7 @@ no-else-clause = { enabled = false }
 no-multi-assignments = { enabled = false }
 no-literal-password = { exclude = ["tests"] }
 sensitive-parameter = { exclude = ["tests"] }
+too-many-enum-cases = { enabled = false }
 
 [analyzer]
 excludes = ["tests", "src/DataFixtures", "src/Debug/GameDataCollector.php"]
