@@ -75,6 +75,9 @@ return [
         CardEffectEnum::TORNED->value => [
             'name' => 'Torned',
         ],
+        CardEffectEnum::POWER_BOOST->value => [
+            'name' => 'Damage Boost',
+        ],
     ],
     // Rarities
     'rarity' => array_reduce(CardRarityEnum::cases(), function ($carry, $item) {

@@ -75,6 +75,9 @@ return [
         CardEffectEnum::TORNED->value => [
             'name' => 'Tordu',
         ],
+        CardEffectEnum::POWER_BOOST->value => [
+            'name' => 'Boost de puissance',
+        ],
     ],
     'rarity' => [
         CardRarityEnum::COMMON->value => 'Commune',

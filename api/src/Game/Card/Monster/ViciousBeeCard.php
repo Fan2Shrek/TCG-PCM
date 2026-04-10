@@ -17,9 +17,9 @@ final class ViciousBeeCard extends AbstractMonsterCard
         return 'ViciousBee';
     }
 
-    public function getAttack(): int
+    public function getBaseAttack(): int
     {
-        return $this->getValue(self::ATTACK, true);
+        return self::ATTACK;
     }
 
     public function onMonsterDeath(GameContext $context): void
