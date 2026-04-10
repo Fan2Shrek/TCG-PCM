@@ -21,7 +21,7 @@ final class ViciousBeeCardTest extends CardTestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertSame('ViciousStinger', $events[0]->data['cardId']);
+        self::assertSame('ViciousStinger', $events[0]->data['cardTemplateId']);
         self::assertSame($card->getOwnerId(), $events[0]->data['playerId']);
     }
 }

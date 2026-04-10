@@ -35,7 +35,10 @@ final class ValidateActionMiddleware implements GameMiddlewareInterface
         if (\in_array($action->actionId, [PlayerAction::PLAY_CARD, PlayerAction::ATTACK], true)) {
             $cardId = $action->payload['cardId'] ?? null;
 
-            if (!$state->getCurrentPlayerState()->hasCardInHand((string) $cardId)) {
+            if (
+                !$state->getCurrentPlayerState()->hasCardInHand((string) $cardId)
+                && !\in_array($cardId, $state->getCurrentPlayerState()->playArea->getAll(), true)
+            ) {
                 throw new CardNotInHandException($state->getCurrentPlayerState()->player, (string) $cardId);
             }
 
