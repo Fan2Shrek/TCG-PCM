@@ -6,44 +6,34 @@ namespace App\DataFixtures;
 
 use App\Entity\Deck;
 use App\Entity\User;
-use App\Game\Card\BenjaminCard;
+use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Character\PierrotCard;
 use App\Game\Card\Character\StonksCard;
-use App\Game\Card\D6Card;
-use App\Game\Card\GitmanCard;
-use App\Game\Card\HackedZoneCard;
-use App\Game\Card\Monster\RedBloonsMonsterCard;
-use App\Game\Card\PierreSaidNoMonsterZone;
-use App\Game\Card\PlacentaCard;
-use App\Game\Card\SpicyD6Card;
+use App\Service\DeckValidator;
+use App\Service\Game\CardRegistryInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 final class DeckFixtures extends AbstractFixtures implements DependentFixtureInterface
 {
-    public function __construct()
-    {
+    public function __construct(
+        private CardRegistryInterface $cardRegistry,
+    ) {
         parent::__construct(Deck::class);
     }
 
     public function getData(): iterable
     {
-        $cards = [
-            $id = new D6Card()->getId(),
-            $id,
-            $id = new SpicyD6Card()->getId(),
-            $id,
-            $id = new BenjaminCard()->getId(),
-            $id,
-            $id = new GitmanCard()->getId(),
-            $id,
-            $id = new PlacentaCard()->getId(),
-            $id,
-            $id = new RedBloonsMonsterCard()->getId(),
-            $id,
-            $id,
-            new HackedZoneCard()->getId(),
-            new PierreSaidNoMonsterZone()->getId(),
-        ];
+        $allCards = array_filter($this->cardRegistry->getAllBy([]), static fn($card) => !is_a($card, AbstractCharacterCard::class, true));
+        $cards = [];
+
+        $count = count($allCards);
+
+        $i = 0;
+        while (count($cards) < DeckValidator::DECK_SIZE) {
+            $cards[] = $allCards[$i % $count];
+            $i++;
+        }
+
         $pierrotCardId = new PierrotCard()->getId();
         $stonksCardId = new StonksCard()->getId();
 
