@@ -188,6 +188,6 @@ class GameContext
     {
         $playerId ??= $this->playerId;
 
-        $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardId' => $cardId]);
+        $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardTemplateId' => $cardId]);
     }
 }

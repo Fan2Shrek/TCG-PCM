@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Game\Pipeline\Middleware;
 
 use App\Enum\GameEventTypeEnum;
-use App\Game\Exception\CardNotInHandException;
 use App\Game\PlayerAction;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -61,10 +60,6 @@ final class ConvertActionToEventMiddleware implements GameMiddlewareInterface
     {
         /** @var string $cardId */
         $cardId = $action->payload['cardId'] ?? null;
-
-        if (!$state->getCurrentPlayerState()->playArea->hasMonsterCard($cardId)) {
-            throw new CardNotInHandException($state->getCurrentPlayerState()->player, $cardId);
-        }
 
         if (!($targetId = $action->payload['targetId'] ?? null)) {
             throw new \InvalidArgumentException('targetId is required in payload');
