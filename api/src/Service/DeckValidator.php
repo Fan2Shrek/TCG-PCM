@@ -11,7 +11,7 @@ use App\Service\Game\CardRegistryInterface;
 
 final class DeckValidator
 {
-    private const DECK_SIZE = 50;
+    public const DECK_SIZE = 50;
 
     private const array RARITY_LIMITS = [
         CardRarityEnum::UNCOMMON->value => 7,
