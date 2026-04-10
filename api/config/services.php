@@ -39,7 +39,7 @@ return App::config([
         ],
         RedisConnection::class => [
             'arguments' => [
-                '$redisDsn' => '%env(REDIS_URL)%',
+                '$redisDsn' => '%env(REDIS_DSN)%',
             ],
         ],
         PublishEventMiddleware::class => [
