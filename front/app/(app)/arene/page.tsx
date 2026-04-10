@@ -6,6 +6,7 @@ import { redirect, RedirectType } from 'next/navigation'
 export default () => {
 	const handleCreate = async () => {
 		const res = await api.room.create();
+		document.cookie = `mercureAuthorization=${res.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
 
 		redirect(`/arene/waiting/${res.id}`, RedirectType.replace)
 	}
