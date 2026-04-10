@@ -1,6 +1,7 @@
 import { AuthResource } from "./resources/AuthResource";
 import { BoosterResource } from "./resources/BoosterResource";
 import { GameResource } from "./resources/GameResource";
+import { RoomResource } from "./resources/RoomResource";
 import { UserResource } from "./resources/UserResource";
 
 export class ApiClient {
@@ -8,6 +9,7 @@ export class ApiClient {
   	booster: BoosterResource;
 	game: GameResource;
 	user: UserResource;
+	room: RoomResource;
 
 	constructor(
 	  private baseUrl: string,
@@ -18,6 +20,7 @@ export class ApiClient {
 		this.booster = new BoosterResource(this);
 		this.game = new GameResource(this);
 		this.user = new UserResource(this);
+		this.room = new RoomResource(this);
 	}
 
 	async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -33,6 +36,11 @@ export class ApiClient {
 		if (!response.ok) {
 			throw new Error(`API request failed with status ${response.status}`);
 		}
+
+		if (response.status === 204) {
+			return {} as T;
+		}
+
 		return response.json();
 	}
 

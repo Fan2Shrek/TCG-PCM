@@ -6,6 +6,7 @@ namespace App\Domain\Command\Room;
 
 use App\Entity\Room;
 use App\Service\Auth\CurrentUserProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -15,6 +16,7 @@ final class JoinRoomHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private EntityManagerInterface $em,
     ) {}
 
     public function __invoke(JoinRoomCommand $command): Room
@@ -33,6 +35,8 @@ final class JoinRoomHandler
 
         $room->setOpponent($user);
         $room->setOpponentDeck($deck);
+
+        $this->em->flush();
 
         return $room;
     }
