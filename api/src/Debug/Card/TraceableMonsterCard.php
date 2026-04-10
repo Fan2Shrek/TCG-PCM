@@ -20,6 +20,11 @@ final class TraceableMonsterCard extends AbstractMonsterCard
         return $this->card->getAttack();
     }
 
+    public function getBaseAttack(): int
+    {
+        return $this->card->getBaseAttack();
+    }
+
     public function getHealPoints(): int
     {
         $this->methodCalled[] = __METHOD__;

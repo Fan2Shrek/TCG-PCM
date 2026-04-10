@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Game;
 
+use App\Enum\CardEffectEnum;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Game\Card\CardState;
@@ -90,6 +91,11 @@ abstract class AbstractCard
     public function getEffects(): EffectCollection
     {
         return $this->effects;
+    }
+
+    public function getEffect(CardEffectEnum $effectName): ?AbstractCardEffect
+    {
+        return $this->effects->get($effectName);
     }
 
     public function setState(CardState $state): void

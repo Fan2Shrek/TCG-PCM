@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Game\Card\Monster;
 
+use App\Enum\CardEffectEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
+use App\Game\Card\Effect\PowerBoostEffect;
 use App\Game\Card\MonsterCardState;
 use App\Game\GameContext;
 
@@ -15,7 +17,19 @@ abstract class AbstractMonsterCard extends AbstractCard
 
     protected bool $canAttack = true;
 
-    abstract public function getAttack(): int;
+    public function getAttack(): int
+    {
+        $value = $this->getValue($this->getBaseAttack(), true);
+
+        /** @var PowerBoostEffect|null $boost */
+        if ($boost = $this->getEffect(CardEffectEnum::POWER_BOOST)) {
+            $value *= $boost->getValue();
+        }
+
+        return (int) $value;
+    }
+
+    abstract public function getBaseAttack(): int;
 
     abstract public function getHealPoints(): int;
 

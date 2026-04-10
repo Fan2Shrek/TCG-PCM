@@ -2,6 +2,7 @@
 
 namespace App\Game\Card;
 
+use App\Enum\CardEffectEnum;
 use App\Game\GameContext;
 
 final class ViciousStingerCard extends AbstractPlayableCard
@@ -13,7 +14,14 @@ final class ViciousStingerCard extends AbstractPlayableCard
 
     public function play(GameContext $context, array $data = []): void
     {
-        // @todo
-        // Appliquer DMG buff ou tsais pas quoi
+        $target = $data['target'] ?? null;
+
+        if (!\is_string($target)) {
+            throw new \InvalidArgumentException('Missing target key');
+        }
+
+        $context->addEffect(CardEffectEnum::POWER_BOOST, $target, [
+            'value' => 1.5,
+        ]);
     }
 }
