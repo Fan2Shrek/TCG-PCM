@@ -9,6 +9,7 @@ use App\Repository\RoomRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -17,9 +18,10 @@ final class CreateRoomHandler
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
         private RoomRepository $roomRepository,
+        private HubInterface $hub,
     ) {}
 
-    public function __invoke(CreateRoomCommand $command): Room
+    public function __invoke(CreateRoomCommand $command): array
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
@@ -32,6 +34,14 @@ final class CreateRoomHandler
 
         $this->roomRepository->save($room);
 
-        return $room;
+        $topic = \sprintf('game/%s', $room->getId());
+        $token = $this->hub->getFactory()?->create([$topic], []);
+        $url = \sprintf('%s?topic=%s', $this->hub->getPublicUrl(), $topic);
+
+        return [
+            'id' => $room->getId(),
+            'mercure_url' => $url,
+            'mercure_token' => $token,
+        ];
     }
 }

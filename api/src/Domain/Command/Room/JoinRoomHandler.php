@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Room;
 
-use App\Entity\Room;
 use App\Service\Auth\CurrentUserProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -17,9 +17,10 @@ final class JoinRoomHandler
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
         private EntityManagerInterface $em,
+        private HubInterface $hub,
     ) {}
 
-    public function __invoke(JoinRoomCommand $command): Room
+    public function __invoke(JoinRoomCommand $command): array
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
@@ -38,6 +39,14 @@ final class JoinRoomHandler
 
         $this->em->flush();
 
-        return $room;
+        $topic = \sprintf('game/%s', $room->getId());
+        $token = $this->hub->getFactory()?->create([$topic], []);
+        $url = \sprintf('%s?topic=%s', $this->hub->getPublicUrl(), $topic);
+
+        return [
+            'id' => $room->getId(),
+            'mercure_url' => $url,
+            'mercure_token' => $token,
+        ];
     }
 }

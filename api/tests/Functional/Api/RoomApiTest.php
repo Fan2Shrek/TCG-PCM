@@ -50,6 +50,23 @@ final class RoomApiTest extends FunctionalTestCase
         self::assertResponseStatusCodeSame(400);
     }
 
+    public function testCreateReturnsId()
+    {
+        $r = $this->post(self::CREATE_URI);
+        $content = $r->toArray();
+
+        self::assertArrayHasKey('id', $content);
+    }
+
+    public function testCreateReturnsToken()
+    {
+        $r = $this->post(self::CREATE_URI);
+        $content = $r->toArray();
+
+        self::assertArrayHasKey('mercure_url', $content);
+        self::assertArrayHasKey('mercure_token', $content);
+    }
+
     public function testJoinRoomSuccess()
     {
         $room = ThereIs::aRoom()->build();
@@ -66,6 +83,17 @@ final class RoomApiTest extends FunctionalTestCase
         $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
 
         self::assertSame($this->currentUser, $room->getOpponent());
+    }
+
+    public function testJoinRoomReturnMercure()
+    {
+        $room = ThereIs::aRoom()->build();
+
+        $r = $this->post($this->getUri(self::JOIN_URI, ['id' => (string) $room->getId()]));
+        $content = $r->toArray();
+
+        self::assertArrayHasKey('mercure_url', $content);
+        self::assertArrayHasKey('mercure_token', $content);
     }
 
     public function testJoinRoomWithoutDeck()
