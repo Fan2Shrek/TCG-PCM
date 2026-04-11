@@ -4,6 +4,7 @@ import { GameContext } from "@/context/GameContext";
 import { useContext } from "react";
 import CardsHand from "../CardsHand";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
+import { getCurrentUser } from "@/lib/utils";
 
 export default () => {
   const { game, getCardById, actions } = useContext(GameContext);
@@ -12,25 +13,25 @@ export default () => {
   	return <div>Loading...</div>;
   }
 
-  const connectedPlayer = game.player1.player.id; // @todo get from auth context or something
+  const connectedPlayer = game.player1.player.name === getCurrentUser()?.username ? game.player1.player.id : game.player2.player.id;
 
-  const p1 = game.player1;
-  const p2 = game.player2;
+  const currentState = game.player1.player.name === getCurrentUser()?.username ? game.player1 : game.player2;
+  const opponentState = game.player1.player.name === getCurrentUser()?.username ? game.player2 : game.player1;
 
   return (
     <div className="flex flex-col h-screen bg-green-900 text-white">
-	  <PlayerHealthBar health={p2.healthPoints} maxHealth={p2.maxHealthPoints} />
+	  <PlayerHealthBar health={opponentState.healthPoints} maxHealth={opponentState.maxHealthPoints} />
       <div className="flex justify-center p-4 border-b border-green-700">
-        <PlayerPanel player={p2} />
+        <PlayerPanel player={opponentState} />
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
 
-        <BoardRow title="Player 2 Monsters" cards={p2.playArea.monsterCards} />
-        <BoardRow title="Player 2 Passive" cards={p2.playArea.passiveCards} />
+        <BoardRow title="Player 2 Monsters" cards={opponentState.playArea.monsterCards} />
+        <BoardRow title="Player 2 Passive" cards={opponentState.playArea.passiveCards} />
 
-        <BoardRow title="Player 1 Monsters" cards={p1.playArea.monsterCards} />
-        <BoardRow title="Player 1 Passive" cards={p1.playArea.passiveCards} />
+        <BoardRow title="Player 1 Monsters" cards={currentState.playArea.monsterCards} />
+        <BoardRow title="Player 1 Passive" cards={currentState.playArea.passiveCards} />
 
         <div className="text-sm opacity-80">
           Current Player: {game.currentPlayer}
@@ -39,12 +40,12 @@ export default () => {
       </div>
 
       <div className="border-t border-green-700 p-4">
-        <PlayerPanel player={p1} />
+        <PlayerPanel player={currentState} />
 
         <div className="flex gap-2 mt-4 justify-center">
-		  <CardsHand cards={game.player1.hand.map((cardId) => getCardById(cardId))} />
+		  <CardsHand cards={currentState.hand.map((cardId) => getCardById(cardId))} />
         </div>
-		<PlayerHealthBar health={p1.healthPoints} maxHealth={p1.maxHealthPoints} />
+		<PlayerHealthBar health={currentState.healthPoints} maxHealth={currentState.maxHealthPoints} />
       </div>
 	  {connectedPlayer == game.currentPlayer && <button className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded" onClick={actions.endTurn}>end</button>}
     </div>
