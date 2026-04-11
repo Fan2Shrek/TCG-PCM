@@ -79,6 +79,10 @@ final class GameEventPublisher
             GameEventTypeEnum::TURN_ENDED => [
                 'currentPlayer' => $state->currentPlayer,
             ],
+            GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
+                'coins' => GameEventTypeEnum::COINS_GAINED ? '+' : '-'.$event->data['amount'],
+                'playerId' => $event->data['playerId'],
+            ],
             default => null,
         };
 

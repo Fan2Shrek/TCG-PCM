@@ -64,6 +64,16 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 		  currentPlayer: e.partialState.currentPlayer,
 		}));
 	  },
+	  [GameEventType.COINS_GAINED]: (e: GameEvent) => {
+		if (!game) return;
+
+		alert(`Player ${e.data.playerId} gained ${e.data.amount} coins!`);
+	  },
+	  [GameEventType.COINS_LOST]: (e: GameEvent) => {
+		if (!game) return;
+
+		alert(`Player ${e.data.playerId} lost ${e.data.amount} coins!`);
+	  },
 	  [GameEventType.CARD_DRAWN]: (e: GameEvent) => {
 		if (!game) return;
 		const playerId = e.data.playerId;
