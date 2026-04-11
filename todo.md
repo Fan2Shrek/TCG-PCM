@@ -8,7 +8,7 @@
 - [X] Enlever les cartes de la main une fois jouées
 - [ ] Création de deck
 - [ ] Plus de carte
-- [ ] Inventaire
+- [X] Inventaire
 
 # API -- Game Engine
 
