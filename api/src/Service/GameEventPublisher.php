@@ -32,7 +32,7 @@ final class GameEventPublisher
         foreach ($events as $event) {
             $this->handlePrivateEvents($event);
             $update = new Update($roomId, json_encode([
-                'event' => $this->formatEvent($event, $player1State, $player2State),
+                'event' => $this->formatEvent($event, $player1State, $player2State, $state),
             ], JSON_THROW_ON_ERROR));
 
             $this->hub->publish($update);
@@ -47,7 +47,7 @@ final class GameEventPublisher
     /**
      * @return array<string, mixed>
      */
-    private function formatEvent(GameEvent $event, GameStateDTO $player1DTO, GameStateDTO $player2DTO): array
+    private function formatEvent(GameEvent $event, GameStateDTO $player1DTO, GameStateDTO $player2DTO, GameState $state): array
     {
         $data = $event->data;
 
@@ -75,6 +75,9 @@ final class GameEventPublisher
                 'hand' => $newHand,
                 'playArea' => $newPlayArea,
                 'cards' => $newCards,
+            ],
+            GameEventTypeEnum::TURN_ENDED => [
+                'currentPlayer' => $state->currentPlayer,
             ],
             default => null,
         };

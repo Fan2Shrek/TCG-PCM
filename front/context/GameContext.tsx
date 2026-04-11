@@ -57,6 +57,12 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   useMercure(
 	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`, // @todo change
 	{
+	  [GameEventType.TURN_ENDED]: (e: GameEvent) => {
+		setGame((prevGame: GameState) => ({
+		  ...prevGame,
+		  currentPlayer: e.partialState.currentPlayer,
+		}));
+	  },
 	  [GameEventType.CARD_DRAWN]: (e: GameEvent) => {
 		if (!game) return;
 		const playerId = e.data.playerId;
