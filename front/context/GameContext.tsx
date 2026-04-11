@@ -3,12 +3,21 @@ import useMercure from '@/hook/useMercure';
 import { GameEventType } from '@/lib/game/type/eventType';
 import { GameEvent } from '@/lib/game/type/gameEvent';
 import { GameState } from '@/lib/game/type/gameState';
+import api from "@/lib/api/api";
 
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useState } from 'react';
+import { PlayerActionType } from '@/lib/game/type/playerAction';
+
+type ActionObject = {
+  playCard: (cardId: string) => void;
+  attack: (cardId: string, targetId: string) => void;
+  endTurn: () => void;
+}
 
 type GameContextType = {
   game: GameState | null;
   getCardById: (cardId: string) => BasicCard | undefined;
+  actions: ActionObject;
 }
 
 type Props = {
@@ -32,6 +41,18 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     },
     [game]
   );
+
+  const playCard = (cardId: string) => {
+	api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
+  }
+
+  const attack = (cardId: string, targetId: string) => {
+	api.game.play(gameId, PlayerActionType.END_TURN, { cardId, targetId });
+  }
+
+  const endTurn = () => {
+	api.game.play(gameId, PlayerActionType.END_TURN);
+  }
 
   useMercure(
 	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`, // @todo change
@@ -76,7 +97,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   );
 
   return (
-    <GameContext.Provider value={{ game, getCardById }}>
+    <GameContext.Provider value={{ game, getCardById, actions: { playCard, attack, endTurn } }}>
 	  {children}
     </GameContext.Provider>
   );

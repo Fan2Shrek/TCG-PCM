@@ -1,19 +1,18 @@
 import PlayerPanel from "@/components/atoms/game/PlayerPanel";
-import Card from "@/components/molecules/Card";
 import BoardRow from "@/components/molecules/game/BoardRow";
 import { GameContext } from "@/context/GameContext";
-import { GameState } from "@/lib/game/type/gameState";
 import { useContext } from "react";
 import CardsHand from "../CardsHand";
-import Bar from "@/components/atoms/bar";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 
 export default () => {
-  const { game, getCardById } = useContext(GameContext);
+  const { game, getCardById, actions } = useContext(GameContext);
 
   if (!game) {
   	return <div>Loading...</div>;
   }
+
+  const connectedPlayer = game.player1.player.id; // @todo get from auth context or something
 
   const p1 = game.player1;
   const p2 = game.player2;
@@ -34,7 +33,7 @@ export default () => {
         <BoardRow title="Player 1 Passive" cards={p1.playArea.passiveCards} />
 
         <div className="text-sm opacity-80">
-          Current Player: {game.currentPlayer.name}
+          Current Player: {game.currentPlayer}
         </div>
 
       </div>
@@ -47,6 +46,7 @@ export default () => {
         </div>
 		<PlayerHealthBar health={p1.healthPoints} maxHealth={p1.maxHealthPoints} />
       </div>
+	  {connectedPlayer == game.currentPlayer && <button className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded" onClick={actions.endTurn}>end</button>}
     </div>
   );
 }
