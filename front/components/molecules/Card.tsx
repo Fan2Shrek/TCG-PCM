@@ -7,6 +7,8 @@ import CardGlare from "../atoms/CardGlare";
 import { CardModel, CardSizeMap, CardSize, CardLayer } from "../types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "../utils/cardUtils";
 
+import { convertDescriptions } from "@/lib/game/cardUtils";
+
 export type CardViewProps = {
   card: BasicCard;
   size?: CardSize;
@@ -54,7 +56,7 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
       <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
 	  <p className="text-center absolute text-black">{card?.name}</p>
-	  <p className="text-center absolute text-black top-40">{card?.description}</p>
+	  {card?.description && <p className="text-center absolute text-black top-40">{convertDescriptions(card?.description)}</p>}
     </div>
   );
 };

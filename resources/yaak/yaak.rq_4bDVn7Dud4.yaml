@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_4bDVn7Dud4
 createdAt: 2026-03-30T18:59:28.537758588
-updatedAt: 2026-04-08T13:10:16.852392070
+updatedAt: 2026-04-11T07:19:00.086223833
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_xTCxBgCVWJ
 authentication: {}
@@ -13,12 +13,12 @@ description: ''
 headers:
 - enabled: true
   name: Accept-Language
-  value: fr
+  value: en
   id: 9nHiqyWCP6
 - enabled: true
   name: ''
   value: ''
-  id: fqPWq436WQ
+  id: rNpddNkEtf
 method: GET
 name: Get inventory
 sortPriority: 2000.0
