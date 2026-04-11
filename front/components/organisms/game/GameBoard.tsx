@@ -1,13 +1,15 @@
 import PlayerPanel from "@/components/atoms/game/PlayerPanel";
 import BoardRow from "@/components/molecules/game/BoardRow";
 import { GameContext } from "@/context/GameContext";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import CardsHand from "../CardsHand";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 import { getCurrentUser } from "@/lib/utils";
+import { emitter } from "@/lib/eventBus";
 
 export default () => {
   const { game, getCardById, actions } = useContext(GameContext);
+  const playBoxRef = useRef<HTMLDivElement>(null);
 
   if (!game) {
   	return <div>Loading...</div>;
@@ -18,6 +20,29 @@ export default () => {
   const currentState = game.player1.player.name === getCurrentUser()?.username ? game.player1 : game.player2;
   const opponentState = game.player1.player.name === getCurrentUser()?.username ? game.player2 : game.player1;
 
+  useEffect(() => {
+	const handler = (data) => {
+	  const rect = playBoxRef.current.getBoundingClientRect();
+
+	  const x = data.x;
+	  const y = data.y;
+
+	  // TODO Check this shit
+		//  const isInside =
+		// x >= rect.left &&
+		// x <= rect.right &&
+		// y >= rect.top &&
+		// y <= rect.bottom;
+
+	  const isInside = true;
+
+	  isInside && actions.playCard(data.id);
+	};
+	emitter.on('card:played', handler);
+
+	return () => emitter.off('card:played', handler);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-green-900 text-white">
 	  <PlayerHealthBar health={opponentState.healthPoints} maxHealth={opponentState.maxHealthPoints} />
@@ -25,18 +50,12 @@ export default () => {
         <PlayerPanel player={opponentState} />
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-6">
-
+      <div ref={playBoxRef} className="flex flex-1 flex-col items-center justify-center gap-6">
         <BoardRow title="Player 2 Monsters" cards={opponentState.playArea.monsterCards} />
         <BoardRow title="Player 2 Passive" cards={opponentState.playArea.passiveCards} />
 
         <BoardRow title="Player 1 Monsters" cards={currentState.playArea.monsterCards} />
         <BoardRow title="Player 1 Passive" cards={currentState.playArea.passiveCards} />
-
-        <div className="text-sm opacity-80">
-          Current Player: {game.currentPlayer}
-        </div>
-
       </div>
 
       <div className="border-t border-green-700 p-4">

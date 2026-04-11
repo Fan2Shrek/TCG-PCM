@@ -13,6 +13,7 @@ type HandCardProps = {
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
   onDragCard: (e: MouseEvent) => void;
+  onDragEnd: (card: CardWithPosition) => void;
 };
 
 export default function HandCard({
@@ -24,6 +25,7 @@ export default function HandCard({
   onHover,
   onLeave,
   onDragCard,
+  onDragEnd,
 }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
@@ -31,7 +33,7 @@ export default function HandCard({
 
   const { isDragging, dragOffset, tilt, handleMouseDown } = useDrag({
     onDrag: onDragCard,
-    onDragEnd: onLeave,
+    onDragEnd: () => onDragEnd(positionedCard),
   });
 
   const handleMouseEnter = () => {
@@ -58,14 +60,18 @@ export default function HandCard({
     }
   }, [isDragging, onLeave]);
 
-  const displayY = isHovered ? positionedCard.y - hoverYOffset : positionedCard.y;
+  const displayY = isHovered
+    ? positionedCard.y - hoverYOffset
+    : positionedCard.y;
   const displayX = positionedCard.x;
   const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
 
   return (
     <div
       className={`absolute top-[50%] left-[50%] ${
-        isDragging ? "cursor-grabbing" : "cursor-grab transition-all ease-in-out duration-100"
+        isDragging
+          ? "cursor-grabbing"
+          : "cursor-grab transition-all ease-in-out duration-100"
       }`}
       style={{
         transform: `
@@ -83,7 +89,11 @@ export default function HandCard({
       <Card
         card={positionedCard.card}
         size={isHovered || isDragging ? hoverCardSize : cardSize}
-        tilt={{ x: tilt.x, y: tilt.y, z: isDragging ? 0 : positionedCard.rotation }}
+        tilt={{
+          x: tilt.x,
+          y: tilt.y,
+          z: isDragging ? 0 : positionedCard.rotation,
+        }}
       />
     </div>
   );

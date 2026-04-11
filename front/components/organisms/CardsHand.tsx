@@ -9,6 +9,7 @@ import {
 import HandCard from "../molecules/HandCard";
 import { useHandPositions } from "../hooks/useHandPositions";
 import { useDebouncedValue } from "../hooks/useDebounceValue";
+import { emitter } from "@/lib/eventBus";
 
 export type CardsHandProps = {
   cards: CardModel[];
@@ -53,7 +54,18 @@ export default function CardsHand({
     setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
   }, [hoveredCard]);
 
-  const handleCardLeave = useCallback(() => setPendingHoveredCard(null), []);
+  const handleCardLeave = useCallback(() => {
+    setPendingHoveredCard(null);
+  }, []);
+
+  const handleCardDragEnd = useCallback((card: CardWithPosition) => {
+	console.log('emieete')
+    emitter.emit("card:played", {
+      id: card.card.instanceId,
+      x: card.x,
+      y: card.y,
+    });
+  }, []);
 
   return (
     <div className={`relative w-82 h-82 ${className}`}>
@@ -68,6 +80,7 @@ export default function CardsHand({
           onHover={handleCardHover}
           onLeave={handleCardLeave}
           onDragCard={handleCardDrag}
+          onDragEnd={handleCardDragEnd}
         />
       ))}
     </div>

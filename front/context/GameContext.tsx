@@ -58,6 +58,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`, // @todo change
 	{
 	  [GameEventType.TURN_ENDED]: (e: GameEvent) => {
+		  console.log(e)
 		setGame((prevGame: GameState) => ({
 		  ...prevGame,
 		  currentPlayer: e.partialState.currentPlayer,
