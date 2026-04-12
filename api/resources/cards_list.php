@@ -16,6 +16,7 @@ return [
 	'ViciousBee' => Card\Monster\ViciousBeeCard::class,
 	'PierreSaidNoMonsterZone' => Card\PierreSaidNoMonsterZone::class,
 	'Placenta' => Card\PlacentaCard::class,
+	'Play2Hurt' => Card\Play2HurtCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
 	'ViciousStinger' => Card\ViciousStingerCard::class,
 ];

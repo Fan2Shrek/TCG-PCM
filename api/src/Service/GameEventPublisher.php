@@ -60,10 +60,10 @@ final class GameEventPublisher
             ];
         }
 
-        $newHand = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->hand : $player1DTO->player2->hand;
-        $newCards = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->cards : $player1DTO->cards;
-        $newDrawpile = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->drawPile : $player1DTO->player2->drawPile;
-        $newPlayArea = $eventPlayerId = $player1DTO->player1->player->id ? $player1DTO->player1->playArea : $player1DTO->player2->playArea;
+        $newHand = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->hand : $player1DTO->player2->hand;
+        $newCards = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->cards : $player1DTO->cards;
+        $newDrawpile = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->drawPile : $player1DTO->player2->drawPile;
+        $newPlayArea = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->playArea : $player1DTO->player2->playArea;
 
         $partialState = match ($event->type) {
             GameEventTypeEnum::CARD_DRAWN => [
@@ -80,7 +80,7 @@ final class GameEventPublisher
                 'currentPlayer' => $state->currentPlayer,
             ],
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
-                'coins' => GameEventTypeEnum::COINS_GAINED ? '+' : '-'.$event->data['amount'],
+                'coins' => GameEventTypeEnum::COINS_GAINED === $event->type ? '+' : '-'.(string) $event->data['amount'],
                 'playerId' => $event->data['playerId'],
             ],
             default => null,

@@ -66,6 +66,10 @@ return [
             'name' => 'Dard Vicieux',
             'description' => 'Applique un buff de dégâts à une carte.',
         ],
+        'Play2Hurt' => [
+            'name' => 'Jouer pour blesser',
+            'description' => 'Inflige {{value}} dégâts a un joeueur à chaque caerte jouée.',
+        ],
     ],
     // Effects
     'effects' => [
