@@ -66,6 +66,10 @@ return [
             'name' => 'Vicious Stinger',
             'description' => 'Give <effect>DMGBoost</effect> to one monster',
         ],
+        'Play2Hurt' => [
+            'name' => 'Play 2 Hurt',
+            'description' => 'When you play a card, deal {{value}} damage to the card owner.',
+        ],
     ],
     // Effects
     'effects' => [

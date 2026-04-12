@@ -18,9 +18,4 @@ trait CardAwareTrait
     {
         // Default implementation does nothing
     }
-
-    public function onCardDeath(AbstractCard $card, GameContext $gameContext): void
-    {
-        // Default implementation does nothing
-    }
 }
