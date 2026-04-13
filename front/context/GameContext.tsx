@@ -67,7 +67,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 	  [GameEventType.COINS_GAINED]: (e: GameEvent) => {
 		if (!game) return;
 
-		alert(`Player ${e.data.playerId} gained ${e.data.amount} coins!`);
+		// alert(`Player ${e.data.playerId} gained ${e.data.amount} coins!`);
 	  },
 	  [GameEventType.COINS_LOST]: (e: GameEvent) => {
 		if (!game) return;

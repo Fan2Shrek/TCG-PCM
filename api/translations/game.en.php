@@ -70,6 +70,10 @@ return [
             'name' => 'Play 2 Hurt',
             'description' => 'When you play a card, deal {{value}} damage to the card owner.',
         ],
+        'StackyStackito' => [
+            'name' => 'Stacky Stackito',
+            'description' => 'Every {{value}} turns, deal coins count as damage.',
+        ],
     ],
     // Effects
     'effects' => [
