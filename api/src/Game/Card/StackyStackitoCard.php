@@ -2,6 +2,7 @@
 
 namespace App\Game\Card;
 
+use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\GameContext;
@@ -9,6 +10,8 @@ use App\Game\GameContext;
 final class StackyStackitoCard extends AbstractPassiveCard implements TurnAwareInterface
 {
     use BaseOnTurnTrait;
+
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
 
     private const DELAY = 10;
 
