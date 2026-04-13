@@ -127,6 +127,12 @@ message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possib
 count = 1
 
 [[issues]]
+file = "src/Game/Card/StackyStackitoCard.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
 file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
 code = "invalid-parent-type"
 message = 'Cannot use `parent` as the current type (`App\Game\Card\Trait\BaseOnTurnTrait`) does not have a parent class.'

@@ -70,6 +70,10 @@ return [
             'name' => 'Jouer pour blesser',
             'description' => 'Inflige {{value}} dégâts a un joeueur à chaque caerte jouée.',
         ],
+        'StackyStackito' => [
+            'name' => 'Stacky Stackito',
+            'description' => 'Chaque {{value}} tours, fait le nombre de piece comme dégats.',
+        ],
     ],
     // Effects
     'effects' => [
