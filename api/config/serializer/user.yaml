@@ -5,6 +5,7 @@ App\Entity\User:
                 - default
                 - api:user:read
                 - api:room:create
+                - api:room:list
         inventory:
             groups:
                 - api:inventory:read

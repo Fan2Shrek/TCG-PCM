@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_D8cuycCj9U
+createdAt: 2026-04-13T19:37:12.750438328
+updatedAt: 2026-04-13T19:37:48.153209722
+workspaceId: wk_YWNRaoZjBb
+folderId: fl_X4DFDrgfVs
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: List waiting rooms
+sortPriority: 9.0
+url: ${[ host ]}/api/waiting-rooms
+urlParameters: []

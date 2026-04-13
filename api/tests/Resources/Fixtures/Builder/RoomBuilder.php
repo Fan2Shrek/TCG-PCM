@@ -6,6 +6,7 @@ namespace App\Tests\Resources\Fixtures\Builder;
 
 use App\Entity\Room;
 use App\Entity\User;
+use App\Enum\RoomStatusEnum;
 use App\Tests\Resources\Fixtures\ThereIs;
 
 /**
@@ -15,6 +16,7 @@ class RoomBuilder extends AbstractBuilder
 {
     private User $owner;
     private User $opponent;
+    private RoomStatusEnum $status = RoomStatusEnum::WAITING;
 
     protected function doBuild(): void
     {
@@ -22,6 +24,7 @@ class RoomBuilder extends AbstractBuilder
 
         $this->entity = new Room($owner);
         $this->entity->setOwnerDeck(ThereIs::aDeck()->ownedBy($owner)->build());
+        $this->entity->setStatus($this->status);
 
         if ($this->opponent ?? null) {
             $this->entity->setOpponent($this->opponent);
@@ -39,6 +42,13 @@ class RoomBuilder extends AbstractBuilder
     public function withOpponent(?User $opponent = null): self
     {
         $this->opponent = $opponent ?? ThereIs::anUser()->build();
+
+        return $this;
+    }
+
+    public function finished(): self
+    {
+        $this->status = RoomStatusEnum::FINISHED;
 
         return $this;
     }
