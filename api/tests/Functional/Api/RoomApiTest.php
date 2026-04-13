@@ -21,6 +21,7 @@ final class RoomApiTest extends FunctionalTestCase
     protected const JOIN_URI = '/api/rooms/{id}/join';
     protected const START_URI = '/api/rooms/{id}/start';
     protected const CHANGE_DECK_URI = '/api/rooms/{id}/change_deck';
+    protected const LIST_ROOM_URI = '/api/waiting-rooms';
 
     public function testCreateRoomSuccess()
     {
@@ -214,5 +215,27 @@ final class RoomApiTest extends FunctionalTestCase
         $this->post($this->getUri(self::CHANGE_DECK_URI, ['id' => (string) $room->getId()]), ['deck' => '/api/decks/'.$deck->getId()]);
 
         self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testListRoomSuccess()
+    {
+        $this->get(self::LIST_ROOM_URI);
+
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testListRoom()
+    {
+        $room1 = ThereIs::aRoom()->build();
+        $room2 = ThereIs::aRoom()->build();
+        ThereIs::aRoom()->finished()->build();
+        ThereIs::aRoom()->withOpponent()->build();
+
+        $r = $this->get(self::LIST_ROOM_URI);
+        $content = $r->toArray();
+
+        self::assertCount(2, $content);
+        self::assertSame((string) $room1->getId(), $content[0]['id']);
+        self::assertSame((string) $room2->getId(), $content[1]['id']);
     }
 }

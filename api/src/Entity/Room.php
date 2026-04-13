@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Api\Provider\GameProvider;
+use App\Api\Provider\WaitingRoomProvider;
 use App\Domain\Command\Game\PlayGameCommand;
 use App\Domain\Command\Room\ChangeDeckCommand;
 use App\Domain\Command\Room\CreateRoomCommand;
@@ -20,6 +22,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
     new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
+    new GetCollection(uriTemplate: '/waiting-rooms', provider: WaitingRoomProvider::class, normalizationContext: ['groups' => 'api:room:list']),
 
     new Post(
         uriTemplate: '/rooms/create',

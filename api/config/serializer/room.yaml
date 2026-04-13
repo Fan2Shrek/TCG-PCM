@@ -3,6 +3,8 @@ App\Entity\Room:
         id:
             groups:
                 - api:room:create
+                - api:room:list
         owner:
             groups:
                 - api:room:create
+                - api:room:list
