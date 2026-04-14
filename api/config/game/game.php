@@ -2,11 +2,13 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Service\EndGameHandler;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistry;
 use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
+use App\Service\Game\EndGameHandlerInterface;
 use App\Service\Game\Factory\GameContextFactory;
 use App\Service\Game\Factory\GameContextFactoryInterface;
 use App\Service\Game\GameEventApplier;
@@ -17,12 +19,12 @@ use App\Service\Game\GameStateConverter;
 use App\Service\Game\GameStateRebuilder;
 use App\Service\Game\Pipeline\GamePipeline;
 use App\Service\Game\Pipeline\Middleware\ConvertActionToEventMiddleware;
+use App\Service\Game\Pipeline\Middleware\EndGameMiddleware;
 use App\Service\Game\Pipeline\Middleware\ExceptionMiddleware;
 use App\Service\Game\Pipeline\Middleware\ProvideGameStateMiddleware;
 use App\Service\Game\Pipeline\Middleware\ResolveEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\SaveGameEventsMiddleware;
 use App\Service\Game\Pipeline\Middleware\SaveGameStateMiddleware;
-use App\Service\Game\Pipeline\Middleware\SaveStateMiddleware;
 use App\Service\Game\Pipeline\Middleware\ValidateActionMiddleware;
 use App\Service\Game\State\DoctrineGameEventRepository;
 use App\Service\Game\State\DoctrineGameStateRepository;
@@ -108,6 +110,10 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->alias(GamePipeline::class, 'game.pipeline')
 
+        ->set('game.end_game_handler', EndGameHandlerInterface::class)
+            ->abstract(true)
+            ->alias(EndGameHandlerInterface::class, 'game.end_game_handler')
+
         // Middlewares
         ->set('game.pipeline.middleware.exception', ExceptionMiddleware::class)
             ->tag('game.pipeline_middleware', ['priority' => 900])
@@ -141,6 +147,11 @@ return static function (ContainerConfigurator $container): void {
             ->tag('game.pipeline_middleware', ['priority' => -100])
             ->args([
                 service('game.game_state_repository'),
+            ])
+        ->set('game.pipeline.middleware.end_game', EndGameMiddleware::class)
+            ->tag('game.pipeline_middleware', ['priority' => -150])
+            ->args([
+                service('game.end_game_handler'),
             ])
     ;
 };

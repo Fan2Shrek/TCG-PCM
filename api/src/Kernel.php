@@ -7,6 +7,7 @@ use App\DependencyInjection\DeployPass;
 use App\DependencyInjection\UseRedisGameStateRepositoryPass;
 use App\Game\GameUtils;
 use App\Interface\DeployAwareInterface;
+use App\Service\EndGameHandler;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Resources\MockHub;
 use App\Utils\KillSwitch;
@@ -39,6 +40,8 @@ class Kernel extends BaseKernel
             $builder->register('game.card_registry', MockCardRegistry::class);
             $builder->register(HubInterface::class, MockHub::class);
         }
+
+        $builder->setAlias('game.end_game_handler', EndGameHandler::class);
     }
 
     public function build(ContainerBuilder $container): void
