@@ -29,7 +29,7 @@ export default function Home() {
   return (
       <main className="flex flex-col items-center gap-12 p-24 sm:items-start">
         <HandExample />
-		{rooms && rooms.map((room) => <div key={room.id}>
+		{rooms && rooms.map((room) => <div key={room.id}  className="hover:rotate-[30deg] transition-transform">
 			<a>{room.owner.username}</a>
 			<br />
 			<button onClick={() => handleJoin(room.id)}>rejoinde</button>
