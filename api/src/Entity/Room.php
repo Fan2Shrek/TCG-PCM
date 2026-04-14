@@ -64,6 +64,9 @@ class Room
     #[ORM\JoinColumn(nullable: true)]
     private ?Deck $opponentDeck = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?string $winnerId = null;
+
     public function __construct(User $owner)
     {
         $this->owner = $owner;
@@ -126,5 +129,17 @@ class Room
         $this->opponentDeck = $opponentDeck;
 
         return $this;
+    }
+
+    public function setWinnerId(string $winnerId): static
+    {
+        $this->winnerId = $winnerId;
+
+        return $this;
+    }
+
+    public function getWinnerId(): ?string
+    {
+        return $this->winnerId;
     }
 }
