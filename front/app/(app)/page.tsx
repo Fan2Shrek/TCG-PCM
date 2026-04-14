@@ -19,8 +19,9 @@ export default function Home() {
 	fetchGame().then((data) => setRooms(data)).catch(console.error)
   }, []);
 
-  const handleJoin = (id: string) => {
-	api.room.join(id);
+  const handleJoin = async (id: string) => {
+	const res = await api.room.join(id);
+	document.cookie = `mercureAuthorization=${res.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
 
 	redirect(`/arene/waiting/${id}`, RedirectType.replace)
   }
