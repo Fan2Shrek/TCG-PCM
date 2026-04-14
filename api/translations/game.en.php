@@ -74,6 +74,10 @@ return [
             'name' => 'Stacky Stackito',
             'description' => 'Every {{value}} turns, deal coins count as damage.',
         ],
+        'RiskyBet' => [
+            'name' => 'Risky Bet',
+            'description' => 'Roll a 10-sided dice. If you roll a 9 or a 10, deal {{value}} damage to the opponent. Otherwise, deal {{value2}} damage to yourself.',
+        ],
     ],
     // Effects
     'effects' => [

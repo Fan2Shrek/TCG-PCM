@@ -74,6 +74,10 @@ return [
             'name' => 'Stacky Stackito',
             'description' => 'Chaque {{value}} tours, fait le nombre de piece comme dégats.',
         ],
+        'RiskyBet' => [
+            'name' => 'Pari risqué',
+            'description' => 'Lancez un dé à dix faces. Si le résultat est de 9 ou 10, infligez {{value}} dégâts à votre adversaire. Sinon, infligez {{value2}} dégâts à vous-même.',
+        ]
     ],
     // Effects
     'effects' => [

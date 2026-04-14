@@ -17,6 +17,7 @@ return [
 	'PierreSaidNoMonsterZone' => Card\PierreSaidNoMonsterZone::class,
 	'Placenta' => Card\PlacentaCard::class,
 	'Play2Hurt' => Card\Play2HurtCard::class,
+	'RiskyBet' => Card\RiskyBetCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
 	'StackyStackito' => Card\StackyStackitoCard::class,
 	'ViciousStinger' => Card\ViciousStingerCard::class,
