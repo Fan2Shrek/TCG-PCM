@@ -356,12 +356,12 @@ return
                 15 => [],
                 18 => [],
                 42 => [
-                    '88fd869f-ccda-4772-a165-cf37419d4b55',
-                    '12e05ab9-6353-4340-a545-0eb421d9c2a8',
+                    '88fd869f-ccda-4772-a165-cf37419d4b55' => 'PierreSaidNoMonsterZone',
+                    '12e05ab9-6353-4340-a545-0eb421d9c2a8' => 'Redbloons',
                 ],
                 44 => [
-                    'a1bcbc4d-497a-49d0-9581-e59e376c872b',
-                    'dabe8cdc-c287-4110-a3b0-bbfa2033f987',
+                    'a1bcbc4d-497a-49d0-9581-e59e376c872b' => 'D6',
+                    'dabe8cdc-c287-4110-a3b0-bbfa2033f987' => 'Gitman',
                 ],
             ],
         ],

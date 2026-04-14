@@ -147,7 +147,7 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertCount(0, $newState->getPlayer('player2')->hand);
-        self::assertCount(1, $newState->getPlayer('player2')->discardPile);
+        self::assertCount(2, $newState->getPlayer('player2')->discardPile);
     }
 
     public function testCardPlaceInPlayArea()
@@ -291,6 +291,19 @@ final class GameEventApplierTest extends TestCase
         self::assertCount(2, $newState->cards);
     }
 
+    public function testApplyCardRedrawn()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState(cards: []);
+        $event = new GameEvent(1, GameEventTypeEnum::CARD_REDRAWN, GameEvent::PLAYER_EVENT, ['playerId' => 'player2', 'cardId' => 'card']);
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertCount(1, $newState->cards);
+        self::assertEquals(new CardState('card', 'D6', 'player2', []), $newState->cards['card']);
+        self::assertContains('card', $newState->player2->hand);
+    }
+
     private function getSut(array $cards = []): GameEventApplier
     {
         return new GameEventApplier(new MockCardRegistry($cards), new GameContextFactory());
@@ -322,6 +335,9 @@ final class GameEventApplierTest extends TestCase
                 ],
                 0,
                 new PlayArea(),
+                [
+                    'card' => 'D6',
+                ],
             ),
             $lastEventId,
             0,

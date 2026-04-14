@@ -100,8 +100,8 @@ return [
             6,
             new PlayArea(),
             [
-                'player1_card1',
-                'player1_card2',
+                'player1_card1' => 'Spicy-D6',
+                'player1_card2' => 'Spicy-D6',
             ],
         ),
         new PlayerState(
@@ -117,7 +117,7 @@ return [
             7,
             new PlayArea(),
             [
-                'player2_card1',
+                'player2_card1' => 'Spicy-D6',
             ]
         ),
         0,

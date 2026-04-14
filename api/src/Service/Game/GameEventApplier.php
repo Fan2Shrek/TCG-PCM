@@ -33,6 +33,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::MONSTER_DIED => $this->applyMonsterDied($event, $gameState),
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
             GameEventTypeEnum::CARD_GENERATED => $this->applyCardGenerated($event, $gameState),
+            GameEventTypeEnum::CARD_REDRAWN => $this->applyCardRedrawn($event, $gameState),
             GameEventTypeEnum::PLAYER_DIED,
             GameEventTypeEnum::ATTACK,
             GameEventTypeEnum::CARD_RUNTIME_VALUE,
@@ -261,7 +262,7 @@ class GameEventApplier implements GameEventApplierInterface
             $player = $player->withPlayArea($newPlayArea);
         }
 
-        $player = $player->withDiscardedCard($cardId);
+        $player = $player->withDiscardedCard($cardId, $cardState->templateId);
 
         return $gameState->withUpdatedPlayer($player)->removeCard($cardId);
     }
@@ -359,10 +360,17 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('MonsterDied requires a playerId');
         }
 
+        $cardState = $state->getCardState($cardId);
+
+        if (!$cardState) {
+            throw new \LogicException('MonsterDied requires a valid cardId');
+        }
+
         $player = $state->getPlayer($playerId);
         $newPlayArea = $player->playArea->removeMonsterCard($cardId);
         $player = $player->withPlayArea($newPlayArea);
-        $player = $player->withDiscardedCard($cardId);
+        $player = $player->withDiscardedCard($cardId, $cardState->templateId);
+        $state = $state->removeCard($cardId);
 
         return $state->withUpdatedPlayer($player);
     }
@@ -384,5 +392,34 @@ class GameEventApplier implements GameEventApplierInterface
         $state = $state->withUpdatedPlayer($newPlayer);
 
         return $state->addCard($cardState);
+    }
+
+    private function applyCardRedrawn(GameEvent $event, GameState $state): GameState
+    {
+        if (null === ($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
+            throw new \LogicException('CardRedrawn requires a playerId');
+        }
+
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('CardRedrawn requires a cardId');
+        }
+
+        $player = $state->getPlayer($playerId);
+        $discard = $player->discardPile;
+
+        if (!\array_key_exists($cardId, $discard)) {
+            throw new \LogicException(\sprintf('Player %s does not have card %s in hand', $playerId, $cardId));
+        }
+        $templateId = $discard[$cardId] ?? null;
+
+        if (!$templateId) {
+            throw new \LogicException(\sprintf('Card %s not found in discard pile of player %s', $cardId, $playerId));
+        }
+
+        $newDiscard = array_filter($discard, static fn($id) => $id !== $cardId, ARRAY_FILTER_USE_KEY);
+        $player = $player->withDiscarded($newDiscard);
+        $player = $player->withNewHandAndDeck([...$player->hand, $cardId], $player->drawPile);
+
+        return $state->addCard(new CardState($cardId, $templateId, $playerId))->withUpdatedPlayer($player);
     }
 }
