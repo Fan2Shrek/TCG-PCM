@@ -157,4 +157,22 @@ final class PlayerStateTest extends TestCase
         self::assertSame(10, $newPlayerState->coins);
         self::assertSame(0, $playerState->coins);
     }
+
+    public function testWithDiscard()
+    {
+        $playerState = new PlayerState(
+            player: new Player('1', 'Player 1'),
+            healthPoints: 30,
+            maxHealthPoints: 30,
+            characterCardId: '',
+            hand: ['Card A', 'Card B'],
+            drawPile: [],
+            coins: 0,
+            playArea: new PlayArea(),
+        );
+
+        $newPlayerState = $playerState->withDiscarded(['aaa']);
+
+        self::assertSame(['aaa'], $newPlayerState->discardPile);
+    }
 }

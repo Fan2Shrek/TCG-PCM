@@ -11,7 +11,7 @@ readonly class PlayerState
     /**
      * @param string[] $hand
      * @param array<string, string> $drawPile
-     * @param string[] $discardPile
+     * @param array<string, string> $discardPile
      */
     public function __construct(
         public Player $player,
@@ -74,10 +74,19 @@ readonly class PlayerState
     }
 
     #[\NoDiscard]
-    public function withDiscardedCard(string $cardId): self
+    public function withDiscardedCard(string $cardId, string $cardTemplateId): self
+    {
+        return $this->withDiscarded(array_merge($this->discardPile, [$cardId => $cardTemplateId]));
+    }
+
+    /**
+     * @param array<string, string> $discard
+     */
+    #[\NoDiscard]
+    public function withDiscarded(array $discard): self
     {
         return clone($this, [
-            'discardPile' => [...$this->discardPile, $cardId],
+            'discardPile' => $discard,
         ]);
     }
 

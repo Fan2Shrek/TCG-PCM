@@ -27,4 +27,5 @@ enum GameEventTypeEnum: string
     case MONSTER_DIED = 'MONSTER_DIED';
     case ATTACK = 'ATTACK';
     case CARD_GENERATED = 'GENERATE_CARD';
+    case CARD_REDRAWN = 'CARD_REDRAWN';
 }
