@@ -109,6 +109,12 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Character/NecromancianCard.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
 file = "src/Game/Card/Character/StonksCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\GameContext::iscurrentplayer` is possibly `null`, but parameter type `string` does not accept it.'

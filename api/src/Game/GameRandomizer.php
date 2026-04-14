@@ -35,6 +35,11 @@ class GameRandomizer
         return (float) $value / 100;
     }
 
+    public function randomBetweenInt(int $min, int $max): int
+    {
+        return self::_doRandom($min, $max);
+    }
+
     private function _doRandom(int $min, int $max): int
     {
         return (int) $this->randomizer->getInt($min, $max);

@@ -97,6 +97,19 @@ class GameContext
         return $result;
     }
 
+    public function randomIntBetween(int $min, int $max): int
+    {
+        $result = $this->state->randomizer->randomBetweenInt($min, $max);
+
+        $this->events[] = GameEvent::game(GameEventTypeEnum::DICE_ROLLED, [
+            'min' => $min,
+            'max' => $max,
+            'result' => $result,
+        ]);
+
+        return $result;
+    }
+
     public function runtimeValueEffect(mixed $value): mixed
     {
         if (\is_callable($value)) {
