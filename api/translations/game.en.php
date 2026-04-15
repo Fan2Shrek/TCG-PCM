@@ -78,6 +78,14 @@ return [
             'name' => 'Risky Bet',
             'description' => 'Roll a 10-sided dice. If you roll a 9 or a 10, deal {{value}} damage to the opponent. Otherwise, deal {{value2}} damage to yourself.',
         ],
+        'Necromancian' => [
+            'name' => 'Necromancian',
+            'description' => 'Redrawn a card, at the end of turn.',
+        ],
+        'Communism' => [
+            'name' => 'Communism',
+            'description' => 'Split your coins evenly with your opponent.',
+        ],
     ],
     // Effects
     'effects' => [
