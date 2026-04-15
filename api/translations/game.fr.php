@@ -77,7 +77,15 @@ return [
         'RiskyBet' => [
             'name' => 'Pari risqué',
             'description' => 'Lancez un dé à dix faces. Si le résultat est de 9 ou 10, infligez {{value}} dégâts à votre adversaire. Sinon, infligez {{value2}} dégâts à vous-même.',
-        ]
+        ],
+        'Necromancian' => [
+            'name' => 'Nécromancien',
+            'description' => 'Ressuscite une carte aléatoire à la fin du tour.',
+        ],
+        'Communism' => [
+            'name' => 'Communisme',
+            'description' => 'Partage equitablement les pièces entre les joueurs.',
+        ],
     ],
     // Effects
     'effects' => [

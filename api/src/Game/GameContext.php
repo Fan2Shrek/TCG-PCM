@@ -197,6 +197,16 @@ class GameContext
         $this->pushGameEvent(GameEventTypeEnum::COINS_GAINED, ['playerId' => $playerId, 'amount' => $amount]);
     }
 
+    public function setCoins(int $amount, ?string $playerId = null): void
+    {
+        $playerId ??= $this->playerId;
+        $currentCoins = $this->state->getPlayer($playerId)->coins;
+
+        $eventType = $amount > $currentCoins ? GameEventTypeEnum::COINS_GAINED : GameEventTypeEnum::COINS_LOST;
+
+        $this->pushGameEvent($eventType, ['playerId' => $playerId, 'amount' => abs($amount - $currentCoins)]);
+    }
+
     public function giveCard(string $cardId, ?string $playerId = null): void
     {
         $playerId ??= $this->playerId;

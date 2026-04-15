@@ -208,6 +208,36 @@ final class GameContextTest extends TestCase
         self::assertSame('characterCardId1', $card);
     }
 
+    public function testSetCoinsGained()
+    {
+        $ctx = new GameContext($this->getGameState(), '1');
+
+        $ctx->setCoins(4);
+
+        $events = $ctx->flushEvents();
+
+        self::assertCount(1, $events);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::COINS_GAINED, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+            'amount' => 3,
+        ]), $events[0]);
+    }
+
+    public function testSetCoinsLost()
+    {
+        $ctx = new GameContext($this->getGameState(), '1');
+
+        $ctx->setCoins(0);
+
+        $events = $ctx->flushEvents();
+
+        self::assertCount(1, $events);
+        self::assertEquals(new GameEvent(0, GameEventTypeEnum::COINS_LOST, GameEvent::GAME_EVENT, [
+            'playerId' => '1',
+            'amount' => 1,
+        ]), $events[0]);
+    }
+
     private function getGameState(): GameState
     {
         return new GameState(

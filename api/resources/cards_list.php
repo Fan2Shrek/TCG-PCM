@@ -4,8 +4,10 @@ use App\Game\Card;
 
 return [
 	'Benjamin' => Card\BenjaminCard::class,
+	'Necromancian' => Card\Character\NecromancianCard::class,
 	'Pierrot' => Card\Character\PierrotCard::class,
 	'Stonks' => Card\Character\StonksCard::class,
+	'Communism' => Card\CommunismCard::class,
 	'consolation_prices' => Card\ConsolationPricesCard::class,
 	'D6' => Card\D6Card::class,
 	'Gitman' => Card\GitmanCard::class,
