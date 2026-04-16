@@ -86,6 +86,10 @@ return [
             'name' => 'Communisme',
             'description' => 'Partage equitablement les pièces entre les joueurs.',
         ],
+        'BloodSucker' => [
+            'name' => 'Suceur de sang',
+            'description' => 'Inflige {{value}} à tous les joueurs à chaque début de tour',
+        ],
     ],
     // Effects
     'effects' => [

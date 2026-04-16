@@ -4,6 +4,7 @@ use App\Game\Card;
 
 return [
 	'Benjamin' => Card\BenjaminCard::class,
+	'BloodSucker' => Card\BloodSuckerCard::class,
 	'Necromancian' => Card\Character\NecromancianCard::class,
 	'Pierrot' => Card\Character\PierrotCard::class,
 	'Stonks' => Card\Character\StonksCard::class,
