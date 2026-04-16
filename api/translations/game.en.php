@@ -86,6 +86,10 @@ return [
             'name' => 'Communism',
             'description' => 'Split your coins evenly with your opponent.',
         ],
+        'BloodSucker' => [
+            'name' => 'Blood sucker',
+            'description' => 'Does {{value}} to all players on turn start',
+        ],
     ],
     // Effects
     'effects' => [
