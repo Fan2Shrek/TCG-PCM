@@ -7,6 +7,7 @@ import api from "@/lib/api/api";
 
 import { createContext, ReactNode, useCallback, useState } from 'react';
 import { PlayerActionType } from '@/lib/game/type/playerAction';
+import { getCurrentUser } from '@/lib/utils';
 
 type ActionObject = {
   playCard: (cardId: string) => void;
@@ -54,63 +55,112 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 	api.game.play(gameId, PlayerActionType.END_TURN);
   }
 
-  useMercure(
-	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`, // @todo change
-	{
-	  [GameEventType.TURN_ENDED]: (e: GameEvent) => {
-		  console.log(e)
-		setGame((prevGame: GameState) => ({
-		  ...prevGame,
-		  currentPlayer: e.partialState.currentPlayer,
-		}));
-	  },
-	  [GameEventType.COINS_GAINED]: (e: GameEvent) => {
-		if (!game) return;
+  const getPlayerKey = (state: GameState, playerId: string): 'player1' | 'player2' =>
+	  state.player1.player.id === playerId ? 'player1' : 'player2';
 
-		// alert(`Player ${e.data.playerId} gained ${e.data.amount} coins!`);
-	  },
-	  [GameEventType.COINS_LOST]: (e: GameEvent) => {
-		if (!game) return;
+  const applyView = (state: GameState, event: GameEvent): GameState => {
+	if (!event.view) return state;
 
-		alert(`Player ${e.data.playerId} lost ${e.data.amount} coins!`);
-	  },
-	  [GameEventType.CARD_DRAWN]: (e: GameEvent) => {
-		if (!game) return;
-		const playerId = e.data.playerId;
-		const playerState = game.player1.player.id === playerId ? game.player1 : game.player2;
-		const newPlayerState = {
-		  ...playerState,
-		  hand: e.partialState.hand,
-		  drawPile: e.partialState.drawPile
+	let next = { ...state };
+	const view = event.view;
+
+	switch (event.type) {
+	  case GameEventType.CARD_DRAWN: {
+		const playerKey = getPlayerKey(state, view.playerId);
+		const player = state[playerKey];
+		// skip
+		if (!view.card && player.player.name === getCurrentUser().username) {
+		  return next;
+		}
+
+		const newHand = [...player.hand, view.cardId];
+
+		const newDrawPile = player.drawPile.filter(
+		  (id) => id !== view.cardId
+		);
+
+		next[playerKey] = {
+		  ...player,
+		  hand: newHand,
+		  drawPile: newDrawPile,
 		};
 
-		setGame((prevGame: GameState) => ({
-		  ...prevGame,
-		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,
-		  player2: game.player2.player.id === playerId ? newPlayerState : prevGame.player2,
-		  cards: e.partialState.cards
-		}));
-	  },
-	  [GameEventType.CARD_PLACE_IN_MONSTER_AREA]: (e: GameEvent) => {
-		if (!game) return;
+		if (view.card) {
+		  next.cards = {
+			...next.cards,
+			[view.card.instanceId]: view.card,
+		  };
+		}
 
-		const playerId = e.data.playerId;
-		const playerState = game.player1.player.id === playerId ? game.player1 : game.player2;
-		const newPlayerState = {
-		  ...playerState,
-		  hand: e.partialState.hand,
-		  playArea: e.partialState.playArea
-		};
-
-
-		setGame((prevGame: GameState) => ({
-		  ...prevGame,
-		  player1: game.player1.player.id === playerId ? newPlayerState : prevGame.player1,
-		  player2: game.player2.player.id === playerId ? newPlayerState : prevGame.player2,
-		  cards: e.partialState.cards
-		}));
+		return next;
 	  }
+
+	  case GameEventType.TURN_STARTED: {
+		return {
+		  ...state,
+		  currentPlayer: view.currentPlayer,
+		};
+	  }
+
+	  case GameEventType.CARD_DISCARDED:
+	  case GameEventType.CARD_PLACE_IN_PLAY_AREA:
+	  case GameEventType.CARD_PLACE_IN_MONSTER_AREA: {
+		const cardId = view.cardId;
+
+		const playerKey = getPlayerKey(state, view.playerId);
+		const player = state[playerKey];
+
+		console.log(cardId, player, view.playerId)
+		player.hand = player.hand.filter((id) => id !== cardId);
+
+		if (event.type === GameEventType.CARD_DISCARDED) {
+		  player.discardPile = [...player.discardPile, cardId];
+		} else {
+		  player.playArea = {
+			passiveCards: event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+			monsterCards: event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
+		  }
+		}
+
+		state[playerKey] = player;
+
+		return state;
+	  }
+
+	  case GameEventType.COINS_GAINED:
+	  case GameEventType.COINS_LOST: {
+		const playerKey = getPlayerKey(state, event.playerId);
+
+		return {
+		  ...state,
+		  [playerKey]: {
+			...state[playerKey],
+			coins: view.total,
+		  },
+		};
+	  }
+
+	  default:
+		console.log(`Unhandled event type ${event.type}`);
+		return state;
 	}
+  }
+
+  useMercure(
+	`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${getCurrentUser().username === game.player1.player.name ? '1' : '2'}`, // @todo change
+	{
+		game_events: (e: { events: GameEvent[] }) => {
+		  setGame((prev: GameState) => {
+			let next = { ...prev };
+
+			for (const event of e.events) {
+			  next = applyView(next, event);
+			}
+
+			return next;
+		  });
+		},
+	},
   );
 
   return (

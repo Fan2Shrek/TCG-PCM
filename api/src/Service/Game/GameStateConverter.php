@@ -28,17 +28,7 @@ final class GameStateConverter
         );
     }
 
-    /**
-     * @param array<string, CardState> $cardsState
-     *
-     * @return array<string, CardDTO>
-     */
-    private function convertCards(array $cardsState): array
-    {
-        return array_map($this->createCardDTO(...), $cardsState);
-    }
-
-    private function createCardDTO(CardState $state): CardDTO
+    public function createCardDTO(CardState $state): CardDTO
     {
         $template = $this->cardRegistry->getCardTemplateById($state->templateId);
         $template->setState($state);
@@ -52,6 +42,16 @@ final class GameStateConverter
             instanceId: $state->instanceId,
             effects: $state->effects,
         );
+    }
+
+    /**
+     * @param array<string, CardState> $cardsState
+     *
+     * @return array<string, CardDTO>
+     */
+    private function convertCards(array $cardsState): array
+    {
+        return array_map($this->createCardDTO(...), $cardsState);
     }
 
     /**
