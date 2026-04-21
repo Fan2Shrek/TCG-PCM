@@ -16,7 +16,11 @@ export default ({ params }: { params: Promise<{ id: string }> }) =>  {
 	  return await api.game.getGame(id)
 	};
 
-	fetchGame().then((data) => setGame(data)).catch(console.error)
+	fetchGame().then((data) => {
+	  setGame(data.state)
+
+	  document.cookie = `mercureAuthorization=${data.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
+	}).catch(console.error)
   }, []);
 
   if (!game) {

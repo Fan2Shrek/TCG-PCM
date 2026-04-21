@@ -88,8 +88,20 @@ final class GameApiTest extends FunctionalTestCase
 
         $response = $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
 
-        $data = $response->toArray();
+        $data = $response->toArray()['state'];
 
         self::assertArrayNotHasKey('cardtest', $data['cards']);
+    }
+
+    public function testMercure()
+    {
+        $room = ThereIs::aGame()->withOwner($this->currentUser)->build();
+
+        $response = $this->get($this->getUri(self::GET_GAME_URI, ['id' => (string) $room->getId()]));
+
+        $data = $response->toArray();
+
+        self::assertArrayHasKey('mercure_token', $data);
+        self::assertArrayHasKey('mercure_url', $data);
     }
 }

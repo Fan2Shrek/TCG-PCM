@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Api\DTO\GameStateDTO;
 use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
-use App\Service\Game\GameStateConverter;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
 final class GameEventPublisher
 {
+    private const PRIVATE_EVENTS = [
+        GameEventTypeEnum::CARD_DRAWN,
+    ];
+
     public function __construct(
         private HubInterface $hub,
-        private GameStateConverter $gameStateConveter,
+        private GameEventPresenter $presenter,
     ) {}
 
     /**
@@ -24,77 +26,65 @@ final class GameEventPublisher
      */
     public function publish(array $events, GameState $state, string $room): void
     {
-        $roomId = $this->getId($room);
+        $topic = $this->getTopic($room);
 
-        $player1State = $this->gameStateConveter->convertGameState($state, $state->player1->player->id);
-        $player2State = $this->gameStateConveter->convertGameState($state, $state->player2->player->id);
+        $payload = [
+            'type' => 'game_events',
+            'events' => array_map(fn(GameEvent $event) => $this->presenter->present($event, $state, false, null), $events),
+        ];
 
-        foreach ($events as $event) {
-            $this->handlePrivateEvents($event);
-            $update = new Update($roomId, json_encode([
-                'event' => $this->formatEvent($event, $player1State, $player2State, $state),
-            ], JSON_THROW_ON_ERROR));
+        $this->doPublish($topic, $payload);
 
-            $this->hub->publish($update);
+        // private events
+        foreach ($this->groupPrivateEvents($events) as $playerId => $playerEvents) {
+            $this->doPublish($topic.'-'.((string) $playerId === $state->player1->player->id ? '1' : '2'), [
+                'type' => 'game_events',
+                'events' => array_map(fn(GameEvent $event) => $this->presenter->present($event, $state, true, (string) $playerId), $playerEvents),
+            ]);
         }
     }
 
-    private function handlePrivateEvents(GameEvent $event): void
+    private function doPublish(string $topci, array $data): void
     {
-        // @ŧodo
+        $update = new Update($topci, json_encode($data, JSON_THROW_ON_ERROR), true);
+
+        $this->hub->publish($update);
+    }
+
+    private function getTopic(string $room): string
+    {
+        return \sprintf('game/%s', $room);
     }
 
     /**
-     * @return array<string, mixed>
+     * @param GameEvent[] $events
+     *
+     * @return array<string, GameEvent[]>
      */
-    private function formatEvent(GameEvent $event, GameStateDTO $player1DTO, GameStateDTO $player2DTO, GameState $state): array
+    private function groupPrivateEvents(array $events): array
     {
-        $data = $event->data;
+        $grouped = [];
 
-        /** @var ?string $eventPlayerId */
-        $eventPlayerId = $event->data['playerId'] ?? null;
+        foreach ($events as $event) {
+            if (!$this->isPrivate($event)) {
+                continue;
+            }
 
-        if (!$eventPlayerId) {
-            return [
-                'type' => $event->type,
-            ];
+            /** @var string $playerId */
+            $playerId = $event->data['playerId'];
+
+            if (!$playerId) {
+                continue;
+            }
+
+            $grouped[$playerId][] = $event;
         }
 
-        $newHand = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->hand : $player1DTO->player2->hand;
-        $newCards = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->cards : $player1DTO->cards;
-        $newDrawpile = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->drawPile : $player1DTO->player2->drawPile;
-        $newPlayArea = $eventPlayerId === $player1DTO->player1->player->id ? $player1DTO->player1->playArea : $player1DTO->player2->playArea;
-
-        $partialState = match ($event->type) {
-            GameEventTypeEnum::CARD_DRAWN => [
-                'hand' => $newHand, // @todo publish to player private topic
-                'drawPile' => $newDrawpile,
-                'cards' => $newCards,
-            ],
-            GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => [
-                'hand' => $newHand,
-                'playArea' => $newPlayArea,
-                'cards' => $newCards,
-            ],
-            GameEventTypeEnum::TURN_ENDED => [
-                'currentPlayer' => $state->currentPlayer,
-            ],
-            GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
-                'coins' => GameEventTypeEnum::COINS_GAINED === $event->type ? '+' : '-'.(string) $event->data['amount'],
-                'playerId' => $event->data['playerId'],
-            ],
-            default => null,
-        };
-
-        return [
-            'type' => $event->type,
-            'data' => $data,
-            'partialState' => $partialState,
-        ];
+        return $grouped;
     }
 
-    private function getId(string $room): string
+    private function isPrivate(GameEvent $event): bool
     {
-        return \sprintf('game/%s', $room);
+        return \in_array($event->type, self::PRIVATE_EVENTS, true);
     }
 }
