@@ -4,13 +4,16 @@ import { GameContext } from "@/context/GameContext";
 import type { GameAnnouncement } from "@/context/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import CardsHand from "../CardsHand";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 
 export default () => {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
   const playBoxRef = useRef<HTMLDivElement>(null);
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
+    null,
+  );
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",
   );
@@ -55,6 +58,38 @@ export default () => {
     game.player1.player.name === getCurrentUser()?.username
       ? game.player2
       : game.player1;
+  const selectedAttackerCard = useMemo(
+    () => (selectedAttackerId ? getCardById(selectedAttackerId) : undefined),
+    [getCardById, selectedAttackerId],
+  );
+
+  useEffect(() => {
+    if (!selectedAttackerId) {
+      return;
+    }
+
+    if (selectedAttackerCard?.isActive === false) {
+      setSelectedAttackerId(null);
+    }
+  }, [selectedAttackerCard, selectedAttackerId]);
+
+  const handleSelectAttacker = (cardId: string) => {
+    if (selectedAttackerId === cardId) {
+      setSelectedAttackerId(null);
+      return;
+    }
+
+    setSelectedAttackerId(cardId);
+  };
+
+  const handleAttackTarget = (targetId: string) => {
+    if (!selectedAttackerId) {
+      return;
+    }
+
+    actions.attack(selectedAttackerId, targetId);
+    setSelectedAttackerId(null);
+  };
 
   return (
     <div className="relative flex flex-col h-screen bg-green-900 text-white">
@@ -91,7 +126,15 @@ export default () => {
         maxHealth={opponentState.maxHealthPoints}
       />
       <div className="flex justify-center p-4 border-b border-green-700">
-        <PlayerPanel player={opponentState} />
+        <button
+          type="button"
+          onClick={() => handleAttackTarget(opponentState.player.id)}
+          disabled={!selectedAttackerId}
+          className={`rounded-xl transition ${selectedAttackerId ? "cursor-pointer hover:scale-[1.01]" : "cursor-not-allowed"} ${selectedAttackerCard ? "ring-4 ring-red-400 ring-offset-2 ring-offset-green-900" : ""}`}
+          aria-label={`Attaquer ${opponentState.player.name}`}
+        >
+          <PlayerPanel player={opponentState} />
+        </button>
       </div>
 
       <div
@@ -101,6 +144,8 @@ export default () => {
         <BoardRow
           title="Player 2 Monsters"
           cards={opponentState.playArea.monsterCards}
+          clickable={!!selectedAttackerId}
+          onCardClick={handleAttackTarget}
         />
         <BoardRow
           title="Player 2 Passive"
@@ -110,6 +155,10 @@ export default () => {
         <BoardRow
           title="Player 1 Monsters"
           cards={currentState.playArea.monsterCards}
+          clickable
+          onCardClick={handleSelectAttacker}
+          selectedCardId={selectedAttackerId}
+          isCardDisabled={(cardId) => getCardById(cardId)?.isActive === false}
         />
         <BoardRow
           title="Player 1 Passive"
@@ -119,6 +168,12 @@ export default () => {
 
       <div className="border-t border-green-700 p-4">
         <PlayerPanel player={currentState} />
+
+        <div className="mt-3 text-center text-sm text-white/70">
+          {selectedAttackerId
+            ? "Choisis une cible pour attaquer"
+            : "Choisis un monstre pour attaquer"}
+        </div>
 
         <div className="flex gap-2 mt-4 justify-center">
           <CardsHand

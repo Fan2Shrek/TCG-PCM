@@ -21,5 +21,6 @@ final readonly class CardDTO
         public CardSetEnum $set,
         public string $instanceId,
         public array $effects,
+        public bool $isActive = true,
     ) {}
 }

@@ -2,7 +2,7 @@ export type GameState = {
 	player1: PlayerState;
 	player2: PlayerState;
 	currentPlayer: Player;
-	cards: CardState[];
+	cards: Record<string, CardState>;
 }
 
 type PlayerState = {

@@ -41,6 +41,10 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
       { src: '/isaac_card_layer_4.gif', depth: 20 },
   ];
 
+  if (false === card?.isActive) {
+	tempCardLayers.push({ src: '/cross.webp', depth: 20 });
+  }
+
   return (
     <div
 	  id={card?.instanceId}

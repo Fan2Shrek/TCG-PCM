@@ -105,7 +105,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   };
 
 	const attack = (cardId: string, targetId: string) => {
-    api.game.play(gameId, PlayerActionType.END_TURN, { cardId, targetId });
+    api.game.play(gameId, PlayerActionType.ATTACK, { cardId, targetId });
   };
 
 	const endTurn = () => {
@@ -301,6 +301,21 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           },
         };
       }
+
+	  case GameEventType.UPDATE_CARD_STATE : {
+		const cardId = view.cardId;
+		console.log('aaa', event)
+
+		return {
+		  ...state,
+		  cards: {
+			...state.cards,
+			[cardId]: {
+			  ...view.card,
+			},
+		  },
+		}
+	  }
 
       default:
         console.log(`Unhandled event type ${event.type}`);

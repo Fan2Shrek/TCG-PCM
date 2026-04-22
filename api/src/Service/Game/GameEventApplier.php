@@ -23,8 +23,6 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::DAMAGE => $this->applyDamage($event, $gameState),
             GameEventTypeEnum::HEAL => $this->applyHeal($event, $gameState),
             GameEventTypeEnum::TURN_ENDED => $this->applyTurnEnded($event, $gameState),
-            GameEventTypeEnum::TURN_STARTED => $this->applyTurnStarted($event, $gameState),
-            GameEventTypeEnum::ROUND_STARTED => $this->applyRoundStarted($event, $gameState),
             GameEventTypeEnum::EFFECT_ADDED => $this->applyEffectAdded($event, $gameState),
             GameEventTypeEnum::CARD_DISCARDED => $this->applyCardDiscarded($event, $gameState),
             GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA => $this->applyCardPlaceInPlayArea($event, $gameState),
@@ -39,6 +37,8 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::CARD_RUNTIME_VALUE,
             GameEventTypeEnum::DICE_ROLLED,
             GameEventTypeEnum::CARD_ACTION_PREVENTED,
+            GameEventTypeEnum::TURN_STARTED,
+            GameEventTypeEnum::ROUND_STARTED,
                 => $this->noOp($event, $gameState),
         };
 
@@ -138,16 +138,6 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('DAMAGE target must be a player or a monster card');
         }
 
-        $sourceId = $event->data['sourceId'] ?? null;
-        if (\is_string($sourceId)) {
-            $sourceState = $newGameState->getCardState($sourceId);
-
-            if ($sourceState instanceof MonsterCardState) {
-                $newSourceState = $sourceState->withCanAttack(false);
-                $newGameState = $newGameState->withUpdatedCardState($newSourceState);
-            }
-        }
-
         return $newGameState;
     }
 
@@ -179,33 +169,6 @@ class GameEventApplier implements GameEventApplierInterface
     private function applyTurnEnded(GameEvent $event, GameState $gameState): GameState
     {
         return $gameState->withCurrentPlayer($gameState->getNextPlayer()->id);
-    }
-
-    private function applyTurnStarted(GameEvent $event, GameState $gameState): GameState
-    {
-        if (!($playerId = $event->data['playerId'] ?? null) || !\is_string($playerId)) {
-            throw new \LogicException('TURN_STARTED requires a playerId');
-        }
-
-        $monsterCards = $gameState->getPlayer($playerId)->playArea->monsterCards;
-
-        foreach ($monsterCards as $cardId) {
-            $cardState = $gameState->getCardState($cardId);
-
-            if ($cardState instanceof MonsterCardState) {
-                $newCardState = $cardState->withCanAttack(true);
-                $gameState = $gameState->withUpdatedCardState($newCardState);
-            }
-        }
-
-        return $gameState;
-    }
-
-    private function applyRoundStarted(GameEvent $event, GameState $gameState): GameState
-    {
-        // @todo appliquer les effets de début de round (buffs, dégâts sur la durée, etc.)
-
-        return $gameState;
     }
 
     private function noOp(GameEvent $event, GameState $gameState): GameState
@@ -314,15 +277,18 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('Update card state requires a cardId');
         }
 
-        if (null === ($newStats = $event->data['stateToUpdate'] ?? null) || !\is_array($newStats)) {
-            throw new \LogicException('Update card state requires a playerId');
-        }
-
         if (!($state = $gameState->getCardState($cardId))) {
             throw new \LogicException('Update card state requires a valid cardId');
         }
 
-        $newState = $state->updateValues($newStats);
+        if (null === ($newStats = $event->data['stateToUpdate'] ?? null) || !\is_array($newStats)) {
+            if (null === ($event->data['canAttack'] ?? null) || !$state instanceof MonsterCardState) {
+                throw new \LogicException('Update card state requires a playerId');
+            }
+            $newState = $state->withCanAttack($event->data['canAttack']);
+        } else {
+            $newState = $state->updateValues($newStats);
+        }
 
         return $gameState->withUpdatedCardState($newState);
     }
