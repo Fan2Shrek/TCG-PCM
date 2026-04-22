@@ -11,6 +11,14 @@ import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 export default () => {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
   const playBoxRef = useRef<HTMLDivElement>(null);
+  const giantAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation === "giant",
+  );
+  const giantAnnouncement =
+    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
+  const regularAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
+  );
 
   useEffect(() => {
     const handler = (data: { id: string }) => {
@@ -51,7 +59,7 @@ export default () => {
   return (
     <div className="relative flex flex-col h-screen bg-green-900 text-white">
       <div className="pointer-events-none absolute left-1/2 top-4 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
-        {announcements.map((announcement: GameAnnouncement) => (
+        {regularAnnouncements.map((announcement: GameAnnouncement) => (
           <div
             key={announcement.id}
             className={`rounded-full border px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm ${
@@ -66,6 +74,17 @@ export default () => {
           </div>
         ))}
       </div>
+
+      {giantAnnouncement && (
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6">
+          <div className="flex min-h-64 min-w-64 flex-col items-center justify-center rounded-[2.5rem] border border-white/20 bg-black/50 px-10 py-8 text-center shadow-[0_0_60px_rgba(255,255,255,0.18)] backdrop-blur-md">
+            <div className="text-5xl sm:text-6xl">🎲</div>
+            <div className="mt-4 text-7xl font-black leading-none tracking-tight text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.55)] sm:text-[8rem]">
+              {giantAnnouncement.text.replace(/^🎲\s*/, "")}
+            </div>
+          </div>
+        </div>
+      )}
 
       <PlayerHealthBar
         health={opponentState.healthPoints}

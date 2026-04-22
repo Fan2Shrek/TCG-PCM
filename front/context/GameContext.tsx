@@ -22,7 +22,10 @@ export type GameAnnouncement = {
   id: number;
   text: string;
   tone: AnnouncementTone;
+  presentation?: "normal" | "giant";
 };
+
+type AnnouncementPayload = Omit<GameAnnouncement, "id">;
 
 type ActionObject = {
   playCard: (cardId: string) => void;
@@ -48,35 +51,34 @@ export const GameContext = createContext<GameContextType>();
 export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
 	const [game, setGame] = useState<GameState | null>(initialGame || null);
 	const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
+  const gameRef = useRef<GameState | null>(initialGame || null);
   const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const currentUser = getCurrentUser();
 
-	const pushAnnouncement = useCallback(
-    (text: string, tone: AnnouncementTone = "neutral") => {
-      const id = ++announcementIdRef.current;
+	const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
+    const id = ++announcementIdRef.current;
 
-      setAnnouncements((current: GameAnnouncement[]) => [
-        ...current,
-        { id, text, tone },
-      ]);
+    setAnnouncements((current: GameAnnouncement[]) => [
+      ...current,
+      { id, ...announcement },
+    ]);
 
-      const timeoutId = window.setTimeout(() => {
-        setAnnouncements((current: GameAnnouncement[]) =>
-          current.filter(
-            (announcement: GameAnnouncement) => announcement.id !== id,
-          ),
-        );
+    const timeoutId = window.setTimeout(() => {
+      setAnnouncements((current: GameAnnouncement[]) =>
+        current.filter(
+          (announcement: GameAnnouncement) => announcement.id !== id,
+        ),
+      );
 
-        timeoutRefs.current = timeoutRefs.current.filter(
-          (currentTimeoutId) => currentTimeoutId !== timeoutId,
-        );
-      }, 2200);
+      timeoutRefs.current = timeoutRefs.current.filter(
+        (currentTimeoutId: ReturnType<typeof setTimeout>) =>
+          currentTimeoutId !== timeoutId,
+      );
+    }, 2200);
 
-      timeoutRefs.current.push(timeoutId);
-    },
-    [],
-  );
+    timeoutRefs.current.push(timeoutId);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -116,16 +118,32 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   ): "player1" | "player2" =>
     state.player1.player.id === playerId ? "player1" : "player2";
 
-  const animate = (state: GameState, event: GameEvent) => {
-    if (!event.view) return;
+  const animate = (
+    state: GameState,
+    event: GameEvent,
+  ): AnnouncementPayload | null => {
+    if (event.type === GameEventType.DICE_ROLLED) {
+	  if (!event.data.faces) return null;
+      const rollValue = event.data.result
+
+      return {
+        text: rollValue === null ? "🎲 Lancer de dés" : `🎲 ${rollValue}`,
+        tone: "neutral",
+        presentation: "giant",
+      };
+    }
+
+    if (!event.view) return null;
 
     const view = event.view;
 
     switch (event.type) {
       case GameEventType.TURN_STARTED: {
-		const player = getPlayerKey(state, view.currentPlayer.id);
-        pushAnnouncement(`Tour de ${state[player].player.name}`, "neutral");
-        return;
+        const player = getPlayerKey(state, view.currentPlayer);
+        return {
+          text: `Tour de ${state[player].player.name}`,
+          tone: "neutral",
+        };
       }
 
       case GameEventType.COINS_GAINED:
@@ -136,13 +154,13 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
         if (nextCoins !== previousCoins) {
           const delta = nextCoins - previousCoins;
-          pushAnnouncement(
-            `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} pièces`,
-            delta > 0 ? "positive" : "negative",
-          );
+          return {
+            text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} pièces`,
+            tone: delta > 0 ? "positive" : "negative",
+          };
         }
 
-        return;
+        return null;
       }
 
       case GameEventType.HEAL:
@@ -153,17 +171,17 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
         if (nextHealth !== previousHealth) {
           const delta = nextHealth - previousHealth;
-          pushAnnouncement(
-            `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} PV`,
-            delta > 0 ? "positive" : "negative",
-          );
+          return {
+            text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} PV`,
+            tone: delta > 0 ? "positive" : "negative",
+          };
         }
 
-        return;
+        return null;
       }
 
       default:
-        return;
+        return null;
     }
   };
 
@@ -294,24 +312,34 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${currentUser?.username === game?.player1.player.name ? "1" : "2"}`, // @todo change
     {
       game_events: (e: { events: GameEvent[] }) => {
-        setGame((prev: GameState | null) => {
-          if (!prev) {
-            return prev;
+        const previousGame = gameRef.current;
+
+        if (!previousGame) {
+          return;
+        }
+
+        let next = { ...previousGame };
+
+        for (const event of e.events) {
+          const previous = next;
+          const announcement = animate(previous, event);
+
+          if (announcement) {
+            pushAnnouncement(announcement);
           }
 
-          let next = { ...prev };
+          next = applyView(next, event);
+        }
 
-          for (const event of e.events) {
-            const previous = next;
-            next = applyView(next, event);
-            animate(previous, event);
-          }
-
-          return next;
-        });
+        gameRef.current = next;
+        setGame(next);
       },
     },
   );
+
+	useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
 
 	return (
     <GameContext.Provider
