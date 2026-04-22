@@ -35,7 +35,7 @@ final class GameEventPresenter
     private function buildView(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId = null): array
     {
         if (null === ($event->data['playerId'] ?? $event->data['targetId'] ?? null)) {
-            return [];
+            return $this->handleAnonymousEvent($event, $state, $isPrivate, $viewerId);
         }
         /** @var string $player */
         $player = $event->data['playerId'] ?? $event->data['targetId'];
@@ -56,6 +56,18 @@ final class GameEventPresenter
             ],
             GameEventTypeEnum::HEAL, GameEventTypeEnum::DAMAGE => [
                 'total' => $state->getPlayer($player)->healthPoints,
+            ],
+            default => [],
+        };
+    }
+
+    private function handleAnonymousEvent(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId): array
+    {
+        return match ($event->type) {
+            GameEventTypeEnum::UPDATE_CARD_STATE => [
+                // @var string $cardId
+                'cardId' => $cardId = $event->data['cardId'],
+                'card' => $this->gameStateConverter->createCardDTO($state->getCardState($cardId)),
             ],
             default => [],
         };

@@ -5,9 +5,20 @@ import Card from "../Card";
 type BoardRowProps = {
   title: string;
   cards: string[];
+  onCardClick?: (cardId: string) => void;
+  selectedCardId?: string | null;
+  clickable?: boolean;
+  isCardDisabled?: (cardId: string) => boolean;
 };
 
-export default ({ title, cards }: BoardRowProps) => {
+export default ({
+  title,
+  cards,
+  onCardClick,
+  selectedCardId,
+  clickable = false,
+  isCardDisabled,
+}: BoardRowProps) => {
   const { getCardById } = useContext(GameContext);
 
   return (
@@ -15,10 +26,28 @@ export default ({ title, cards }: BoardRowProps) => {
       <div className="text-sm opacity-70">{title}</div>
 
       <div className="flex gap-2">
-		{cards.map((cardId) => (
-		  <Card key={cardId} card={getCardById(cardId)} />
-		))}
+        {cards.map((cardId) => {
+          const card = getCardById(cardId);
+          const cardDisabled =
+            !clickable || isCardDisabled?.(cardId) || card?.isActive === false;
+
+          return (
+            <button
+              key={cardId}
+              type="button"
+              onClick={() => onCardClick?.(cardId)}
+              disabled={cardDisabled}
+              className={`rounded-xl transition-transform ${
+                cardDisabled
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer hover:-translate-y-1"
+              } ${selectedCardId === cardId ? "ring-4 ring-yellow-300 ring-offset-2 ring-offset-green-900" : ""}`}
+            >
+              <Card card={card} />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
-}
+};

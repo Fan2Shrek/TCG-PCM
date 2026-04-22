@@ -32,34 +32,6 @@ final class GameEventApplierTest extends TestCase
         self::assertEquals(new CardState('id', 'D6', 'player1', []), $newState->cards['id']);
     }
 
-    public function testTurnStartMonster()
-    {
-        $eventApplier = $this->getSut();
-        $state = $this->getInitialGameState(cards: [
-            'monster' => MonsterCardState::fromParent(new CardState('monster', 'monster', 'player1'), 10)->withCanAttack(false),
-        ]);
-        $event = new GameEvent(1, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => 'player1']);
-
-        $newState = $eventApplier->apply($event, $state);
-
-        self::assertTrue($newState->getCardState('monster')->canAttack);
-    }
-
-    public function testDamageMonsterCannotAttack()
-    {
-        $eventApplier = $this->getSut();
-        $state = $this->getInitialGameState();
-        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
-            'targetId' => 'monster',
-            'sourceId' => 'monster',
-            'damage' => 1,
-        ]);
-
-        $newState = $eventApplier->apply($event, $state);
-
-        self::assertFalse($newState->getCardState('monster')->canAttack);
-    }
-
     public function testApplyDamage(): void
     {
         $eventApplier = $this->getSut();
@@ -183,6 +155,23 @@ final class GameEventApplierTest extends TestCase
         $newState = $eventApplier->apply($event, $state);
 
         self::assertSame(1, $newState->cards['test']->values['turnRemainingBeforeAction']);
+    }
+
+    public function testCardStateUpdateCanAttack()
+    {
+        $eventApplier = $this->getSut();
+        $state = $this->getInitialGameState();
+        $cardState = new MonsterCardState('test', '', '', 1, [], [], true);
+        $state = $state->addCard($cardState);
+
+        $event = new GameEvent(1, GameEventTypeEnum::UPDATE_CARD_STATE, GameEvent::GAME_EVENT, [
+            'cardId' => 'test',
+            'canAttack' => false,
+        ]);
+
+        $newState = $eventApplier->apply($event, $state);
+
+        self::assertFalse($newState->cards['test']->canAttack);
     }
 
     public function testCardPlaceInMonsterArea()

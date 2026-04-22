@@ -261,6 +261,12 @@ count = 1
 [[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\Card\MonsterCardState::withcanattack`: expected `bool`, but found `nonnull`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `app\game\card\effect\effectstate::__construct`: expected `array<array-key, mixed>`, but found `nonnull`.'
 count = 1
 
@@ -284,8 +290,20 @@ count = 1
 
 [[issues]]
 file = "src/Service/GameEventPresenter.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\State\GameState::getcardstate`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Service/GameEventPresenter.php"
 code = "mixed-array-index"
 message = 'Invalid index type `mixed` used for array access on `array<string, App\Game\Card\CardState>`.'
+count = 1
+
+[[issues]]
+file = "src/Service/GameEventPresenter.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Service\Game\GameStateConverter::createcarddto` is possibly `null`, but parameter type `App\Game\Card\CardState` does not accept it.'
 count = 1
 
 [[issues]]

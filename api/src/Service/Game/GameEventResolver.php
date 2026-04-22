@@ -12,6 +12,7 @@ use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Monster\AbstractMonsterCard;
+use App\Game\Card\MonsterCardState;
 use App\Game\Exception\CardCannotAttackExpcetion;
 use App\Game\Exception\NotEnoughCoinsException;
 use App\Game\State\GameEvent;
@@ -130,6 +131,7 @@ class GameEventResolver
                 $events[] = GameEvent::game(GameEventTypeEnum::CARD_DRAWN, [
                     'playerId' => $playerId,
                 ]);
+                $events = array_merge($events, $this->restoreMonstersAttack($state, $playerId));
                 break;
             case GameEventTypeEnum::CARD_PLAYED:
                 $events = $this->doGenerateReactionsForCardPlayed($event, $state);
@@ -142,6 +144,29 @@ class GameEventResolver
                 $events = $this->doGenerareReactionsForDeath($event, $state);
             default:
                 break;
+        }
+
+        return $events;
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function restoreMonstersAttack(GameState $state, string $playerId): array
+    {
+        $events = [];
+
+        foreach ($state->getPlayer($playerId)->playArea->monsterCards as $cardId) {
+            $currentState = $state->getCardState($cardId);
+
+            if (!$currentState instanceof MonsterCardState || $currentState->canAttack) {
+                continue;
+            }
+
+            $events[] = GameEvent::game(GameEventTypeEnum::UPDATE_CARD_STATE, [
+                'cardId' => $cardId,
+                'canAttack' => true,
+            ]);
         }
 
         return $events;
@@ -251,7 +276,13 @@ class GameEventResolver
             'sourceId' => $attackerId,
         ]);
 
-        return [$event];
+        return [
+            $event,
+            GameEvent::game(GameEventTypeEnum::UPDATE_CARD_STATE, [
+                'cardId' => $attackerId,
+                'canAttack' => false,
+            ]),
+        ];
     }
 
     /**
