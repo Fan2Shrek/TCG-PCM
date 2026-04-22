@@ -41,6 +41,9 @@ final class GameEventPresenter
             ],
             GameEventTypeEnum::CARD_DISCARDED, GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA => [
                 'cardId' => $event->data['cardId'] ?? null,
+                'card' => GameEventTypeEnum::CARD_DISCARDED === $event->type
+                    ? null
+                    : $this->gameStateConverter->createCardDTO($state->cards[$event->data['cardId']]) ?? null,
             ],
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
                 'total' => $state->getPlayer($player)->coins,
