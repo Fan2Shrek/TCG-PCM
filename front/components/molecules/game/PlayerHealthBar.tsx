@@ -7,11 +7,23 @@ type Props = {
 }
 
 export default ({ health, maxHealth }: Props) => {
-  const progress = useMemo(() => health/maxHealth * 100, [health, maxHealth]);
+  const progress = useMemo(() => {
+    if (maxHealth <= 0) return 0;
+    return Math.max(0, Math.min(100, (health / maxHealth) * 100));
+  }, [health, maxHealth]);
+
+  const color = useMemo(() => {
+    const hue = Math.round((progress / 100) * 120);
+    return `hsl(${hue}, 85%, 45%)`;
+  }, [progress]);
 
   return (
-	  <div>
-		<ProgressBar progress={progress} text={`${health} / ${maxHealth}`} />
-	  </div>
-	);
+    <div>
+      <ProgressBar
+        progress={progress}
+        text={`${health} / ${maxHealth}`}
+        color={color}
+      />
+    </div>
+  );
 }
