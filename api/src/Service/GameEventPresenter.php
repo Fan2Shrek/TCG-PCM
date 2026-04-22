@@ -11,6 +11,9 @@ use App\Service\Game\GameStateConverter;
 
 final class GameEventPresenter
 {
+    private int $player1Offset = 0;
+    private int $player2Offset = 0;
+
     public function __construct(
         private GameStateConverter $gameStateConverter,
     ) {}
@@ -46,7 +49,7 @@ final class GameEventPresenter
                 'cardId' => $event->data['cardId'] ?? null,
                 'card' => GameEventTypeEnum::CARD_DISCARDED === $event->type
                     ? null
-                    : $this->gameStateConverter->createCardDTO($state->cards[$event->data['cardId']]) ?? null,
+                    : $this->gameStateConverter->createCardDTO($state->cards[$event->data['cardId']]),
             ],
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
                 'total' => $state->getPlayer($player)->coins,
@@ -62,7 +65,11 @@ final class GameEventPresenter
     {
         /** @var string $playerId */
         $playerId = $event->data['playerId'];
-        $cardId = array_last($state->getPlayer($playerId)->hand);
+        // this sucks as fck
+        $player = $state->getPlayer($playerId);
+        $cardId = array_slice($player->hand, -($player === $state->player1 ? $this->player1Offset : $this->player2Offset), 1)[0];
+
+        $player === $state->player1 ? ++$this->player1Offset : ++$this->player2Offset;
 
         if (!$playerId || !$cardId) {
             throw new \LogicException('CARD_DRAWN requires playerId and cardId');
@@ -74,6 +81,11 @@ final class GameEventPresenter
         ];
 
         if ($isPrivate && $viewerId === $playerId) {
+            // this still sucks ass btw
+            $player === $state->player1 ? --$this->player1Offset : --$this->player2Offset;
+            $cardId = array_slice($player->hand, -($player === $state->player1 ? $this->player1Offset : $this->player2Offset), 1)[0];
+            $player === $state->player1 ? --$this->player1Offset : --$this->player2Offset;
+
             $cardState = $state->cards[$cardId] ?? null;
 
             if (!$cardState) {
