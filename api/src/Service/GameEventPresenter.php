@@ -22,7 +22,7 @@ final class GameEventPresenter
             'data' => $event->data,
             'view' => array_merge(
                 [
-                    'playerId' => $event->data['playerId'] ?? null,
+                    'playerId' => $event->data['playerId'] ?? $event->data['targetId'] ?? null,
                 ],
                 $this->buildView($event, $state, $isPrivate, $viewerId),
             ),
@@ -31,8 +31,11 @@ final class GameEventPresenter
 
     private function buildView(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId = null): array
     {
+        if (null === ($event->data['playerId'] ?? $event->data['targetId'] ?? null)) {
+            return [];
+        }
         /** @var string $player */
-        $player = $event->data['playerId'];
+        $player = $event->data['playerId'] ?? $event->data['targetId'];
 
         return match ($event->type) {
             GameEventTypeEnum::CARD_DRAWN => $this->cardDrawnView($event, $state, $isPrivate, $viewerId),
@@ -47,6 +50,9 @@ final class GameEventPresenter
             ],
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
                 'total' => $state->getPlayer($player)->coins,
+            ],
+            GameEventTypeEnum::HEAL, GameEventTypeEnum::DAMAGE => [
+                'total' => $state->getPlayer($player)->healthPoints,
             ],
             default => [],
         };
