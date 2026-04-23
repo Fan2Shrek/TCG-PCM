@@ -51,7 +51,7 @@ export const GameContext = createContext<GameContextType>();
 export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
 	const [game, setGame] = useState<GameState | null>(initialGame || null);
 	const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
-  const gameRef = useRef<GameState | null>(initialGame || null);
+	const gameRef = useRef<GameState | null>(initialGame || null);
   const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const currentUser = getCurrentUser();
@@ -80,7 +80,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     timeoutRefs.current.push(timeoutId);
   }, []);
 
-  useEffect(() => {
+	useEffect(() => {
     return () => {
       timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) =>
         window.clearTimeout(timeoutId),
@@ -112,19 +112,19 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-  const getPlayerKey = (
+	const getPlayerKey = (
     state: GameState,
     playerId: string,
   ): "player1" | "player2" =>
     state.player1.player.id === playerId ? "player1" : "player2";
 
-  const animate = (
+	const animate = (
     state: GameState,
     event: GameEvent,
   ): AnnouncementPayload | null => {
     if (event.type === GameEventType.DICE_ROLLED) {
-	  if (!event.data.faces) return null;
-      const rollValue = event.data.result
+      if (!event.data.faces) return null;
+      const rollValue = event.data.result;
 
       return {
         text: rollValue === null ? "🎲 Lancer de dés" : `🎲 ${rollValue}`,
@@ -242,6 +242,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         };
 
         if (event.type === GameEventType.CARD_DISCARDED) {
+          console.log(cardId, player.playArea);
+          if (nextPlayer.playArea.monsterCards.includes(cardId)) {
+            nextPlayer.playArea.monsterCards =
+              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
+          } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
+            nextPlayer.playArea.passiveCards =
+              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
+          }
+
           return {
             ...state,
             [playerKey]: {
@@ -302,20 +311,20 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         };
       }
 
-	  case GameEventType.UPDATE_CARD_STATE : {
-		const cardId = view.cardId;
-		console.log('aaa', event)
+      case GameEventType.UPDATE_CARD_STATE: {
+        const cardId = view.cardId;
+        console.log("aaa", event);
 
-		return {
-		  ...state,
-		  cards: {
-			...state.cards,
-			[cardId]: {
-			  ...view.card,
-			},
-		  },
-		}
-	  }
+        return {
+          ...state,
+          cards: {
+            ...state.cards,
+            [cardId]: {
+              ...view.card,
+            },
+          },
+        };
+      }
 
       default:
         console.log(`Unhandled event type ${event.type}`);

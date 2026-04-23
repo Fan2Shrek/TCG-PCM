@@ -187,7 +187,10 @@ class GameContext
 
     public function discardCard(string $cardId): void
     {
-        $this->pushGameEvent(GameEventTypeEnum::CARD_DISCARDED, ['cardId' => $cardId]);
+        $this->pushGameEvent(GameEventTypeEnum::CARD_DISCARDED, [
+            'cardId' => $cardId,
+            'playerId' => $this->state->getCardState($cardId)?->ownerId,
+        ]);
     }
 
     public function addCoins(int $amount, ?string $playerId = null): void
