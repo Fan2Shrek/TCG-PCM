@@ -34,6 +34,16 @@ export class ApiClient {
 		});
 
 		if (!response.ok) {
+			if (response.status === 400) {
+        const errorBody = (await response.json().catch(() => null)) as {
+          detail?: string;
+        } | null;
+
+        if (errorBody?.detail) {
+          throw new Error(errorBody.detail);
+        }
+      }
+
 			throw new Error(`API request failed with status ${response.status}`);
 		}
 

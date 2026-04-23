@@ -52,7 +52,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 	const [game, setGame] = useState<GameState | null>(initialGame || null);
 	const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
 	const gameRef = useRef<GameState | null>(initialGame || null);
-  const announcementIdRef = useRef(0);
+	const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const currentUser = getCurrentUser();
 
@@ -100,8 +100,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     [game],
   );
 
-	const playCard = (cardId: string) => {
-    api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
+	const playCard = async (cardId: string) => {
+    try {
+      await api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
+    } catch (error) {
+      pushAnnouncement({
+        text: error.message || "Une erreur est survenue",
+        tone: "negative",
+      });
+    }
   };
 
 	const attack = (cardId: string, targetId: string) => {
