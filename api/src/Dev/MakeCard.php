@@ -121,7 +121,7 @@ final class MakeCard extends AbstractMaker
                 CardTestCase::class,
                 false,
                 [
-                    $cardClassData->getClassName(),
+                    $cardClassData->getClassName().'Card',
                 ],
             );
 

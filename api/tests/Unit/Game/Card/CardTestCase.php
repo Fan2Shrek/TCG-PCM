@@ -42,14 +42,16 @@ abstract class CardTestCase extends TestCase
         }
     }
 
-    protected function createGameContext(): GameContext
+    protected function createGameContext(?GameState $state = null): GameContext
     {
-        $player1State = $this->createPlayerState('1');
-        $player2State = $this->createPlayerState('2');
+        if (!$state) {
+            $player1State = $this->createPlayerState('1');
+            $player2State = $this->createPlayerState('2');
 
-        $state = new GameState($player1State, $player2State, 1, 0, null, [
-            'test_card' => new CardState('test_card', DummyCard::class, '1', []),
-        ]);
+            $state = new GameState($player1State, $player2State, 1, 0, null, [
+                'test_card' => new CardState('test_card', DummyCard::class, '1', []),
+            ]);
+        }
 
         return new TestableGameContext($state, '1', $this->nextRoll ?? 0);
     }
