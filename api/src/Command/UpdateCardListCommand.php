@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Game\AbstractCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardHelper;
 use App\Game\Card\CardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\EffectCollection;
@@ -29,6 +30,7 @@ final class UpdateCardListCommand
         AbstractPassiveCard::class,
         AbstractPlayableCard::class,
         CardState::class,
+        CardHelper::class,
         MonsterCardState::class,
         EffectCollection::class,
     ];
