@@ -32,6 +32,6 @@ final class ConsolationPricesCard extends AbstractPassiveCard implements DeathAw
             return;
         }
 
-        $gameContext->addCoins($this->getValue(self::COINS_PER_DEATH, true));
+        $gameContext->addCoins($this->getValue(self::COINS_PER_DEATH, true), $card->getOwnerId());
     }
 }
