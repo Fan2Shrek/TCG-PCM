@@ -150,6 +150,14 @@ class GameContext
             throw new \LogicException('No cards available to select');
         }
 
+        return $this->selectRandomCardIn($pool);
+    }
+
+    /**
+     * @param string[] $pool
+     */
+    public function selectRandomCardIn(array $pool): string
+    {
         $randomCardId = $pool[array_rand($pool)];
 
         $this->runtimeValueEffect($randomCardId);

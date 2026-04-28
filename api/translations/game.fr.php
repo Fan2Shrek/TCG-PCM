@@ -68,7 +68,7 @@ return [
         ],
         'Play2Hurt' => [
             'name' => 'Jouer pour blesser',
-            'description' => 'Inflige {{value}} dégâts a un joeueur à chaque caerte jouée.',
+            'description' => 'Inflige {{value}} dégâts a un joeueur à chaque carte jouée.',
         ],
         'StackyStackito' => [
             'name' => 'Stacky Stackito',
@@ -89,6 +89,10 @@ return [
         'BloodSucker' => [
             'name' => 'Suceur de sang',
             'description' => 'Inflige {{value}} à tous les joueurs à chaque début de tour',
+        ],
+        'TheHand' => [
+            'nam' => 'La main',
+            'description' => 'Défausse une carte aléatoire de la zone de jeu de votre adversaire.',
         ],
     ],
     // Effects

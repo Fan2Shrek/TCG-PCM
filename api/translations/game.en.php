@@ -90,6 +90,10 @@ return [
             'name' => 'Blood sucker',
             'description' => 'Does {{value}} to all players on turn start',
         ],
+        'TheHand' => [
+            'name' => 'The hand',
+            'description' => 'Discard a random card from your opponent play area.',
+        ],
     ],
     // Effects
     'effects' => [
