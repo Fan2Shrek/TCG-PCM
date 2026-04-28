@@ -20,6 +20,7 @@ final class Play2HurtCard extends AbstractPassiveCard implements CardAwareInterf
 
     public function onCardPlayed(AbstractCard $card, GameContext $gameContext): void
     {
+        $gameContext->attack($this->getValue(self::DAMAGE_AMOUNT, true));
         $gameContext->attack($this->getValue(self::DAMAGE_AMOUNT, true), $card->getOwnerId());
     }
 }

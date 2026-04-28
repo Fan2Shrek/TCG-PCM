@@ -5,6 +5,7 @@ use App\Game\Card;
 return [
 	'Benjamin' => Card\BenjaminCard::class,
 	'BloodSucker' => Card\BloodSuckerCard::class,
+	'Bomb' => Card\BombCard::class,
 	'Necromancian' => Card\Character\NecromancianCard::class,
 	'Pierrot' => Card\Character\PierrotCard::class,
 	'Stonks' => Card\Character\StonksCard::class,
@@ -23,5 +24,6 @@ return [
 	'RiskyBet' => Card\RiskyBetCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
 	'StackyStackito' => Card\StackyStackitoCard::class,
+	'TheHand' => Card\TheHandCard::class,
 	'ViciousStinger' => Card\ViciousStingerCard::class,
 ];
