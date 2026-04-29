@@ -45,12 +45,21 @@ final class GameUtils
 
     public static function t(string $msg): string
     {
-        return self::$container->get('translator')->trans($msg, [], 'game');
+        return self::getService('translator')->trans($msg, [], 'game');
     }
 
     public static function setContainer(ContainerInterface $container): void
     {
         self::$container = $container;
+    }
+
+    public static function getService(string $id): mixed
+    {
+        if (!self::$container->has($id)) {
+            throw new \LogicException(sprintf('Service with id "%s" not found in container.', $id));
+        }
+
+        return self::$container->get($id);
     }
 
     private static function formatValue(string $type, mixed $value): string

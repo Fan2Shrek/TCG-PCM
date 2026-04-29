@@ -103,6 +103,12 @@ message = "Unsafe array access on type `mixed`."
 count = 3
 
 [[issues]]
+file = "src/DependencyInjection/RegisterGameHelperPass.php"
+code = "mixed-array-assignment"
+message = "Unsafe array assignment on type `mixed`."
+count = 1
+
+[[issues]]
 file = "src/Doctrine/Type/PlayerStateType.php"
 code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `json_decode`: expected `string`, but found `nonnull`."
@@ -206,8 +212,14 @@ count = 1
 
 [[issues]]
 file = "src/Kernel.php"
-code = "possibly-null-argument"
-message = 'Argument #1 of method `app\game\gameutils::setcontainer` is possibly `null`, but parameter type `Psr\Container\ContainerInterface` does not accept it.'
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `app\game\gameutils::setcontainer`: expected `Psr\Container\ContainerInterface`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Kernel.php"
+code = "possible-method-access-on-null"
+message = "Attempting to call a method on `null`."
 count = 1
 
 [[issues]]

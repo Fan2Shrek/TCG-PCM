@@ -2,7 +2,6 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use App\Service\EndGameHandler;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistry;
@@ -17,6 +16,7 @@ use App\Service\Game\GameEventResolver;
 use App\Service\Game\GameInitializer;
 use App\Service\Game\GameStateConverter;
 use App\Service\Game\GameStateRebuilder;
+use App\Service\Game\Helper\HttpHelper;
 use App\Service\Game\Pipeline\GamePipeline;
 use App\Service\Game\Pipeline\Middleware\ConvertActionToEventMiddleware;
 use App\Service\Game\Pipeline\Middleware\EndGameMiddleware;
@@ -31,6 +31,7 @@ use App\Service\Game\State\DoctrineGameStateRepository;
 use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateProvider;
 use App\Service\Game\State\GameStateRepositoryInterface;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -153,5 +154,16 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service('game.end_game_handler'),
             ])
+
+        // Game container
+        ->set('game.container', ServiceLocator::class)
+            ->arg(0, [
+                'translator' => service('translator'),
+            ])
+            ->tag('container.service_locator')
+            ->public()
+
+        ->set('game.helper.http', HttpHelper::class)
+            ->tag('game.helper', ['name' => 'http'])
     ;
 };

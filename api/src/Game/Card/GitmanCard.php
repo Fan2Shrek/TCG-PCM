@@ -6,8 +6,8 @@ use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\ComputedCardInterface;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Service\Game\Helper\HttpHelper;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpFoundation\Request;
 
 class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
 {
@@ -64,8 +64,9 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
             return $this->commitCount;
         }
 
-        $client = HttpClient::create();
-        $response = $client->request(Request::METHOD_GET, self::GITHUB_API_URL);
+        /** @var HttpHelper $client */
+        $client = GameUtils::getService('http');
+        $response = $client->get(self::GITHUB_API_URL);
 
         $headers = $response->getHeaders();
 
