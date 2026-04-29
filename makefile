@@ -1,6 +1,8 @@
 WITH_DOCKER?=1
 COMPOSE=$(shell which docker) compose
 
+STACK_NAME=tcg
+
 ifndef env
 env=dev
 endif
@@ -76,3 +78,28 @@ symfony-lint:
 
 stan:
 	$(PHP) vendor/bin/mago analyze
+
+# ===== Docker Swarm =====
+
+swarm-init:
+	docker swarm init
+
+secrets-create:
+	@echo "Entrez le mot de passe root MariaDB puis Ctrl+D :"
+	docker secret create db_root_password -
+
+secrets-list:
+	docker secret ls
+
+stack-deploy:
+	docker stack deploy -c stack.yml $(STACK_NAME) --with-registry-auth
+
+stack-ps:
+	docker stack ps $(STACK_NAME)
+
+SERVICE?=$(STACK_NAME)_php
+stack-logs:
+	docker service logs $(SERVICE) -f
+
+stack-rm:
+	docker stack rm $(STACK_NAME)

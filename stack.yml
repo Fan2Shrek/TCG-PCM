@@ -1,0 +1,101 @@
+services:
+  php:
+    image: ghcr.io/fan2shrek/tcg/api:latest
+    ports:
+      - "8000:80"
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: mysql://root:root@db:3306/app
+      MERCURE_URL: http://mercure/.well-known/mercure
+      MERCURE_PUBLIC_URL: https://mercure.esgi.wiatr.fr/.well-known/mercure
+      MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app
+
+  front:
+    image: ghcr.io/fan2shrek/tcg/frontend:latest
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app
+
+  db:
+    image: mariadb:11.8.2
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MYSQL_DATABASE: app
+    volumes:
+      - db_data:/var/lib/mysql
+    secrets:
+      - db_root_password
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - "8090:80"
+    deploy:
+      replicas: 1
+    networks:
+      - app
+
+  redis:
+    image: redis:7
+    deploy:
+      replicas: 1
+    networks:
+      - app
+
+  mercure:
+    image: dunglas/mercure
+    environment:
+      SERVER_NAME: ':80'
+      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins https://front.esgi.wiatr.fr
+    ports:
+      - "8080:80"
+    volumes:
+      - mercure_data:/data
+      - mercure_config:/config
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app
+
+secrets:
+  db_root_password:
+    external: true
+
+volumes:
+  db_data:
+  mercure_data:
+  mercure_config:
+
+networks:
+  app:
+    driver: overlay
