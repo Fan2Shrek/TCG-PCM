@@ -4,6 +4,7 @@ namespace App;
 
 use App\Badge\Handler\BadgeHandlerInterface;
 use App\DependencyInjection\DeployPass;
+use App\DependencyInjection\RegisterGameHelperPass;
 use App\DependencyInjection\UseRedisGameStateRepositoryPass;
 use App\Game\GameUtils;
 use App\Interface\DeployAwareInterface;
@@ -51,6 +52,7 @@ class Kernel extends BaseKernel
 
         $container->addCompilerPass(new UseRedisGameStateRepositoryPass());
         $container->addCompilerPass(new DeployPass());
+        $container->addCompilerPass(new RegisterGameHelperPass());
 
         $container
             ->register('kernel.get_feature', \Closure::class)
@@ -67,6 +69,6 @@ class Kernel extends BaseKernel
     {
         parent::boot();
 
-        GameUtils::setContainer($this->container);
+        GameUtils::setContainer($this->container->get('game.container'));
     }
 }
