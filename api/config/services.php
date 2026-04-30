@@ -13,6 +13,8 @@ return App::config([
         'app.resources_dir' => "%kernel.project_dir%/resources",
         'app.cards_list' => "%app.resources_dir%/cards_list.php",
         'app.feature_list' => "%kernel.project_dir%/config/features.php",
+        'app.stripe_token' => '%env(string:STRIPE_TOKEN)%',
+        'game.stripe_token' => '%app.stripe_token%',
     ],
     'services' => [
         '_defaults' => [

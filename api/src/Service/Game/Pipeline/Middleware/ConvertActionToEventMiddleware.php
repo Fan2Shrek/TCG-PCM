@@ -46,6 +46,7 @@ final class ConvertActionToEventMiddleware implements GameMiddlewareInterface
         return GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
             'playerId' => $action->authorId,
             'cardId' => $card,
+            'data' => $action->payload['data'] ?? [],
         ]);
     }
 

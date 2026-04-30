@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Service\Game\Helper\StripeHelper;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistry;
@@ -32,6 +33,7 @@ use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateProvider;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -159,11 +161,18 @@ return static function (ContainerConfigurator $container): void {
         ->set('game.container', ServiceLocator::class)
             ->arg(0, [
                 'translator' => service('translator'),
+                'mercure' => service('mercure.hub'),
             ])
             ->tag('container.service_locator')
             ->public()
 
         ->set('game.helper.http', HttpHelper::class)
             ->tag('game.helper', ['name' => 'http'])
+
+        ->set('game.helper.stripe', StripeHelper::class)
+            ->args([
+                param('game.stripe_token'),
+            ])
+            ->tag('game.helper', ['name' => 'stripe'])
     ;
 };

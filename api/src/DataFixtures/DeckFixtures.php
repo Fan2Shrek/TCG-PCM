@@ -29,6 +29,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
 
         $i = 0;
         while (count($cards) < DeckValidator::DECK_SIZE) {
+            $cards[] = 'Pay2Win';
             $cards[] = $allCards[$i % $count];
             $i++;
         }

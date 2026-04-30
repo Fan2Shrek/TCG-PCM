@@ -18,6 +18,7 @@ return [
 	'Justice' => Card\JusticeCard::class,
 	'Redbloons' => Card\Monster\RedBloonsMonsterCard::class,
 	'ViciousBee' => Card\Monster\ViciousBeeCard::class,
+	'Pay2Win' => Card\Pay2WinCard::class,
 	'PierreSaidNoMonsterZone' => Card\PierreSaidNoMonsterZone::class,
 	'Placenta' => Card\PlacentaCard::class,
 	'Play2Hurt' => Card\Play2HurtCard::class,

@@ -2,19 +2,24 @@ type: http_request
 model: http_request
 id: rq_hDPGUmSeSA
 createdAt: 2026-02-19T16:38:57.970239220
-updatedAt: 2026-04-14T17:36:23.065238493
+updatedAt: 2026-04-30T15:09:03.306952312
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_JLpCFxuyh2
 authentication: {}
 authenticationType: null
 body:
-  text: |
+  text: |+
     {
       "actionId": "play_card",
       "payload": {
-        "cardId": "b99e109c-a382-4cf8-be06-7e9f4323f1ba"
+        "cardId": "93abfb91-314c-4391-bb62-fa15c8917265",
+        "data": {
+          "amount": 100,
+          "url": "http://localhost:3000/game/${[ room_id ]}"
+        }
       }
     }
+
 bodyType: application/json
 description: ''
 headers:
