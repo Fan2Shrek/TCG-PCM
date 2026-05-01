@@ -55,9 +55,13 @@ services:
       DOZZLE_MODE: swarm
       DOZZLE_ENABLE_ACTIONS: 'true'
       DOZZLE_ENABLE_SHELL: 'true'
+      DOZZLE_AUTH_PROVIDER: simple
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - dozzle_data:/data
+    secrets:
+      - source: dozzle_users
+        target: /data/users.yml
+        mode: 0444
     ports:
       - "9000:8080"
     networks:
@@ -98,12 +102,13 @@ services:
 secrets:
   db_root_password:
     external: true
+  dozzle_users:
+    external: true
 
 volumes:
   db_data:
   mercure_data:
   mercure_config:
-  dozzle_data:
 
 networks:
   app:

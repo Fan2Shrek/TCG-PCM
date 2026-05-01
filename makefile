@@ -152,6 +152,28 @@ secrets-restore:
 		--plain \
 	| docker secret create db_root_password -
 
+dozzle-secret-create:
+	@set -a && . /root/.env.infisical && set +a && \
+	TOKEN=$$(infisical login \
+		--method=universal-auth \
+		--client-id=$$INFISICAL_CLIENT_ID \
+		--client-secret=$$INFISICAL_CLIENT_SECRET \
+		--domain=$(INFISICAL_DOMAIN) \
+		--plain) && \
+	PASSWORD=$$(infisical secrets get DOZZLE_PASSWORD \
+		--token=$$TOKEN \
+		--domain=$(INFISICAL_DOMAIN) \
+		--projectId=$(INFISICAL_PROJECT_ID) \
+		--plain) && \
+	HASH=$$(htpasswd -bnBC 10 "" "$$PASSWORD" | tr -d ':\n' | sed 's/\$$2y/\$$2a/') && \
+	printf 'users:\n  admin:\n    name: Admin\n    email: admin@wiatr.fr\n    password: "%s"\n' "$$HASH" \
+	| docker secret create dozzle_users -
+	@echo "Secret Dozzle créé."
+
+dozzle-secret-rotate:
+	-docker secret rm dozzle_users
+	$(MAKE) dozzle-secret-create
+
 secrets-list:
 	docker secret ls
 
