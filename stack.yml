@@ -112,4 +112,4 @@ volumes:
 
 networks:
   app:
-    driver: overlay
+    external: true
