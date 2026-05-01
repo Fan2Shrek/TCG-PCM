@@ -178,13 +178,17 @@ dozzle-secret-rotate:
 secrets-list:
 	docker secret ls
 
+networks:
+	docker network inspect app >/dev/null 2>&1 || docker network create --driver overlay --attachable app
+	docker network inspect infisical >/dev/null 2>&1 || docker network create --driver overlay --attachable infisical
+
 stack-deploy-backup:
 	docker stack deploy -c stack.backup.yml backup --with-registry-auth
 
-stack-deploy-infisical: stack-deploy-backup
+stack-deploy-infisical:
 	docker stack deploy -c stack.infisical.yml infisical --with-registry-auth
 
-stack-deploy: stack-deploy-backup
+stack-deploy:
 	@set -a && . /root/.env.infisical && set +a && \
 	TOKEN=$$(infisical login \
 		--method=universal-auth \

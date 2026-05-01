@@ -88,6 +88,7 @@ jobs:
             cd ${{ secrets.DEPLOY_PROJECT_PATH }}
             git pull
             make pull
+            make networks
             make stack-deploy-backup
             make stack-deploy-infisical
             make stack-deploy

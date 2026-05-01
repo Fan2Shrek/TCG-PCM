@@ -67,4 +67,4 @@ volumes:
 
 networks:
   infisical:
-    driver: overlay
+    external: true
