@@ -86,6 +86,7 @@ build-front-dev:
 pull:
 	docker pull ghcr.io/fan2shrek/tcg/api:latest
 	docker pull ghcr.io/fan2shrek/tcg/frontend:latest
+	docker pull ghcr.io/fan2shrek/tcg/db-backup:latest
 	docker pull mariadb:11.8.2
 	docker pull redis:7
 	docker pull dunglas/mercure
@@ -177,10 +178,13 @@ dozzle-secret-rotate:
 secrets-list:
 	docker secret ls
 
-stack-deploy-infisical:
+stack-deploy-backup:
+	docker stack deploy -c stack.backup.yml backup --with-registry-auth
+
+stack-deploy-infisical: stack-deploy-backup
 	docker stack deploy -c stack.infisical.yml infisical --with-registry-auth
 
-stack-deploy:
+stack-deploy: stack-deploy-backup
 	@set -a && . /root/.env.infisical && set +a && \
 	TOKEN=$$(infisical login \
 		--method=universal-auth \
@@ -206,3 +210,6 @@ stack-rm:
 
 stack-rm-infisical:
 	docker stack rm infisical
+
+stack-rm-backup:
+	docker stack rm backup

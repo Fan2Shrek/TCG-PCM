@@ -7,6 +7,7 @@ on:
     paths:
       - 'front/**'
       - 'api/**'
+      - 'infra/backup/**'
 
 env:
   REGISTRY: ghcr.io
@@ -61,3 +62,32 @@ jobs:
           build-args: |
             API_URL=${{ secrets.API_URL }}
             MERCURE_URL=${{ secrets.MERCURE_URL }}
+
+      - name: Build and push db-backup image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./infra/backup
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/db-backup:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_PREFIX }}/db-backup:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_PREFIX }}/db-backup:buildcache,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to swarm
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: 4892
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PROJECT_PATH }}
+            git pull
+            make pull
+            make stack-deploy-backup
+            make stack-deploy-infisical
+            make stack-deploy
