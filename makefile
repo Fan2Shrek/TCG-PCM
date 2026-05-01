@@ -17,6 +17,9 @@ CONSOLE=$(PHP) php bin/console --env=$(env)
 
 COVERAGE_DIR=var/phpunit
 
+install:
+	$(COMPOSE) exec php composer install
+
 card-list:
 	$(CONSOLE) app:update:card-list
 
@@ -56,6 +59,31 @@ tests-replay:
 
 remove-cache:
 	@rm -rf api/var
+
+clean:
+	@rm -rf api/var
+	@rm -rf front/.next front/node_modules
+	docker builder prune -f
+
+build-api:
+	docker build --no-cache -t tcg-api:prod --target prod ./api
+
+build-api-dev:
+	docker build --no-cache -t tcg-api:dev --target dev ./api
+
+build-front:
+	docker build --no-cache -t tcg-front:prod --target prod ./front
+
+build-front-dev:
+	docker build --no-cache -t tcg-front:dev --target dev ./front
+
+pull:
+	docker pull ghcr.io/fan2shrek/tcg/api:latest
+	docker pull ghcr.io/fan2shrek/tcg/frontend:latest
+	docker pull mariadb:11.8.2
+	docker pull redis:7
+	docker pull dunglas/mercure
+	docker pull amir20/dozzle:latest
 
 format:
 	$(PHP) vendor/bin/mago format

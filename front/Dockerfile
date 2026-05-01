@@ -1,7 +1,8 @@
+ARG NODE_VERSION=24.13.0-slim
 # =========================
 # BASE
 # =========================
-FROM node:20-alpine AS base
+FROM node:${NODE_VERSION} AS base
 WORKDIR /app
 
 FROM base AS deps
