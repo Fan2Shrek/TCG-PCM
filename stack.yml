@@ -5,10 +5,10 @@ services:
       - "8000:80"
     environment:
       APP_ENV: prod
-      DATABASE_URL: mysql://root:root@db:3306/app
+      DATABASE_URL: mysql://root:${DB_ROOT_PASSWORD}@db:3306/app
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: https://mercure.esgi.wiatr.fr/.well-known/mercure
-      MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET}
     deploy:
       replicas: 2
       restart_policy:
@@ -76,8 +76,8 @@ services:
     image: dunglas/mercure
     environment:
       SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET}
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins https://front.esgi.wiatr.fr
     ports:
