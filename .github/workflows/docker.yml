@@ -91,4 +91,5 @@ jobs:
             make networks
             make stack-deploy-backup
             make stack-deploy-infisical
+            until curl -4 -sf http://localhost:8081/api/status; do sleep 10; done
             make stack-deploy
