@@ -22,6 +22,8 @@ RUN install-php-extensions \
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 WORKDIR /app
 
 COPY ./nginx.conf /etc/nginx/http.d/default.conf
