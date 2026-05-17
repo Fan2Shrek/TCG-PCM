@@ -5,7 +5,7 @@ export type GameState = {
 	cards: Record<string, CardState>;
 }
 
-type PlayerState = {
+export type PlayerState = {
 	player: Player;
 	healthPoints: number;
 	maxHealthPoints: number;

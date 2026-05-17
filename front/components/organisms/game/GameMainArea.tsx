@@ -1,6 +1,9 @@
-import BoardRow from "@/components/molecules/game/BoardRow";
 import { BasicCard } from "@/components/types/card";
-import { GameState } from "@/lib/game/type/gameState";
+import { GameState, PlayerState } from "@/lib/game/type/gameState";
+import EnemyCharacterPanel from "./EnemyCharacterPanel";
+import AlliedCharacterPanel from "./AlliedCharacterPanel";
+import PassivesZone from "@/components/molecules/game/PassivesZone";
+import MonsterZone from "@/components/molecules/game/MonsterZone"; // NEW IMPORT
 
 type GameMainAreaProps = {
   game: GameState | null;
@@ -8,7 +11,11 @@ type GameMainAreaProps = {
   onSelectAttacker: (cardId: string) => void;
   onSelectTarget: (cardId: string) => void;
   getCardById: (id: string) => BasicCard | undefined;
+  opponentState: PlayerState;
+  currentState: PlayerState;
+  selectedAttackerCard: BasicCard | undefined;
   className?: string;
+  isCardDragged: boolean;
 };
 
 export default function GameMainArea({
@@ -18,58 +25,79 @@ export default function GameMainArea({
   onSelectAttacker,
   onSelectTarget,
   getCardById,
+  opponentState,
+  currentState,
+  selectedAttackerCard,
+  isCardDragged,
 }: GameMainAreaProps) {
   const p1 = game?.player1;
   const p2 = game?.player2;
 
   return (
     <div
-      className={`relative flex-1 flex flex-col items-center justify-center transform-3d transform-gpu w-full h-full  ${className || ""}`}
+      className={`relative flex-1 flex flex-col items-center justify-center transform-3d transform-gpu w-[5000px] h-[5000px]  ${className || ""}`}
     >
+      {/* parent div to apply transform 3d to the game area */}
       <div
-        className="w-full h-full flex flex-col items-center gap-6 bg-orange-800 max-w-[1500px] max-h-[1000px]"
+        className="absolute -inset-[20%] flex items-center justify-center bg-orange-800 transition-transform duration-300"
         style={{
-          transform: "perspective(1000px) rotateX(40deg) rotateZ(0deg)",
+          transform: isCardDragged
+            ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)"
+            : "perspective(1000px) rotateX(20deg) rotateZ(0deg)",
         }}
       >
-        {p2 && (
-          <>
-            <BoardRow
-              title="Player 2 Monsters"
-              cards={p2.playArea.monsterCards}
-              clickable={!!selectedAttackerId}
-              onCardClick={onSelectTarget}
-            />
-            <BoardRow
-              title="Player 2 Passive"
-              cards={p2.playArea.passiveCards}
-            />
-          </>
-        )}
+        {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
+        <div className="h-[90vh] w-[90vw] bg-orange-800 flex flex-col pb-25">
+          {/* finally, this div contains the actual play area where everything happens. */}
+          {p2 && (
+            <div className="flex-1 w-full grid grid-cols-5 items-center bg-red-600">
+              <PassivesZone
+                title="Player 2 Passive"
+                cards={p2.playArea.passiveCards}
+                className="col-span-1"
+              />
+              <MonsterZone
+                title="Player 2 Monsters"
+                cards={p2.playArea.monsterCards}
+                clickable={!!selectedAttackerId}
+                onCardClick={onSelectTarget}
+                className="col-span-3"
+              />
+              <EnemyCharacterPanel
+                player={opponentState}
+                selectedAttackerId={selectedAttackerId}
+                handleAttackTarget={onSelectTarget}
+                selectedAttackerCard={selectedAttackerCard}
+              />
+            </div>
+          )}
 
-        {p1 && (
-          <>
-            <BoardRow
-              title="Player 1 Monsters"
-              cards={p1.playArea.monsterCards}
-              clickable
-              onCardClick={onSelectAttacker}
-              selectedCardId={selectedAttackerId}
-              isCardDisabled={(cardId) =>
-                getCardById(cardId)?.isActive === false
-              }
-            />
-            <BoardRow
-              title="Player 1 Passive"
-              cards={p1.playArea.passiveCards}
-            />
-          </>
-        )}
+          {p1 && (
+            <div className="flex-1 w-full grid grid-cols-5 items-center bg-blue-600">
+              <AlliedCharacterPanel
+                player={currentState}
+                className="col-span-1"
+              />
+              <MonsterZone
+                title="Player 1 Monsters"
+                cards={p1.playArea.monsterCards}
+                clickable
+                onCardClick={onSelectAttacker}
+                selectedCardId={selectedAttackerId}
+                isCardDisabled={(cardId) =>
+                  getCardById(cardId)?.isActive === false
+                }
+                className="col-span-3"
+              />
+              <PassivesZone
+                title="Player 1 Passive"
+                cards={p1.playArea.passiveCards}
+                className="col-span-1"
+              />
+            </div>
+          )}
+        </div>
       </div>
-      <div className="absolute bottom-10 right-1/15 left-1/15 h-[50px] bg-orange-900" />
-
-      <div className="absolute -bottom-30 left-1/15 w-[200px] h-[200px] bg-orange-900" />
-      <div className="absolute -bottom-30 right-1/15 w-[200px] h-[200px] bg-orange-900" />
     </div>
   );
 }

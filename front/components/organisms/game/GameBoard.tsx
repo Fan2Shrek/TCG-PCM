@@ -1,12 +1,11 @@
-import PlayerPanel from "@/components/atoms/game/PlayerPanel";
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import CardsHand from "../CardsHand";
-import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 import GameMainArea from "./GameMainArea";
+import CardsHand from "../CardsHand";
+import { CardWithPosition } from "@/components/types/card";
 
 export default () => {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
@@ -14,6 +13,9 @@ export default () => {
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
+  const [isHandHovered, setIsHandHovered] = useState(false);
+  const [draggedCard, setDraggedCard] = useState<CardWithPosition | null>(null);
+
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",
   );
@@ -40,6 +42,24 @@ export default () => {
 
     return () => emitter.off("card:played", handler);
   }, [actions]);
+
+  useEffect(() => {
+    const handleDragStart = ({ card }: { card: CardWithPosition }) => {
+      setDraggedCard(card);
+    };
+    const handleDragEnd = () => {
+      setDraggedCard(null);
+      setIsHandHovered(false);
+    };
+
+    emitter.on("card:drag:start", handleDragStart);
+    emitter.on("card:drag:end", handleDragEnd);
+
+    return () => {
+      emitter.off("card:drag:start", handleDragStart);
+      emitter.off("card:drag:end", handleDragEnd);
+    };
+  }, []);
 
   if (!game) {
     return <div>Loading...</div>;
@@ -91,8 +111,15 @@ export default () => {
     setSelectedAttackerId(null);
   };
 
+  const cardHandSize = draggedCard ? "sm" : isHandHovered ? "md" : "sm";
+  const cardHandPositionClass = draggedCard
+    ? "-bottom-20"
+    : isHandHovered
+      ? "bottom-0"
+      : "-bottom-20";
+
   return (
-    <div className="relative flex flex-col h-screen bg-green-900 text-white">
+    <div className="relative flex flex-col h-screen bg-green-900 text-white overflow-hidden">
       <div className="pointer-events-none absolute left-1/2 top-4 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
         {regularAnnouncements.map((announcement: GameAnnouncement) => (
           <div
@@ -108,6 +135,11 @@ export default () => {
             {announcement.text}
           </div>
         ))}
+        {selectedAttackerId && (
+          <div className="rounded-full border border-blue-300/60 bg-blue-500/20 text-blue-100 px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm">
+            Choisis une cible pour attaquer
+          </div>
+        )}
       </div>
 
       {giantAnnouncement && (
@@ -121,18 +153,6 @@ export default () => {
         </div>
       )}
 
-      <div className="absolute top-0 w-full z-10 pointer-events-auto">
-        <button
-          type="button"
-          onClick={() => handleAttackTarget(opponentState.player.id)}
-          disabled={!selectedAttackerId}
-          className={`rounded-xl transition ${selectedAttackerId ? "cursor-pointer hover:scale-[1.01]" : "cursor-not-allowed"} ${selectedAttackerCard ? "ring-4 ring-red-400 ring-offset-2 ring-offset-green-900" : ""}`}
-          aria-label={`Attaquer ${opponentState.player.name}`}
-        >
-          <PlayerPanel player={opponentState} />
-        </button>
-      </div>
-
       <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
         <GameMainArea
           game={game}
@@ -140,16 +160,24 @@ export default () => {
           onSelectAttacker={handleSelectAttacker}
           onSelectTarget={handleAttackTarget}
           getCardById={getCardById}
+          opponentState={opponentState}
+          currentState={currentState}
+          selectedAttackerCard={selectedAttackerCard}
+          isCardDragged={!!draggedCard}
+        />
+      </div>
+      <div
+        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
+        onMouseEnter={() => setIsHandHovered(true)}
+        onMouseLeave={() => setIsHandHovered(false)}
+      >
+        <CardsHand
+          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
+          cardSize={cardHandSize}
         />
       </div>
 
-      <div className="absolute bottom-0 w-full px-4 z-10 pointer-events-auto">
-        <CurrentPlayerPanel
-          player={currentState}
-          selectedAttackerId={selectedAttackerId}
-        />
-      </div>
-      {connectedPlayer == game.currentPlayer && (
+      {connectedPlayer == game.currentPlayer.id && (
         <button
           className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded"
           onClick={actions.endTurn}

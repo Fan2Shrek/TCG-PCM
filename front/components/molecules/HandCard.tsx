@@ -3,6 +3,7 @@ import Card from "./Card";
 import { CardSize, CardWithPosition } from "../types/card";
 import { useDebouncedValue } from "../hooks/useDebounceValue";
 import { useDrag } from "../hooks/useDrag";
+import { emitter } from "@/lib/eventBus";
 
 type HandCardProps = {
   positionedCard: CardWithPosition;
@@ -12,8 +13,8 @@ type HandCardProps = {
   totalCards: number;
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
-  onDragCard: (e: MouseEvent) => void;
-  onDragEnd: (card: CardWithPosition) => void;
+  onDragCard?: (e: MouseEvent) => void;
+  onDragEnd?: (card: CardWithPosition) => void;
 };
 
 export default function HandCard({
@@ -31,9 +32,19 @@ export default function HandCard({
   const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
   const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
 
-  const { isDragging, dragOffset, tilt, handleMouseDown } = useDrag({
+  const handleMouseDown = (e: React.MouseEvent) => {
+    emitter.emit("card:drag:start", { card: positionedCard });
+    useDragHandleMouseDown(e);
+  };
+
+  const {
+    isDragging,
+    dragOffset,
+    tilt,
+    handleMouseDown: useDragHandleMouseDown,
+  } = useDrag({
     onDrag: onDragCard,
-    onDragEnd: () => onDragEnd(positionedCard),
+    onDragEnd: onDragEnd ? () => onDragEnd(positionedCard) : undefined,
   });
 
   const handleMouseEnter = () => {

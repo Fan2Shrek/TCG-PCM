@@ -2,7 +2,7 @@ import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
 import Card from "../Card";
 
-type BoardRowProps = {
+type MonsterZoneProps = {
   title: string;
   cards: string[];
   onCardClick?: (cardId: string) => void;
@@ -20,12 +20,12 @@ export default ({
   clickable = false,
   isCardDisabled,
   className,
-}: BoardRowProps) => {
+}: MonsterZoneProps) => {
   const { getCardById } = useContext(GameContext);
 
   return (
     <div className={`flex flex-col items-center gap-2 ${className}`}>
-      <div className="text-sm opacity-70">{title}</div>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
 
       <div className="flex gap-2">
         {cards.map((cardId) => {
@@ -45,7 +45,7 @@ export default ({
                   : "cursor-pointer hover:-translate-y-1"
               } ${selectedCardId === cardId ? "ring-4 ring-yellow-300 ring-offset-2 ring-offset-green-900" : ""}`}
             >
-              <Card card={card} />
+              {card && <Card card={card} />}
             </button>
           );
         })}

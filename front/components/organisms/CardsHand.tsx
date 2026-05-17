@@ -2,10 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CardModel, CardSize, CardWithPosition } from "../types/card";
-import {
-  getCardWidthPx,
-  getCardAspectRatio,
-} from "../utils/cardUtils";
+import { getCardWidthPx, getCardAspectRatio } from "../utils/cardUtils";
 import HandCard from "../molecules/HandCard";
 import { useHandPositions } from "../hooks/useHandPositions";
 import { useDebouncedValue } from "../hooks/useDebounceValue";
@@ -24,7 +21,6 @@ export default function CardsHand({
   hoverCardSize = "lg",
   className = "",
 }: CardsHandProps) {
-
   const cardWidthPx = getCardWidthPx(cardSize);
   const hoverCardWidthPx = getCardWidthPx(hoverCardSize);
   const cardAspectRatio = getCardAspectRatio();
@@ -36,7 +32,8 @@ export default function CardsHand({
   }, [cardWidthPx, hoverCardWidthPx, cardAspectRatio]);
 
   const [hoveredCard, setHoveredCard] = useState<CardWithPosition | null>(null);
-  const [pendingHoveredCard, setPendingHoveredCard] = useState<CardWithPosition | null>(null);
+  const [pendingHoveredCard, setPendingHoveredCard] =
+    useState<CardWithPosition | null>(null);
   const debouncedHoveredCard = useDebouncedValue(pendingHoveredCard, 50);
 
   const positionedCards = useHandPositions(cards, cardWidthPx, hoveredCard);
@@ -45,25 +42,24 @@ export default function CardsHand({
     setHoveredCard(debouncedHoveredCard);
   }, [debouncedHoveredCard]);
 
-  const handleCardDrag = useCallback((e: MouseEvent) => {
-    //TODO implement card play through drag and drop
-    console.log(e);
-  }, []);
-
-  const handleCardHover = useCallback((card: CardWithPosition) => {
-    setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
-  }, [hoveredCard]);
+  const handleCardHover = useCallback(
+    (card: CardWithPosition) => {
+      setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
+    },
+    [hoveredCard],
+  );
 
   const handleCardLeave = useCallback(() => {
     setPendingHoveredCard(null);
   }, []);
 
-  const handleCardDragEnd = useCallback((card: CardWithPosition) => {
-	console.log('emieete')
+  const handleCardDragEnd = useCallback((positionedCard: CardWithPosition) => {
+    emitter.emit("card:drag:end");
+    console.log("emieete");
     emitter.emit("card:played", {
-      id: card.card.instanceId,
-      x: card.x,
-      y: card.y,
+      id: positionedCard.card.instanceId,
+      x: positionedCard.x,
+      y: positionedCard.y,
     });
   }, []);
 
@@ -79,7 +75,6 @@ export default function CardsHand({
           totalCards={cards.length}
           onHover={handleCardHover}
           onLeave={handleCardLeave}
-          onDragCard={handleCardDrag}
           onDragEnd={handleCardDragEnd}
         />
       ))}
