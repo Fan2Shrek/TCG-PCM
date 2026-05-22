@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Debug View</h1>
+
+    <p>This is a debug view for testing purposes.</p>
+
+    {% for card in cards %}
+        <div class="card">
+            <h2>{{ card.name }}</h2>
+            <p>{{ card.description }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}
