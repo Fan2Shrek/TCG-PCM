@@ -94,6 +94,10 @@ return [
             'name' => 'The hand',
             'description' => 'Discard a random card from your opponent play area.',
         ],
+        'Coins' => [
+            'name' => 'Coins',
+            'description' => 'Gains {{value}} coins.',
+        ],
     ],
     // Effects
     'effects' => [
