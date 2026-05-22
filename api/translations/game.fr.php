@@ -94,6 +94,10 @@ return [
             'nam' => 'La main',
             'description' => 'Défausse une carte aléatoire de la zone de jeu de votre adversaire.',
         ],
+        'Coins' => [
+            'name' => 'Pièces',
+            'description' => 'Gagne {{value}} pièces.',
+        ],
     ],
     // Effects
     'effects' => [
