@@ -80,4 +80,13 @@ const client = new ApiClient(
   token,
 );
 
+export const getImage = (img: string) => {
+  try {
+    new URL(img);
+    return img;
+  } catch {
+	return `${client.baseUrl.replaceAll("api", "")}${img}`;
+  }
+};
+
 export default client;

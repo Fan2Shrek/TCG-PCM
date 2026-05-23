@@ -6,6 +6,7 @@ import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
 import { CardModel, CardSizeMap, CardSize, CardLayer } from "../types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "../utils/cardUtils";
+import { getImage } from "@/lib/api/api";
 
 import { convertDescriptions } from "@/lib/game/cardUtils";
 
@@ -24,10 +25,11 @@ const Card = ({ card, size = "md", tilt, glare, isHovering, style, className }: 
 
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
+  console.log(getImage(card.image))
 
   const tempCardLayers = [
       {
-		src: card?.image || '/isaac_card_layer_1.png',
+		src: card?.image && getImage(card.image) || '/isaac_card_layer_1.png',
 		isHovering: false,
 		depth: -20,
 	  },

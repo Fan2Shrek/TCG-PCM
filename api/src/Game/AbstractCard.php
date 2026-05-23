@@ -53,7 +53,7 @@ abstract class AbstractCard
 
     public function getImage(): string
     {
-        return \sprintf('%s.png', $this->getName());
+        return \sprintf('%s.png', $this->getId());
     }
 
     /**
