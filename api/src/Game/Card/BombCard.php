@@ -3,6 +3,7 @@
 namespace App\Game\Card;
 
 use App\Game\GameContext;
+use Override;
 
 final class BombCard extends AbstractPlayableCard
 {
@@ -11,6 +12,12 @@ final class BombCard extends AbstractPlayableCard
     public function getId(): string
     {
         return 'Bomb';
+    }
+
+    #[Override]
+    public function getImage(): string
+    {
+        return 'bomb.png';
     }
 
     public function play(GameContext $context, array $data = []): void
