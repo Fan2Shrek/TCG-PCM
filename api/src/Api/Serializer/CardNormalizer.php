@@ -30,13 +30,16 @@ final class CardNormalizer implements NormalizerInterface
 
         $path = $card instanceof AbstractCard ? $card->getImage() : $card->image;
 
-        return [
+        return array_filter([
             'name' => $card instanceof AbstractCard ? $card->getName() : $card->name,
             'description' => $card instanceof AbstractCard ? $card->getDescription() : $card->description,
             'rarity' => ($card instanceof AbstractCard ? $card::$rarity : $card->rarity)->label()->trans($this->translator),
             'serie' => $card instanceof AbstractCard ? $card::$serie : $card->set,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
-        ];
+            'instanceId' => $card instanceof CardDTO ? $card->instanceId : null,
+            'effects' => $card instanceof CardDTO ? $card->effects : null,
+            'isActive' => $card instanceof CardDTO ? $card->isActive : null,
+        ]);
     }
 
     public function getSupportedTypes(?string $format): array
