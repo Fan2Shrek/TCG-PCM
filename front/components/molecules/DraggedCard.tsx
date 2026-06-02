@@ -18,15 +18,7 @@ type DraggedCardProps = {
   isDropped: boolean;
 };
 
-export default function DraggedCard({
-  card,
-  originPos,
-  originSize,
-  originTilt,
-  pointerPos,
-  tilt,
-  isDropped,
-}: DraggedCardProps) {
+export default function DraggedCard({ card, originPos, originSize, originTilt, pointerPos, tilt, isDropped }: DraggedCardProps) {
   if (typeof document === "undefined") return null;
 
   let x = 0;
@@ -71,8 +63,6 @@ export default function DraggedCard({
     shouldTransition = true;
   }
 
-  console.log(originTilt);
-
   const style: React.CSSProperties = {
     position: "fixed",
     top: "50%",
@@ -80,9 +70,7 @@ export default function DraggedCard({
     transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
     zIndex: 50,
     cursor: "grabbing",
-    transition: shouldTransition
-      ? "transform 300ms cubic-bezier(.2,.8,.2,1)"
-      : undefined,
+    transition: shouldTransition ? "transform 300ms cubic-bezier(.2,.8,.2,1)" : undefined,
   };
 
   const portal = (
