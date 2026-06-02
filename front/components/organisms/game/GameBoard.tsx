@@ -163,8 +163,6 @@ export default () => {
       </div>
       <div
         className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
-        onMouseEnter={() => setIsHandHovered(true)}
-        onMouseLeave={() => setIsHandHovered(false)}
       >
         <CardsHand
           cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
