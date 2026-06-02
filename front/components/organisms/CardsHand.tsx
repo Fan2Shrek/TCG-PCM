@@ -12,6 +12,8 @@ export type CardsHandProps = {
   cards: CardModel[];
   cardSize?: CardSize;
   hoverCardSize?: CardSize;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   className?: string;
 };
 
@@ -20,6 +22,8 @@ export default function CardsHand({
   cardSize = "md",
   hoverCardSize = "lg",
   className = "",
+  onMouseEnter,
+  onMouseLeave,
 }: CardsHandProps) {
   const cardWidthPx = getCardWidthPx(cardSize);
   const hoverCardWidthPx = getCardWidthPx(hoverCardSize);
@@ -45,23 +49,30 @@ export default function CardsHand({
   const handleCardHover = useCallback(
     (card: CardWithPosition) => {
       setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
+      onMouseEnter?.();
     },
     [hoveredCard],
   );
 
   const handleCardLeave = useCallback(() => {
     setPendingHoveredCard(null);
+    onMouseLeave?.();
   }, []);
 
-  const handleCardDragEnd = useCallback((positionedCard: CardWithPosition) => {
-    emitter.emit("card:drag:end");
-    console.log("emieete");
-    emitter.emit("card:played", {
-      id: positionedCard.card.instanceId,
-      x: positionedCard.x,
-      y: positionedCard.y,
-    });
-  }, []);
+  const handleCardDragEnd = useCallback(
+    (
+      positionedCard: CardWithPosition,
+      pointerPos: { x: number; y: number },
+    ) => {
+      console.log("emieete");
+      emitter.emit("card:played", {
+        id: positionedCard.card.instanceId,
+        x: pointerPos.x,
+        y: pointerPos.y,
+      });
+    },
+    [],
+  );
 
   return (
     <div className={`relative w-82 h-82 ${className}`}>

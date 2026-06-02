@@ -8,8 +8,12 @@ type UseDragOptions = {
 
 export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [pointerPos, setPointerPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   const prevPos = useRef<{ x: number; y: number } | null>(null);
@@ -19,7 +23,7 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
     e.preventDefault();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
-    setDragOffset({ x: 0, y: 0 });
+    setPointerPos({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseMove = useCallback(
@@ -29,7 +33,7 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
       const x = e.clientX - dragStart.x;
       const y = e.clientY - dragStart.y;
 
-      setDragOffset({ x, y });
+      setPointerPos({ x: e.clientX, y: e.clientY });
 
       if (prevPos.current) {
         const dx = x - prevPos.current.x;
@@ -51,13 +55,12 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
 
       onDrag?.(e);
     },
-    [dragStart, onDrag]
+    [dragStart, onDrag],
   );
 
   const handleMouseUp = useCallback(() => {
     if (dragStart) {
       setIsDragging(false);
-      setDragOffset(null);
       setDragStart(null);
       setTilt({ x: 0, y: 0 });
       prevPos.current = null;
@@ -79,7 +82,7 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
 
   return {
     isDragging,
-    dragOffset,
+    pointerPos,
     tilt,
     handleMouseDown,
   };

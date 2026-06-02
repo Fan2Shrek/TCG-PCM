@@ -49,7 +49,6 @@ export default () => {
     };
     const handleDragEnd = () => {
       setDraggedCard(null);
-      setIsHandHovered(false);
     };
 
     emitter.on("card:drag:start", handleDragStart);
@@ -112,11 +111,7 @@ export default () => {
   };
 
   const cardHandSize = draggedCard ? "sm" : isHandHovered ? "md" : "sm";
-  const cardHandPositionClass = draggedCard
-    ? "-bottom-20"
-    : isHandHovered
-      ? "bottom-0"
-      : "-bottom-20";
+  const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-20";
 
   return (
     <div className="relative flex flex-col h-screen bg-green-900 text-white overflow-hidden">
@@ -174,6 +169,8 @@ export default () => {
         <CardsHand
           cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
           cardSize={cardHandSize}
+          onMouseEnter={() => setIsHandHovered(true)}
+          onMouseLeave={() => setIsHandHovered(false)}
         />
       </div>
 
