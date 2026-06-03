@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -42,6 +43,15 @@ final class JoinRoomHandler
         $topic = \sprintf('game/%s', $room->getId());
         $token = $this->hub->getFactory()?->create([$topic], []);
         $url = \sprintf('%s?topic=%s', $this->hub->getPublicUrl(), $topic);
+
+        $this->hub->publish(
+            new Update($topic, json_encode([
+                'type' => 'opponent_joined',
+                'data' => [
+                    'opponent' => $user->getUsername(),
+                ],
+            ])),
+        );
 
         return [
             'id' => $room->getId(),

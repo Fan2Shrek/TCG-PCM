@@ -115,6 +115,12 @@ message = "Invalid argument type for argument #1 of `json_decode`: expected `str
 count = 1
 
 [[issues]]
+file = "src/Domain/Command/Room/JoinRoomHandler.php"
+code = "possibly-false-argument"
+message = 'Argument #2 of method `symfony\component\mercure\update::__construct` is possibly `false`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
 file = "src/Entity/User.php"
 code = "invalid-return-statement"
 message = 'Invalid return type for function `app\entity\user::getuseridentifier`: expected `non-empty-string`, but found `string`.'

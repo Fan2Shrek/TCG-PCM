@@ -7,7 +7,6 @@ use App\Game\Card\Interface\ComputedCardInterface;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 use App\Service\Game\Helper\HttpHelper;
-use Symfony\Component\HttpClient\HttpClient;
 
 class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
 {
