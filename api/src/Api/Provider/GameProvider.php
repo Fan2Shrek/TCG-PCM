@@ -39,7 +39,7 @@ final class GameProvider implements ProviderInterface
 
         $user = $this->currentUserProvider->getCurrentUser();
         $topic = \sprintf('game/%s', $room->getId());
-        $privateTopic = $topic.'-'.($user->getId() === $gameState->player1->player->id ? '1' : '2');
+        $privateTopic = $topic.'-'.($user->getId() == $gameState->player1->player->id ? '1' : '2'); // @mago-ignore lint:identity-comparison
         $token = $this->hub->getFactory()?->create([$topic, $privateTopic], []);
         $url = \sprintf('%s?topic=%s&topic=%s', $this->hub->getPublicUrl(), $topic, $privateTopic);
 

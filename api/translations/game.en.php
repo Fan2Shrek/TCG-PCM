@@ -98,6 +98,10 @@ return [
             'name' => 'Coins',
             'description' => 'Gains {{value}} coins.',
         ],
+        'Crypto4Noob' => [
+            'name' => 'Crypto4Noob',
+            'description' => 'Does as much damage as the current price of Bitcoin in euros.',
+        ],
     ],
     // Effects
     'effects' => [
