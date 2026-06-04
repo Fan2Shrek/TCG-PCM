@@ -151,6 +151,12 @@ message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possib
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Monster/Crypto4NoobCard.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 1
+
+[[issues]]
 file = "src/Game/Card/StackyStackitoCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
