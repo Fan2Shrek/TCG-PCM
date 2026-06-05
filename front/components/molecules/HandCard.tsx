@@ -143,7 +143,6 @@ export default function HandCard({
         {cardElement}
         <DraggedCard
           card={positionedCard.card}
-          cardSize={hoverCardSize}
           targetPos={cardCenter}
           targetSize={cardSize}
           targetTilt={positionedCard.rotation}

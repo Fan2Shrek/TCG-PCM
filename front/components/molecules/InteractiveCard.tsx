@@ -24,7 +24,12 @@ export type InteractiveCardProps = {
   onClick?: (cardId: string) => void;
 };
 
-export default function InteractiveCard({ card, size = "md", onHover, onClick }: InteractiveCardProps) {
+export default function InteractiveCard({
+  card,
+  size = "md",
+  onHover,
+  onClick,
+}: InteractiveCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [tilt, setTilt] = useState(DEFAULT_TILT);
   const [glare, setGlare] = useState(DEFAULT_GLARE);
@@ -48,16 +53,17 @@ export default function InteractiveCard({ card, size = "md", onHover, onClick }:
   useEffect(() => {
     return () => clearTimeouts();
   }, []);
-  
+
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-
       const rootElement = rootRef.current;
       if (!rootElement) return;
 
       setIsHovering((prev) => (prev ? prev : true));
 
-      setStyle({ transition: `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)` });
+      setStyle({
+        transition: `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`,
+      });
 
       clearTimeouts();
 
@@ -77,29 +83,40 @@ export default function InteractiveCard({ card, size = "md", onHover, onClick }:
   );
 
   const handlePointerLeave = useCallback(() => {
-
     setIsHovering(false);
 
     clearTimeouts();
 
     tiltBackTimeoutRef.current = window.setTimeout(() => {
-      setStyle({ transition: `transform ${SNAPBACK_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)` });
+      setStyle({
+        transition: `transform ${SNAPBACK_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`,
+      });
 
-      const newTilt = calculateTiltOnHover(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
-      const newGlare = calculateGlareOnHover(NORMALIZED_CENTER, NORMALIZED_CENTER, tilt.y);
+      const newTilt = calculateTiltOnHover(
+        NORMALIZED_CENTER,
+        NORMALIZED_CENTER,
+        tilt.y,
+      );
+      const newGlare = calculateGlareOnHover(
+        NORMALIZED_CENTER,
+        NORMALIZED_CENTER,
+        tilt.y,
+      );
 
       setTilt(newTilt);
       setGlare(newGlare);
 
       restoreTransitionTimeoutRef.current = window.setTimeout(() => {
-        setStyle({ transition: `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)` });
+        setStyle({
+          transition: `transform ${NORMAL_ANIMATION_DURATION_MS}ms cubic-bezier(.2,.9,.2,1)`,
+        });
       }, SNAPBACK_ANIMATION_DURATION_MS);
     }, SNAPBACK_DELAY_MS);
   }, [tilt.y]);
 
-
   const handleClick = useCallback(() => {
-    const newRotationY = tilt.y > HALF_ROTATION ? tilt.y - FLIP_DEG : tilt.y + FLIP_DEG;
+    const newRotationY =
+      tilt.y > HALF_ROTATION ? tilt.y - FLIP_DEG : tilt.y + FLIP_DEG;
 
     setGlare((prev) => ({ x: 100 - prev.x, y: prev.y }));
     setTilt((prev) => ({ ...prev, y: newRotationY }));
@@ -108,8 +125,21 @@ export default function InteractiveCard({ card, size = "md", onHover, onClick }:
   }, [onClick, card.id, tilt.y]);
 
   return (
-    <div ref={rootRef} onClick={handleClick} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave} className="cursor-pointer">
-      <Card card={card} size={size} tilt={tilt} glare={glare} isHovering={isHovering} style={style} />
+    <div
+      ref={rootRef}
+      onClick={handleClick}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="cursor-pointer"
+    >
+      <Card
+        card={card}
+        size={size}
+        tilt={tilt}
+        glare={glare}
+        isHovering={isHovering}
+        style={style}
+      />
     </div>
   );
 }

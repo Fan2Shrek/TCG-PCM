@@ -4,24 +4,24 @@ import React from "react";
 import { createPortal } from "react-dom";
 import Card from "./Card";
 import { BasicCard, CardSize } from "../types/card";
+import { resolveDropZone } from "@/lib/dropZones/dropzoneResolver";
+import { emitter } from "@/lib/eventBus";
 
 type DraggedCardProps = {
   card: BasicCard;
-  cardSize: CardSize;
   pointerPos: { x: number; y: number } | null;
   tilt: { x: number; y: number };
-  targetPos: { x: number; y: number } | null;
-  targetSize: CardSize;
-  targetTilt: number;
+  originPos: { x: number; y: number } | null;
+  originSize: CardSize;
+  originTilt: number;
   isReturning: boolean;
 };
 
 export default function DraggedCard({
   card,
-  cardSize,
-  targetPos,
-  targetSize,
-  targetTilt,
+  originPos,
+  originSize,
+  originTilt,
   pointerPos,
   tilt,
   isReturning,
@@ -30,16 +30,33 @@ export default function DraggedCard({
 
   let x = 0;
   let y = 0;
-  let currentSize = cardSize;
+  let currentSize = originSize;
   let currentTilt = { x: 0, y: 0, z: 0 };
   let shouldTransition = false;
+
+  // storing "current" target here, initialized by handcard but updated if dropped over a playable zone
+  let targetPos = originPos;
+  let targetSize = originSize;
+  let targetTilt = originTilt;
+
+  const onDragEnd = () => {
+    const dropResult = resolveDropZone(pointerPos!, card);
+    if (dropResult) {
+      targetPos = dropResult.pos;
+      targetSize = dropResult.size;
+      targetTilt = dropResult.tilt;
+    } else {
+      emitter.emit("card:return-hand", { card, pointerPos });
+    }
+  };
 
   if (pointerPos && !isReturning) {
     x = pointerPos.x - window.innerWidth / 2;
     y = pointerPos.y - window.innerHeight / 2;
-    currentSize = cardSize;
+    currentSize = originSize;
     currentTilt = { ...tilt, z: 0 };
   } else if (isReturning && targetPos) {
+    onDragEnd();
     x = targetPos.x - window.innerWidth / 2;
     y = targetPos.y - window.innerHeight / 2;
     currentSize = targetSize;

@@ -12,7 +12,7 @@ type MonsterZoneProps = {
   className?: string;
 };
 
-export default ({
+export default function MonsterZone({
   title,
   cards,
   onCardClick,
@@ -20,7 +20,7 @@ export default ({
   clickable = false,
   isCardDisabled,
   className,
-}: MonsterZoneProps) => {
+}: MonsterZoneProps) {
   const { getCardById } = useContext(GameContext);
 
   return (
@@ -52,4 +52,4 @@ export default ({
       </div>
     </div>
   );
-};
+}

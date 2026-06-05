@@ -7,7 +7,7 @@ import GameMainArea from "./GameMainArea";
 import CardsHand from "../CardsHand";
 import { CardWithPosition } from "@/components/types/card";
 
-export default () => {
+export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
   const playBoxRef = useRef<HTMLDivElement>(null);
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
@@ -182,4 +182,4 @@ export default () => {
       )}
     </div>
   );
-};
+}
