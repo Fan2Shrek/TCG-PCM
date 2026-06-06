@@ -1,17 +1,17 @@
 "use client";
 import { useMemo } from "react";
-import { CardModel, CardWithPosition } from "../types/card";
+import { CardModel, CardWithPosition } from "@/lib/cards/types/card";
 import {
   cardsHandComputeArcParameters,
   cardsHandComputeCardPosition,
-} from "../utils/cardUtils";
+} from "@/lib/cards/cardUtils";
 
 type ArcParameters = ReturnType<typeof cardsHandComputeArcParameters>;
 
 export function useHandPositions(
   cards: CardModel[],
   cardWidthPx: number,
-  hoveredCard: CardWithPosition | null
+  hoveredCard: CardWithPosition | null,
 ): CardWithPosition[] {
   const positionedCards = useMemo(() => {
     const totalCards = cards.length;
@@ -26,7 +26,7 @@ export function useHandPositions(
       totalCards,
       cardWidthPx,
       maxAngle,
-      false
+      false,
     );
 
     const getPositions = (params: ArcParameters, effectiveCenter?: number) =>
@@ -36,7 +36,7 @@ export function useHandPositions(
           totalCards,
           params.arcAngleRadian,
           params.radius,
-          effectiveCenter
+          effectiveCenter,
         );
         return { x, y, rotation };
       });
@@ -59,7 +59,7 @@ export function useHandPositions(
         totalCards,
         cardWidthPx,
         maxAngle,
-        true
+        true,
       );
       const fannedPositions = getPositions(fanParams, hoveredCard.rank);
 

@@ -1,4 +1,4 @@
-import type { MenuItemType } from "@/components/types/menuItem";
+import { MenuItemType } from "@/types/menuItem";
 import MenuItem from "@/components/atoms/menu/MenuItem";
 import { AiOutlineFolderOpen, AiOutlineStar } from "react-icons/ai";
 import { TbPlayCardStar } from "react-icons/tb";
@@ -26,9 +26,11 @@ const menuItems: MenuItemType[] = [
   },
 ];
 
-export default ({ className }: MenuProps) => {
+export default function Menu({ className }: MenuProps) {
   return (
-    <nav className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg ${className || ""}`}>
+    <nav
+      className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg ${className || ""}`}
+    >
       <ul className="flex items-center gap-2 px-4">
         {menuItems.map((menuItem) => (
           <MenuItem
@@ -43,4 +45,4 @@ export default ({ className }: MenuProps) => {
       <ProfileIcon />
     </nav>
   );
-};
+}

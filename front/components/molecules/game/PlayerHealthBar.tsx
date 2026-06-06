@@ -16,7 +16,6 @@ export default function PlayerHealthBar({
 
   const containerColor = "#FFFFFF99";
   const containerSize = size + 24;
-  const fillColor = "#b60707";
 
   const maskId = `heart-mask-${Math.random().toString(36).slice(0, 9)}`;
 

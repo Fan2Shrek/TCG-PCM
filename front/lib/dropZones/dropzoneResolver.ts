@@ -1,6 +1,6 @@
-import { BasicCard } from "@/components/types/card";
+import { BasicCard } from "../cards/types/card";
 import { getDropZones } from "./dropzoneRegistry";
-import { DropResult } from "./type/dropZone";
+import { DropResult } from "./types/dropZone";
 
 export function resolveDropZone(
   pointer: {

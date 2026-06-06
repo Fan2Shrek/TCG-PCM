@@ -1,3 +1,5 @@
+import { FoilEffects } from "@/constants/card";
+
 export type BasicCard = {
   name: string;
   description: string;
@@ -13,7 +15,7 @@ export type CardLayer = {
   src: string;
   depth: number;
   alt?: string | null;
-  foilEffect?: foilEffects | null;
+  foilEffect?: FoilEffect | null;
   foil?: string | null;
   mask?: string | null;
 };
@@ -33,17 +35,4 @@ export type CardWithPosition = {
   rotation: number;
 };
 
-export type CardSize = "sm" | "md" | "lg" | "xl";
-
-export const CardSizeMap: Record<CardSize, string> = {
-  sm: "w-card-sm",
-  md: "w-card-md",
-  lg: "w-card-lg",
-  xl: "w-card-xl",
-};
-
-export enum foilEffects {
-  HOLO = "Holographic",
-  RAINBOW = "Rainbow",
-  GOLDEN = "Golden",
-}
+export type FoilEffect = (typeof FoilEffects)[keyof typeof FoilEffects];

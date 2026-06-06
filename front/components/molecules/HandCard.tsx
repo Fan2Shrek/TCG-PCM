@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Card from "./Card";
-import { CardSize, CardWithPosition } from "../types/card";
-import { useDebouncedValue } from "../hooks/useDebounceValue";
-import { useDrag } from "../hooks/useDrag";
-import { emitter } from "@/lib/eventBus";
+import { CardSize } from "@/constants/card";
+import { CardWithPosition } from "@/lib/cards/types/card";
+import { useDebouncedValue } from "@/hooks/useDebounceValue";
+import { useDrag } from "@/hooks/useDrag";
 import DraggedCard from "./DraggedCard";
 
 type HandCardProps = {
@@ -34,27 +34,26 @@ export default function HandCard({
 }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
+  //for drag
   const [cardCenter, setCardCenter] = useState<{ x: number; y: number } | null>(
     null,
   );
-  const [isReturning, setIsReturning] = useState(false);
+  const [isDropped, setIsDropped] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const prevDraggingRef = useRef(false);
 
-  const {
-    isDragging,
-    pointerPos,
-    tilt,
-    handleMouseDown: useDragHandleMouseDown,
-  } = useDrag({
+  const { isDragging, pointerPos, tilt, handleMouseDown } = useDrag({
     onDrag: onDragCard,
     onDragEnd: () => {
-      setIsReturning(true);
-      const t = window.setTimeout(() => setIsReturning(false), 220);
+      setIsDropped(true);
+      const t = window.setTimeout(() => setIsDropped(false), 300);
       return () => window.clearTimeout(t);
     },
+    card: positionedCard.card,
   });
+
+  const showDraggedCard = isDragging || (isDropped && pointerPos);
 
   const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
   const displayY = isHovered
@@ -81,7 +80,6 @@ export default function HandCard({
         y: rect.top + rect.height / 2,
       });
 
-      emitter.emit("card:drag:end");
       onDragEnd?.(positionedCard, pointerPos);
     }
     prevDraggingRef.current = isDragging;
@@ -90,11 +88,6 @@ export default function HandCard({
   useEffect(() => {
     setIsHovered(debouncedIsHovered);
   }, [debouncedIsHovered]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    emitter.emit("card:drag:start", { card: positionedCard });
-    useDragHandleMouseDown(e);
-  };
 
   const handleMouseEnter = () => {
     setPendingIsHovered(true);
@@ -110,7 +103,7 @@ export default function HandCard({
     <div
       ref={cardRef}
       className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 ${
-        isDragging || isReturning ? "invisible pointer-events-none" : ""
+        isDragging || isDropped ? "invisible pointer-events-none" : ""
       }`}
       style={{
         transform: `
@@ -123,7 +116,7 @@ export default function HandCard({
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => handleMouseDown(e)}
     >
       <Card
         card={positionedCard.card}
@@ -137,18 +130,18 @@ export default function HandCard({
     </div>
   );
 
-  if (isDragging || isReturning) {
+  if (showDraggedCard) {
     return (
       <>
         {cardElement}
         <DraggedCard
           card={positionedCard.card}
-          targetPos={cardCenter}
-          targetSize={cardSize}
-          targetTilt={positionedCard.rotation}
-          pointerPos={isDragging ? pointerPos : null}
+          originPos={cardCenter}
+          originSize={cardSize}
+          originTilt={positionedCard.rotation}
+          pointerPos={showDraggedCard ? pointerPos : null}
           tilt={tilt}
-          isReturning={isReturning}
+          isDropped={isDropped}
         />
       </>
     );

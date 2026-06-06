@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CardModel, CardSize, CardWithPosition } from "../types/card";
-import { getCardWidthPx, getCardAspectRatio } from "../utils/cardUtils";
+import { CardModel, CardWithPosition } from "@/lib/cards/types/card";
+import { CardSize } from "@/constants/card";
+import { getCardWidthPx, getCardAspectRatio } from "@/lib/cards/cardUtils";
 import HandCard from "../molecules/HandCard";
-import { useHandPositions } from "../hooks/useHandPositions";
-import { useDebouncedValue } from "../hooks/useDebounceValue";
+import { useHandPositions } from "@/hooks/useHandPositions";
+import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import { emitter } from "@/lib/eventBus";
 
 export type CardsHandProps = {
@@ -19,8 +20,8 @@ export type CardsHandProps = {
 
 export default function CardsHand({
   cards,
-  cardSize = "md",
-  hoverCardSize = "lg",
+  cardSize = CardSize.MD,
+  hoverCardSize = CardSize.LG,
   className = "",
   onMouseEnter,
   onMouseLeave,
@@ -64,7 +65,6 @@ export default function CardsHand({
       positionedCard: CardWithPosition,
       pointerPos: { x: number; y: number },
     ) => {
-      console.log("emieete");
       emitter.emit("card:played", {
         id: positionedCard.card.instanceId,
         x: pointerPos.x,

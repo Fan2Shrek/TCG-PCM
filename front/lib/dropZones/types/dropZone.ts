@@ -1,4 +1,5 @@
-import { BasicCard, CardSize } from "../../../components/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
+import { CardSize } from "@/constants/card";
 
 export type DropZone = {
   id: string;
@@ -9,5 +10,5 @@ export type DropZone = {
 export type DropResult = {
   pos: { x: number; y: number };
   size: CardSize;
-  tilt: number;
+  tilt: { x: number; y: number; z: number };
 };

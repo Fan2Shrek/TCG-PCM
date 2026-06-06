@@ -1,9 +1,10 @@
-import { BasicCard } from "@/components/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 import { GameState, PlayerState } from "@/lib/game/type/gameState";
-import EnemyCharacterPanel from "./EnemyCharacterPanel";
 import AlliedCharacterPanel from "./AlliedCharacterPanel";
 import PassivesZone from "@/components/molecules/game/PassivesZone";
-import MonsterZone from "@/components/molecules/game/MonsterZone"; // NEW IMPORT
+import MonsterZone from "@/components/molecules/game/MonsterZone";
+import { GAMEBOARD_TILT } from "@/constants/gameArea";
+import EnemyCharacterPanel from "./EnemyCharacterPanel";
 
 type GameMainAreaProps = {
   game: GameState | null;
@@ -35,7 +36,7 @@ export default function GameMainArea({
 
   return (
     <div
-      className={`relative flex-1 flex flex-col items-center justify-center transform-3d transform-gpu w-[5000px] h-[5000px]  ${className || ""}`}
+      className={`relative flex-1 flex flex-col items-center justify-center transform-3d transform-gpu w-1250 h-1250  ${className || ""}`}
     >
       {/* parent div to apply transform 3d to the game area */}
       <div
@@ -43,7 +44,7 @@ export default function GameMainArea({
         style={{
           transform: isCardDragged
             ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)"
-            : "perspective(1000px) rotateX(20deg) rotateZ(0deg)",
+            : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg)`,
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
@@ -58,7 +59,7 @@ export default function GameMainArea({
               />
               <MonsterZone
                 title="Player 2 Monsters"
-                cards={p2.playArea.monsterCards}
+                cardsIds={p2.playArea.monsterCards}
                 clickable={!!selectedAttackerId}
                 onCardClick={onSelectTarget}
                 className="col-span-3"
@@ -80,7 +81,7 @@ export default function GameMainArea({
               />
               <MonsterZone
                 title="Player 1 Monsters"
-                cards={p1.playArea.monsterCards}
+                cardsIds={p1.playArea.monsterCards}
                 clickable
                 onCardClick={onSelectAttacker}
                 selectedCardId={selectedAttackerId}
@@ -88,6 +89,7 @@ export default function GameMainArea({
                   getCardById(cardId)?.isActive === false
                 }
                 className="col-span-3"
+                isUsersZone
               />
               <PassivesZone
                 title="Player 1 Passive"

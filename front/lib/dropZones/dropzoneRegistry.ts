@@ -1,4 +1,4 @@
-import { DropZone } from "./type/dropZone";
+import { DropZone } from "./types/dropZone";
 
 const zones = new Map<string, DropZone>();
 
