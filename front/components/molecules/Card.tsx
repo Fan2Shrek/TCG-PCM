@@ -58,7 +58,12 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
         } as React.CSSProperties
       }
     >
-      <CardFront layers={tempCardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
+      <CardFront
+        layers={tempCardLayers}
+        tilt={appliedTilt}
+        glare={appliedGlare}
+        isHovering={!!isHovering}
+      />
       <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
       <p className='text-center absolute text-black'>{card?.name}</p>

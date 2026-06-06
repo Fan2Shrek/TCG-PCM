@@ -11,7 +11,7 @@ import { emitter } from "@/lib/eventBus";
 type DraggedCardProps = {
   card: BasicCard;
   pointerPos: { x: number; y: number } | null;
-  tilt: { x: number; y: number };
+  tilt: { x: number; y: number; z: number };
   originPos: { x: number; y: number } | null;
   originSize: CardSize;
   originTilt: { x: number; y: number; z: number };
