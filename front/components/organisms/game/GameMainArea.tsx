@@ -1,12 +1,11 @@
 import { BasicCard } from "@/lib/cards/types/card";
 import { GameState, PlayerState } from "@/lib/game/type/gameState";
-import AlliedCharacterPanel from "./AlliedCharacterPanel";
-import PassiveZone from "@/components/molecules/game/PassiveZone";
-import MonsterZone from "@/components/molecules/game/MonsterZone";
-import EnemyPassiveZone from "@/components/molecules/game/EnemyPassiveZone";
-import EnemyMonsterZone from "@/components/molecules/game/EnemyMonsterZone";
+import PlayZone from "@/components/molecules/game/PlayZone";
+import EnemyPlayZone from "@/components/molecules/game/EnemyPlayZone";
+import DrawPile from "@/components/molecules/game/DrawPile";
+import Cemetery from "@/components/molecules/game/Cemetery";
+import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterDisplay";
 import { GAMEBOARD_TILT } from "@/constants/gameArea";
-import EnemyCharacterPanel from "./EnemyCharacterPanel";
 
 type GameMainAreaProps = {
   game: GameState | null;
@@ -50,52 +49,48 @@ export default function GameMainArea({
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
-        <div className="h-[90vh] w-[90vw] bg-orange-800 flex flex-col pb-25">
+        <div className="h-[90vh] w-[90vw] bg-orange-800 flex flex-col pb-25 relative">
           {/* finally, this div contains the actual play area where everything happens. */}
           {p2 && (
-            <div className="flex-1 w-full grid grid-cols-5 items-center bg-red-600 gap-5 px-5">
-              <EnemyPassiveZone
-                title="Player 2 Passive"
-                cards={p2.playArea.passiveCards}
-                className="col-span-1"
-              />
-              <EnemyMonsterZone
-                title="Player 2 Monsters"
-                cardsIds={p2.playArea.monsterCards}
-                clickable={!!selectedAttackerId}
-                onCardClick={onSelectTarget}
-                className="col-span-3"
-              />
-              <EnemyCharacterPanel
+            <div className="flex-1 w-full flex flex-col items-center justify-center bg-red-600 gap-5 px-5 relative">
+              <PlayerCharacterDisplay
                 player={opponentState}
-                selectedAttackerId={selectedAttackerId}
-                handleAttackTarget={onSelectTarget}
-                selectedAttackerCard={selectedAttackerCard}
+                className="absolute top-0"
               />
+              <div className="w-full grid grid-cols-5 items-center gap-5">
+                <DrawPile
+                  numCards={p2.drawPile.length}
+                  className="col-span-1"
+                />
+                <EnemyPlayZone
+                  title="Player 2 Cards"
+                  passiveCardIds={p2.playArea.passiveCards}
+                  monsterCardIds={p2.playArea.monsterCards}
+                  className="col-span-3"
+                />
+                <Cemetery cardIds={p2.discardPile} className="col-span-1" />
+              </div>
             </div>
           )}
 
           {p1 && (
-            <div className="flex-1 w-full grid grid-cols-5 items-center bg-blue-600 gap-5 px-5">
-              <AlliedCharacterPanel
+            <div className="flex-1 w-full flex flex-col items-center justify-center bg-blue-600 gap-5 px-5 relative">
+              <div className="w-full grid grid-cols-5 items-center gap-5">
+                <DrawPile
+                  numCards={p1.drawPile.length}
+                  className="col-span-1"
+                />
+                <PlayZone
+                  title="Player 1 Cards"
+                  passiveCardIds={p1.playArea.passiveCards}
+                  monsterCardIds={p1.playArea.monsterCards}
+                  className="col-span-3"
+                />
+                <Cemetery cardIds={p1.discardPile} className="col-span-1" />
+              </div>
+              <PlayerCharacterDisplay
                 player={currentState}
-                className="col-span-1"
-              />
-              <MonsterZone
-                title="Player 1 Monsters"
-                cardsIds={p1.playArea.monsterCards}
-                clickable
-                onCardClick={onSelectAttacker}
-                selectedCardId={selectedAttackerId}
-                isCardDisabled={(cardId) =>
-                  getCardById(cardId)?.isActive === false
-                }
-                className="col-span-3"
-              />
-              <PassiveZone
-                title="Player 1 Passive"
-                cards={p1.playArea.passiveCards}
-                className="col-span-1"
+                className="absolute bottom-0"
               />
             </div>
           )}

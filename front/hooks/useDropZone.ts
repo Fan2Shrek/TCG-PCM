@@ -40,7 +40,25 @@ export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
 
   useEffect(() => {
     const onStart = () => setIsDragging(true);
-    const onEnd = () => {
+    const onEnd = (payload: {
+      pos: { x: number; y: number };
+      card: BasicCard;
+    }) => {
+      const rect = getRect();
+      const inside =
+        payload.pos.x >= rect.left &&
+        payload.pos.x <= rect.right &&
+        payload.pos.y >= rect.top &&
+        payload.pos.y <= rect.bottom;
+
+      if (inside) {
+        emitter.emit("card:dropped", {
+          card: payload.card,
+          zoneId: id,
+          dropResult: getDropResult(payload.card),
+        });
+      }
+
       setIsDragging(false);
       setIsHovered(false);
     };
@@ -68,7 +86,7 @@ export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
       emitter.off("card:drag:end", onEnd);
       emitter.off("card:drag:move", onMove);
     };
-  }, [getRect]);
+  }, [getRect, id, getDropResult]);
 
   return {
     isDragging,
