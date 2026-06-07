@@ -138,7 +138,7 @@ export default function HandCard({
           card={positionedCard.card}
           originPos={cardCenter}
           originSize={cardSize}
-          originTilt={positionedCard.rotation}
+          originTilt={{ x: 0, y: 0, z: positionedCard.rotation }}
           pointerPos={showDraggedCard ? pointerPos : null}
           tilt={tilt}
           isDropped={isDropped}

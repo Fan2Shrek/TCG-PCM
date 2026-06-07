@@ -5,7 +5,8 @@ import { emitter } from "@/lib/eventBus";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import GameMainArea from "./GameMainArea";
 import CardsHand from "../CardsHand";
-import { CardWithPosition } from "@/components/types/card";
+import { CardWithPosition } from "@/lib/cards/types/card";
+import PlayerMoneyDisplay from "@/components/molecules/game/PlayerMoneyDisplay";
 
 export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
@@ -170,6 +171,10 @@ export default function GameBoard() {
           onMouseEnter={() => setIsHandHovered(true)}
           onMouseLeave={() => setIsHandHovered(false)}
         />
+      </div>
+
+      <div className="absolute left-10 bottom-10">
+        <PlayerMoneyDisplay money={currentState.coins} />
       </div>
 
       {connectedPlayer == game.currentPlayer.id && (

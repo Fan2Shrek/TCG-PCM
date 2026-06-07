@@ -11,7 +11,7 @@ import { emitter } from "@/lib/eventBus";
 type DraggedCardProps = {
   card: BasicCard;
   pointerPos: { x: number; y: number } | null;
-  tilt: { x: number; y: number; z: number };
+  tilt: { x: number; y: number };
   originPos: { x: number; y: number } | null;
   originSize: CardSize;
   originTilt: { x: number; y: number; z: number };
@@ -48,7 +48,10 @@ export default function DraggedCard({
       targetPos = dropResult.pos;
       targetSize = dropResult.size;
       targetTilt = dropResult.tilt;
-      emitter.emit("card:played", { pos: dropResult.pos, card });
+      emitter.emit("card:played", {
+        pos: dropResult.pos,
+        card,
+      });
     } else {
       emitter.emit("card:return-hand", { pos: pointerPos, card });
     }
@@ -67,6 +70,8 @@ export default function DraggedCard({
     currentTilt = targetTilt;
     shouldTransition = true;
   }
+
+  console.log(originTilt);
 
   const style: React.CSSProperties = {
     position: "fixed",

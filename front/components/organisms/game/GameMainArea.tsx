@@ -1,8 +1,10 @@
 import { BasicCard } from "@/lib/cards/types/card";
 import { GameState, PlayerState } from "@/lib/game/type/gameState";
 import AlliedCharacterPanel from "./AlliedCharacterPanel";
-import PassivesZone from "@/components/molecules/game/PassivesZone";
+import PassiveZone from "@/components/molecules/game/PassiveZone";
 import MonsterZone from "@/components/molecules/game/MonsterZone";
+import EnemyPassiveZone from "@/components/molecules/game/EnemyPassiveZone";
+import EnemyMonsterZone from "@/components/molecules/game/EnemyMonsterZone";
 import { GAMEBOARD_TILT } from "@/constants/gameArea";
 import EnemyCharacterPanel from "./EnemyCharacterPanel";
 
@@ -51,13 +53,13 @@ export default function GameMainArea({
         <div className="h-[90vh] w-[90vw] bg-orange-800 flex flex-col pb-25">
           {/* finally, this div contains the actual play area where everything happens. */}
           {p2 && (
-            <div className="flex-1 w-full grid grid-cols-5 items-center bg-red-600">
-              <PassivesZone
+            <div className="flex-1 w-full grid grid-cols-5 items-center bg-red-600 gap-5 px-5">
+              <EnemyPassiveZone
                 title="Player 2 Passive"
                 cards={p2.playArea.passiveCards}
                 className="col-span-1"
               />
-              <MonsterZone
+              <EnemyMonsterZone
                 title="Player 2 Monsters"
                 cardsIds={p2.playArea.monsterCards}
                 clickable={!!selectedAttackerId}
@@ -74,7 +76,7 @@ export default function GameMainArea({
           )}
 
           {p1 && (
-            <div className="flex-1 w-full grid grid-cols-5 items-center bg-blue-600">
+            <div className="flex-1 w-full grid grid-cols-5 items-center bg-blue-600 gap-5 px-5">
               <AlliedCharacterPanel
                 player={currentState}
                 className="col-span-1"
@@ -89,9 +91,8 @@ export default function GameMainArea({
                   getCardById(cardId)?.isActive === false
                 }
                 className="col-span-3"
-                isUsersZone
               />
-              <PassivesZone
+              <PassiveZone
                 title="Player 1 Passive"
                 cards={p1.playArea.passiveCards}
                 className="col-span-1"

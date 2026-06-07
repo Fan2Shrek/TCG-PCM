@@ -1,13 +1,8 @@
 import { GameContext } from "@/contexts/GameContext";
-import React, { useCallback, useContext, useRef } from "react";
+import { useContext } from "react";
 import Card from "../Card";
-import { BasicCard } from "@/lib/cards/types/card";
-import { GAMEBOARD_TILT } from "@/constants/gameArea";
-import { useDropZone } from "@/hooks/useDropZone";
-import { CardZone } from "@/constants/zone";
-import { CardSize } from "@/constants/card";
 
-type MonsterZoneProps = {
+type EnemyMonsterZoneProps = {
   title: string;
   cardsIds: string[];
   onCardClick?: (cardId: string) => void;
@@ -17,7 +12,7 @@ type MonsterZoneProps = {
   className?: string;
 };
 
-export default function MonsterZone({
+export default function EnemyMonsterZone({
   title,
   cardsIds,
   onCardClick,
@@ -25,43 +20,12 @@ export default function MonsterZone({
   clickable = false,
   isCardDisabled,
   className,
-}: MonsterZoneProps) {
+}: EnemyMonsterZoneProps) {
   const { getCardById } = useContext(GameContext);
-  const zoneRef = useRef<HTMLDivElement>(null);
-  const zoneId = CardZone.MONSTER;
-
-  const getDropResult = useCallback(
-    (card: BasicCard) => {
-      if (!zoneRef.current) {
-        throw new Error("MonsterZone ref is not set.");
-      }
-
-      return {
-        pos: {
-          x: zoneRef.current.getBoundingClientRect().left,
-          y: zoneRef.current.getBoundingClientRect().top,
-        },
-        size: CardSize.MD,
-        tilt: { x: GAMEBOARD_TILT, y: 0, z: 0 },
-        zoneId: zoneId,
-      };
-    },
-    [zoneId],
-  );
-
-  const { isDragging, isHovered } = useDropZone({
-    id: zoneId,
-    ref: zoneRef,
-    getDropResult: getDropResult,
-  });
 
   return (
     <div
-      ref={zoneRef}
-      className={`transition-all duration-200 rounded-xl flex flex-row justify-center items-center gap-2 min-h-72 ${className}
-        ${isDragging ? "ring-4 ring-blue-400/60 shadow-lg shadow-blue-400/30" : ""}
-        ${isHovered ? "ring-4 ring-yellow-300 animate-pulse" : ""}
-      `}
+      className={`transition-all duration-200 rounded-xl flex flex-row justify-center items-center gap-2 min-h-72 ${className}`}
     >
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
 

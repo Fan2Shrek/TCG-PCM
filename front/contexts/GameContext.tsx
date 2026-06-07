@@ -1,4 +1,4 @@
-import { BasicCard } from "@/components/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 import useMercure from "@/hooks/useMercure";
 import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
