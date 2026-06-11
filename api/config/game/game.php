@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Game\Card\CardHelper;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
 use App\Service\Game\CardRegistry;
@@ -165,5 +166,11 @@ return static function (ContainerConfigurator $container): void {
 
         ->set('game.helper.http', HttpHelper::class)
             ->tag('game.helper', ['name' => 'http'])
+
+        ->set('game.helper.cards', CardHelper::class)
+            ->args([
+                service('game.card_registry'),
+            ])
+            ->tag('game.helper', ['name' => 'cards'])
     ;
 };

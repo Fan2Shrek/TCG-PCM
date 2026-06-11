@@ -158,6 +158,7 @@ class GameContext
      */
     public function selectRandomCardIn(array $pool): string
     {
+        // @todo handle by GameRandomizer
         $randomCardId = $pool[array_rand($pool)];
 
         $this->runtimeValueEffect($randomCardId);
@@ -228,5 +229,10 @@ class GameContext
     public function damageCard(string $cardId, int $damage): void
     {
         $this->pushGameEvent(GameEventTypeEnum::ATTACK, ['cardId' => $cardId, 'damage' => $damage]);
+    }
+
+    public function getPlayerStateById(string $playerId): PlayerState
+    {
+        return $this->state->getPlayer($playerId);
     }
 }
