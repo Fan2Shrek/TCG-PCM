@@ -157,6 +157,12 @@ message = "Unsafe array access on type `mixed`."
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Monster/MimeticPrismRubyCard.php"
+code = "mixed-method-access"
+message = "Attempting to access a method on a non-object type (`mixed`)."
+count = 1
+
+[[issues]]
 file = "src/Game/Card/StackyStackitoCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'

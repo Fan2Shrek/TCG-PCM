@@ -8,7 +8,8 @@ use App\Game\GameContext;
 
 /**
  * @todo add tests but I'm a little sad rn
- * final /* static */ class CardHelper
+ */
+final /* static */ class CardHelper
 {
     /**
      * @return string[]
