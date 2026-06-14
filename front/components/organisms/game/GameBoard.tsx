@@ -8,6 +8,7 @@ import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
 import { CardWithPosition } from "@/lib/cards/types/card";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
+import { CardSize } from "@/constants/card";
 
 export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
@@ -15,9 +16,20 @@ export default function GameBoard() {
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
+    null,
+  );
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<CardWithPosition | null>(null);
 
+  const giantAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation === "giant",
+  );
+  const giantAnnouncement =
+    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
+  const regularAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
+  );
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",
   );
@@ -67,6 +79,10 @@ export default function GameBoard() {
       card: { instanceId: string };
       zoneId: string;
     }) => {
+    const handleCardDropped = (data: {
+      card: { instanceId: string };
+      zoneId: string;
+    }) => {
       const cardId = data.card.instanceId;
       const card = getCardById(cardId);
 
@@ -74,9 +90,9 @@ export default function GameBoard() {
         return;
       }
 
-      // if (currentState.coins >= (card.cost || 0)) {
+      //if (currentState.coins >= (card.cost || 0)) {
       actions.playCard(cardId);
-      // }
+      //}
     };
 
     emitter.on("card:dropped", handleCardDropped);
@@ -84,37 +100,17 @@ export default function GameBoard() {
     return () => emitter.off("card:dropped", handleCardDropped);
   }, [getCardById, actions]);
 
-  if (!game) {
-    return <div>Loading...</div>;
-  }
+  const selectedAttackerCard = useMemo(() => {
+    if (!selectedAttackerId) return undefined;
 
-  const connectedPlayer =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1.player.id
-      : game.player2.player.id;
+    const card = getCardById(selectedAttackerId);
 
-  const currentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1
-      : game.player2;
-  const opponentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player2
-      : game.player1;
-  const selectedAttackerCard = useMemo(
-    () => (selectedAttackerId ? getCardById(selectedAttackerId) : undefined),
-    [getCardById, selectedAttackerId],
-  );
-
-  useEffect(() => {
-    if (!selectedAttackerId) {
-      return;
+    if (card?.isActive === false) {
+      return undefined;
     }
 
-    if (selectedAttackerCard?.isActive === false) {
-      setSelectedAttackerId(null);
-    }
-  }, [selectedAttackerCard, selectedAttackerId]);
+    return card;
+  }, [getCardById, selectedAttackerId]);
 
   const handleSelectAttacker = (cardId: string) => {
     if (selectedAttackerId === cardId) {
@@ -134,7 +130,29 @@ export default function GameBoard() {
     setSelectedAttackerId(null);
   };
 
-  const cardHandSize = draggedCard ? "sm" : isHandHovered ? "md" : "sm";
+  if (!game) {
+    return <div>Loading...</div>;
+  }
+
+  const connectedPlayer =
+    game.player1.player.name === getCurrentUser()?.username
+      ? game.player1.player
+      : game.player2.player;
+
+  const currentState =
+    game.player1.player.name === getCurrentUser()?.username
+      ? game.player1
+      : game.player2;
+  const opponentState =
+    game.player1.player.name === getCurrentUser()?.username
+      ? game.player2
+      : game.player1;
+
+  const cardHandSize = draggedCard
+    ? CardSize.SM
+    : isHandHovered
+      ? CardSize.MD
+      : CardSize.SM;
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-20";
 
   return (
@@ -144,20 +162,35 @@ export default function GameBoard() {
         giantAnnouncement={giantAnnouncement}
         selectedAttackerId={selectedAttackerId}
       />
+    <div className="relative flex flex-col h-screen bg-green-900 text-white overflow-hidden">
+      <GameAnnouncements
+        regularAnnouncements={regularAnnouncements}
+        giantAnnouncement={giantAnnouncement}
+        selectedAttackerId={selectedAttackerId}
+      />
 
       <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
         <GameMainArea
-          game={game}
           selectedAttackerId={selectedAttackerId}
           onSelectAttacker={handleSelectAttacker}
           onSelectTarget={handleAttackTarget}
+          selectedAttackerCard={selectedAttackerCard}
           getCardById={getCardById}
+          game={game}
           opponentState={opponentState}
           currentState={currentState}
-          selectedAttackerCard={selectedAttackerCard}
           isCardDragged={!!draggedCard}
         />
       </div>
+      <div
+        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
+      >
+        <CardsHand
+          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
+          cardSize={cardHandSize}
+          onMouseEnter={() => setIsHandHovered(true)}
+          onMouseLeave={() => setIsHandHovered(false)}
+        />
       <div
         className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
       >
@@ -174,14 +207,19 @@ export default function GameBoard() {
           money={currentState.coins}
           health={currentState.healthPoints}
         />
+      <div className="absolute left-10 bottom-10">
+        <PlayerStatsDisplay
+          money={currentState.coins}
+          health={currentState.healthPoints}
+        />
       </div>
 
-      {connectedPlayer == game.currentPlayer.id && (
+      {connectedPlayer.id == game.currentPlayer && (
         <button
-          className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded"
+          className="absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer"
           onClick={actions.endTurn}
         >
-          end
+          End turn
         </button>
       )}
     </div>

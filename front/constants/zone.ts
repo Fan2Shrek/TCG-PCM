@@ -1,3 +1,3 @@
-export enum CardZone {
+export enum CardZones {
   MAIN = "MAIN",
 }
