@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import useMercure from "@/hooks/useMercure";
 
 import api from "@/lib/api/api";
+import { Button } from "@/components/ui/button";
 
 export default ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -38,15 +39,13 @@ export default ({ params }: { params: Promise<{ id: string }> }) => {
     },
   });
 
-  return (
-    <div className="flex flex-col items-center justify-end h-screen">
-      {err}
-      <br />
-      {opp ? `opponent: ${opp}` : "waiting for opponent..."}
-      <br />
-      {id}
-      <button onClick={handleCopy}>copy id</button>
-      <button onClick={handleStart}>start</button>
-    </div>
-  );
-};
+  return <div className="flex flex-col items-center justify-end h-screen">
+	  {err}
+	  <br />
+	  {opp ? `opponent: ${opp}` : "waiting for opponent..."}
+	  <br />
+	  {id}
+	  <Button onClick={handleCopy} className="rounded-full">copy id</Button>
+	  <Button onClick={handleStart} className="rounded-full">start</Button>
+  </div>
+}

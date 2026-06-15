@@ -1,6 +1,4 @@
 import LoginForm from "@/components/molecules/form/LoginForm";
-import CardExamples from "@/components/organisms/CardExamples";
-import HandExample from "@/components/organisms/HandExample";
 
 export default function Home() {
   return (

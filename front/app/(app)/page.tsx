@@ -5,6 +5,7 @@ import { redirect, RedirectType } from 'next/navigation'
 
 import api from "@/lib/api/api";
 import HandExample from "@/components/organisms/HandExample";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   // Examples rendered in a client component to allow event handlers
@@ -32,7 +33,7 @@ export default function Home() {
 		{rooms && rooms.map((room) => <div key={room.id}  className="hover:rotate-[30deg] transition-transform">
 			<a>{room.owner.username}</a>
 			<br />
-			<button onClick={() => handleJoin(room.id)}>rejoinde</button>
+			<Button onClick={() => handleJoin(room.id)} className="rounded-full">rejoinde</Button>
 		</div>)}
       </main>
   );

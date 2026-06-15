@@ -3,6 +3,7 @@ import { BoosterResource } from "./resources/BoosterResource";
 import { GameResource } from "./resources/GameResource";
 import { RoomResource } from "./resources/RoomResource";
 import { UserResource } from "./resources/UserResource";
+import { getToken } from "@/lib/utils";
 
 export class ApiClient {
   auth: AuthResource;
@@ -11,26 +12,27 @@ export class ApiClient {
   user: UserResource;
   room: RoomResource;
 
-  constructor(
-    private baseUrl: string,
-    private token: string | null = null,
-  ) {
-    this.auth = new AuthResource(this);
-    this.booster = new BoosterResource(this);
-    this.game = new GameResource(this);
-    this.user = new UserResource(this);
-    this.room = new RoomResource(this);
-  }
+	constructor(
+	  private baseUrl: string,
+	) {
 
-  async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      ...(this.token && { Authorization: `Bearer ${this.token}` }),
-    };
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers,
-    });
+		this.auth = new AuthResource(this);
+		this.booster = new BoosterResource(this);
+		this.game = new GameResource(this);
+		this.user = new UserResource(this);
+		this.room = new RoomResource(this);
+	}
+
+	async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+	    const token = getToken();
+	    const headers: HeadersInit = {
+		  "Content-Type": "application/json",
+		  ...(token && { Authorization: `Bearer ${token}` }),
+		};
+		const response = await fetch(`${this.baseUrl}${endpoint}`, {
+		  ...options,
+		  headers,
+		});
 
     if (!response.ok) {
       if (response.status === 400) {
@@ -66,15 +68,9 @@ export class ApiClient {
   }
 }
 
-const token =
-  typeof document !== "undefined"
-    ? document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1] || null
-    : null;
-
-const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL || "", token);
+const client = new ApiClient(
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+);
 
 export const getImage = (img: string) => {
   try {
