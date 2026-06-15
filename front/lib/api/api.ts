@@ -3,6 +3,7 @@ import { BoosterResource } from "./resources/BoosterResource";
 import { GameResource } from "./resources/GameResource";
 import { RoomResource } from "./resources/RoomResource";
 import { UserResource } from "./resources/UserResource";
+import { getToken } from "@/lib/utils";
 
 export class ApiClient {
 	auth: AuthResource;
@@ -13,7 +14,6 @@ export class ApiClient {
 
 	constructor(
 	  private baseUrl: string,
-	  private token: string | null = null,
 	) {
 
 		this.auth = new AuthResource(this);
@@ -24,9 +24,10 @@ export class ApiClient {
 	}
 
 	async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+	    const token = getToken();
 	    const headers: HeadersInit = {
 		  "Content-Type": "application/json",
-		  ...(this.token && { Authorization: `Bearer ${this.token}` }),
+		  ...(token && { Authorization: `Bearer ${token}` }),
 		};
 		const response = await fetch(`${this.baseUrl}${endpoint}`, {
 		  ...options,
@@ -67,17 +68,8 @@ export class ApiClient {
 	}
 }
 
-const token =
-  typeof document !== "undefined"
-    ? document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1] || null
-    : null;
-
 const client = new ApiClient(
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
-  token,
 );
 
 export const getImage = (img: string) => {

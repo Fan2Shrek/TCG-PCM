@@ -25,11 +25,12 @@ export default () => {
 		setError(null);
 
 		try {
-			const response = await api.auth.login(data.username, data.password)
+			await api.auth.register(data.username, data.password);
+			const response = await api.auth.login(data.username, data.password);
 			login(response.token);
 			router.push('/');
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'mdr ca a explosé');
+			setError(err instanceof Error ? err.message : 'mdr ca a explosé, inscription pas encore branchée');
 		}
 	}
 
@@ -50,12 +51,12 @@ export default () => {
 
 				<Field>
 					<Button type="submit" className="rounded-full">
-						Login
+						S'inscrire
 					</Button>
 				</Field>
 
 				<p className="text-sm text-center">
-					Pas de compte ? <a href="/register" className="text-primary hover:underline">Inscris-toi</a>
+					Déjà un compte ? <a href="/login" className="text-primary hover:underline">Connecte-toi</a>
 				</p>
 			</FieldGroup>
 		</form>

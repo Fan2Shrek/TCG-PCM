@@ -6,4 +6,8 @@ export class AuthResource {
   async login(username: string, password: string) {
 	return this.client.post('/login_check', { username, password });
   }
+
+  async register(username: string, password: string) {
+	return this.client.post('/register', { username, password });
+  }
 }

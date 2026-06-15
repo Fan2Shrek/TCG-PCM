@@ -12,7 +12,9 @@ export default ({ children }: { children: React.ReactNode }) => {
           <Image src={logoPath} alt="Logo" width={275} height={275} className="justify-self-center" />
           <Menu className="justify-self-end"/>
         </div>
-        {children}
+        <div className="md:pt-32">
+          {children}
+        </div>
       </>
   );
 }
