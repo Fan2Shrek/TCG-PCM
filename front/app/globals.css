@@ -27,16 +27,8 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --foil-sheen: linear-gradient(
-      -45deg,
-      #000 15%,
-      #fff,
-      #000 85%);
-      --foil-glare: radial-gradient(
-        circle,
-        #fff 5%,
-        #000 50%,
-        #fff 80%);
+      --foil-sheen: linear-gradient(-45deg, #000 15%, #fff, #000 85%);
+      --foil-glare: radial-gradient(circle, #fff 5%, #000 50%, #fff 80%);
     }
   }
 
@@ -60,15 +52,11 @@
   }
 
   .inner-shadow {
-    box-shadow: inset 0 0  4px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
   }
 
   .bg-glare-effect {
-    background: radial-gradient(
-      circle,
-      rgba(255,255,255,0.35),
-      transparent 40%
-    );
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 40%);
   }
 
   .bg-blend-soft-light-difference {
@@ -126,7 +114,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #A40353;
+  --primary: #a40353;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

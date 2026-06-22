@@ -1,11 +1,11 @@
 "use client";
 
-import type { MenuItemType } from "@/components/types/menuItem";
+import type { MenuItemType } from "@/types/menuItem";
 import MenuItem from "@/components/atoms/menu/MenuItem";
 import { AiOutlineFolderOpen, AiOutlineStar } from "react-icons/ai";
 import { TbPlayCardStar } from "react-icons/tb";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
 type MenuProps = {
