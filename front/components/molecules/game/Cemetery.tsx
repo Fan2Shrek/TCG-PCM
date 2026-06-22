@@ -13,25 +13,13 @@ type CemeteryProps = {
 export default function Cemetery({ cardIds, className = "" }: CemeteryProps) {
   const { getCardById } = useContext(GameContext);
 
-  const lastCard =
-    cardIds.length > 0 ? getCardById(cardIds[cardIds.length - 1]) : null;
+  const lastCard = cardIds.length > 0 ? getCardById(cardIds[cardIds.length - 1]) : null;
 
   return (
-    <div
-      className={`transition-all duration-200 rounded-xl flex flex-col items-center justify-center p-2 min-h-72 gap-2 ${className}`}
-    >
-      <h3 className="text-lg font-semibold mb-2">Cemetery</h3>
-      <div className="flex flex-col items-center gap-2">
-        {lastCard ? (
-          <Card card={lastCard} size={CardSize.MD} />
-        ) : (
-          <div className="w-card-md aspect-card rounded-lg border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400">
-            Empty
-          </div>
-        )}
-        {cardIds.length > 0 && (
-          <p className="text-sm text-gray-300">{cardIds.length} cards</p>
-        )}
+    <div className={`rounded-xl flex flex-col items-center justify-center p-2 ${className}`}>
+      <div className='flex flex-col items-center gap-2'>
+        {lastCard ? <Card card={lastCard} size={CardSize.MD} /> : <div className='w-card-md aspect-card rounded-lg border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400'>Empty</div>}
+        {cardIds.length > 0 && <p className='text-sm text-gray-300'>{cardIds.length} cards</p>}
       </div>
     </div>
   );

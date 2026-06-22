@@ -7,37 +7,18 @@ import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
 import { CardWithPosition } from "@/lib/cards/types/card";
-import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
 import { CardSize } from "@/constants/card";
 
 export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
   const playBoxRef = useRef<HTMLDivElement>(null);
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
-    null,
-  );
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
-    null,
-  );
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(null);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<CardWithPosition | null>(null);
 
-  const giantAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation === "giant",
-  );
-  const giantAnnouncement =
-    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
-  const regularAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
-  );
-  const giantAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation === "giant",
-  );
-  const giantAnnouncement =
-    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
-  const regularAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
-  );
+  const giantAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation === "giant");
+  const giantAnnouncement = giantAnnouncements[giantAnnouncements.length - 1] ?? null;
+  const regularAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation !== "giant");
 
   useEffect(() => {
     const handler = (data: { id: string }) => {
@@ -75,14 +56,7 @@ export default function GameBoard() {
   }, []);
 
   useEffect(() => {
-    const handleCardDropped = (data: {
-      card: { instanceId: string };
-      zoneId: string;
-    }) => {
-    const handleCardDropped = (data: {
-      card: { instanceId: string };
-      zoneId: string;
-    }) => {
+    const handleCardDropped = (data: { card: { instanceId: string }; zoneId: string }) => {
       const cardId = data.card.instanceId;
       const card = getCardById(cardId);
 
@@ -134,91 +108,28 @@ export default function GameBoard() {
     return <div>Loading...</div>;
   }
 
-  const connectedPlayer =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1.player
-      : game.player2.player;
+  const connectedPlayer = game.player1.player.name === getCurrentUser()?.username ? game.player1.player : game.player2.player;
 
-  const currentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1
-      : game.player2;
-  const opponentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player2
-      : game.player1;
+  const currentState = game.player1.player.name === getCurrentUser()?.username ? game.player1 : game.player2;
+  const opponentState = game.player1.player.name === getCurrentUser()?.username ? game.player2 : game.player1;
 
-  const cardHandSize = draggedCard
-    ? CardSize.SM
-    : isHandHovered
-      ? CardSize.MD
-      : CardSize.SM;
+  const cardHandSize = draggedCard ? CardSize.MD : isHandHovered ? CardSize.LG : CardSize.MD;
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-20";
 
   return (
-    <div className="relative flex flex-col h-screen bg-green-900 text-white overflow-hidden">
-      <GameAnnouncements
-        regularAnnouncements={regularAnnouncements}
-        giantAnnouncement={giantAnnouncement}
-        selectedAttackerId={selectedAttackerId}
-      />
-    <div className="relative flex flex-col h-screen bg-green-900 text-white overflow-hidden">
-      <GameAnnouncements
-        regularAnnouncements={regularAnnouncements}
-        giantAnnouncement={giantAnnouncement}
-        selectedAttackerId={selectedAttackerId}
-      />
+    <div className='relative flex flex-col h-screen bg-green-900 text-white overflow-hidden'>
+      <GameAnnouncements regularAnnouncements={regularAnnouncements} giantAnnouncement={giantAnnouncement} selectedAttackerId={selectedAttackerId} />
 
-      <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
-        <GameMainArea
-          selectedAttackerId={selectedAttackerId}
-          onSelectAttacker={handleSelectAttacker}
-          onSelectTarget={handleAttackTarget}
-          selectedAttackerCard={selectedAttackerCard}
-          getCardById={getCardById}
-          game={game}
-          opponentState={opponentState}
-          currentState={currentState}
-          isCardDragged={!!draggedCard}
-        />
+      <div className='h-full flex flex-row justify-center items-center pointer-events-auto'>
+        <GameMainArea selectedAttackerId={selectedAttackerId} onSelectAttacker={handleSelectAttacker} onSelectTarget={handleAttackTarget} selectedAttackerCard={selectedAttackerCard} getCardById={getCardById} game={game} opponentState={opponentState} currentState={currentState} isCardDragged={!!draggedCard} />
       </div>
-      <div
-        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
-      >
-        <CardsHand
-          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
-          cardSize={cardHandSize}
-          onMouseEnter={() => setIsHandHovered(true)}
-          onMouseLeave={() => setIsHandHovered(false)}
-        />
-      <div
-        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}
-      >
-        <CardsHand
-          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
-          cardSize={cardHandSize}
-          onMouseEnter={() => setIsHandHovered(true)}
-          onMouseLeave={() => setIsHandHovered(false)}
-        />
+      <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}>
+        <CardsHand cards={currentState.hand.map((cardId: string) => getCardById(cardId))} cardSize={cardHandSize} onMouseEnter={() => setIsHandHovered(true)} onMouseLeave={() => setIsHandHovered(false)} />
       </div>
 
-      <div className="absolute left-10 bottom-10">
-        <PlayerStatsDisplay
-          money={currentState.coins}
-          health={currentState.healthPoints}
-        />
-      <div className="absolute left-10 bottom-10">
-        <PlayerStatsDisplay
-          money={currentState.coins}
-          health={currentState.healthPoints}
-        />
-      </div>
 
       {connectedPlayer.id == game.currentPlayer && (
-        <button
-          className="absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer"
-          onClick={actions.endTurn}
-        >
+        <button className='absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer' onClick={actions.endTurn}>
           End turn
         </button>
       )}

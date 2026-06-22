@@ -1,23 +1,19 @@
 "use client";
 
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { useDropZone } from "@/hooks/useDropZone";
 import { GAMEBOARD_TILT } from "@/constants/gameArea";
 import { CardSize } from "@/constants/card";
 import { BasicCard } from "@/lib/cards/types/card";
-import Card from "../Card";
-import { GameContext } from "@/contexts/GameContext";
-import { CardZones } from "@/constants/zone";
+import CardRow from "./CardRow";
 
 type PlayZoneProps = {
-  title: string;
   passiveCardIds: string[];
   monsterCardIds: string[];
   className?: string;
 };
 
-export default function PlayZone({ title, passiveCardIds, monsterCardIds, className = "" }: PlayZoneProps) {
-  const { getCardById } = useContext(GameContext);
+export default function PlayZone({ passiveCardIds, monsterCardIds, className = "" }: PlayZoneProps) {
   const zoneRef = useRef<HTMLDivElement>(null);
 
   const getDropResult = useCallback((_: BasicCard) => {
@@ -35,7 +31,7 @@ export default function PlayZone({ title, passiveCardIds, monsterCardIds, classN
   }, []);
 
   const { isDragging, isHovered } = useDropZone({
-    id: "MONSTER",
+    id: "PLAYZONE",
     ref: zoneRef,
     getDropResult: getDropResult,
   });
@@ -43,26 +39,13 @@ export default function PlayZone({ title, passiveCardIds, monsterCardIds, classN
   return (
     <div
       ref={zoneRef}
-      className={`transition-all duration-200 rounded-xl flex flex-col items-center justify-center p-2 min-h-72 ${className}
+      className={`w-full h-full max-h-112 transition-all duration-200 rounded-xl flex flex-col items-center justify-between p-2 ${className}
         ${isDragging ? "ring-4 ring-blue-400/60 shadow-lg shadow-blue-400/30" : ""}
-        ${isHovered ? "ring-4 ring-yellow-300 animate-pulse" : ""}
+        ${isHovered ? "ring-4 ring-yellow-300 ring-pulse" : ""}
       `}
     >
-      <h3 className='text-lg font-semibold mb-2'>{title}</h3>
-      <div className='w-full flex flex-col gap-4'>
-        <div className='flex flex-wrap justify-center gap-2'>
-          {monsterCardIds.map((cardId) => {
-            const card = getCardById(cardId);
-            return card && <Card key={card.instanceId} card={card} size={CardSize.MD} />;
-          })}
-        </div>
-        <div className='flex flex-wrap justify-center gap-2'>
-          {passiveCardIds.map((cardId) => {
-            const card = getCardById(cardId);
-            return card && <Card key={card.instanceId} card={card} size={CardSize.MD} />;
-          })}
-        </div>
-      </div>
+      <CardRow cardIds={monsterCardIds} />
+      <CardRow cardIds={passiveCardIds} />
     </div>
   );
 }
