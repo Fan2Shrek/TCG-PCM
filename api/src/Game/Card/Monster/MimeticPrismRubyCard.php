@@ -46,7 +46,6 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function onMonsterPlayed(GameContext $context): void
     {
-        dump('jqkshdj');
         $copyId = $context->selectRandomCardIn($context->getPlayerStateById($this->ownerId)->playArea->monsterCards);
         $state = $context->state->getCardState($copyId);
 
