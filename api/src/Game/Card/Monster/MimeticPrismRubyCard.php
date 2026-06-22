@@ -26,12 +26,10 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function setState(CardState $state): void
     {
-        if (!\is_string($state->values['templateId'])) {
-            throw new \LogicException('Missing "templateId" in card state values');
+        if (\is_string($state->values['templateId'] ?? null)) {
+            $this->copyTemplateId = $state->values['templateId'];
+            $this->getMimedCard();
         }
-
-        $this->copyTemplateId = $state->values['templateId'];
-        $this->getMimedCard();
 
         parent::setState($state);
     }
@@ -48,6 +46,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function onMonsterPlayed(GameContext $context): void
     {
+        dump('jqkshdj');
         $copyId = $context->selectRandomCardIn($context->getPlayerStateById($this->ownerId)->playArea->monsterCards);
         $state = $context->state->getCardState($copyId);
 
