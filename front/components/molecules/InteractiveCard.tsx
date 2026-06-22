@@ -13,7 +13,7 @@ export type InteractiveCardProps = {
   onClick?: (cardId: string) => void;
 };
 
-export default function InteractiveCard({ card, size = "md", onHover, onClick }: InteractiveCardProps) {
+export default function InteractiveCard({ card, size = CardSize.MD, onHover, onClick }: InteractiveCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [tilt, setTilt] = useState(DEFAULT_TILT);
   const [glare, setGlare] = useState(DEFAULT_GLARE);

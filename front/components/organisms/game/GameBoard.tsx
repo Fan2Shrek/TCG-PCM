@@ -105,11 +105,11 @@ export default function GameBoard() {
 
   // Gère quand carte laché dans zone de jeu
   useEffect(() => {
-    const handleCardDropped = (data: { card: { instanceId: string }; zoneId: string }) => {
+    const handleCardDropped = (data: { card: { instanceId: string }; zoneId?: string }) => {
       const cardId = data.card.instanceId;
       const card = getCardById(cardId);
 
-      if (!card) {
+      if (!card || !data.zoneId) {
         return;
       }
 

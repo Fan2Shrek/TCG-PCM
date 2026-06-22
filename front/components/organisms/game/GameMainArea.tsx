@@ -7,6 +7,7 @@ import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterD
 import { GAMEBOARD_TILT } from "@/constants/gameArea";
 import { BasicCard } from "@/lib/cards/types/card";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
+import OpponentHand from "@/components/molecules/game/OpponentHand";
 
 type GameMainAreaProps = {
   game: GameState | null;
@@ -37,6 +38,9 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
         <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-50'>
+          {/* OpponentHand positioned absolutely */}
+          {!isCardDragged && <OpponentHand numCards={oppositePlayer?.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 top-8 z-1' />}
+
           {/* finally, this div contains the actual play area where everything happens. */}
           {oppositePlayer && (
             <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
