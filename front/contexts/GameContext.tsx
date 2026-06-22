@@ -24,6 +24,7 @@ type ActionObject = {
   playCard: (cardId: string) => void;
   attack: (cardId: string, targetId: string) => void;
   endTurn: () => void;
+  pushAnnouncement: (announcement: AnnouncementPayload) => void;
 };
 
 type GameContextType = {
@@ -347,7 +348,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         game,
         getCardById,
         announcements,
-        actions: { playCard, attack, endTurn },
+        actions: { playCard, attack, endTurn, pushAnnouncement },
       }}
     >
       {children}

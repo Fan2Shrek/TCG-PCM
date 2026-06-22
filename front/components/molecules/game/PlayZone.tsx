@@ -11,9 +11,12 @@ type PlayZoneProps = {
   passiveCardIds: string[];
   monsterCardIds: string[];
   className?: string;
+  selectedCardId?: string | null;
+  onSelectCard?: (cardId: string | null) => void;
+  hoveredTargetId?: string | null;
 };
 
-export default function PlayZone({ passiveCardIds, monsterCardIds, className = "" }: PlayZoneProps) {
+export default function PlayZone({ passiveCardIds, monsterCardIds, className = "", selectedCardId, onSelectCard, hoveredTargetId }: PlayZoneProps) {
   const zoneRef = useRef<HTMLDivElement>(null);
 
   const getDropResult = useCallback((_: BasicCard) => {
@@ -39,13 +42,13 @@ export default function PlayZone({ passiveCardIds, monsterCardIds, className = "
   return (
     <div
       ref={zoneRef}
-      className={`w-full h-full max-h-112 transition-all duration-200 rounded-xl flex flex-col items-center justify-between p-2 ${className}
+      className={`w-full min-h-110 transition-all duration-200 rounded-xl flex flex-col items-center justify-between p-2 ${className}
         ${isDragging ? "ring-4 ring-blue-400/60 shadow-lg shadow-blue-400/30" : ""}
         ${isHovered ? "ring-4 ring-yellow-300 ring-pulse" : ""}
       `}
     >
-      <CardRow cardIds={monsterCardIds} />
-      <CardRow cardIds={passiveCardIds} />
+      <CardRow cardIds={monsterCardIds} isLoggedPlayerSide selectedCardId={selectedCardId} onSelectCard={onSelectCard} hoveredTargetId={hoveredTargetId} />
+      <CardRow cardIds={passiveCardIds} isLoggedPlayerSide selectedCardId={selectedCardId} onSelectCard={onSelectCard} hoveredTargetId={hoveredTargetId} />
     </div>
   );
 }

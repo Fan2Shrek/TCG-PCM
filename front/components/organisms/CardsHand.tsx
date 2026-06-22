@@ -16,6 +16,7 @@ export type CardsHandProps = {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
+  isDisabled?: boolean;
 };
 
 export default function CardsHand({
@@ -25,6 +26,7 @@ export default function CardsHand({
   className = "",
   onMouseEnter,
   onMouseLeave,
+  isDisabled = false,
 }: CardsHandProps) {
   const cardWidthPx = getCardWidthPx(cardSize);
   const hoverCardWidthPx = getCardWidthPx(hoverCardSize);
@@ -87,6 +89,7 @@ export default function CardsHand({
           onHover={handleCardHover}
           onLeave={handleCardLeave}
           onDragEnd={handleCardDragEnd}
+          isDisabled={isDisabled}
         />
       ))}
     </div>

@@ -16,17 +16,20 @@ type HandCardProps = {
   onLeave: () => void;
   onDragCard?: (e: MouseEvent) => void;
   onDragEnd?: (card: CardWithPosition, pointerPos: { x: number; y: number }) => void;
+  isDisabled?: boolean;
 };
 
-export default function HandCard({ positionedCard, hoverYOffset, cardSize, hoverCardSize, totalCards, onHover, onLeave, onDragCard, onDragEnd }: HandCardProps) {
+export default function HandCard({ positionedCard, hoverYOffset, cardSize, hoverCardSize, totalCards, onHover, onLeave, onDragCard, onDragEnd, isDisabled = false }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
   //for drag
   const [cardCenter, setCardCenter] = useState<{ x: number; y: number } | null>(null);
   const [isDropped, setIsDropped] = useState(false);
+  const [showCardElementDebounced, setShowCardElementDebounced] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const prevDraggingRef = useRef(false);
+  const dropDebounceRef = useRef<number | null>(null);
 
   const { isDragging, pointerPos, tilt, handleMouseDown } = useDrag({
     onDrag: onDragCard,
@@ -39,6 +42,21 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
   });
 
   const showDraggedCard = isDragging || (isDropped && pointerPos);
+
+  useEffect(() => {
+    if (showDraggedCard) {
+      setShowCardElementDebounced(true);
+      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+    } else if (!showDraggedCard && showCardElementDebounced) {
+      dropDebounceRef.current = window.setTimeout(() => {
+        setShowCardElementDebounced(false);
+      }, 100);
+    }
+
+    return () => {
+      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+    };
+  }, [showDraggedCard, showCardElementDebounced]);
 
   const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
   const displayY = isHovered ? positionedCard.y - hoverYOffset : positionedCard.y;
@@ -80,7 +98,7 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
   const cardElement = (
     <div
       ref={cardRef}
-      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 ${isDragging || isDropped ? "invisible pointer-events-none" : ""}`}
+      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 ${showDraggedCard || showCardElementDebounced ? "invisible pointer-events-none" : ""}`}
       style={{
         transform: `
           translate(
@@ -92,7 +110,7 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseDown={(e) => handleMouseDown(e)}
+      onMouseDown={(e) => !isDisabled && handleMouseDown(e)}
     >
       <Card
         card={positionedCard.card}
@@ -106,11 +124,11 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
     </div>
   );
 
-  if (showDraggedCard) {
+  if (showDraggedCard || showCardElementDebounced) {
     return (
       <>
         {cardElement}
-        <DraggedCard card={positionedCard.card} originPos={cardCenter} originSize={cardSize} originTilt={{ x: 0, y: 0, z: positionedCard.rotation }} pointerPos={showDraggedCard ? pointerPos : null} tilt={tilt} isDropped={isDropped} />
+        <DraggedCard card={positionedCard.card} originPos={cardCenter} originSize={cardSize} originTilt={{ x: 0, y: 0, z: positionedCard.rotation }} pointerPos={showDraggedCard ? pointerPos : null} tilt={{ ...tilt, z: positionedCard.rotation }} isDropped={isDropped} />
       </>
     );
   }

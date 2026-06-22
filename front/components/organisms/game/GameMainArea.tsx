@@ -7,7 +7,6 @@ import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterD
 import { GAMEBOARD_TILT } from "@/constants/gameArea";
 import { BasicCard } from "@/lib/cards/types/card";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
-import type { PlayerState as PlayerStateType } from "@/lib/game/type/gameState";
 
 type GameMainAreaProps = {
   game: GameState | null;
@@ -20,9 +19,10 @@ type GameMainAreaProps = {
   currentState: PlayerState;
   className?: string;
   isCardDragged: boolean;
+  hoveredTargetId?: string | null;
 };
 
-export default function GameMainArea({ game, className, selectedAttackerId, onSelectAttacker, onSelectTarget, selectedAttackerCard, opponentState, currentState, isCardDragged }: GameMainAreaProps) {
+export default function GameMainArea({ game, className, selectedAttackerId, onSelectAttacker, onSelectTarget, selectedAttackerCard, opponentState, currentState, isCardDragged, hoveredTargetId }: GameMainAreaProps) {
   const loggedPlayer = game?.player1.player.id === currentState.player.id ? game?.player1 : game?.player2;
   const oppositePlayer = loggedPlayer === game?.player1 ? game?.player2 : game?.player1;
 
@@ -40,16 +40,16 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
           {/* finally, this div contains the actual play area where everything happens. */}
           {oppositePlayer && (
             <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
-              <div className='flex flex-col col-span-1 items-center h-full'>
+              <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
                 <Cemetery cardIds={oppositePlayer.discardPile} />
                 <DrawPile numCards={oppositePlayer.drawPile.length} />
               </div>
               <div className='flex flex-col col-span-3 items-center'>
-                <EnemyPlayZone passiveCardIds={oppositePlayer.playArea.passiveCards} monsterCardIds={oppositePlayer.playArea.monsterCards} />
+                <EnemyPlayZone passiveCardIds={oppositePlayer.playArea.passiveCards} monsterCardIds={oppositePlayer.playArea.monsterCards} selectedCardId={selectedAttackerId} onSelectCard={(id) => id && onSelectAttacker(id)} hoveredTargetId={hoveredTargetId} />
               </div>
               <div className='flex flex-col col-span-1 items-center gap-2'>
-                <PlayerCharacterDisplay player={opponentState} />
                 <PlayerStatsDisplay money={opponentState.coins} health={opponentState.healthPoints} />
+                <PlayerCharacterDisplay player={opponentState} isTargeting={selectedAttackerId !== null} hoveredTargetId={hoveredTargetId} />
               </div>
             </div>
           )}
@@ -57,11 +57,11 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
           {loggedPlayer && (
             <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-blue-600 p-3'>
               <div className='flex flex-col col-span-1 items-center gap-2'>
-                <PlayerCharacterDisplay player={loggedPlayer} />
+                <PlayerCharacterDisplay player={currentState} isTargeting={selectedAttackerId !== null} hoveredTargetId={hoveredTargetId} />
                 <PlayerStatsDisplay money={currentState.coins} health={currentState.healthPoints} />
               </div>
               <div className='flex flex-col col-span-3 items-center h-full'>
-                <PlayZone passiveCardIds={loggedPlayer.playArea.passiveCards} monsterCardIds={loggedPlayer.playArea.monsterCards} />
+                <PlayZone passiveCardIds={loggedPlayer.playArea.passiveCards} monsterCardIds={loggedPlayer.playArea.monsterCards} selectedCardId={selectedAttackerId} onSelectCard={(id) => id && onSelectAttacker(id)} hoveredTargetId={hoveredTargetId} />
               </div>
               <div className='flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2'>
                 <DrawPile numCards={loggedPlayer.drawPile.length} />
