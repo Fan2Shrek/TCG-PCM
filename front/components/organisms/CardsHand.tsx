@@ -30,8 +30,8 @@ export default function CardsHand({ cards, cardSize = CardSize.MD, hoverCardSize
     return (hoverHeightPx - normalHeightPx) * 2;
   }, [cardWidthPx, hoverCardWidthPx, cardAspectRatio]);
 
-  const [hoveredCard, setHoveredCard] = useState<CardWithPosition | null>(null);
   const [pendingHoveredCard, setPendingHoveredCard] = useState<CardWithPosition | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<CardWithPosition | null>(null);
   const debouncedHoveredCard = useDebouncedValue(pendingHoveredCard, 50);
 
   const positionedCards = useHandPositions(cards, cardWidthPx, hoveredCard);
@@ -42,10 +42,10 @@ export default function CardsHand({ cards, cardSize = CardSize.MD, hoverCardSize
 
   const handleCardHover = useCallback(
     (card: CardWithPosition) => {
-      setPendingHoveredCard({ ...card, y: hoveredCard?.y ?? card.y });
+      setPendingHoveredCard(card);
       onMouseEnter?.();
     },
-    [hoveredCard],
+    [],
   );
 
   const handleCardLeave = useCallback(() => {
