@@ -21,15 +21,12 @@ type HandCardProps = {
 
 export default function HandCard({ positionedCard, hoverYOffset, cardSize, hoverCardSize, totalCards, onHover, onLeave, onDragCard, onDragEnd, isDisabled = false }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
   //for drag
   const [cardCenter, setCardCenter] = useState<{ x: number; y: number } | null>(null);
   const [isDropped, setIsDropped] = useState(false);
-  const [showCardElementDebounced, setShowCardElementDebounced] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const prevDraggingRef = useRef(false);
-  const dropDebounceRef = useRef<number | null>(null);
 
   const { isDragging, pointerPos, tilt, handleMouseDown } = useDrag({
     onDrag: onDragCard,
@@ -42,32 +39,22 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
   });
 
   const showDraggedCard = isDragging || (isDropped && pointerPos);
+  const showCardElementDebounced = useDebouncedValue(showDraggedCard, 100);
 
-  useEffect(() => {
-    if (showDraggedCard) {
-      setShowCardElementDebounced(true);
-      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
-    } else if (!showDraggedCard && showCardElementDebounced) {
-      dropDebounceRef.current = window.setTimeout(() => {
-        setShowCardElementDebounced(false);
-      }, 100);
-    }
-
-    return () => {
-      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
-    };
-  }, [showDraggedCard, showCardElementDebounced]);
-
-  const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
   const displayY = isHovered ? positionedCard.y - hoverYOffset : positionedCard.y;
   const displayX = positionedCard.x;
   const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
 
   useEffect(() => {
     if (isDragging) {
-      setPendingIsHovered(false);
-      setIsHovered(false);
       onLeave();
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        setCardCenter({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        });
+      }
       //this if for when a card is no longer dragged basically
     } else if (prevDraggingRef.current && !isDragging && cardRef.current && pointerPos) {
       const rect = cardRef.current.getBoundingClientRect();
@@ -79,26 +66,22 @@ export default function HandCard({ positionedCard, hoverYOffset, cardSize, hover
       onDragEnd?.(positionedCard, pointerPos);
     }
     prevDraggingRef.current = isDragging;
-  }, [isDragging]);
-
-  useEffect(() => {
-    setIsHovered(debouncedIsHovered);
-  }, [debouncedIsHovered]);
+  }, [isDragging, onLeave, onDragEnd, positionedCard, pointerPos]);
 
   const handleMouseEnter = () => {
-    setPendingIsHovered(true);
+    setIsHovered(true);
     onHover(positionedCard);
   };
 
   const handleMouseLeave = () => {
-    setPendingIsHovered(false);
+    setIsHovered(false);
     onLeave();
   };
 
   const cardElement = (
     <div
       ref={cardRef}
-      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 ${showDraggedCard || showCardElementDebounced ? "invisible pointer-events-none" : ""}`}
+      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 ${isDragging || isDropped ? "invisible pointer-events-none" : ""}`}
       style={{
         transform: `
           translate(
