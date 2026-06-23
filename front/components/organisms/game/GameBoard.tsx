@@ -29,28 +29,6 @@ export default function GameBoard() {
   const giantAnnouncement = giantAnnouncements[giantAnnouncements.length - 1] ?? null;
   const regularAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation !== "giant");
 
-  // Écoute quand une carte est jouée
-  useEffect(() => {
-    const handler = (data: { id: string }) => {
-      const card = getCardById(data.id);
-      const cost = card?.cost || 0;
-
-      if (currentState.coins < cost) {
-        actions.pushAnnouncement({
-          text: "Not enough coins",
-          tone: "negative",
-        });
-        return;
-      }
-
-      actions.playCard(data.id);
-    };
-
-    emitter.on("card:played", handler);
-
-    return () => emitter.off("card:played", handler);
-  }, [actions, getCardById, currentState.coins]);
-
   // Gère le drag et drop des cartes
   useEffect(() => {
     const handleDragStart = ({ card }: { card: CardWithPosition }) => {
@@ -162,7 +140,7 @@ export default function GameBoard() {
   };
 
   const cardHandSize = draggedCard ? CardSize.MD : isHandHovered ? CardSize.LG : CardSize.MD;
-  const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-20";
+  const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
 
   const handleBackgroundClick = () => {
     if (selectedAttackerId) {

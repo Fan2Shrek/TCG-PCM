@@ -37,9 +37,9 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
-        <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-50'>
+        <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
           {/* OpponentHand positioned absolutely */}
-          {!isCardDragged && <OpponentHand numCards={oppositePlayer?.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 top-8 z-1' />}
+          {!isCardDragged && <OpponentHand numCards={oppositePlayer?.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 -top-8 z-1' />}
 
           {/* finally, this div contains the actual play area where everything happens. */}
           {oppositePlayer && (

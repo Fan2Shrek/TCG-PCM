@@ -19,15 +19,7 @@ export type CardsHandProps = {
   isDisabled?: boolean;
 };
 
-export default function CardsHand({
-  cards,
-  cardSize = CardSize.MD,
-  hoverCardSize = CardSize.LG,
-  className = "",
-  onMouseEnter,
-  onMouseLeave,
-  isDisabled = false,
-}: CardsHandProps) {
+export default function CardsHand({ cards, cardSize = CardSize.MD, hoverCardSize = CardSize.LG, className = "", onMouseEnter, onMouseLeave, isDisabled = false }: CardsHandProps) {
   const cardWidthPx = getCardWidthPx(cardSize);
   const hoverCardWidthPx = getCardWidthPx(hoverCardSize);
   const cardAspectRatio = getCardAspectRatio();
@@ -39,8 +31,7 @@ export default function CardsHand({
   }, [cardWidthPx, hoverCardWidthPx, cardAspectRatio]);
 
   const [hoveredCard, setHoveredCard] = useState<CardWithPosition | null>(null);
-  const [pendingHoveredCard, setPendingHoveredCard] =
-    useState<CardWithPosition | null>(null);
+  const [pendingHoveredCard, setPendingHoveredCard] = useState<CardWithPosition | null>(null);
   const debouncedHoveredCard = useDebouncedValue(pendingHoveredCard, 50);
 
   const positionedCards = useHandPositions(cards, cardWidthPx, hoveredCard);
@@ -62,35 +53,18 @@ export default function CardsHand({
     onMouseLeave?.();
   }, []);
 
-  const handleCardDragEnd = useCallback(
-    (
-      positionedCard: CardWithPosition,
-      pointerPos: { x: number; y: number },
-    ) => {
-      emitter.emit("card:played", {
-        id: positionedCard.card.instanceId,
-        x: pointerPos.x,
-        y: pointerPos.y,
-      });
-    },
-    [],
-  );
+  const handleCardDragEnd = useCallback((positionedCard: CardWithPosition, pointerPos: { x: number; y: number }) => {
+    emitter.emit("card:played", {
+      id: positionedCard.card.instanceId,
+      x: pointerPos.x,
+      y: pointerPos.y,
+    });
+  }, []);
 
   return (
-    <div className={`relative w-82 h-82 ${className}`}>
+    <div className={`relative w-82 h-62 ${className}`}>
       {positionedCards.map((positionedCard) => (
-        <HandCard
-          key={positionedCard?.card?.instanceId ?? Math.random()}
-          positionedCard={positionedCard}
-          hoverYOffset={hoverYOffset}
-          cardSize={cardSize}
-          hoverCardSize={hoverCardSize}
-          totalCards={cards.length}
-          onHover={handleCardHover}
-          onLeave={handleCardLeave}
-          onDragEnd={handleCardDragEnd}
-          isDisabled={isDisabled}
-        />
+        <HandCard key={positionedCard?.card?.instanceId ?? Math.random()} positionedCard={positionedCard} hoverYOffset={hoverYOffset} cardSize={cardSize} hoverCardSize={hoverCardSize} totalCards={cards.length} onHover={handleCardHover} onLeave={handleCardLeave} onDragEnd={handleCardDragEnd} isDisabled={isDisabled} />
       ))}
     </div>
   );
