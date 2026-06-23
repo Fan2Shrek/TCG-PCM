@@ -272,6 +272,7 @@ final class GameEventApplierTest extends TestCase
         $event = new GameEvent(1, GameEventTypeEnum::CARD_GENERATED, GameEvent::GAME_EVENT, [
             'playerId' => 'player1',
             'cardTemplateId' => 'monster',
+            'cardInstanceId' => 'monster2',
         ]);
 
         $newState = $eventApplier->apply($event, $state);

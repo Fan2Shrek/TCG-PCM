@@ -223,7 +223,9 @@ class GameContext
     {
         $playerId ??= $this->playerId;
 
-        $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardTemplateId' => $cardId]);
+        $id = $this->state->randomizer->roll(0xFFFF_FFFF);
+
+        $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardTemplateId' => $cardId, 'cardInstanceId' => $id]);
     }
 
     public function damageCard(string $cardId, int $damage): void
