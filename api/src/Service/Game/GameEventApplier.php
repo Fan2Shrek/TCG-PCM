@@ -351,8 +351,11 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('CardGenerated requires a cardId');
         }
 
-        // @ŧodo refact one day
-        $cardState = new CardState(uniqid('gen_', true), $cardTemplateId, $playerId);
+        if (!($id = $event->data['cardInstanceId'] ?? null)) {
+            throw new \LogicException('CardGenerated requires a cardInstanceId');
+        }
+
+        $cardState = new CardState((string) $id, $cardTemplateId, $playerId);
         $player = $state->getPlayer($playerId);
         $newPlayer = $player->withNewHandAndDeck([...$player->hand, $cardState->instanceId], $player->drawPile);
         $state = $state->withUpdatedPlayer($newPlayer);

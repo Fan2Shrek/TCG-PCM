@@ -11,6 +11,7 @@ use App\Enum\RoomStatusEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Player;
 use App\Service\Game\CardFactory;
+use App\Service\Game\CardIdGeneratorInterface;
 use App\Service\RoomStarter;
 use App\Tests\Resources\MockCardRegistry;
 use App\Tests\Unit\Fixtures\DummyCard;
@@ -103,12 +104,20 @@ final class RoomStarterTest extends TestCase
 
     private function getSut(): RoomStarter
     {
-        return new RoomStarter(new CardFactory(new MockCardRegistry([
-            DummyCard::class => DummyCard::class,
-            'other_card' => DummyCard::class,
-            DummyCharacterCard::class => DummyCharacterCard::class,
-            DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
-        ])));
+        return new RoomStarter(
+            new CardFactory(new MockCardRegistry([
+                DummyCard::class => DummyCard::class,
+                'other_card' => DummyCard::class,
+                DummyCharacterCard::class => DummyCharacterCard::class,
+                DummyCharacterCardWithMoreHP::class => DummyCharacterCardWithMoreHP::class,
+            ])),
+            new class implements CardIdGeneratorInterface {
+                public function generateCardId(string $templateId): string
+                {
+                    return uniqid('card_', true);
+                }
+            },
+        );
     }
 }
 

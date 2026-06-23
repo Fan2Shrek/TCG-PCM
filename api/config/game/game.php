@@ -5,6 +5,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use App\Game\Card\CardHelper;
 use App\Service\Game\CardFactory;
 use App\Service\Game\CardFactoryInterface;
+use App\Service\Game\CardIdGenerator;
+use App\Service\Game\CardIdGeneratorInterface;
 use App\Service\Game\CardRegistry;
 use App\Service\Game\CardRegistryInterface;
 use App\Service\Game\CardRuntimeMap;
@@ -116,6 +118,11 @@ return static function (ContainerConfigurator $container): void {
             ->abstract(true)
             ->alias(EndGameHandlerInterface::class, 'game.end_game_handler')
 
+        ->set('game.card_id_generator', CardIdGeneratorInterface::class)
+
+        ->set('game.card_id_generator.default', CardIdGenerator::class)
+            ->alias(CardIdGeneratorInterface::class, 'game.card_id_generator.default')
+
         // Middlewares
         ->set('game.pipeline.middleware.exception', ExceptionMiddleware::class)
             ->tag('game.pipeline_middleware', ['priority' => 900])
@@ -170,6 +177,7 @@ return static function (ContainerConfigurator $container): void {
         ->set('game.helper.cards', CardHelper::class)
             ->args([
                 service('game.card_registry'),
+                service('game.card_id_generator'),
             ])
             ->tag('game.helper', ['name' => 'cards'])
     ;
