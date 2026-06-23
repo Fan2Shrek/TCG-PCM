@@ -15,12 +15,13 @@ use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Service\Game\CardFactoryInterface;
-use Symfony\Component\Uid\Uuid;
+use App\Service\Game\CardIdGeneratorInterface;
 
 final class RoomStarter
 {
     public function __construct(
         private CardFactoryInterface $cardFactory,
+        private CardIdGeneratorInterface $cardIdGenerator,
     ) {}
 
     public function startRoom(Room $room): GameState
@@ -67,7 +68,7 @@ final class RoomStarter
             $player,
             $characterCard->getHealthPoints(),
             $characterCard->getHealthPoints(),
-            $this->createCardId()->toString(),
+            $this->cardIdGenerator->generateCardId($characterCard->getId()),
             [],
             $cardsIds,
             0,
@@ -85,7 +86,7 @@ final class RoomStarter
         shuffle($cards);
 
         foreach ($cards as $card) {
-            $cardsIds[$this->createCardId()->toString()] = $card;
+            $cardsIds[$this->cardIdGenerator->generateCardId($card)] = $card;
         }
 
         return $cardsIds;
@@ -94,10 +95,5 @@ final class RoomStarter
     private function generateSeed(): int
     {
         return random_int(0, 0xFFFF_FFFF);
-    }
-
-    private function createCardId(): Uuid
-    {
-        return Uuid::v4();
     }
 }

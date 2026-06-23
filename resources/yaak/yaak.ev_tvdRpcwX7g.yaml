@@ -3,7 +3,7 @@ model: environment
 id: ev_tvdRpcwX7g
 workspaceId: wk_YWNRaoZjBb
 createdAt: 2026-02-19T16:38:57.970851468
-updatedAt: 2026-04-14T17:35:39.647864118
+updatedAt: 2026-06-22T14:52:48.631970206
 name: Global Variables
 public: true
 base: true
@@ -28,7 +28,7 @@ variables:
   id: 5AaVmGGyg4
 - enabled: true
   name: room_id
-  value: 019d8d0c-5f80-7a57-8ac0-acaa8d05b11c
+  value: ${[ response.body.path(request='rq_n2Pfsbno8X', behavior='smart', ttl='0', result='first', join=b64'LCA', path=b64'JC5pZA') ]}
   id: QNbtvsPWzj
 - enabled: true
   name: opponent_token
