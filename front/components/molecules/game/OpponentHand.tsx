@@ -27,7 +27,7 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
     isActive: true,
   }));
 
-  const positionedCards = useHandPositions(dummyCards, cardWidthPx, null);
+  const positionedCards = useHandPositions(dummyCards, cardWidthPx, false);
 
   return (
     <div className={`relative w-82 h-82 ${className}`} style={{ transform: "scaleY(-1)", transformStyle: "preserve-3d" }}>

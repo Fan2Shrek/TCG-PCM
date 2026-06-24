@@ -8,7 +8,7 @@ export type DropZone = {
 };
 
 export type DropResult = {
-  pos: { x: number; y: number };
+  pos: { x: number; y: number; z: number };
   size: CardSize;
   tilt: { x: number; y: number; z: number };
 };

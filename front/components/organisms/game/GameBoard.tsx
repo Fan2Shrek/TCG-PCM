@@ -2,12 +2,11 @@ import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
 import { CardWithPosition } from "@/lib/cards/types/card";
-import { CardSize } from "@/constants/card";
 
 export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
@@ -139,7 +138,6 @@ export default function GameBoard() {
     setSelectedAttackerId(null);
   };
 
-  const cardHandSize = draggedCard ? CardSize.MD : isHandHovered ? CardSize.LG : CardSize.MD;
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
 
   const handleBackgroundClick = () => {
@@ -160,8 +158,8 @@ export default function GameBoard() {
       <div className='h-full flex flex-row justify-center items-center pointer-events-auto'>
         <GameMainArea selectedAttackerId={selectedAttackerId} onSelectAttacker={handleSelectAttackerWithTurnCheck} onSelectTarget={handleAttackTarget} selectedAttackerCard={selectedAttackerCard} getCardById={getCardById} game={game} opponentState={opponentState} currentState={currentState} isCardDragged={!!draggedCard} hoveredTargetId={hoveredTargetId} />
       </div>
-      <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 transition-all z-10`}>
-        <CardsHand cards={currentState.hand.map((cardId: string) => getCardById(cardId))} cardSize={cardHandSize} onMouseEnter={() => setIsHandHovered(true)} onMouseLeave={() => setIsHandHovered(false)} isDisabled={!isLoggedPlayerTurn} />
+      <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}>
+        <CardsHand cards={currentState.hand.map((cardId: string) => getCardById(cardId))} onMouseEnter={() => setIsHandHovered(true)} onMouseLeave={() => setIsHandHovered(false)} isDisabled={!isLoggedPlayerTurn} />
       </div>
 
       {connectedPlayer.id == game.currentPlayer && (

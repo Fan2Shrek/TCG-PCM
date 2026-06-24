@@ -12,7 +12,7 @@ type DraggedCardProps = {
   card: BasicCard;
   pointerPos: { x: number; y: number } | null;
   tilt: { x: number; y: number; z: number };
-  originPos: { x: number; y: number } | null;
+  originPos: { x: number; y: number; z: number } | null;
   originSize: CardSize;
   originTilt: { x: number; y: number; z: number };
   isDropped: boolean;
@@ -23,6 +23,7 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
 
   let x = 0;
   let y = 0;
+  let z = 50;
   let currentSize: CardSize = CardSize.MD;
   let currentTilt = { ...tilt, z: 0 };
   let shouldTransition = false;
@@ -52,12 +53,14 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
   if (pointerPos && !isDropped) {
     x = pointerPos.x - window.innerWidth / 2;
     y = pointerPos.y - window.innerHeight / 2;
+    z = 50;
   } else {
     onDragEnd();
     if (!targetPos) return;
 
     x = targetPos.x - window.innerWidth / 2;
     y = targetPos.y - window.innerHeight / 2;
+    z = targetPos.z;
     currentSize = targetSize;
     currentTilt = targetTilt;
     shouldTransition = true;
@@ -68,7 +71,7 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
     top: "50%",
     left: "50%",
     transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-    zIndex: 50,
+    zIndex: z,
     cursor: "grabbing",
     transition: shouldTransition ? "transform 300ms cubic-bezier(.2,.8,.2,1)" : undefined,
   };

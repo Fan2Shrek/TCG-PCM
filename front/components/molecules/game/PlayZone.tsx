@@ -27,6 +27,7 @@ export default function PlayZone({ passiveCardIds, monsterCardIds, className = "
       pos: {
         x: zoneRef.current.getBoundingClientRect().left,
         y: zoneRef.current.getBoundingClientRect().top,
+        z: 50,
       },
       size: CardSize.MD,
       tilt: { x: GAMEBOARD_TILT, y: 0, z: 0 },

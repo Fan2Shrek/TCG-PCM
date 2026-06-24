@@ -5,7 +5,7 @@ import { cardsHandComputeArcParameters, cardsHandComputeCardPosition } from "@/l
 
 type ArcParameters = ReturnType<typeof cardsHandComputeArcParameters>;
 
-export function useHandPositions(cards: CardModel[], cardWidthPx: number, hoveredCard: CardWithPosition | null): CardWithPosition[] {
+export function useHandPositions(cards: CardModel[], cardWidthPx: number, hovered: boolean): CardWithPosition[] {
   const positionedCards = useMemo(() => {
     const totalCards = cards.length;
     if (totalCards === 0) {
@@ -33,7 +33,7 @@ export function useHandPositions(cards: CardModel[], cardWidthPx: number, hovere
 
     const positions = getArcPositions(normalParams);
 
-    if (!hoveredCard) {
+    if (!hovered) {
       return mapToCardWithPosition(positions);
     } else {
       const baseSpacing = cardWidthPx;
@@ -60,7 +60,7 @@ export function useHandPositions(cards: CardModel[], cardWidthPx: number, hovere
 
       return mapToCardWithPosition(straightLinePositions);
     }
-  }, [cards, cardWidthPx, hoveredCard]);
+  }, [cards, cardWidthPx, hovered]);
 
   return positionedCards;
 }
