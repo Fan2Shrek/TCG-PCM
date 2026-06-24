@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { CardSize } from "@/constants/card";
 import Card from "../Card";
 import { GameContext } from "@/contexts/GameContext";
@@ -25,8 +25,8 @@ export default function CardRow({ cardIds, className, isLoggedPlayerSide = false
       {cardIds.map((cardId) => {
         const card = getCardById(cardId);
         const isSelected = selectedCardId === card?.instanceId;
-        const isHovered = hoveredTargetId === card?.instanceId && isTargeting;
-        const canSelect = isLoggedPlayerSide && isControlled;
+        const isHovered = hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
+        const canSelect = isLoggedPlayerSide && isControlled && card?.isActive;
 
         return (
           card && (
@@ -36,7 +36,7 @@ export default function CardRow({ cardIds, className, isLoggedPlayerSide = false
                 e.stopPropagation();
                 if (canSelect) {
                   onSelectCard?.(isSelected ? null : card.instanceId);
-                } else if (isTargeting) {
+                } else if (isTargeting && card?.isActive) {
                   emitter.emit("target:click", card.instanceId);
                 }
               }}
@@ -49,7 +49,7 @@ export default function CardRow({ cardIds, className, isLoggedPlayerSide = false
                       transform: "scale(1.1) translateZ(80px) translateY(-40px)",
                       boxShadow: "0 50px 40px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3)",
                     }
-                  : { transform: "scale(1) translateZ(0) translateY(0)" }
+                  : { transform: `scale(1) translateZ(0) translateY(0)${!card?.isActive ? " rotateZ(90deg)" : ""}` }
               }
             >
               <Card card={card} size={CardSize.MD} />

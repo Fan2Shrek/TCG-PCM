@@ -43,7 +43,7 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
     { src: "/isaac_card_layer_4.gif", depth: 20 },
   ];
 
-  if (false === card?.isActive) {
+  if (!card?.isActive) {
     tempCardLayers.push({ src: "/cross.webp", depth: 20 });
   }
 
@@ -58,12 +58,7 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
         } as React.CSSProperties
       }
     >
-      <CardFront
-        layers={tempCardLayers}
-        tilt={appliedTilt}
-        glare={appliedGlare}
-        isHovering={!!isHovering}
-      />
+      <CardFront layers={tempCardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
       <CardBack id={card?.instanceId} />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
       <p className='text-center absolute text-black'>{card?.name}</p>
