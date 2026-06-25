@@ -1,55 +1,58 @@
-'use client'
+"use client";
 
-import { use, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import useMercure from '@/hook/useMercure';
-
+import { use, useState } from "react";
+import { useRouter } from "next/navigation";
+import useMercure from "@/hooks/useMercure";
 import api from "@/lib/api/api";
 import { Button } from "@/components/ui/button";
 
-export default ({ params }: { params: Promise<{ id: string }> }) =>  {
-  const { id } = use(params)
-  const router = useRouter()
+const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
+  const router = useRouter();
 
-  const [err, setErr] = useState<string|null>(null)
-  const [opp, setOpp] = useState<string|null>(null)
+  const [err, setErr] = useState<string | null>(null);
+  const [opponent, setOpponent] = useState<string | null>(null);
 
   const handleStart = async () => {
-	try {
-	  api.room.start(id);
-
-	  r(id);
-	} catch (e) {
-	  setErr(e.message)
-	}
+    try {
+      await api.room.start(id);
+      router.push(`/game/${id}`);
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "Failed to start game");
+    }
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(id);
+    } catch {
+      setErr("Failed to copy room ID");
+    }
+  };
 
-  // Can't use redirect here bc next sucks ass
-  const r = (id) => {
-	router.push(`/game/${id}`)
-  }
-
-  const handleCopy = () => {
-  	navigator.clipboard.writeText(id);
-  }
-
-  useMercure(
-    `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${id}`,
-    {
-	  opponent_joined: (message: { data: { opponent: string }}) => {
-	    setOpp(message.data.opponent);
-	  }
+  useMercure(`${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${id}`, {
+    opponent_joined: (message: { data: { opponent: string } }) => {
+      setOpponent(message.data.opponent);
     },
-  );
+  });
 
-  return <div className="flex flex-col items-center justify-end h-screen">
-	  {err}
-	  <br />
-	  {opp ? `opponent: ${opp}` : "waiting for opponent..."}
-	  <br />
-	  {id}
-	  <Button onClick={handleCopy} className="rounded-full">copy id</Button>
-	  <Button onClick={handleStart} className="rounded-full">start</Button>
-  </div>
-}
+  return (
+    <div className='flex flex-col items-center justify-center gap-4 h-screen'>
+      {err && <p className='text-red-500'>{err}</p>}
+      <div className='text-center'>
+        <p className='text-lg'>{opponent ? `Opponent: ${opponent}` : "Waiting for opponent..."}</p>
+        <p className='text-sm text-gray-500 mt-2'>Room ID: {id}</p>
+      </div>
+      <div className='flex gap-2'>
+        <Button onClick={handleCopy} className='rounded-full'>
+          Copy ID
+        </Button>
+        <Button onClick={handleStart} className='rounded-full'>
+          Start Game
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default WaitingPage;

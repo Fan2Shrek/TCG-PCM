@@ -1,77 +1,124 @@
-import PlayerPanel from "@/components/atoms/game/PlayerPanel";
-import BoardRow from "@/components/molecules/game/BoardRow";
-import { GameContext } from "@/context/GameContext";
-import type { GameAnnouncement } from "@/context/GameContext";
+import { GameContext } from "@/contexts/GameContext";
+import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import GameMainArea from "./GameMainArea";
+import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
-import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
+import { CardWithPosition } from "@/lib/cards/types/card";
 
-export default () => {
+export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
-  const playBoxRef = useRef<HTMLDivElement>(null);
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
-    null,
-  );
-  const giantAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation === "giant",
-  );
-  const giantAnnouncement =
-    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
-  const regularAnnouncements = announcements.filter(
-    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
-  );
-
-  useEffect(() => {
-    const handler = (data: { id: string }) => {
-      const rect = playBoxRef.current?.getBoundingClientRect();
-
-      if (!rect) {
-        return;
-      }
-
-      const isInside = true;
-
-      isInside && actions.playCard(data.id);
-    };
-
-    emitter.on("card:played", handler);
-
-    return () => emitter.off("card:played", handler);
-  }, [actions]);
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(null);
+  const [isHandHovered, setIsHandHovered] = useState(false);
+  const [draggedCard, setDraggedCard] = useState<CardWithPosition | null>(null);
+  const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
 
   if (!game) {
     return <div>Loading...</div>;
   }
 
-  const connectedPlayer =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1.player.id
-      : game.player2.player.id;
+  const connectedPlayer = game.player1.player.name === getCurrentUser()?.username ? game.player1.player : game.player2.player;
+  const isLoggedPlayerTurn = connectedPlayer.id === game.currentPlayer;
+  const currentState = game.player1.player.name === getCurrentUser()?.username ? game.player1 : game.player2;
+  const opponentState = game.player1.player.name === getCurrentUser()?.username ? game.player2 : game.player1;
 
-  const currentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player1
-      : game.player2;
-  const opponentState =
-    game.player1.player.name === getCurrentUser()?.username
-      ? game.player2
-      : game.player1;
-  const selectedAttackerCard = useMemo(
-    () => (selectedAttackerId ? getCardById(selectedAttackerId) : undefined),
-    [getCardById, selectedAttackerId],
-  );
+  const giantAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation === "giant");
+  const giantAnnouncement = giantAnnouncements[giantAnnouncements.length - 1] ?? null;
+  const regularAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation !== "giant");
 
+  // Gère le drag et drop des cartes
+  useEffect(() => {
+    const handleDragStart = ({ card }: { card: CardWithPosition }) => {
+      if (!isLoggedPlayerTurn) return;
+      setDraggedCard(card);
+      setSelectedAttackerId(null);
+    };
+    const handleDragEnd = () => {
+      setDraggedCard(null);
+    };
+
+    emitter.on("card:drag:start", handleDragStart);
+    emitter.on("card:drag:end", handleDragEnd);
+
+    return () => {
+      emitter.off("card:drag:start", handleDragStart);
+      emitter.off("card:drag:end", handleDragEnd);
+    };
+  }, [isLoggedPlayerTurn]);
+
+  // Gère la sélection de cibles
   useEffect(() => {
     if (!selectedAttackerId) {
+      setHoveredTargetId(null);
       return;
     }
 
-    if (selectedAttackerCard?.isActive === false) {
-      setSelectedAttackerId(null);
+    const handleTargetHover = (targetId: string) => {
+      setHoveredTargetId(targetId);
+    };
+
+    const handleTargetLeave = () => {
+      setHoveredTargetId(null);
+    };
+
+    const handleTargetClick = (targetId: string) => {
+      if (selectedAttackerId) {
+        handleAttackTarget(targetId);
+      }
+    };
+
+    emitter.on("target:hover", handleTargetHover);
+    emitter.on("target:leave", handleTargetLeave);
+    emitter.on("target:click", handleTargetClick);
+
+    return () => {
+      emitter.off("target:hover", handleTargetHover);
+      emitter.off("target:leave", handleTargetLeave);
+      emitter.off("target:click", handleTargetClick);
+    };
+  }, [selectedAttackerId]);
+
+  // Gère quand carte laché dans zone de jeu
+  useEffect(() => {
+    const handleCardDropped = (data: { card: { instanceId: string }; zoneId?: string }) => {
+      const cardId = data.card.instanceId;
+      const card = getCardById(cardId);
+
+      if (!card || !data.zoneId) {
+        return;
+      }
+
+      const cost = card.cost || 0;
+
+      if (currentState.coins < cost) {
+        actions.pushAnnouncement({
+          text: "Not enough coins",
+          tone: "negative",
+        });
+        return;
+      }
+
+      actions.playCard(cardId);
+    };
+
+    emitter.on("card:dropped", handleCardDropped);
+
+    return () => emitter.off("card:dropped", handleCardDropped);
+  }, [getCardById, actions, currentState.coins]);
+
+  const selectedAttackerCard = useMemo(() => {
+    if (!selectedAttackerId) return undefined;
+
+    const card = getCardById(selectedAttackerId);
+
+    if (card?.isActive === false) {
+      return undefined;
     }
-  }, [selectedAttackerCard, selectedAttackerId]);
+
+    return card;
+  }, [getCardById, selectedAttackerId]);
 
   const handleSelectAttacker = (cardId: string) => {
     if (selectedAttackerId === cardId) {
@@ -91,108 +138,33 @@ export default () => {
     setSelectedAttackerId(null);
   };
 
+  const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
+
+  const handleBackgroundClick = () => {
+    if (selectedAttackerId) {
+      setSelectedAttackerId(null);
+    }
+  };
+
+  const handleSelectAttackerWithTurnCheck = (cardId: string) => {
+    if (!isLoggedPlayerTurn) return;
+    handleSelectAttacker(cardId);
+  };
+
   return (
-    <div className="relative flex flex-col h-screen bg-green-900 text-white">
-      <div className="pointer-events-none absolute left-1/2 top-4 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
-        {regularAnnouncements.map((announcement: GameAnnouncement) => (
-          <div
-            key={announcement.id}
-            className={`rounded-full border px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm ${
-              announcement.tone === "positive"
-                ? "border-emerald-300/60 bg-emerald-500/20 text-emerald-100"
-                : announcement.tone === "negative"
-                  ? "border-rose-300/60 bg-rose-500/20 text-rose-100"
-                  : "border-white/20 bg-black/30 text-white"
-            }`}
-          >
-            {announcement.text}
-          </div>
-        ))}
+    <div className='relative flex flex-col h-screen bg-green-900 text-white overflow-hidden' onClick={handleBackgroundClick}>
+      <GameAnnouncements regularAnnouncements={regularAnnouncements} giantAnnouncement={giantAnnouncement} selectedAttackerId={selectedAttackerId} />
+
+      <div className='h-full flex flex-row justify-center items-center pointer-events-auto'>
+        <GameMainArea selectedAttackerId={selectedAttackerId} onSelectAttacker={handleSelectAttackerWithTurnCheck} onSelectTarget={handleAttackTarget} selectedAttackerCard={selectedAttackerCard} getCardById={getCardById} game={game} opponentState={opponentState} currentState={currentState} isCardDragged={!!draggedCard} hoveredTargetId={hoveredTargetId} />
+      </div>
+      <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}>
+        <CardsHand cards={currentState.hand.map((cardId: string) => getCardById(cardId))} onMouseEnter={() => setIsHandHovered(true)} onMouseLeave={() => setIsHandHovered(false)} isDisabled={!isLoggedPlayerTurn} />
       </div>
 
-      {giantAnnouncement && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6">
-          <div className="flex min-h-64 min-w-64 flex-col items-center justify-center rounded-[2.5rem] border border-white/20 bg-black/50 px-10 py-8 text-center shadow-[0_0_60px_rgba(255,255,255,0.18)] backdrop-blur-md">
-            <div className="text-5xl sm:text-6xl">🎲</div>
-            <div className="mt-4 text-7xl font-black leading-none tracking-tight text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.55)] sm:text-[8rem]">
-              {giantAnnouncement.text.replace(/^🎲\s*/, "")}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <PlayerHealthBar
-        health={opponentState.healthPoints}
-        maxHealth={opponentState.maxHealthPoints}
-      />
-      <div className="flex justify-center p-4 border-b border-green-700">
-        <button
-          type="button"
-          onClick={() => handleAttackTarget(opponentState.player.id)}
-          disabled={!selectedAttackerId}
-          className={`rounded-xl transition ${selectedAttackerId ? "cursor-pointer hover:scale-[1.01]" : "cursor-not-allowed"} ${selectedAttackerCard ? "ring-4 ring-red-400 ring-offset-2 ring-offset-green-900" : ""}`}
-          aria-label={`Attaquer ${opponentState.player.name}`}
-        >
-          <PlayerPanel player={opponentState} />
-        </button>
-      </div>
-
-      <div
-        ref={playBoxRef}
-        className="flex flex-1 flex-col items-center justify-center gap-6"
-      >
-        <BoardRow
-          title="Player 2 Monsters"
-          cards={opponentState.playArea.monsterCards}
-          clickable={!!selectedAttackerId}
-          onCardClick={handleAttackTarget}
-        />
-        <BoardRow
-          title="Player 2 Passive"
-          cards={opponentState.playArea.passiveCards}
-        />
-
-        <BoardRow
-          title="Player 1 Monsters"
-          cards={currentState.playArea.monsterCards}
-          clickable
-          onCardClick={handleSelectAttacker}
-          selectedCardId={selectedAttackerId}
-          isCardDisabled={(cardId) => getCardById(cardId)?.isActive === false}
-        />
-        <BoardRow
-          title="Player 1 Passive"
-          cards={currentState.playArea.passiveCards}
-        />
-      </div>
-
-      <div className="border-t border-green-700 p-4">
-        <PlayerPanel player={currentState} />
-
-        <div className="mt-3 text-center text-sm text-white/70">
-          {selectedAttackerId
-            ? "Choisis une cible pour attaquer"
-            : "Choisis un monstre pour attaquer"}
-        </div>
-
-        <div className="flex gap-2 mt-4 justify-center">
-          <CardsHand
-            cards={currentState.hand.map((cardId: string) =>
-              getCardById(cardId),
-            )}
-          />
-        </div>
-        <PlayerHealthBar
-          health={currentState.healthPoints}
-          maxHealth={currentState.maxHealthPoints}
-        />
-      </div>
-      {connectedPlayer == game.currentPlayer && (
-        <button
-          className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded"
-          onClick={actions.endTurn}
-        >
-          end
+      {connectedPlayer.id == game.currentPlayer && (
+        <button className='absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer' onClick={actions.endTurn}>
+          End turn
         </button>
       )}
     </div>

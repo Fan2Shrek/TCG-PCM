@@ -1,20 +1,13 @@
-import { BasicCard } from '@/components/types/card';
-import useMercure from '@/hook/useMercure';
-import { GameEventType } from '@/lib/game/type/eventType';
-import { GameEvent } from '@/lib/game/type/gameEvent';
-import { GameState } from '@/lib/game/type/gameState';
+import { BasicCard } from "@/lib/cards/types/card";
+import useMercure from "@/hooks/useMercure";
+import { GameEventType } from "@/lib/game/type/eventType";
+import { GameEvent } from "@/lib/game/type/gameEvent";
+import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
 
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { PlayerActionType } from '@/lib/game/type/playerAction';
-import { getCurrentUser } from '@/lib/utils';
+import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { PlayerActionType } from "@/lib/game/type/playerAction";
+import { getCurrentUser } from "@/lib/utils";
 
 export type AnnouncementTone = "neutral" | "positive" | "negative";
 
@@ -31,6 +24,7 @@ type ActionObject = {
   playCard: (cardId: string) => void;
   attack: (cardId: string, targetId: string) => void;
   endTurn: () => void;
+  pushAnnouncement: (announcement: AnnouncementPayload) => void;
 };
 
 type GameContextType = {
@@ -46,50 +40,41 @@ type Props = {
   game?: GameState | null;
 };
 
-export const GameContext = createContext<GameContextType>();
+export const GameContext = createContext<GameContextType>({
+  game: null,
+  getCardById: () => undefined,
+});
 
 export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
-	const [game, setGame] = useState<GameState | null>(initialGame || null);
-	const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
-	const gameRef = useRef<GameState | null>(initialGame || null);
-	const announcementIdRef = useRef(0);
+  const [game, setGame] = useState<GameState | null>(initialGame || null);
+  const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
+  const gameRef = useRef<GameState | null>(initialGame || null);
+  const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
-	const currentUser = getCurrentUser();
+  const currentUser = getCurrentUser();
 
-	const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
+  const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
-    setAnnouncements((current: GameAnnouncement[]) => [
-      ...current,
-      { id, ...announcement },
-    ]);
+    setAnnouncements((current: GameAnnouncement[]) => [...current, { id, ...announcement }]);
 
     const timeoutId = window.setTimeout(() => {
-      setAnnouncements((current: GameAnnouncement[]) =>
-        current.filter(
-          (announcement: GameAnnouncement) => announcement.id !== id,
-        ),
-      );
+      setAnnouncements((current: GameAnnouncement[]) => current.filter((announcement: GameAnnouncement) => announcement.id !== id));
 
-      timeoutRefs.current = timeoutRefs.current.filter(
-        (currentTimeoutId: ReturnType<typeof setTimeout>) =>
-          currentTimeoutId !== timeoutId,
-      );
+      timeoutRefs.current = timeoutRefs.current.filter((currentTimeoutId: ReturnType<typeof setTimeout>) => currentTimeoutId !== timeoutId);
     }, 2200);
 
     timeoutRefs.current.push(timeoutId);
   }, []);
 
-	useEffect(() => {
+  useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) =>
-        window.clearTimeout(timeoutId),
-      );
+      timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) => window.clearTimeout(timeoutId));
       timeoutRefs.current = [];
     };
   }, []);
 
-	const getCardById = useCallback(
+  const getCardById = useCallback(
     (cardId: string): BasicCard | undefined => {
       if (!game) {
         return undefined;
@@ -100,7 +85,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     [game],
   );
 
-	const playCard = async (cardId: string) => {
+  const playCard = async (cardId: string) => {
     try {
       await api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
     } catch (error) {
@@ -111,24 +96,17 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	const attack = (cardId: string, targetId: string) => {
+  const attack = (cardId: string, targetId: string) => {
     api.game.play(gameId, PlayerActionType.ATTACK, { cardId, targetId });
   };
 
-	const endTurn = () => {
+  const endTurn = () => {
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-	const getPlayerKey = (
-    state: GameState,
-    playerId: string,
-  ): "player1" | "player2" =>
-    state.player1.player.id === playerId ? "player1" : "player2";
+  const getPlayerKey = (state: GameState, playerId: string): "player1" | "player2" => (state.player1.player.id === playerId ? "player1" : "player2");
 
-	const animate = (
-    state: GameState,
-    event: GameEvent,
-  ): AnnouncementPayload | null => {
+  const animate = (state: GameState, event: GameEvent): AnnouncementPayload | null => {
     if (event.type === GameEventType.DICE_ROLLED) {
       if (!event.data.faces) return null;
       const rollValue = event.data.result;
@@ -192,7 +170,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	const applyView = (state: GameState, event: GameEvent): GameState => {
+  const applyView = (state: GameState, event: GameEvent): GameState => {
     if (!event.view) return state;
     console.log(event);
 
@@ -251,11 +229,9 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         if (event.type === GameEventType.CARD_DISCARDED) {
           console.log(cardId, player.playArea);
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
-            nextPlayer.playArea.monsterCards =
-              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
-            nextPlayer.playArea.passiveCards =
-              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.passiveCards = nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
           }
 
           return {
@@ -272,14 +248,8 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           [playerKey]: {
             ...nextPlayer,
             playArea: {
-              passiveCards:
-                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA
-                  ? [...player.playArea.passiveCards, cardId]
-                  : player.playArea.passiveCards,
-              monsterCards:
-                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA
-                  ? [...player.playArea.monsterCards, cardId]
-                  : player.playArea.monsterCards,
+              passiveCards: event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+              monsterCards: event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
             },
           },
           cards: {
@@ -339,7 +309,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     }
   };
 
-	useMercure(
+  useMercure(
     `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${currentUser?.username === game?.player1.player.name ? "1" : "2"}`, // @todo change
     {
       game_events: (e: { events: GameEvent[] }) => {
@@ -368,20 +338,20 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     },
   );
 
-	useEffect(() => {
+  useEffect(() => {
     gameRef.current = game;
   }, [game]);
 
-	return (
+  return (
     <GameContext.Provider
       value={{
         game,
         getCardById,
         announcements,
-        actions: { playCard, attack, endTurn },
+        actions: { playCard, attack, endTurn, pushAnnouncement },
       }}
     >
       {children}
     </GameContext.Provider>
   );
-}
+};

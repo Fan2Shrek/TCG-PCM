@@ -1,15 +1,22 @@
 "use client";
+import { emitter } from "@/lib/eventBus";
 import { useState, useCallback, useEffect, useRef } from "react";
+import { BasicCard } from "../types/card";
 
 type UseDragOptions = {
+  card: BasicCard;
   onDrag?: (e: MouseEvent) => void;
   onDragEnd?: () => void;
 };
 
-export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
+export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [pointerPos, setPointerPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   const prevPos = useRef<{ x: number; y: number } | null>(null);
@@ -19,7 +26,12 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
     e.preventDefault();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
-    setDragOffset({ x: 0, y: 0 });
+    setPointerPos({ x: e.clientX, y: e.clientY });
+
+    emitter.emit("card:drag:start", {
+      pos: { x: e.clientX, y: e.clientY },
+      card,
+    });
   };
 
   const handleMouseMove = useCallback(
@@ -29,7 +41,7 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
       const x = e.clientX - dragStart.x;
       const y = e.clientY - dragStart.y;
 
-      setDragOffset({ x, y });
+      setPointerPos({ x: e.clientX, y: e.clientY });
 
       if (prevPos.current) {
         const dx = x - prevPos.current.x;
@@ -49,21 +61,30 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
         setTilt({ x: 0, y: 0 });
       }, 200);
 
+      emitter.emit("card:drag:move", {
+        pos: { x: e.clientX, y: e.clientY },
+        card,
+      });
+
       onDrag?.(e);
     },
-    [dragStart, onDrag]
+    [dragStart, onDrag, card],
   );
 
   const handleMouseUp = useCallback(() => {
     if (dragStart) {
       setIsDragging(false);
-      setDragOffset(null);
       setDragStart(null);
       setTilt({ x: 0, y: 0 });
       prevPos.current = null;
+      emitter.emit("card:drag:end", {
+        pos: { x: pointerPos?.x, y: pointerPos?.y },
+        card,
+      });
+
       onDragEnd?.();
     }
-  }, [dragStart, onDragEnd]);
+  }, [dragStart, onDragEnd, card, pointerPos]);
 
   useEffect(() => {
     if (!dragStart) return;
@@ -79,7 +100,7 @@ export function useDrag({ onDrag, onDragEnd }: UseDragOptions = {}) {
 
   return {
     isDragging,
-    dragOffset,
+    pointerPos,
     tilt,
     handleMouseDown,
   };

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default ( url: string, callbacks: Object<string, Function>) => {
+export default ( url: string, callbacks: Record<string, Function>) => {
     useEffect(() => {
         const eventSource = new EventSource(url, {withCredentials: true});
         eventSource.onmessage = (message) => {

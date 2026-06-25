@@ -5,10 +5,10 @@ export type CardBackProps = {
   backImage?: string;
 };
 
-const CardBack = ({ id, backImage = null }: CardBackProps) => (
+const CardBack = ({ id, backImage = "" }: CardBackProps) => (
   <div className="absolute inset-0 backface-hidden rotate-y-180 pointer-events-none select-none">
     <Image
-      src={backImage ?? "/default_card_back.png"}
+      src={backImage == "" ? "/default_card_back.png" : backImage}
       alt={`${id} back`}
       fill
       className="object-cover"

@@ -5,7 +5,7 @@ export type GameState = {
 	cards: Record<string, CardState>;
 }
 
-type PlayerState = {
+export type PlayerState = {
 	player: Player;
 	healthPoints: number;
 	maxHealthPoints: number;
@@ -27,7 +27,7 @@ type PlayArea = {
 	monsterCards: string[];
 }
 
-type CardState = {
+export type CardState = {
 	instanceId: string;
 	effects: EffectState[];
 	values: any;

@@ -1,4 +1,4 @@
-import { CardSize } from "../types/card";
+import { CardSize } from "@/constants/card";
 
 export const MAX_X_TILT = 30;
 export const MAX_Y_TILT = 45;
@@ -20,10 +20,10 @@ export const CARD_HAND_ARC_ANGLE_SCALE = 10;
 export const DEGREES_TO_RADIANS = Math.PI / 180;
 
 export const CARD_WIDTH_PX = {
-  sm: 128,
-  md: 176,
-  lg: 240,
-  xl: 480,
+  sm: 112,
+  md: 144,
+  lg: 176,
+  xl: 352,
 };
 
 export const CARD_ASPECT_RATIO = 5 / 7;
@@ -49,14 +49,13 @@ export const getCardAspectRatio = (): number => {
 };
 
 export const cardsHandComputeArcParameters = (totalCards: number, cardWidthPx: number, maxAngle: number, fanOut: boolean) => {
-
   const maxArcAngle = Math.min(maxAngle, CARD_HAND_MIN_ARC_ANGLE + totalCards * CARD_HAND_ARC_ANGLE_SCALE);
   const arcAngleRadian = maxArcAngle * DEGREES_TO_RADIANS;
 
-  const radius = cardWidthPx * (fanOut ? CARD_HAND_RADIUS_MULTIPLIER * totalCards / 1.95 : CARD_HAND_RADIUS_MULTIPLIER);
+  const radius = cardWidthPx * (fanOut ? (CARD_HAND_RADIUS_MULTIPLIER * totalCards) / 1.95 : CARD_HAND_RADIUS_MULTIPLIER);
 
   return { arcAngleRadian, radius };
-}
+};
 
 export const cardsHandComputeCardPosition = (index: number, totalCards: number, arcAngleRadian: number, radius: number, hoveredCardIndex?: number) => {
   const middleIndex = (totalCards - 1) / 2;
@@ -71,6 +70,6 @@ export const cardsHandComputeCardPosition = (index: number, totalCards: number, 
   const rotation = (angle * 180) / Math.PI;
 
   return { x, y, rotation };
-}
+};
 
 export const clamp = (v: number) => Math.max(0, Math.min(1, v));

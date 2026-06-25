@@ -19,24 +19,16 @@
 @layer base {
   :root {
     --aspect-card: 5/7;
-    --spacing-card-sm: 8rem;
-    --spacing-card-md: 11rem;
-    --spacing-card-lg: 15rem;
-    --spacing-card-xl: 30rem;
+    --spacing-card-sm: 7rem;
+    --spacing-card-md: 9rem;
+    --spacing-card-lg: 11rem;
+    --spacing-card-xl: 22rem;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --foil-sheen: linear-gradient(
-      -45deg,
-      #000 15%,
-      #fff,
-      #000 85%);
-      --foil-glare: radial-gradient(
-        circle,
-        #fff 5%,
-        #000 50%,
-        #fff 80%);
+      --foil-sheen: linear-gradient(-45deg, #000 15%, #fff, #000 85%);
+      --foil-glare: radial-gradient(circle, #fff 5%, #000 50%, #fff 80%);
     }
   }
 
@@ -60,19 +52,45 @@
   }
 
   .inner-shadow {
-    box-shadow: inset 0 0  4px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
   }
 
   .bg-glare-effect {
-    background: radial-gradient(
-      circle,
-      rgba(255,255,255,0.35),
-      transparent 40%
-    );
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 40%);
   }
 
   .bg-blend-soft-light-difference {
     background-blend-mode: soft-light, difference;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% {
+      box-shadow: inset 0 0 0 4px rgba(253, 224, 71, 1);
+    }
+    50% {
+      box-shadow: inset 0 0 0 4px rgba(253, 224, 71, 0.5);
+    }
+  }
+
+  .ring-pulse {
+    animation: ringPulse 2s ease-in-out infinite;
+  }
+
+  .card-selected {
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes bluePulse {
+    0%, 100% {
+      box-shadow: inset 0 0 0 4px rgba(96, 165, 250, 1);
+    }
+    50% {
+      box-shadow: inset 0 0 0 4px rgba(96, 165, 250, 0.5);
+    }
+  }
+
+  .blue-pulse {
+    animation: bluePulse 2s ease-in-out infinite;
   }
 }
 
@@ -126,7 +144,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #A40353;
+  --primary: #a40353;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

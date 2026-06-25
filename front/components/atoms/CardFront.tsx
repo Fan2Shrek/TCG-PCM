@@ -1,10 +1,9 @@
-import Image from './Image';
-import { CardLayer } from '../types/card';
-import CardFoil from './CardFoil';
-import HoloFoil from './HoloFoil';
-import RainbowFoil from './RainbowFoil';
-import GoldenFoil from './GoldenFoil';
-import { Fragment } from 'react/jsx-runtime';
+import Image from "./Image";
+import { CardLayer } from "@/lib/cards/types/card";
+import HoloFoil from "./HoloFoil";
+import RainbowFoil from "./RainbowFoil";
+import GoldenFoil from "./GoldenFoil";
+import { Fragment } from "react/jsx-runtime";
 
 export type CardFrontProps = {
   layers: CardLayer[];
@@ -33,12 +32,14 @@ const CardFront = ({ layers, tilt, isHovering }: CardFrontProps) => (
             src={layer.src}
             alt={layer.alt ?? `layer-${i}`}
             fill
-            className={`object-cover ${!isHovering ? 'transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]' : ''} z-0`}
+            className={`object-cover ${!isHovering ? "transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]" : ""} z-0`}
             style={{
               transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
             }}
           />
-          {FoilComponent && foil && mask && <FoilComponent tilt={tilt} foil={foil} mask={mask} />}
+          {FoilComponent && foil && mask && (
+            <FoilComponent tilt={tilt} foil={foil} mask={mask} />
+          )}
         </Fragment>
       );
     })}

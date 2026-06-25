@@ -1,100 +1,122 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Card from "./Card";
-import { CardSize, CardWithPosition } from "../types/card";
-import { useDebouncedValue } from "../hooks/useDebounceValue";
-import { useDrag } from "../hooks/useDrag";
+import { CardSize } from "@/constants/card";
+import { CardWithPosition } from "@/lib/cards/types/card";
+import { useDebouncedValue } from "@/hooks/useDebounceValue";
+import { useDrag } from "@/hooks/useDrag";
+import DraggedCard from "./DraggedCard";
 
 type HandCardProps = {
   positionedCard: CardWithPosition;
-  hoverYOffset: number;
   cardSize: CardSize;
-  hoverCardSize: CardSize;
   totalCards: number;
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
-  onDragCard: (e: MouseEvent) => void;
-  onDragEnd: (card: CardWithPosition) => void;
+  onDragCard?: (e: MouseEvent) => void;
+  onDragEnd?: (card: CardWithPosition, pointerPos: { x: number; y: number }) => void;
+  isDisabled?: boolean;
 };
 
-export default function HandCard({
-  positionedCard,
-  hoverYOffset,
-  cardSize,
-  hoverCardSize,
-  totalCards,
-  onHover,
-  onLeave,
-  onDragCard,
-  onDragEnd,
-}: HandCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [pendingIsHovered, setPendingIsHovered] = useState(isHovered);
-  const debouncedIsHovered = useDebouncedValue(pendingIsHovered, 100);
+const HOVERED_CARD_OFFSET = 30;
 
-  const { isDragging, dragOffset, tilt, handleMouseDown } = useDrag({
+export default function HandCard({ positionedCard, cardSize, totalCards, onHover, onLeave, onDragCard, onDragEnd, isDisabled = false }: HandCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  //for drag
+  const [cardCenter, setCardCenter] = useState<{ x: number; y: number; z: number } | null>(null);
+  const [isDropped, setIsDropped] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const prevDraggingRef = useRef(false);
+
+  const { isDragging, pointerPos, tilt, handleMouseDown } = useDrag({
     onDrag: onDragCard,
-    onDragEnd: () => onDragEnd(positionedCard),
+    onDragEnd: () => {
+      setIsDropped(true);
+      const t = window.setTimeout(() => setIsDropped(false), 300);
+      return () => window.clearTimeout(t);
+    },
+    card: positionedCard.card,
   });
 
+  const showDraggedCard = isDragging || (isDropped && pointerPos);
+  const showCardElementDebounced = useDebouncedValue(showDraggedCard, 100);
+
+  const displayY = isHovered ? positionedCard.y - HOVERED_CARD_OFFSET : positionedCard.y;
+  const displayX = positionedCard.x;
+  const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
+
+  useEffect(() => {
+    if (isDragging) {
+      onLeave();
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        setCardCenter({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          z: 50,
+        });
+      }
+      //this if for when a card is no longer dragged basically
+    } else if (prevDraggingRef.current && !isDragging && cardRef.current && pointerPos) {
+      const rect = cardRef.current.getBoundingClientRect();
+      setCardCenter({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        z: zIndex,
+      });
+
+      onDragEnd?.(positionedCard, pointerPos);
+    }
+    prevDraggingRef.current = isDragging;
+  }, [isDragging, onLeave, onDragEnd, positionedCard, pointerPos]);
+
   const handleMouseEnter = () => {
-    if (isDragging) return;
-    setPendingIsHovered(true);
+    setIsHovered(true);
     onHover(positionedCard);
   };
 
   const handleMouseLeave = () => {
-    if (isDragging) return;
-    setPendingIsHovered(false);
+    setIsHovered(false);
     onLeave();
   };
 
-  useEffect(() => {
-    setIsHovered(debouncedIsHovered);
-  }, [debouncedIsHovered]);
-
-  useEffect(() => {
-    if (isDragging) {
-      setPendingIsHovered(false);
-      setIsHovered(false);
-      onLeave();
-    }
-  }, [isDragging, onLeave]);
-
-  const displayY = isHovered
-    ? positionedCard.y - hoverYOffset
-    : positionedCard.y;
-  const displayX = positionedCard.x;
-  const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
-
-  return (
+  const cardElement = (
     <div
-      className={`absolute top-[50%] left-[50%] ${
-        isDragging
-          ? "cursor-grabbing"
-          : "cursor-grab transition-all ease-in-out duration-100"
-      }`}
+      ref={cardRef}
+      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-full after:h-24 after:pointer-events-auto ${isDragging || isDropped ? "invisible pointer-events-none" : ""}`}
       style={{
         transform: `
           translate(
-            calc(-50% + ${displayX + (dragOffset?.x || 0)}px),
-            calc(50% + ${displayY + (dragOffset?.y || 0)}px)
+            calc(-50% + ${displayX}px),
+            calc(50% + ${displayY}px)
           )
         `,
         zIndex,
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => !isDisabled && handleMouseDown(e)}
     >
       <Card
         card={positionedCard.card}
-        size={isHovered || isDragging ? hoverCardSize : cardSize}
+        size={cardSize}
         tilt={{
-          x: tilt.x,
-          y: tilt.y,
-          z: isDragging ? 0 : positionedCard.rotation,
+          x: 0,
+          y: 0,
+          z: positionedCard.rotation,
         }}
       />
     </div>
   );
+
+  if (showDraggedCard || showCardElementDebounced) {
+    return (
+      <>
+        {cardElement}
+        <DraggedCard card={positionedCard.card} originPos={cardCenter} originSize={cardSize} originTilt={{ x: 0, y: 0, z: positionedCard.rotation }} pointerPos={showDraggedCard ? pointerPos : null} tilt={{ ...tilt, z: positionedCard.rotation }} isDropped={isDropped} />
+      </>
+    );
+  }
+
+  return cardElement;
 }

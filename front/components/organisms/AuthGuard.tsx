@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PUBLIC_PATHS = ["/login", "/register"];
 

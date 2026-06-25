@@ -7,7 +7,7 @@ type CardFoilProps = {
   isHovering: boolean;
 };
 
-const CardFoil = ({ tilt, foil, mask, isHovering, brightness }: CardFoilProps) => (
+const CardFoil = ({ foil, mask, brightness }: CardFoilProps) => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
     <div
       className={`

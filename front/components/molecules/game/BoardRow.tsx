@@ -1,4 +1,4 @@
-import { GameContext } from "@/context/GameContext";
+import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
 import Card from "../Card";
 
@@ -9,6 +9,7 @@ type BoardRowProps = {
   selectedCardId?: string | null;
   clickable?: boolean;
   isCardDisabled?: (cardId: string) => boolean;
+  className?: string;
 };
 
 export default ({
@@ -18,11 +19,12 @@ export default ({
   selectedCardId,
   clickable = false,
   isCardDisabled,
+  className,
 }: BoardRowProps) => {
   const { getCardById } = useContext(GameContext);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className={`flex flex-col items-center gap-2 ${className}`}>
       <div className="text-sm opacity-70">{title}</div>
 
       <div className="flex gap-2">
