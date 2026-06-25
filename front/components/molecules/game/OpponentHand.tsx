@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/components/molecules/Card";
+import DummyFaceDownCard from "@/components/molecules/game/DummyFaceDownCard";
 import { CardSize } from "@/constants/card";
 import { CardModel } from "@/lib/cards/types/card";
 import { useHandPositions } from "@/hooks/useHandPositions";
@@ -31,7 +31,7 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
 
   return (
     <div className={`relative w-82 h-82 ${className}`} style={{ transform: "scaleY(-1)", transformStyle: "preserve-3d" }}>
-      {positionedCards.map((positionedCard) => (
+      {positionedCards.map((positionedCard, i) => (
         <div
           key={positionedCard.card.instanceId}
           className='absolute top-[50%] left-[50%]'
@@ -40,7 +40,7 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
             zIndex: positionedCard.rank,
           }}
         >
-          <Card card={positionedCard.card} size={CardSize.MD} tilt={{ x: 0, y: 180, z: 0 }} />
+          <DummyFaceDownCard size={CardSize.MD} id={`opponent-card-${i}`} />
         </div>
       ))}
     </div>
