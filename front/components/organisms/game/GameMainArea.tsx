@@ -23,17 +23,17 @@ type GameMainAreaProps = {
   hoveredTargetId?: string | null;
 };
 
-export default function GameMainArea({ game, className, selectedAttackerId, onSelectAttacker, onSelectTarget, selectedAttackerCard, opponentState, currentState, isCardDragged, hoveredTargetId }: GameMainAreaProps) {
+export default function GameMainArea({ game, className, selectedAttackerId, onSelectAttacker, opponentState, currentState, isCardDragged, hoveredTargetId }: GameMainAreaProps) {
   const loggedPlayer = game?.player1.player.id === currentState.player.id ? game?.player1 : game?.player2;
   const oppositePlayer = loggedPlayer === game?.player1 ? game?.player2 : game?.player1;
 
   return (
-    <div className={`relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}>
+    <div className={`game-main-area relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}>
       {/* parent div to apply transform 3d to the game area */}
       <div
-        className='absolute -inset-[20%] flex items-center justify-center bg-orange-800 transition-transform duration-300'
+        className='game-board absolute -inset-[50%] flex items-center justify-center bg-orange-800 transition-transform duration-300'
         style={{
-          transform: isCardDragged ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)" : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg) scale(0.9)`,
+          transform: isCardDragged ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)" : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg)`,
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
