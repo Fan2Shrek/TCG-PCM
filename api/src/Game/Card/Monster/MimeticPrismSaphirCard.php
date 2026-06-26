@@ -9,6 +9,6 @@ final class MimeticPrismSaphirCard extends MimeticPrismRubyCard
 
     public function getId(): string
     {
-        return 'MimeticPrismSaphir';
+        return 'mimestic_prism_saphir';
     }
 }

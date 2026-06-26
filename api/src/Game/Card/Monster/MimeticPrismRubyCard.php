@@ -21,7 +21,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function getId(): string
     {
-        return 'MimeticPrismRuby';
+        return 'mimestic_prism_ruby';
     }
 
     public function setState(CardState $state): void
