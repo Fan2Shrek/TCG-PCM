@@ -9,7 +9,7 @@ final class ViciousStingerCard extends AbstractPlayableCard
 {
     public function getId(): string
     {
-        return 'ViciousStinger';
+        return 'vicious_stinger.webp';
     }
 
     public function play(GameContext $context, array $data = []): void
