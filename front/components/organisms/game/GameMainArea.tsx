@@ -23,7 +23,16 @@ type GameMainAreaProps = {
   hoveredTargetId?: string | null;
 };
 
-export default function GameMainArea({ game, className, selectedAttackerId, onSelectAttacker, opponentState, currentState, isCardDragged, hoveredTargetId }: GameMainAreaProps) {
+export default function GameMainArea({
+  game,
+  className,
+  selectedAttackerId,
+  onSelectAttacker,
+  opponentState,
+  currentState,
+  isCardDragged,
+  hoveredTargetId,
+}: GameMainAreaProps) {
   const loggedPlayer = game?.player1.player.id === currentState.player.id ? game?.player1 : game?.player2;
   const oppositePlayer = loggedPlayer === game?.player1 ? game?.player2 : game?.player1;
 
@@ -33,14 +42,16 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
       <div
         className='game-board absolute -inset-[50%] flex items-center justify-center bg-orange-800'
         style={{
-          transform: isCardDragged ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)" : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg)`,
+          transform: isCardDragged
+            ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)"
+            : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg)`,
           transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
         <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
           {/* OpponentHand positioned absolutely */}
-          {!isCardDragged && <OpponentHand numCards={oppositePlayer?.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 -top-8 z-1' />}
+          <OpponentHand numCards={oppositePlayer?.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 -top-8 z-1' />
 
           {/* finally, this div contains the actual play area where everything happens. */}
           {oppositePlayer && (
@@ -50,7 +61,13 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
                 <DrawPile numCards={oppositePlayer.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />
               </div>
               <div className='flex flex-col col-span-3 items-center'>
-                <EnemyPlayZone passiveCardIds={oppositePlayer.playArea.passiveCards} monsterCardIds={oppositePlayer.playArea.monsterCards} selectedCardId={selectedAttackerId} onSelectCard={(id) => id && onSelectAttacker(id)} hoveredTargetId={hoveredTargetId} />
+                <EnemyPlayZone
+                  passiveCardIds={oppositePlayer.playArea.passiveCards}
+                  monsterCardIds={oppositePlayer.playArea.monsterCards}
+                  selectedCardId={selectedAttackerId}
+                  onSelectCard={(id) => id && onSelectAttacker(id)}
+                  hoveredTargetId={hoveredTargetId}
+                />
               </div>
               <div className='flex flex-col col-span-1 items-center gap-2'>
                 <PlayerStatsDisplay money={opponentState.coins} health={opponentState.healthPoints} />
@@ -66,7 +83,13 @@ export default function GameMainArea({ game, className, selectedAttackerId, onSe
                 <PlayerStatsDisplay money={currentState.coins} health={currentState.healthPoints} />
               </div>
               <div className='flex flex-col col-span-3 items-center h-full'>
-                <PlayZone passiveCardIds={loggedPlayer.playArea.passiveCards} monsterCardIds={loggedPlayer.playArea.monsterCards} selectedCardId={selectedAttackerId} onSelectCard={(id) => id && onSelectAttacker(id)} hoveredTargetId={hoveredTargetId} />
+                <PlayZone
+                  passiveCardIds={loggedPlayer.playArea.passiveCards}
+                  monsterCardIds={loggedPlayer.playArea.monsterCards}
+                  selectedCardId={selectedAttackerId}
+                  onSelectCard={(id) => id && onSelectAttacker(id)}
+                  hoveredTargetId={hoveredTargetId}
+                />
               </div>
               <div className='flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2'>
                 <DrawPile numCards={loggedPlayer.drawPile.length} mirrored={false} isCardDragged={isCardDragged} />

@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { CardModel, CardWithPosition } from "@/lib/cards/types/card";
 import { CardSize } from "@/constants/card";
 import { getCardWidthPx } from "@/lib/cards/cardUtils";
 import HandCard from "../molecules/HandCard";
 import { useHandPositions } from "@/hooks/useHandPositions";
+import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import { emitter } from "@/lib/eventBus";
 
 export type CardsHandProps = {
@@ -17,7 +18,16 @@ export type CardsHandProps = {
 };
 
 export default function CardsHand({ cards, className = "", onMouseEnter, onMouseLeave, isDisabled = false }: CardsHandProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isPendingHovered, setIsPendingHovered] = useState(false);
+  const isHovered = useDebouncedValue(isPendingHovered, 50);
+
+  useEffect(() => {
+    if (isHovered) {
+      onMouseEnter?.();
+    } else {
+      onMouseLeave?.();
+    }
+  }, [isHovered, onMouseEnter, onMouseLeave]);
 
   const cardSize = isHovered ? CardSize.LG : CardSize.MD;
   const cardWidthPx = getCardWidthPx(cardSize);
@@ -25,14 +35,12 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
   const positionedCards = useHandPositions(cards, cardWidthPx, isHovered);
 
   const handleCardHover = useCallback(() => {
-    setIsHovered(true);
-    onMouseEnter?.();
-  }, [onMouseEnter]);
+    setIsPendingHovered(true);
+  }, []);
 
   const handleCardLeave = useCallback(() => {
-    setIsHovered(false);
-    onMouseLeave?.();
-  }, [onMouseLeave]);
+    setIsPendingHovered(false);
+  }, []);
 
   const handleCardDragEnd = useCallback((positionedCard: CardWithPosition, pointerPos: { x: number; y: number }) => {
     emitter.emit("card:played", {
@@ -45,7 +53,17 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
   return (
     <div className={`relative w-82 h-62 ${className}`}>
       {positionedCards.map((positionedCard, i) => (
-        <HandCard key={positionedCard?.card?.instanceId ?? i} positionedCard={positionedCard} cardSize={cardSize} totalCards={cards.length} onHover={handleCardHover} onLeave={handleCardLeave} onDragEnd={handleCardDragEnd} isDisabled={isDisabled} />
+        <HandCard
+          key={positionedCard?.card?.instanceId ?? i}
+          positionedCard={positionedCard}
+          cardSize={cardSize}
+          totalCards={cards.length}
+          onHover={handleCardHover}
+          onLeave={handleCardLeave}
+          onDragEnd={handleCardDragEnd}
+          isDisabled={isDisabled}
+          isHandHovered={isHovered}
+        />
       ))}
     </div>
   );

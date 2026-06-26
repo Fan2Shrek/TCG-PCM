@@ -31,7 +31,7 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
 
   return (
     <div className={`relative w-82 h-82 ${className}`} style={{ transform: "scaleY(-1)", transformStyle: "preserve-3d" }}>
-      {positionedCards.map((positionedCard, i) => (
+      {positionedCards.map((positionedCard) => (
         <div
           key={positionedCard.card.instanceId}
           className='absolute top-[50%] left-[50%]'
@@ -40,7 +40,7 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
             zIndex: positionedCard.rank,
           }}
         >
-          <DummyFaceDownCard size={CardSize.MD} id={`opponent-card-${i}`} />
+          <DummyFaceDownCard size={CardSize.MD} />
         </div>
       ))}
     </div>
