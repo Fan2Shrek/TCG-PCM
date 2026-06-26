@@ -47,6 +47,10 @@
 }
 
 @layer components {
+  .game-board {
+    scale: clamp(0.3, calc(100vw / 2000px), 0.7);
+  }
+
   .rotate-y-180 {
     transform: rotateY(90deg);
   }
@@ -92,6 +96,7 @@
   .blue-pulse {
     animation: bluePulse 2s ease-in-out infinite;
   }
+
 }
 
 @theme inline {

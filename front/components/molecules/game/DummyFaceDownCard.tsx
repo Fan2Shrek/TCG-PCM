@@ -1,0 +1,25 @@
+"use client";
+
+import Image from "next/image";
+import { CardSize, CardSizeMap } from "@/constants/card";
+
+type DummyFaceDownCardProps = {
+  size?: CardSize;
+};
+
+export default function DummyFaceDownCard({ size = CardSize.MD }: DummyFaceDownCardProps) {
+  const sizeClass = CardSizeMap[size];
+
+  return (
+    <div className={`${sizeClass} aspect-card rounded-lg overflow-hidden`}>
+      <Image
+        src='/default_card_back.png'
+        alt='Card back'
+        fill
+        style={{
+          objectFit: "cover",
+        }}
+      />
+    </div>
+  );
+}

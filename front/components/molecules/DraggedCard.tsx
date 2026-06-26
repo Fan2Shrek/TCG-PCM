@@ -23,7 +23,7 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
 
   let x = 0;
   let y = 0;
-  let z = 50;
+  let z = originPos?.z ?? 50;
   let currentSize: CardSize = CardSize.MD;
   let currentTilt = { ...tilt, z: 0 };
   let shouldTransition = false;
@@ -53,7 +53,6 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
   if (pointerPos && !isDropped) {
     x = pointerPos.x - window.innerWidth / 2;
     y = pointerPos.y - window.innerHeight / 2;
-    z = 50;
   } else {
     onDragEnd();
     if (!targetPos) return;
