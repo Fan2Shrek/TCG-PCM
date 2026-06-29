@@ -316,7 +316,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
       case GameEventType.UPDATE_CARD_STATE: {
         const cardId = view.cardId;
-        console.log("aaa", event);
 
         return {
           ...state,
