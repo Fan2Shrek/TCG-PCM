@@ -4,6 +4,7 @@ import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
+import { emitter } from "@/lib/eventBus";
 
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
@@ -203,6 +204,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           };
         }
 
+        emitter.emit("game:card-drawn", {
+          playerId: view.playerId,
+          cardId: view.cardId,
+        });
+
         return next;
       }
 
@@ -248,8 +254,10 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           [playerKey]: {
             ...nextPlayer,
             playArea: {
-              passiveCards: event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
-              monsterCards: event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
+              passiveCards:
+                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+              monsterCards:
+                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
             },
           },
           cards: {
@@ -264,6 +272,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         const nextCoins = view.total;
 
         const playerKey = getPlayerKey(state, view.playerId);
+        const player = state[playerKey];
+        const previousCoins = player.coins;
+        const delta = nextCoins - previousCoins;
+
+        emitter.emit("game:coins-changed", {
+          playerId: view.playerId,
+          delta,
+        });
+
         return {
           ...state,
           [playerKey]: {
@@ -278,6 +295,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         const nextHealth = view.total;
 
         const playerKey = getPlayerKey(state, view.playerId);
+        const player = state[playerKey];
+        const previousHealth = player.healthPoints;
+        const delta = nextHealth - previousHealth;
+
+        emitter.emit("game:health-changed", {
+          playerId: view.playerId,
+          delta,
+          type: event.type === GameEventType.DAMAGE ? "damage" : "heal",
+        });
 
         return {
           ...state,

@@ -19,6 +19,7 @@ export type CardsHandProps = {
 
 export default function CardsHand({ cards, className = "", onMouseEnter, onMouseLeave, isDisabled = false }: CardsHandProps) {
   const [isPendingHovered, setIsPendingHovered] = useState(false);
+  const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(null);
   const isHovered = useDebouncedValue(isPendingHovered, 50);
 
   useEffect(() => {
@@ -28,6 +29,21 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
       onMouseLeave?.();
     }
   }, [isHovered, onMouseEnter, onMouseLeave]);
+
+  useEffect(() => {
+    const handleDrawComplete = () => {
+      setAnimatingCardIndex(cards.length - 1);
+
+      const animationTimer = setTimeout(() => {
+        setAnimatingCardIndex(null);
+      }, 500);
+
+      return () => clearTimeout(animationTimer);
+    };
+
+    emitter.on("animation:card-draw-complete", handleDrawComplete);
+    return () => emitter.off("animation:card-draw-complete", handleDrawComplete);
+  }, [cards.length]);
 
   const cardSize = isHovered ? CardSize.LG : CardSize.MD;
   const cardWidthPx = getCardWidthPx(cardSize);
@@ -63,6 +79,7 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
           onDragEnd={handleCardDragEnd}
           isDisabled={isDisabled}
           isHandHovered={isHovered}
+          isAnimatingDraw={i === animatingCardIndex}
         />
       ))}
     </div>

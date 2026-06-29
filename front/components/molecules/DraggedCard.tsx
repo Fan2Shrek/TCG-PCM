@@ -20,6 +20,7 @@ type DraggedCardProps = {
 
 export default function DraggedCard({ card, originPos, originSize, originTilt, pointerPos, tilt, isDropped }: DraggedCardProps) {
   if (typeof document === "undefined") return null;
+  if (!pointerPos && !isDropped) return null;
 
   let x = 0;
   let y = 0;
@@ -28,40 +29,26 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
   let currentTilt = { ...tilt, z: 0 };
   let shouldTransition = false;
 
-  // storing "current" target here, initialized by handcard but updated if dropped over a playable zone
-  let targetPos = originPos;
-  let targetSize = originSize;
-  let targetTilt = originTilt;
-
-  const onDragEnd = () => {
-    if (!pointerPos) return;
-
-    const dropResult = resolveDropZone(pointerPos, card);
-    if (dropResult) {
-      targetPos = dropResult.pos;
-      targetSize = dropResult.size;
-      targetTilt = dropResult.tilt;
-      emitter.emit("card:played", {
-        pos: dropResult.pos,
-        card,
-      });
-    } else {
-      emitter.emit("card:return-hand", { pos: pointerPos, card });
-    }
-  };
-
   if (pointerPos && !isDropped) {
     x = pointerPos.x - window.innerWidth / 2;
     y = pointerPos.y - window.innerHeight / 2;
   } else {
-    onDragEnd();
-    if (!targetPos) return;
+    if (!pointerPos) return null;
 
-    x = targetPos.x - window.innerWidth / 2;
-    y = targetPos.y - window.innerHeight / 2;
-    z = targetPos.z;
-    currentSize = targetSize;
-    currentTilt = targetTilt;
+    const dropResult = resolveDropZone(pointerPos, card);
+    if (dropResult) {
+      return null;
+    }
+
+    emitter.emit("card:return-hand", { pos: pointerPos, card });
+
+    if (!originPos) return null;
+
+    x = originPos.x - window.innerWidth / 2;
+    y = originPos.y - window.innerHeight / 2;
+    z = originPos.z;
+    currentSize = originSize;
+    currentTilt = originTilt;
     shouldTransition = true;
   }
 

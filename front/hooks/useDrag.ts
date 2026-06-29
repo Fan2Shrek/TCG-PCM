@@ -2,6 +2,7 @@
 import { emitter } from "@/lib/eventBus";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { BasicCard } from "../types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 
 type UseDragOptions = {
   card: BasicCard;
