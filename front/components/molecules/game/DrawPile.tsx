@@ -12,42 +12,40 @@ type DrawPileProps = {
   className?: string;
   mirrored?: boolean;
   isCardDragged?: boolean;
+  playerId?: string;
 };
 
-export default function DrawPile({ numCards, className = "", mirrored = false, isCardDragged = false }: DrawPileProps) {
+const CARD_DRAW_ANIMATION_TIME = 200;
+
+export default function DrawPile({ numCards, className = "", mirrored = false, isCardDragged = false, playerId }: DrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
-  const [shouldAnimateDraw, setShouldAnimateDraw] = useState(false);
+  const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
   const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shadowOffsetX = mirrored ? -displayNumCards * 2 + 6 : displayNumCards * 2 - 6;
   const shadow = `1px 0 rgba(0,0,0,0.66)`;
 
   useEffect(() => {
-    const handleCardDrawn = () => {
+    const handleCardDrawn = (event: { playerId: string }) => {
       if (mirrored) return;
+      if (playerId && event.playerId !== playerId) return;
 
-      setDisplayNumCards(numCards + 1);
-      setShouldAnimateDraw(false);
-
-      requestAnimationFrame(() => {
-        setShouldAnimateDraw(true);
-      });
+      setAnimatingIndex(displayNumCards - 1);
 
       animationTimerRef.current = setTimeout(() => {
-        console.log(displayNumCards);
-
         emitter.emit("animation:card-draw-complete");
-        setDisplayNumCards(numCards);
-        setShouldAnimateDraw(false);
-      }, 500);
+        setAnimatingIndex(null);
+        setDisplayNumCards((prev) => prev - 1);
+      }, CARD_DRAW_ANIMATION_TIME);
     };
 
     emitter.on("game:card-drawn", handleCardDrawn);
     return () => {
-      if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+      const timerId = animationTimerRef.current;
+      if (timerId) clearTimeout(timerId);
       emitter.off("game:card-drawn", handleCardDrawn);
     };
-  }, [displayNumCards, numCards, mirrored]);
+  }, [mirrored, playerId, displayNumCards]);
 
   return (
     <div
@@ -61,7 +59,8 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
       {Array.from({ length: displayNumCards }).map((_, i) => {
         const offsetX = mirrored ? -i : i;
         const offsetY = isCardDragged ? 0 : -i * 1.3;
-        const isAnimating = shouldAnimateDraw && i === displayNumCards;
+        const animatedCardOffsetY = offsetY + 750;
+        const isAnimating = i === animatingIndex;
         const isBottomCard = i === 0;
 
         return (
@@ -69,9 +68,9 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
             key={i}
             className='absolute'
             style={{
-              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${isAnimating ? "500px" : offsetY}px)`,
+              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${isAnimating ? animatedCardOffsetY : offsetY}px)`,
               zIndex: i,
-              transition: isAnimating ? "transform 500ms ease-in" : `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
+              transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
               pointerEvents: "auto",
               ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
             }}

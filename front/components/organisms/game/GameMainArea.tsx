@@ -58,7 +58,7 @@ export default function GameMainArea({
             <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
               <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
                 <Cemetery cardIds={oppositePlayer.discardPile} />
-                <DrawPile numCards={oppositePlayer.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />
+                {/*<DrawPile numCards={oppositePlayer.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />*/}
               </div>
               <div className='flex flex-col col-span-3 items-center'>
                 <EnemyPlayZone
@@ -92,7 +92,7 @@ export default function GameMainArea({
                 />
               </div>
               <div className='flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2'>
-                <DrawPile numCards={loggedPlayer.drawPile.length} mirrored={false} isCardDragged={isCardDragged} />
+                <DrawPile numCards={loggedPlayer.drawPile.length} mirrored={false} isCardDragged={isCardDragged} playerId={loggedPlayer.player.id} />
                 <Cemetery cardIds={loggedPlayer.discardPile} />
               </div>
             </div>
