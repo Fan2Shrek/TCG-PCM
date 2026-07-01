@@ -156,10 +156,26 @@ export default function GameBoard() {
       <GameAnnouncements regularAnnouncements={regularAnnouncements} giantAnnouncement={giantAnnouncement} selectedAttackerId={selectedAttackerId} />
 
       <div className='h-full flex flex-row justify-center items-center pointer-events-auto'>
-        <GameMainArea selectedAttackerId={selectedAttackerId} onSelectAttacker={handleSelectAttackerWithTurnCheck} onSelectTarget={handleAttackTarget} selectedAttackerCard={selectedAttackerCard} getCardById={getCardById} game={game} opponentState={opponentState} currentState={currentState} isCardDragged={!!draggedCard} hoveredTargetId={hoveredTargetId} />
+        <GameMainArea
+          selectedAttackerId={selectedAttackerId}
+          onSelectAttacker={handleSelectAttackerWithTurnCheck}
+          onSelectTarget={handleAttackTarget}
+          selectedAttackerCard={selectedAttackerCard}
+          getCardById={getCardById}
+          game={game}
+          opponentState={opponentState}
+          currentState={currentState}
+          isCardDragged={!!draggedCard}
+          hoveredTargetId={hoveredTargetId}
+        />
       </div>
       <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}>
-        <CardsHand cards={currentState.hand.map((cardId: string) => getCardById(cardId))} onMouseEnter={() => setIsHandHovered(true)} onMouseLeave={() => setIsHandHovered(false)} isDisabled={!isLoggedPlayerTurn} />
+        <CardsHand
+          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
+          onMouseEnter={() => setIsHandHovered(true)}
+          onMouseLeave={() => setIsHandHovered(false)}
+          isDisabled={!isLoggedPlayerTurn}
+        />
       </div>
 
       {connectedPlayer.id == game.currentPlayer && (

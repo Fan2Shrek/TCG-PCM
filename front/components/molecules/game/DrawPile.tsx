@@ -34,6 +34,7 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
 
       animationTimerRef.current = setTimeout(() => {
         emitter.emit("animation:card-draw-complete");
+        console.log("draw complete");
         setAnimatingIndex(null);
         setDisplayNumCards((prev) => prev - 1);
       }, CARD_DRAW_ANIMATION_TIME);

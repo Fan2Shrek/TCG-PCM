@@ -173,7 +173,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
   const applyView = (state: GameState, event: GameEvent): GameState => {
     if (!event.view) return state;
-    console.log(event);
 
     let next = { ...state };
     const view = event.view;
@@ -233,7 +232,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         };
 
         if (event.type === GameEventType.CARD_DISCARDED) {
-          console.log(cardId, player.playArea);
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
             nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
@@ -329,7 +327,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       }
 
       default:
-        console.log(`Unhandled event type ${event.type}`);
         return state;
     }
   };

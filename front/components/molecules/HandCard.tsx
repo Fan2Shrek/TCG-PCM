@@ -103,11 +103,10 @@ export default function HandCard({
         transform: `
           translate(
             calc(-50% + ${displayX}px),
-            calc(50% + ${displayY}${isAnimatingDraw ? " + 200px" : ""}px)
+            calc(50% + ${displayY}${isAnimatingDraw ? " + 200px" : "25"}px)
           )
         `,
-        opacity: isAnimatingDraw ? 0 : 1,
-        transition: isAnimatingDraw ? "transform 500ms ease-out, opacity 500ms ease-out" : "all 100ms ease-in-out",
+        transition: "all 100ms ease-in-out",
         zIndex,
       }}
       onMouseEnter={handleMouseEnter}
