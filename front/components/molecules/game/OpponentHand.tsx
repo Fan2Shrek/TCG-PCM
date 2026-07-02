@@ -31,13 +31,14 @@ export default function OpponentHand({ numCards, className = "" }: OpponentHandP
 
   return (
     <div className={`relative w-82 h-82 ${className}`} style={{ transform: "scaleY(-1)", transformStyle: "preserve-3d" }}>
-      {positionedCards.map((positionedCard) => (
+      {positionedCards.map((positionedCard, i) => (
         <div
           key={positionedCard.card.instanceId}
           className='absolute top-[50%] left-[50%]'
           style={{
             transform: `translate(calc(-50% + ${positionedCard.x}px), calc(50% + ${positionedCard.y}px)) rotateZ(${positionedCard.rotation}deg)`,
             zIndex: positionedCard.rank,
+            ...(i === positionedCards.length - 1 && { viewTransitionName: "opponent-card-draw" }),
           }}
         >
           <DummyFaceDownCard size={CardSize.MD} />

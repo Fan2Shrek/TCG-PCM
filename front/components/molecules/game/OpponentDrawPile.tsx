@@ -7,26 +7,26 @@ import { CardSize } from "@/constants/card";
 import { GAMEBOARD_ANIMATION_DURATION, GAMEBOARD_ANIMATION_TIMING } from "@/constants/gameArea";
 import { emitter } from "@/lib/eventBus";
 
-type DrawPileProps = {
+type OpponentDrawPileProps = {
   numCards: number;
   className?: string;
   isCardDragged?: boolean;
-  playerId?: string;
+  currentPlayerId?: string;
 };
 
 const CARD_DRAW_ANIMATION_TIME = 200;
 
-export default function DrawPile({ numCards, className = "", isCardDragged = false, playerId }: DrawPileProps) {
+export default function OpponentDrawPile({ numCards, className = "", isCardDragged = false, currentPlayerId }: OpponentDrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
   const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const shadowOffsetX = displayNumCards * 2 - 6;
+  const shadowOffsetX = -displayNumCards * 2 + 6;
   const shadow = `1px 0 rgba(0,0,0,0.66)`;
 
   useEffect(() => {
     const handleCardDrawn = (event: { playerId: string }) => {
-      if (playerId && event.playerId !== playerId) return;
+      if (currentPlayerId && event.playerId === currentPlayerId) return;
 
       setAnimatingIndex(displayNumCards - 1);
 
@@ -47,7 +47,7 @@ export default function DrawPile({ numCards, className = "", isCardDragged = fal
       if (timerId) clearTimeout(timerId);
       emitter.off("game:card-drawn", handleCardDrawn);
     };
-  }, [playerId, displayNumCards]);
+  }, [displayNumCards, currentPlayerId]);
 
   return (
     <div
@@ -60,29 +60,29 @@ export default function DrawPile({ numCards, className = "", isCardDragged = fal
       }}
     >
       {Array.from({ length: displayNumCards }).map((_, i) => {
-        const offsetX = i;
+        const offsetX = -i;
         const offsetY = isCardDragged ? 0 : -i * 1.3;
-        const animatedCardOffsetY = offsetY + 750;
         const isAnimating = i === animatingIndex;
         const isBottomCard = i === 0;
 
         return (
           <div
             key={i}
-            className='absolute'
             style={{
-              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${isAnimating ? animatedCardOffsetY : offsetY}px)`,
+              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${offsetY}px)`,
               zIndex: i,
               transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
               pointerEvents: "auto",
               ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
+              ...(isAnimating && { viewTransitionName: "opponent-card-draw" }),
             }}
+            className='absolute'
           >
-            <DummyFaceDownCard size={CardSize.MD} />
+            <DummyFaceDownCard size={CardSize.MD} className='rotate-180' />
           </div>
         );
       })}
-      <PileTooltip isVisible={showTooltip} count={numCards} label='cards left' />
+      <PileTooltip isVisible={showTooltip} count={numCards} isMirrored label='cards left' />
     </div>
   );
 }

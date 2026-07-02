@@ -2,6 +2,7 @@ import { GameState, PlayerState } from "@/lib/game/type/gameState";
 import PlayZone from "@/components/molecules/game/PlayZone";
 import OpponentPlayZone from "@/components/molecules/game/OpponentPlayZone";
 import DrawPile from "@/components/molecules/game/DrawPile";
+import OpponentDrawPile from "@/components/molecules/game/OpponentDrawPile";
 import Cemetery from "@/components/molecules/game/Cemetery";
 import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterDisplay";
 import { GAMEBOARD_TILT, GAMEBOARD_ANIMATION_DURATION, GAMEBOARD_ANIMATION_TIMING } from "@/constants/gameArea";
@@ -49,7 +50,7 @@ export default function GameMainArea({
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
-        <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
+        <div className='h-[70vh] min-h-300 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
           {/* OpponentHand positioned absolutely, logged user's hand is in gameboard instead as an overlay */}
           <OpponentHand numCards={opponentState.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 -top-8 z-1' />
 
@@ -57,7 +58,7 @@ export default function GameMainArea({
           <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
             <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
               <Cemetery cardIds={opponentState.discardPile} />
-              <DrawPile numCards={opponentState.drawPile.length} isMirrored isCardDragged={isCardDragged} />
+              <OpponentDrawPile numCards={opponentState.drawPile.length} isCardDragged={isCardDragged} currentPlayerId={currentState.player.id} />
             </div>
             <div className='flex flex-col col-span-3 items-center'>
               <OpponentPlayZone
