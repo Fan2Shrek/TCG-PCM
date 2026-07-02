@@ -31,18 +31,24 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
   }, [isHovered, onMouseEnter, onMouseLeave]);
 
   useEffect(() => {
-    const handleDrawComplete = () => {
-      setAnimatingCardIndex(cards.length - 1);
+    const handleCardDrawn = () => {
+      setAnimatingCardIndex(cards.length);
+    };
 
+    const handleDrawComplete = () => {
       const animationTimer = setTimeout(() => {
         setAnimatingCardIndex(null);
-      }, 500);
+      }, 200);
 
       return () => clearTimeout(animationTimer);
     };
 
+    emitter.on("game:card-drawn", handleCardDrawn);
     emitter.on("animation:card-draw-complete", handleDrawComplete);
-    return () => emitter.off("animation:card-draw-complete", handleDrawComplete);
+    return () => {
+      emitter.off("game:card-drawn", handleCardDrawn);
+      emitter.off("animation:card-draw-complete", handleDrawComplete);
+    };
   }, [cards.length]);
 
   const cardSize = isHovered ? CardSize.LG : CardSize.MD;
@@ -60,9 +66,7 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
 
   const handleCardDragEnd = useCallback((positionedCard: CardWithPosition, pointerPos: { x: number; y: number }) => {
     emitter.emit("card:played", {
-      id: positionedCard.card.instanceId,
-      x: pointerPos.x,
-      y: pointerPos.y,
+      card: positionedCard.card,
     });
   }, []);
 

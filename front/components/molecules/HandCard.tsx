@@ -20,6 +20,7 @@ type HandCardProps = {
 };
 
 const HOVERED_CARD_OFFSET = 30;
+const DRAWING_CARD_OFFSET = -200;
 
 export default function HandCard({
   positionedCard,
@@ -54,7 +55,11 @@ export default function HandCard({
   const showDraggedCard = isDragging || (isDropped && pointerPos);
   const showCardElementDebounced = useDebouncedValue(showDraggedCard, 100);
 
-  const displayY = isHandHovered && isHovered ? positionedCard.y - HOVERED_CARD_OFFSET : positionedCard.y;
+  const displayY = isAnimatingDraw
+    ? positionedCard.y - DRAWING_CARD_OFFSET
+    : isHandHovered && isHovered
+      ? positionedCard.y - HOVERED_CARD_OFFSET
+      : positionedCard.y;
   const displayX = positionedCard.x;
   const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
 
@@ -103,7 +108,7 @@ export default function HandCard({
         transform: `
           translate(
             calc(-50% + ${displayX}px),
-            calc(50% + ${displayY}${isAnimatingDraw ? " + 200px" : "25"}px)
+            calc(50% + ${displayY}px)
           )
         `,
         transition: "all 100ms ease-in-out",

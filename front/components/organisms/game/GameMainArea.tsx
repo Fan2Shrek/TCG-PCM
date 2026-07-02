@@ -28,7 +28,6 @@ const objectToArray = (value: object): string[] => {
 };
 
 export default function GameMainArea({
-  game,
   className,
   selectedAttackerId,
   onSelectAttacker,
@@ -58,7 +57,7 @@ export default function GameMainArea({
           <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
             <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
               <Cemetery cardIds={opponentState.discardPile} />
-              {/*<DrawPile numCards={opponentState.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />*/}
+              <DrawPile numCards={opponentState.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />
             </div>
             <div className='flex flex-col col-span-3 items-center'>
               <EnemyPlayZone
