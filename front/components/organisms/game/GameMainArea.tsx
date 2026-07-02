@@ -1,6 +1,6 @@
 import { GameState, PlayerState } from "@/lib/game/type/gameState";
 import PlayZone from "@/components/molecules/game/PlayZone";
-import EnemyPlayZone from "@/components/molecules/game/EnemyPlayZone";
+import OpponentPlayZone from "@/components/molecules/game/OpponentPlayZone";
 import DrawPile from "@/components/molecules/game/DrawPile";
 import Cemetery from "@/components/molecules/game/Cemetery";
 import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterDisplay";
@@ -50,17 +50,17 @@ export default function GameMainArea({
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
         <div className='h-[70vh] min-h-280 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
-          {/* OpponentHand positioned absolutely */}
+          {/* OpponentHand positioned absolutely, logged user's hand is in gameboard instead as an overlay */}
           <OpponentHand numCards={opponentState.hand.length || 0} className='absolute left-1/2 -translate-x-1/2 -top-8 z-1' />
 
           {/* finally, this div contains the actual play area where everything happens. */}
           <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
             <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
               <Cemetery cardIds={opponentState.discardPile} />
-              <DrawPile numCards={opponentState.drawPile.length} mirrored={true} isCardDragged={isCardDragged} />
+              <DrawPile numCards={opponentState.drawPile.length} isMirrored isCardDragged={isCardDragged} />
             </div>
             <div className='flex flex-col col-span-3 items-center'>
-              <EnemyPlayZone
+              <OpponentPlayZone
                 passiveCardIds={objectToArray(opponentState.playArea.passiveCards)}
                 monsterCardIds={objectToArray(opponentState.playArea.monsterCards)}
                 selectedCardId={selectedAttackerId}
@@ -89,7 +89,7 @@ export default function GameMainArea({
               />
             </div>
             <div className='flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2'>
-              <DrawPile numCards={currentState.drawPile.length} mirrored={false} isCardDragged={isCardDragged} playerId={currentState.player.id} />
+              <DrawPile numCards={currentState.drawPile.length} isCardDragged={isCardDragged} playerId={currentState.player.id} />
               <Cemetery cardIds={currentState.discardPile} />
             </div>
           </div>

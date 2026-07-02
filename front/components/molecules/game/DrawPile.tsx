@@ -10,24 +10,24 @@ import { emitter } from "@/lib/eventBus";
 type DrawPileProps = {
   numCards: number;
   className?: string;
-  mirrored?: boolean;
+  isMirrored?: boolean;
   isCardDragged?: boolean;
   playerId?: string;
 };
 
 const CARD_DRAW_ANIMATION_TIME = 200;
 
-export default function DrawPile({ numCards, className = "", mirrored = false, isCardDragged = false, playerId }: DrawPileProps) {
+export default function DrawPile({ numCards, className = "", isMirrored = false, isCardDragged = false, playerId }: DrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
   const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const shadowOffsetX = mirrored ? -displayNumCards * 2 + 6 : displayNumCards * 2 - 6;
+  const shadowOffsetX = isMirrored ? -displayNumCards * 2 + 6 : displayNumCards * 2 - 6;
   const shadow = `1px 0 rgba(0,0,0,0.66)`;
 
   useEffect(() => {
     const handleCardDrawn = (event: { playerId: string }) => {
-      if (mirrored) return;
+      if (isMirrored) return;
       if (playerId && event.playerId !== playerId) return;
 
       setAnimatingIndex(displayNumCards - 1);
@@ -46,7 +46,7 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
       if (timerId) clearTimeout(timerId);
       emitter.off("game:card-drawn", handleCardDrawn);
     };
-  }, [mirrored, playerId, displayNumCards]);
+  }, [isMirrored, playerId, displayNumCards]);
 
   return (
     <div
@@ -58,7 +58,7 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
       }}
     >
       {Array.from({ length: displayNumCards }).map((_, i) => {
-        const offsetX = mirrored ? -i : i;
+        const offsetX = isMirrored ? -i : i;
         const offsetY = isCardDragged ? 0 : -i * 1.3;
         const animatedCardOffsetY = offsetY + 750;
         const isAnimating = i === animatingIndex;
@@ -76,11 +76,11 @@ export default function DrawPile({ numCards, className = "", mirrored = false, i
               ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
             }}
           >
-            <DummyFaceDownCard size={CardSize.MD} />
+            <DummyFaceDownCard size={CardSize.MD} className={isMirrored ? "rotate-180" : ""} />
           </div>
         );
       })}
-      <PileTooltip isVisible={showTooltip} count={numCards} mirrored={mirrored} label='cards left' />
+      <PileTooltip isVisible={showTooltip} count={numCards} isMirrored={isMirrored} label='cards left' />
     </div>
   );
 }
