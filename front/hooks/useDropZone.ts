@@ -1,16 +1,13 @@
 import { useEffect, RefObject, useCallback, useState } from "react";
-import {
-  registerDropZone,
-  unregisterDropZone,
-} from "@/lib/dropZones/dropzoneRegistry";
-import { DropZone, DropResult } from "@/lib/dropZones/types/dropZone";
+import { registerDropZone, unregisterDropZone } from "@/lib/dropZones/dropzoneRegistry";
+import { DropZone } from "@/lib/dropZones/types/dropZone";
 import { BasicCard } from "@/lib/cards/types/card";
 import { emitter } from "@/lib/eventBus";
 
 type UseDropZoneOptions = {
   id: string;
   ref: RefObject<HTMLDivElement | null>;
-  getDropResult: (card: BasicCard) => DropResult;
+  getDropResult: (card: BasicCard) => string | null;
 };
 
 export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
@@ -40,39 +37,29 @@ export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
 
   useEffect(() => {
     const onStart = () => setIsDragging(true);
-    const onEnd = (payload: {
-      pos: { x: number; y: number };
-      card: BasicCard;
-    }) => {
+    const onEnd = (payload: { pos: { x: number | undefined; y: number | undefined }; card: BasicCard }) => {
+      if (payload.pos.x === undefined || payload.pos.y === undefined) return;
+
       const rect = getRect();
-      const inside =
-        payload.pos.x >= rect.left &&
-        payload.pos.x <= rect.right &&
-        payload.pos.y >= rect.top &&
-        payload.pos.y <= rect.bottom;
+      const inside = payload.pos.x >= rect.left && payload.pos.x <= rect.right && payload.pos.y >= rect.top && payload.pos.y <= rect.bottom;
 
       if (inside) {
-        emitter.emit("card:dropped", {
-          card: payload.card,
-          zoneId: id,
-          dropResult: getDropResult(payload.card),
-        });
+        const dropResult = getDropResult(payload.card);
+        if (dropResult) {
+          emitter.emit("card:dropped", {
+            card: payload.card,
+            zoneId: id,
+          });
+        }
       }
 
       setIsDragging(false);
       setIsHovered(false);
     };
 
-    const onMove = (payload: {
-      pos: { x: number; y: number };
-      card: BasicCard;
-    }) => {
+    const onMove = (payload: { pos: { x: number; y: number }; card: BasicCard }) => {
       const rect = getRect();
-      const inside =
-        payload.pos.x >= rect.left &&
-        payload.pos.x <= rect.right &&
-        payload.pos.y >= rect.top &&
-        payload.pos.y <= rect.bottom;
+      const inside = payload.pos.x >= rect.left && payload.pos.x <= rect.right && payload.pos.y >= rect.top && payload.pos.y <= rect.bottom;
 
       setIsHovered(inside);
     };

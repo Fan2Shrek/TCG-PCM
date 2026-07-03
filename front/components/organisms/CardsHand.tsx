@@ -19,6 +19,7 @@ export type CardsHandProps = {
 
 export default function CardsHand({ cards, className = "", onMouseEnter, onMouseLeave, isDisabled = false }: CardsHandProps) {
   const [isPendingHovered, setIsPendingHovered] = useState(false);
+  const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(null);
   const isHovered = useDebouncedValue(isPendingHovered, 50);
 
   useEffect(() => {
@@ -28,6 +29,27 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
       onMouseLeave?.();
     }
   }, [isHovered, onMouseEnter, onMouseLeave]);
+
+  useEffect(() => {
+    const handleCardDrawn = () => {
+      setAnimatingCardIndex(cards.length);
+    };
+
+    const handleDrawComplete = () => {
+      const animationTimer = setTimeout(() => {
+        setAnimatingCardIndex(null);
+      }, 200);
+
+      return () => clearTimeout(animationTimer);
+    };
+
+    emitter.on("game:card-drawn", handleCardDrawn);
+    emitter.on("animation:card-draw-complete", handleDrawComplete);
+    return () => {
+      emitter.off("game:card-drawn", handleCardDrawn);
+      emitter.off("animation:card-draw-complete", handleDrawComplete);
+    };
+  }, [cards.length]);
 
   const cardSize = isHovered ? CardSize.LG : CardSize.MD;
   const cardWidthPx = getCardWidthPx(cardSize);
@@ -44,9 +66,7 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
 
   const handleCardDragEnd = useCallback((positionedCard: CardWithPosition, pointerPos: { x: number; y: number }) => {
     emitter.emit("card:played", {
-      id: positionedCard.card.instanceId,
-      x: pointerPos.x,
-      y: pointerPos.y,
+      card: positionedCard.card,
     });
   }, []);
 
@@ -63,6 +83,7 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
           onDragEnd={handleCardDragEnd}
           isDisabled={isDisabled}
           isHandHovered={isHovered}
+          isAnimatingDraw={i === animatingCardIndex}
         />
       ))}
     </div>

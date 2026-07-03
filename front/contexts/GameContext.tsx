@@ -4,6 +4,7 @@ import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
+import { emitter } from "@/lib/eventBus";
 
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
@@ -172,7 +173,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
   const applyView = (state: GameState, event: GameEvent): GameState => {
     if (!event.view) return state;
-    console.log(event);
 
     let next = { ...state };
     const view = event.view;
@@ -203,6 +203,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           };
         }
 
+        emitter.emit("game:card-drawn", {
+          playerId: view.playerId,
+          cardId: view.cardId,
+        });
+
         return next;
       }
 
@@ -217,6 +222,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       case GameEventType.CARD_PLACE_IN_PLAY_AREA:
       case GameEventType.CARD_PLACE_IN_MONSTER_AREA: {
         const cardId = view.cardId;
+        const card = state.cards[cardId];
 
         const playerKey = getPlayerKey(state, view.playerId);
         const player = state[playerKey];
@@ -227,7 +233,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         };
 
         if (event.type === GameEventType.CARD_DISCARDED) {
-          console.log(cardId, player.playArea);
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
             nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
@@ -243,13 +248,20 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           };
         }
 
+        const cardToEmit = view.card || card;
+        if (cardToEmit) {
+          emitter.emit("card:played", { card: cardToEmit });
+        }
+
         return {
           ...state,
           [playerKey]: {
             ...nextPlayer,
             playArea: {
-              passiveCards: event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
-              monsterCards: event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
+              passiveCards:
+                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+              monsterCards:
+                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
             },
           },
           cards: {
@@ -264,6 +276,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         const nextCoins = view.total;
 
         const playerKey = getPlayerKey(state, view.playerId);
+        const player = state[playerKey];
+        const previousCoins = player.coins;
+        const delta = nextCoins - previousCoins;
+
+        emitter.emit("game:coins-changed", {
+          playerId: view.playerId,
+          delta,
+        });
+
         return {
           ...state,
           [playerKey]: {
@@ -278,6 +299,15 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         const nextHealth = view.total;
 
         const playerKey = getPlayerKey(state, view.playerId);
+        const player = state[playerKey];
+        const previousHealth = player.healthPoints;
+        const delta = nextHealth - previousHealth;
+
+        emitter.emit("game:health-changed", {
+          playerId: view.playerId,
+          delta,
+          type: event.type === GameEventType.DAMAGE ? "damage" : "heal",
+        });
 
         return {
           ...state,
@@ -290,7 +320,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
       case GameEventType.UPDATE_CARD_STATE: {
         const cardId = view.cardId;
-        console.log("aaa", event);
 
         return {
           ...state,
@@ -304,7 +333,6 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       }
 
       default:
-        console.log(`Unhandled event type ${event.type}`);
         return state;
     }
   };

@@ -16,9 +16,11 @@ type HandCardProps = {
   onDragEnd?: (card: CardWithPosition, pointerPos: { x: number; y: number }) => void;
   isDisabled?: boolean;
   isHandHovered?: boolean;
+  isAnimatingDraw?: boolean;
 };
 
 const HOVERED_CARD_OFFSET = 30;
+const DRAWING_CARD_OFFSET = -200;
 
 export default function HandCard({
   positionedCard,
@@ -30,6 +32,7 @@ export default function HandCard({
   onDragEnd,
   isDisabled = false,
   isHandHovered = false,
+  isAnimatingDraw = false,
 }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   //for drag
@@ -52,7 +55,11 @@ export default function HandCard({
   const showDraggedCard = isDragging || (isDropped && pointerPos);
   const showCardElementDebounced = useDebouncedValue(showDraggedCard, 100);
 
-  const displayY = isHandHovered && isHovered ? positionedCard.y - HOVERED_CARD_OFFSET : positionedCard.y;
+  const displayY = isAnimatingDraw
+    ? positionedCard.y - DRAWING_CARD_OFFSET
+    : isHandHovered && isHovered
+      ? positionedCard.y - HOVERED_CARD_OFFSET
+      : positionedCard.y;
   const displayX = positionedCard.x;
   const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
 
@@ -94,8 +101,8 @@ export default function HandCard({
   const cardElement = (
     <div
       ref={cardRef}
-      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 after:content-[''] 
-        after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-full after:h-24 after:pointer-events-auto 
+      className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 after:content-['']
+        after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-full after:h-24 after:pointer-events-auto
         ${isDragging || isDropped ? "invisible pointer-events-none" : ""}`}
       style={{
         transform: `
@@ -104,6 +111,7 @@ export default function HandCard({
             calc(50% + ${displayY}px)
           )
         `,
+        transition: "all 100ms ease-in-out",
         zIndex,
       }}
       onMouseEnter={handleMouseEnter}
