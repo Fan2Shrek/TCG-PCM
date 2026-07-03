@@ -14,7 +14,7 @@ type OpponentDrawPileProps = {
   currentPlayerId?: string;
 };
 
-const CARD_DRAW_ANIMATION_TIME = 200;
+const CARD_DRAW_ANIMATION_TIME = 600;
 
 export default function OpponentDrawPile({ numCards, className = "", isCardDragged = false, currentPlayerId }: OpponentDrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -62,6 +62,7 @@ export default function OpponentDrawPile({ numCards, className = "", isCardDragg
       {Array.from({ length: displayNumCards }).map((_, i) => {
         const offsetX = -i;
         const offsetY = isCardDragged ? 0 : -i * 1.3;
+        const animatedCardOffsetY = offsetY - 1200;
         const isAnimating = i === animatingIndex;
         const isBottomCard = i === 0;
 
@@ -69,12 +70,11 @@ export default function OpponentDrawPile({ numCards, className = "", isCardDragg
           <div
             key={i}
             style={{
-              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${offsetY}px)`,
+              transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${isAnimating ? animatedCardOffsetY : offsetY}px)`,
               zIndex: i,
               transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
               pointerEvents: "auto",
               ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
-              ...(isAnimating && { viewTransitionName: "opponent-card-draw" }),
             }}
             className='absolute'
           >
