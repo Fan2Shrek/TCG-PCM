@@ -69,7 +69,7 @@ export default function GameMainArea({
                 passiveCardIds={objectToArray(opponentState.playArea.passiveCards)}
                 monsterCardIds={objectToArray(opponentState.playArea.monsterCards)}
                 selectedCardId={selectedAttackerId}
-                onSelectCard={(id) => id && onSelectAttacker(id)}
+                onSelectCard={onSelectAttacker}
                 hoveredTargetId={hoveredTargetId}
               />
             </div>
@@ -89,7 +89,7 @@ export default function GameMainArea({
                 passiveCardIds={objectToArray(currentState.playArea.passiveCards)}
                 monsterCardIds={objectToArray(currentState.playArea.monsterCards)}
                 selectedCardId={selectedAttackerId}
-                onSelectCard={(id) => id && onSelectAttacker(id)}
+                onSelectCard={onSelectAttacker}
                 hoveredTargetId={hoveredTargetId}
               />
             </div>

@@ -222,6 +222,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       case GameEventType.CARD_PLACE_IN_PLAY_AREA:
       case GameEventType.CARD_PLACE_IN_MONSTER_AREA: {
         const cardId = view.cardId;
+        const card = state.cards[cardId];
 
         const playerKey = getPlayerKey(state, view.playerId);
         const player = state[playerKey];
@@ -245,6 +246,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
               discardPile: [...player.discardPile, cardId],
             },
           };
+        }
+
+        const cardToEmit = view.card || card;
+        if (cardToEmit) {
+          emitter.emit("card:played", { card: cardToEmit });
         }
 
         return {
