@@ -12,9 +12,16 @@ type PlayerCharacterDisplayProps = {
   className?: string;
   isTargeting?: boolean;
   hoveredTargetId?: string | null;
+  onSelectTarget?: (targetId: string) => void;
 };
 
-export default function PlayerCharacterDisplay({ player, className = "", isTargeting = false, hoveredTargetId }: PlayerCharacterDisplayProps) {
+export default function PlayerCharacterDisplay({
+  player,
+  className = "",
+  isTargeting = false,
+  hoveredTargetId,
+  onSelectTarget,
+}: PlayerCharacterDisplayProps) {
   const { getCardById } = useContext(GameContext);
 
   const playerCard = getCardById(player.characterCardId);
@@ -27,11 +34,15 @@ export default function PlayerCharacterDisplay({ player, className = "", isTarge
   return (
     <div
       className={`flex flex-col items-center gap-2 ${className} ${isTargeting ? "cursor-pointer" : ""}`}
-      onMouseEnter={() => isTargeting && emitter.emit("target:hover", player.player.id)}
+      onMouseEnter={() =>
+        isTargeting && emitter.emit("target:hover", player.player.id)
+      }
       onMouseLeave={() => emitter.emit("target:leave")}
       onClick={(e) => {
         e.stopPropagation();
-        isTargeting && emitter.emit("target:click", player.player.id);
+        if (isTargeting) {
+          onSelectTarget?.(player.player.id);
+        }
       }}
     >
       <div className={isHovered ? "blue-pulse rounded-xl" : ""}>

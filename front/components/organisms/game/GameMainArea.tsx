@@ -5,7 +5,11 @@ import DrawPile from "@/components/molecules/game/DrawPile";
 import OpponentDrawPile from "@/components/molecules/game/OpponentDrawPile";
 import Cemetery from "@/components/molecules/game/Cemetery";
 import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterDisplay";
-import { GAMEBOARD_TILT, GAMEBOARD_ANIMATION_DURATION, GAMEBOARD_ANIMATION_TIMING } from "@/constants/gameArea";
+import {
+  GAMEBOARD_TILT,
+  GAMEBOARD_ANIMATION_DURATION,
+  GAMEBOARD_ANIMATION_TIMING,
+} from "@/constants/gameArea";
 import { BasicCard } from "@/lib/cards/types/card";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
 import OpponentHand from "@/components/molecules/game/OpponentHand";
@@ -13,7 +17,7 @@ import OpponentHand from "@/components/molecules/game/OpponentHand";
 type GameMainAreaProps = {
   game: GameState | null;
   selectedAttackerId: string | null;
-  onSelectAttacker: (cardId: string) => void;
+  onSelectAttacker: (cardId: string | null) => void;
   onSelectTarget: (cardId: string) => void;
   getCardById: (id: string) => BasicCard | undefined;
   selectedAttackerCard: BasicCard | undefined;
@@ -32,16 +36,19 @@ export default function GameMainArea({
   className,
   selectedAttackerId,
   onSelectAttacker,
+  onSelectTarget,
   opponentState,
   currentState,
   isCardDragged,
   hoveredTargetId,
 }: GameMainAreaProps) {
   return (
-    <div className={`game-main-area relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}>
+    <div
+      className={`game-main-area relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}
+    >
       {/* parent div to apply transform 3d to the game area */}
       <div
-        className='game-board absolute -inset-[50%] flex items-center justify-center bg-orange-800'
+        className="game-board absolute -inset-[50%] flex items-center justify-center"
         style={{
           transform: isCardDragged
             ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)"
@@ -50,51 +57,84 @@ export default function GameMainArea({
         }}
       >
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
-        <div className='h-[70vh] min-h-300 w-[85vw] min-w-420 bg-orange-800 flex flex-col relative -mt-60'>
+        <div className="h-[70vh] min-h-300 w-[85vw] min-w-420  flex flex-col relative -mt-60">
           {/* OpponentHand positioned absolutely, logged user's hand is in gameboard instead as an overlay */}
           <OpponentHand
             numCards={opponentState.hand.length || 0}
-            className='absolute left-1/2 -translate-x-1/2 -top-8 z-1'
+            className="absolute left-1/2 -translate-x-1/2 -top-8 z-1"
             currentPlayerId={currentState.player.id}
           />
 
           {/* finally, this div contains the actual play area where everything happens. */}
-          <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3'>
-            <div className='flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2'>
+          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3">
+            <div className="flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2">
               <Cemetery cardIds={opponentState.discardPile} />
-              <OpponentDrawPile numCards={opponentState.drawPile.length} isCardDragged={isCardDragged} currentPlayerId={currentState.player.id} />
+              <OpponentDrawPile
+                numCards={opponentState.drawPile.length}
+                isCardDragged={isCardDragged}
+                currentPlayerId={currentState.player.id}
+              />
             </div>
-            <div className='flex flex-col col-span-3 items-center'>
+            <div className="flex flex-col col-span-3 items-center">
               <OpponentPlayZone
-                passiveCardIds={objectToArray(opponentState.playArea.passiveCards)}
-                monsterCardIds={objectToArray(opponentState.playArea.monsterCards)}
+                passiveCardIds={objectToArray(
+                  opponentState.playArea.passiveCards,
+                )}
+                monsterCardIds={objectToArray(
+                  opponentState.playArea.monsterCards,
+                )}
                 selectedCardId={selectedAttackerId}
                 onSelectCard={onSelectAttacker}
+                onSelectTarget={onSelectTarget}
                 hoveredTargetId={hoveredTargetId}
               />
             </div>
-            <div className='flex flex-col col-span-1 items-center gap-2'>
-              <PlayerStatsDisplay money={opponentState.coins} health={opponentState.healthPoints} />
-              <PlayerCharacterDisplay player={opponentState} isTargeting={selectedAttackerId !== null} hoveredTargetId={hoveredTargetId} />
+            <div className="flex flex-col col-span-1 items-center gap-2">
+              <PlayerStatsDisplay
+                money={opponentState.coins}
+                health={opponentState.healthPoints}
+              />
+              <PlayerCharacterDisplay
+                player={opponentState}
+                isTargeting={selectedAttackerId !== null}
+                hoveredTargetId={hoveredTargetId}
+                onSelectTarget={onSelectTarget}
+              />
             </div>
           </div>
 
-          <div className='w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-blue-600 p-3'>
-            <div className='flex flex-col col-span-1 items-center gap-2'>
-              <PlayerCharacterDisplay player={currentState} isTargeting={selectedAttackerId !== null} hoveredTargetId={hoveredTargetId} />
-              <PlayerStatsDisplay money={currentState.coins} health={currentState.healthPoints} />
+          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-blue-600 p-3">
+            <div className="flex flex-col col-span-1 items-center gap-2">
+              <PlayerCharacterDisplay
+                player={currentState}
+                isTargeting={selectedAttackerId !== null}
+                hoveredTargetId={hoveredTargetId}
+                onSelectTarget={onSelectTarget}
+              />
+              <PlayerStatsDisplay
+                money={currentState.coins}
+                health={currentState.healthPoints}
+              />
             </div>
-            <div className='flex flex-col col-span-3 items-center h-full'>
+            <div className="flex flex-col col-span-3 items-center h-full">
               <PlayZone
-                passiveCardIds={objectToArray(currentState.playArea.passiveCards)}
-                monsterCardIds={objectToArray(currentState.playArea.monsterCards)}
+                passiveCardIds={objectToArray(
+                  currentState.playArea.passiveCards,
+                )}
+                monsterCardIds={objectToArray(
+                  currentState.playArea.monsterCards,
+                )}
                 selectedCardId={selectedAttackerId}
                 onSelectCard={onSelectAttacker}
                 hoveredTargetId={hoveredTargetId}
               />
             </div>
-            <div className='flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2'>
-              <DrawPile numCards={currentState.drawPile.length} isCardDragged={isCardDragged} playerId={currentState.player.id} />
+            <div className="flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2">
+              <DrawPile
+                numCards={currentState.drawPile.length}
+                isCardDragged={isCardDragged}
+                playerId={currentState.player.id}
+              />
               <Cemetery cardIds={currentState.discardPile} />
             </div>
           </div>

@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import DummyFaceDownCard from "@/components/molecules/game/DummyFaceDownCard";
 import PileTooltip from "@/components/atoms/PileTooltip";
 import { CardSize } from "@/constants/card";
-import { GAMEBOARD_ANIMATION_DURATION, GAMEBOARD_ANIMATION_TIMING } from "@/constants/gameArea";
+import {
+  GAMEBOARD_ANIMATION_DURATION,
+  GAMEBOARD_ANIMATION_TIMING,
+} from "@/constants/gameArea";
 import { emitter } from "@/lib/eventBus";
 
 type DrawPileProps = {
@@ -16,7 +19,12 @@ type DrawPileProps = {
 
 const CARD_DRAW_ANIMATION_TIME = 200;
 
-export default function DrawPile({ numCards, className = "", isCardDragged = false, playerId }: DrawPileProps) {
+export default function DrawPile({
+  numCards,
+  className = "",
+  isCardDragged = false,
+  playerId,
+}: DrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
@@ -69,20 +77,26 @@ export default function DrawPile({ numCards, className = "", isCardDragged = fal
         return (
           <div
             key={i}
-            className='absolute'
+            className="absolute"
             style={{
               transform: `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${isAnimating ? animatedCardOffsetY : offsetY}px)`,
               zIndex: i,
               transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
               pointerEvents: "auto",
-              ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
+              ...(isBottomCard && {
+                boxShadow: `${shadowOffsetX}px 0 ${shadow}`,
+              }),
             }}
           >
             <DummyFaceDownCard size={CardSize.MD} />
           </div>
         );
       })}
-      <PileTooltip isVisible={showTooltip} count={numCards} label='cards left' />
+      <PileTooltip
+        isVisible={showTooltip}
+        count={numCards}
+        label="cards left"
+      />
     </div>
   );
 }

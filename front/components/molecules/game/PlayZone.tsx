@@ -2,9 +2,6 @@
 
 import { useCallback, useRef } from "react";
 import { useDropZone } from "@/hooks/useDropZone";
-import { GAMEBOARD_TILT } from "@/constants/gameArea";
-import { CardSize } from "@/constants/card";
-import { BasicCard } from "@/lib/cards/types/card";
 import CardRow from "./CardRow";
 
 type PlayZoneProps = {
@@ -26,7 +23,7 @@ export default function PlayZone({
 }: PlayZoneProps) {
   const zoneRef = useRef<HTMLDivElement>(null);
 
-  const getDropResult = useCallback((_: BasicCard) => {
+  const getDropResult = useCallback(() => {
     if (!zoneRef.current) {
       throw new Error("PlayZone ref is not set.");
     }

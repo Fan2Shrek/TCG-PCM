@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import DummyFaceDownCard from "@/components/molecules/game/DummyFaceDownCard";
 import PileTooltip from "@/components/atoms/PileTooltip";
 import { CardSize } from "@/constants/card";
-import { GAMEBOARD_ANIMATION_DURATION, GAMEBOARD_ANIMATION_TIMING } from "@/constants/gameArea";
+import {
+  GAMEBOARD_ANIMATION_DURATION,
+  GAMEBOARD_ANIMATION_TIMING,
+} from "@/constants/gameArea";
 import { emitter } from "@/lib/eventBus";
 
 type OpponentDrawPileProps = {
@@ -16,7 +19,12 @@ type OpponentDrawPileProps = {
 
 const CARD_DRAW_ANIMATION_TIME = 600;
 
-export default function OpponentDrawPile({ numCards, className = "", isCardDragged = false, currentPlayerId }: OpponentDrawPileProps) {
+export default function OpponentDrawPile({
+  numCards,
+  className = "",
+  isCardDragged = false,
+  currentPlayerId,
+}: OpponentDrawPileProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
@@ -74,15 +82,22 @@ export default function OpponentDrawPile({ numCards, className = "", isCardDragg
               zIndex: i,
               transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
               pointerEvents: "auto",
-              ...(isBottomCard && { boxShadow: `${shadowOffsetX}px 0 ${shadow}` }),
+              ...(isBottomCard && {
+                boxShadow: `${shadowOffsetX}px 0 ${shadow}`,
+              }),
             }}
-            className='absolute'
+            className="absolute"
           >
-            <DummyFaceDownCard size={CardSize.MD} className='rotate-180' />
+            <DummyFaceDownCard size={CardSize.MD} className="rotate-180" />
           </div>
         );
       })}
-      <PileTooltip isVisible={showTooltip} count={numCards} isMirrored label='cards left' />
+      <PileTooltip
+        isVisible={showTooltip}
+        count={numCards}
+        isMirrored
+        label="cards left"
+      />
     </div>
   );
 }

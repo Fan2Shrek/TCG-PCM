@@ -8,14 +8,17 @@ type DummyFaceDownCardProps = {
   className?: string;
 };
 
-export default function DummyFaceDownCard({ size = CardSize.MD, className = "" }: DummyFaceDownCardProps) {
+export default function DummyFaceDownCard({
+  size = CardSize.MD,
+  className = "",
+}: DummyFaceDownCardProps) {
   const sizeClass = CardSizeMap[size];
 
   return (
-    <div className={`${sizeClass} aspect-card rounded-lg overflow-hidden ${className}`}>
+    <div className={`${sizeClass} aspect-card ${className}`}>
       <Image
-        src='/default_card_back.png'
-        alt='Card back'
+        src="/default_card_back.png"
+        alt="Card back"
         fill
         style={{
           objectFit: "cover",

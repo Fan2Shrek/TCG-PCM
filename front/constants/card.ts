@@ -5,6 +5,20 @@ export enum CardSize {
   XL = "xl",
 }
 
+export enum CardRaririty {
+  COMMON = "Common",
+  UNCOMMON = "Uncommon",
+  RARE = "Rare",
+  EPIC = "Epic",
+  LEGENDARY = "Legendary",
+}
+
+export enum CardEffect {
+  HACKED = "Hacked",
+  TORNED = "Torned",
+  POWER_BOOST = "PowerBoost",
+}
+
 export const CardSizeMap: Record<CardSize, string> = {
   [CardSize.SM]: "w-card-sm",
   [CardSize.MD]: "w-card-md",

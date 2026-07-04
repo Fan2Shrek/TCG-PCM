@@ -1,13 +1,13 @@
-import { FoilEffects } from "@/constants/card";
+import { CardEffect, CardRaririty, FoilEffects } from "@/constants/card";
 
 export type BasicCard = {
   name: string;
   description: string;
   image: string;
-  rarity: string;
+  rarity: CardRaririty;
   set: string;
   instanceId: string;
-  effects: any;
+  effects: CardEffect[];
   isActive: boolean;
 };
 
@@ -20,14 +20,7 @@ export type CardLayer = {
   mask?: string | null;
 };
 
-export type CardModel = {
-  id: string;
-  backImage?: string;
-  frontLayers?: CardLayer[] | null;
-};
-
 export type CardWithPosition = {
-  // card: CardModel;
   card: BasicCard;
   rank: number;
   x: number;

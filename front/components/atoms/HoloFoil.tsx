@@ -1,10 +1,10 @@
-type CardFoilProps = {
+type HoloFoilProps = {
   tilt: { x: number; y: number };
   foil: string;
   mask: string;
 };
 
-const CardFoil = ({ tilt, foil, mask }: CardFoilProps) => {
+const HoloFoil = ({ tilt, foil, mask }: HoloFoilProps) => {
   const intensity = 0.4 + Math.sqrt(tilt.x ** 2 + tilt.y ** 2) / 15;
 
   const highlightX = 50 + tilt.x * 3;
@@ -13,7 +13,7 @@ const CardFoil = ({ tilt, foil, mask }: CardFoilProps) => {
   const angle = -45 + tilt.x * 2;
 
   return (
-    <div className='absolute inset-0 overflow-hidden pointer-events-none select-none'>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
       <div
         className={`
         absolute inset-0 opacity-30 bg-cover bg-blend-soft-light-difference
@@ -46,4 +46,4 @@ const CardFoil = ({ tilt, foil, mask }: CardFoilProps) => {
   );
 };
 
-export default CardFoil;
+export default HoloFoil;
