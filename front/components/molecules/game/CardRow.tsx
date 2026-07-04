@@ -12,6 +12,7 @@ type CardRowProps = {
   isLoggedPlayerSide?: boolean;
   selectedCardId?: string | null;
   onSelectCard?: (cardId: string | null) => void;
+  onSelectTarget?: (cardId: string) => void;
   hoveredTargetId?: string | null;
 };
 
@@ -40,12 +41,18 @@ function useCardPlayAnimation() {
   return playingCardIds;
 }
 
-function getCardStyle(isPlaying: boolean, isSelected: boolean, isActive: boolean, isOpponentSide: boolean) {
+function getCardStyle(
+  isPlaying: boolean,
+  isSelected: boolean,
+  isActive: boolean,
+  isOpponentSide: boolean,
+) {
   if (isPlaying) {
     const playOffset = isOpponentSide ? "-200px" : "200px";
     return {
       transform: `scale(1.1) translateZ(80px) translateY(${playOffset})`,
-      boxShadow: "0 50px 40px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3)",
+      boxShadow:
+        "0 50px 40px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3)",
       transition: "transform 300ms ease-in",
     } as React.CSSProperties;
   }
@@ -53,7 +60,8 @@ function getCardStyle(isPlaying: boolean, isSelected: boolean, isActive: boolean
   if (isSelected) {
     return {
       transform: "scale(1.1) translateZ(80px) translateY(-40px)",
-      boxShadow: "0 50px 40px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3)",
+      boxShadow:
+        "0 50px 40px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3)",
     } as React.CSSProperties;
   }
 
@@ -62,18 +70,31 @@ function getCardStyle(isPlaying: boolean, isSelected: boolean, isActive: boolean
   } as React.CSSProperties;
 }
 
-export default function CardRow({ cardIds, className, isLoggedPlayerSide = false, selectedCardId, onSelectCard, hoveredTargetId }: CardRowProps) {
+export default function CardRow({
+  cardIds,
+  className,
+  isLoggedPlayerSide = false,
+  selectedCardId,
+  onSelectCard,
+  onSelectTarget,
+  hoveredTargetId,
+}: CardRowProps) {
   const { getCardById } = useContext(GameContext);
   const playingCardIds = useCardPlayAnimation();
-  const isControlled = selectedCardId !== undefined && onSelectCard !== undefined;
+  const isControlled =
+    selectedCardId !== undefined && onSelectCard !== undefined;
   const isTargeting = selectedCardId !== null;
 
   return (
-    <div className={`flex flex-wrap justify-center gap-2 ${className}`} style={{ perspective: "1000px" }}>
+    <div
+      className={`flex flex-wrap justify-center gap-2 ${className}`}
+      style={{ perspective: "1000px" }}
+    >
       {cardIds.map((cardId) => {
         const card = getCardById(cardId);
         const isSelected = selectedCardId === card?.instanceId;
-        const isHovered = hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
+        const isHovered =
+          hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
         const canSelect = isLoggedPlayerSide && isControlled && card?.isActive;
         const isPlaying = playingCardIds.has(card?.instanceId || "");
 
@@ -86,13 +107,20 @@ export default function CardRow({ cardIds, className, isLoggedPlayerSide = false
                 if (canSelect) {
                   onSelectCard?.(isSelected ? null : card.instanceId);
                 } else if (isTargeting && card?.isActive) {
-                  emitter.emit("target:click", card.instanceId);
+                  onSelectTarget?.(card.instanceId);
                 }
               }}
-              onMouseEnter={() => isTargeting && emitter.emit("target:hover", card.instanceId)}
+              onMouseEnter={() =>
+                isTargeting && emitter.emit("target:hover", card.instanceId)
+              }
               onMouseLeave={() => emitter.emit("target:leave")}
               className={`card-selected ${canSelect || isTargeting ? "cursor-pointer" : ""} ${isHovered ? "blue-pulse" : ""}`}
-              style={getCardStyle(isPlaying, isSelected, card?.isActive ?? true, !isLoggedPlayerSide)}
+              style={getCardStyle(
+                isPlaying,
+                isSelected,
+                card?.isActive ?? true,
+                !isLoggedPlayerSide,
+              )}
             >
               <Card card={card} size={CardSize.MD} />
             </div>

@@ -18,7 +18,15 @@ type DraggedCardProps = {
   isDropped: boolean;
 };
 
-export default function DraggedCard({ card, originPos, originSize, originTilt, pointerPos, tilt, isDropped }: DraggedCardProps) {
+export default function DraggedCard({
+  card,
+  originPos,
+  originSize,
+  originTilt,
+  pointerPos,
+  tilt,
+  isDropped,
+}: DraggedCardProps) {
   if (typeof document === "undefined") return null;
   if (!pointerPos && !isDropped) return null;
 
@@ -59,7 +67,9 @@ export default function DraggedCard({ card, originPos, originSize, originTilt, p
     transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
     zIndex: z,
     cursor: "grabbing",
-    transition: shouldTransition ? "transform 300ms cubic-bezier(.2,.8,.2,1)" : undefined,
+    transition: shouldTransition
+      ? "transform 300ms cubic-bezier(.2,.8,.2,1)"
+      : undefined,
   };
 
   const portal = (

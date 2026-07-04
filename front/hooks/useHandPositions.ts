@@ -1,11 +1,18 @@
 "use client";
 import { useMemo } from "react";
-import { CardModel, CardWithPosition } from "@/lib/cards/types/card";
-import { cardsHandComputeArcParameters, cardsHandComputeCardPosition } from "@/lib/cards/cardUtils";
+import { BasicCard, CardWithPosition } from "@/lib/cards/types/card";
+import {
+  cardsHandComputeArcParameters,
+  cardsHandComputeCardPosition,
+} from "@/lib/cards/cardUtils";
 
 type ArcParameters = ReturnType<typeof cardsHandComputeArcParameters>;
 
-export function useHandPositions(cards: CardModel[], cardWidthPx: number, hovered: boolean): CardWithPosition[] {
+export function useHandPositions(
+  cards: BasicCard[],
+  cardWidthPx: number,
+  hovered: boolean,
+): CardWithPosition[] {
   const positionedCards = useMemo(() => {
     const totalCards = cards.length;
     if (totalCards === 0) {
@@ -14,11 +21,22 @@ export function useHandPositions(cards: CardModel[], cardWidthPx: number, hovere
 
     const maxAngle = 60;
 
-    const normalParams = cardsHandComputeArcParameters(totalCards, cardWidthPx, maxAngle, false);
+    const normalParams = cardsHandComputeArcParameters(
+      totalCards,
+      cardWidthPx,
+      maxAngle,
+      false,
+    );
 
     const getArcPositions = (params: ArcParameters, effectiveCenter?: number) =>
       cards.map((_card, index) => {
-        const { x, y, rotation } = cardsHandComputeCardPosition(index, totalCards, params.arcAngleRadian, params.radius, effectiveCenter);
+        const { x, y, rotation } = cardsHandComputeCardPosition(
+          index,
+          totalCards,
+          params.arcAngleRadian,
+          params.radius,
+          effectiveCenter,
+        );
         return { x, y, rotation };
       });
 

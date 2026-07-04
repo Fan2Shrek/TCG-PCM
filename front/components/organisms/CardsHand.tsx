@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
-import { CardModel, CardWithPosition } from "@/lib/cards/types/card";
+import { BasicCard, CardWithPosition } from "@/lib/cards/types/card";
 import { CardSize } from "@/constants/card";
 import { getCardWidthPx } from "@/lib/cards/cardUtils";
 import HandCard from "../molecules/HandCard";
@@ -10,16 +10,24 @@ import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import { emitter } from "@/lib/eventBus";
 
 export type CardsHandProps = {
-  cards: CardModel[];
+  cards: BasicCard[];
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
   isDisabled?: boolean;
 };
 
-export default function CardsHand({ cards, className = "", onMouseEnter, onMouseLeave, isDisabled = false }: CardsHandProps) {
+export default function CardsHand({
+  cards,
+  className = "",
+  onMouseEnter,
+  onMouseLeave,
+  isDisabled = false,
+}: CardsHandProps) {
   const [isPendingHovered, setIsPendingHovered] = useState(false);
-  const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(null);
+  const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(
+    null,
+  );
   const isHovered = useDebouncedValue(isPendingHovered, 50);
 
   useEffect(() => {
@@ -64,7 +72,7 @@ export default function CardsHand({ cards, className = "", onMouseEnter, onMouse
     setIsPendingHovered(false);
   }, []);
 
-  const handleCardDragEnd = useCallback((positionedCard: CardWithPosition, pointerPos: { x: number; y: number }) => {
+  const handleCardDragEnd = useCallback((positionedCard: CardWithPosition) => {
     emitter.emit("card:played", {
       card: positionedCard.card,
     });

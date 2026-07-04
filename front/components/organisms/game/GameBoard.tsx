@@ -2,35 +2,50 @@ import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
-import { CardWithPosition } from "@/lib/cards/types/card";
+import type { BasicCard } from "@/lib/cards/types/card";
 
 export default function GameBoard() {
   const { game, getCardById, announcements, actions } = useContext(GameContext);
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(null);
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
+    null,
+  );
   const [isHandHovered, setIsHandHovered] = useState(false);
-  const [draggedCard, setDraggedCard] = useState<CardWithPosition | null>(null);
+  const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
 
-  if (!game) {
-    return <div>Loading...</div>;
-  }
+  const connectedPlayer =
+    game?.player1.player.name === getCurrentUser()?.username
+      ? game?.player1.player
+      : (game?.player2.player ?? null);
+  const isLoggedPlayerTurn = Boolean(
+    connectedPlayer && game && connectedPlayer.id === game.currentPlayerId,
+  );
+  const currentState =
+    game?.player1.player.name === getCurrentUser()?.username
+      ? game?.player1
+      : (game?.player2 ?? null);
+  const opponentState =
+    game?.player1.player.name === getCurrentUser()?.username
+      ? (game?.player2 ?? null)
+      : (game?.player1 ?? null);
+  const currentCoins = currentState?.coins ?? 0;
 
-  const connectedPlayer = game.player1.player.name === getCurrentUser()?.username ? game.player1.player : game.player2.player;
-  const isLoggedPlayerTurn = connectedPlayer.id === game.currentPlayer;
-  const currentState = game.player1.player.name === getCurrentUser()?.username ? game.player1 : game.player2;
-  const opponentState = game.player1.player.name === getCurrentUser()?.username ? game.player2 : game.player1;
-
-  const giantAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation === "giant");
-  const giantAnnouncement = giantAnnouncements[giantAnnouncements.length - 1] ?? null;
-  const regularAnnouncements = announcements.filter((announcement: GameAnnouncement) => announcement.presentation !== "giant");
+  const giantAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation === "giant",
+  );
+  const giantAnnouncement =
+    giantAnnouncements[giantAnnouncements.length - 1] ?? null;
+  const regularAnnouncements = announcements.filter(
+    (announcement: GameAnnouncement) => announcement.presentation !== "giant",
+  );
 
   // Gère le drag et drop des cartes
   useEffect(() => {
-    const handleDragStart = ({ card }: { card: CardWithPosition }) => {
+    const handleDragStart = ({ card }: { card: BasicCard }) => {
       if (!isLoggedPlayerTurn) return;
       setDraggedCard(card);
       setSelectedAttackerId(null);
@@ -48,13 +63,21 @@ export default function GameBoard() {
     };
   }, [isLoggedPlayerTurn]);
 
+  const handleAttackTarget = useCallback(
+    (targetId: string) => {
+      if (!selectedAttackerId) {
+        return;
+      }
+
+      actions.attack(selectedAttackerId, targetId);
+      setHoveredTargetId(null);
+      setSelectedAttackerId(null);
+    },
+    [actions, selectedAttackerId],
+  );
+
   // Gère la sélection de cibles
   useEffect(() => {
-    if (!selectedAttackerId) {
-      setHoveredTargetId(null);
-      return;
-    }
-
     const handleTargetHover = (targetId: string) => {
       setHoveredTargetId(targetId);
     };
@@ -78,11 +101,14 @@ export default function GameBoard() {
       emitter.off("target:leave", handleTargetLeave);
       emitter.off("target:click", handleTargetClick);
     };
-  }, [selectedAttackerId]);
+  }, [selectedAttackerId, handleAttackTarget]);
 
   // Gère quand carte laché dans zone de jeu
   useEffect(() => {
-    const handleCardDropped = (data: { card: { instanceId: string }; zoneId?: string }) => {
+    const handleCardDropped = (data: {
+      card: { instanceId: string };
+      zoneId?: string;
+    }) => {
       const cardId = data.card.instanceId;
       const card = getCardById(cardId);
 
@@ -90,9 +116,9 @@ export default function GameBoard() {
         return;
       }
 
-      const cost = card.cost || 0;
+      const cost = (card as BasicCard & { cost?: number }).cost ?? 0;
 
-      if (currentState.coins < cost) {
+      if (currentCoins < cost) {
         actions.pushAnnouncement({
           text: "Not enough coins",
           tone: "negative",
@@ -106,7 +132,7 @@ export default function GameBoard() {
     emitter.on("card:dropped", handleCardDropped);
 
     return () => emitter.off("card:dropped", handleCardDropped);
-  }, [getCardById, actions, currentState.coins]);
+  }, [getCardById, actions, currentCoins]);
 
   const selectedAttackerCard = useMemo(() => {
     if (!selectedAttackerId) return undefined;
@@ -120,45 +146,56 @@ export default function GameBoard() {
     return card;
   }, [getCardById, selectedAttackerId]);
 
-  const handleSelectAttacker = (cardId: string) => {
+  const handleSelectAttacker = (cardId: string | null) => {
+    if (!isLoggedPlayerTurn) return;
+
     if (selectedAttackerId === cardId) {
+      setHoveredTargetId(null);
       setSelectedAttackerId(null);
       return;
     }
 
+    setHoveredTargetId(null);
     setSelectedAttackerId(cardId);
-  };
-
-  const handleAttackTarget = (targetId: string) => {
-    if (!selectedAttackerId) {
-      return;
-    }
-
-    actions.attack(selectedAttackerId, targetId);
-    setSelectedAttackerId(null);
   };
 
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
 
   const handleBackgroundClick = () => {
     if (selectedAttackerId) {
+      setHoveredTargetId(null);
       setSelectedAttackerId(null);
     }
   };
 
-  const handleSelectAttackerWithTurnCheck = (cardId: string) => {
-    if (!isLoggedPlayerTurn) return;
-    handleSelectAttacker(cardId);
-  };
+  const handCards = useMemo(() => {
+    if (!currentState) {
+      return [] as BasicCard[];
+    }
+
+    return currentState.hand
+      .map((cardId: string) => getCardById(cardId))
+      .filter((card): card is BasicCard => Boolean(card));
+  }, [currentState, getCardById]);
+
+  if (!game || !connectedPlayer || !currentState || !opponentState) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className='relative flex flex-col h-screen bg-green-900 text-white overflow-hidden' onClick={handleBackgroundClick}>
-      <GameAnnouncements regularAnnouncements={regularAnnouncements} giantAnnouncement={giantAnnouncement} selectedAttackerId={selectedAttackerId} />
-
-      <div className='h-full flex flex-row justify-center items-center pointer-events-auto'>
+    <div
+      className="relative flex flex-col h-screen bg-orange-800 text-white overflow-hidden"
+      onClick={handleBackgroundClick}
+    >
+      <GameAnnouncements
+        regularAnnouncements={regularAnnouncements}
+        giantAnnouncement={giantAnnouncement}
+        selectedAttackerId={selectedAttackerId}
+      />
+      <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
         <GameMainArea
           selectedAttackerId={selectedAttackerId}
-          onSelectAttacker={handleSelectAttackerWithTurnCheck}
+          onSelectAttacker={handleSelectAttacker}
           onSelectTarget={handleAttackTarget}
           selectedAttackerCard={selectedAttackerCard}
           getCardById={getCardById}
@@ -169,17 +206,21 @@ export default function GameBoard() {
           hoveredTargetId={hoveredTargetId}
         />
       </div>
-      <div className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}>
+      <div
+        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}
+      >
         <CardsHand
-          cards={currentState.hand.map((cardId: string) => getCardById(cardId))}
+          cards={handCards}
           onMouseEnter={() => setIsHandHovered(true)}
           onMouseLeave={() => setIsHandHovered(false)}
           isDisabled={!isLoggedPlayerTurn}
         />
       </div>
-
-      {connectedPlayer.id == game.currentPlayer && (
-        <button className='absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer' onClick={actions.endTurn}>
+      {isLoggedPlayerTurn && (
+        <button
+          className="absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer"
+          onClick={actions.endTurn}
+        >
           End turn
         </button>
       )}

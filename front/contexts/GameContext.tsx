@@ -6,7 +6,14 @@ import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
 import { emitter } from "@/lib/eventBus";
 
-import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
 import { getCurrentUser } from "@/lib/utils";
 
@@ -44,25 +51,69 @@ type Props = {
 export const GameContext = createContext<GameContextType>({
   game: null,
   getCardById: () => undefined,
+  announcements: [],
+  actions: {
+    playCard: () => undefined,
+    attack: () => undefined,
+    endTurn: () => undefined,
+    pushAnnouncement: () => undefined,
+  },
 });
 
-export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
-  const [game, setGame] = useState<GameState | null>(initialGame || null);
+export const GameProvider = ({
+  children,
+  gameId,
+  game: initialGame,
+}: Props) => {
+  const normalizeGameState = useCallback(
+    (state: GameState | null | undefined) => {
+      if (!state) {
+        return null;
+      }
+
+      const legacyCurrentPlayer = (
+        state as GameState & { currentPlayer?: string | number }
+      ).currentPlayer;
+
+      return {
+        ...state,
+        currentPlayerId:
+          state.currentPlayerId ||
+          (legacyCurrentPlayer !== undefined
+            ? String(legacyCurrentPlayer)
+            : ""),
+      } as GameState;
+    },
+    [],
+  );
+
+  const [game, setGame] = useState<GameState | null>(
+    normalizeGameState(initialGame),
+  );
   const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
-  const gameRef = useRef<GameState | null>(initialGame || null);
+  const gameRef = useRef<GameState | null>(normalizeGameState(initialGame));
   const announcementIdRef = useRef(0);
-  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const timeoutRefs = useRef<number[]>([]);
   const currentUser = getCurrentUser();
 
   const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
-    setAnnouncements((current: GameAnnouncement[]) => [...current, { id, ...announcement }]);
+    setAnnouncements((current: GameAnnouncement[]) => [
+      ...current,
+      { id, ...announcement },
+    ]);
 
     const timeoutId = window.setTimeout(() => {
-      setAnnouncements((current: GameAnnouncement[]) => current.filter((announcement: GameAnnouncement) => announcement.id !== id));
+      setAnnouncements((current: GameAnnouncement[]) =>
+        current.filter(
+          (announcement: GameAnnouncement) => announcement.id !== id,
+        ),
+      );
 
-      timeoutRefs.current = timeoutRefs.current.filter((currentTimeoutId: ReturnType<typeof setTimeout>) => currentTimeoutId !== timeoutId);
+      timeoutRefs.current = timeoutRefs.current.filter(
+        (currentTimeoutId: number) => currentTimeoutId !== timeoutId,
+      );
     }, 2200);
 
     timeoutRefs.current.push(timeoutId);
@@ -70,7 +121,9 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
   useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach((timeoutId: ReturnType<typeof setTimeout>) => window.clearTimeout(timeoutId));
+      timeoutRefs.current.forEach((timeoutId: number) =>
+        window.clearTimeout(timeoutId),
+      );
       timeoutRefs.current = [];
     };
   }, []);
@@ -81,7 +134,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
         return undefined;
       }
 
-      return game.cards[cardId] as BasicCard | undefined;
+      return game.cards[cardId] as unknown as BasicCard | undefined;
     },
     [game],
   );
@@ -90,8 +143,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     try {
       await api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Une erreur est survenue";
+
       pushAnnouncement({
-        text: error.message || "Une erreur est survenue",
+        text: message,
         tone: "negative",
       });
     }
@@ -105,9 +161,16 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-  const getPlayerKey = (state: GameState, playerId: string): "player1" | "player2" => (state.player1.player.id === playerId ? "player1" : "player2");
+  const getPlayerKey = (
+    state: GameState,
+    playerId: string,
+  ): "player1" | "player2" =>
+    state.player1.player.id === playerId ? "player1" : "player2";
 
-  const animate = (state: GameState, event: GameEvent): AnnouncementPayload | null => {
+  const animate = (
+    state: GameState,
+    event: GameEvent,
+  ): AnnouncementPayload | null => {
     if (event.type === GameEventType.DICE_ROLLED) {
       if (!event.data.faces) return null;
       const rollValue = event.data.result;
@@ -125,7 +188,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
     switch (event.type) {
       case GameEventType.TURN_STARTED: {
-        const player = getPlayerKey(state, view.currentPlayer);
+        const player = getPlayerKey(state, String(view.currentPlayer));
         return {
           text: `Tour de ${state[player].player.name}`,
           tone: "neutral",
@@ -174,7 +237,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
   const applyView = (state: GameState, event: GameEvent): GameState => {
     if (!event.view) return state;
 
-    let next = { ...state };
+    const next = { ...state };
     const view = event.view;
 
     switch (event.type) {
@@ -214,7 +277,7 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
       case GameEventType.TURN_STARTED: {
         return {
           ...state,
-          currentPlayer: view.currentPlayer,
+          currentPlayerId: String(view.currentPlayer),
         };
       }
 
@@ -234,9 +297,11 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
 
         if (event.type === GameEventType.CARD_DISCARDED) {
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
-            nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.monsterCards =
+              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
-            nextPlayer.playArea.passiveCards = nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.passiveCards =
+              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
           }
 
           return {
@@ -259,9 +324,13 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
             ...nextPlayer,
             playArea: {
               passiveCards:
-                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
+                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA
+                  ? [...player.playArea.passiveCards, cardId]
+                  : player.playArea.passiveCards,
               monsterCards:
-                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
+                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA
+                  ? [...player.playArea.monsterCards, cardId]
+                  : player.playArea.monsterCards,
             },
           },
           cards: {
@@ -360,15 +429,17 @@ export const GameProvider = ({ children, gameId, game: initialGame }: Props) => 
           next = applyView(next, event);
         }
 
-        gameRef.current = next;
-        setGame(next);
+        const normalizedNext = normalizeGameState(next);
+
+        gameRef.current = normalizedNext;
+        setGame(normalizedNext);
       },
     },
   );
 
   useEffect(() => {
-    gameRef.current = game;
-  }, [game]);
+    gameRef.current = normalizeGameState(game);
+  }, [game, normalizeGameState]);
 
   return (
     <GameContext.Provider
