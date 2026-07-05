@@ -9,6 +9,11 @@ final class ViciousStingerCard extends AbstractPlayableCard
 {
     public function getId(): string
     {
+        return 'ViciousStinger';
+    }
+
+    public function getImage(): string
+    {
         return 'vicious_stinger.webp';
     }
 

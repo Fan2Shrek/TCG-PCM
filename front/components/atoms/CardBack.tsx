@@ -5,9 +5,9 @@ export type CardBackProps = {
 };
 
 const CardBack = ({ backImage = "" }: CardBackProps) => (
-  <div className="absolute inset-0 backface-hidden rotate-y-180 pointer-events-none select-none">
+  <div className="absolute inset-0 backface-hidden rotate-y-180 pointer-events-none select-none rounded-sm overflow-hidden">
     <Image
-      src={backImage == "" ? "/default_card_back.png" : backImage}
+      src={backImage == "" ? "/card/card_back.png" : backImage}
       alt="Card back"
       fill
       className="object-cover"
