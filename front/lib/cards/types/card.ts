@@ -1,11 +1,18 @@
-import { CardEffect, CardRaririty, FoilEffects } from "@/constants/card";
+import {
+  CardEffect,
+  CardRaririty,
+  CardSet,
+  CardType,
+  FoilEffects,
+} from "@/constants/card";
 
 export type BasicCard = {
   name: string;
   description: string;
   image: string;
   rarity: CardRaririty;
-  set: string;
+  set: CardSet;
+  type?: CardType;
   instanceId: string;
   effects: CardEffect[];
   isActive: boolean;

@@ -15,14 +15,14 @@ export default function DummyFaceDownCard({
   const sizeClass = CardSizeMap[size];
 
   return (
-    <div className={`${sizeClass} aspect-card ${className}`}>
+    <div
+      className={`${sizeClass} aspect-card rounded-sm overflow-hidden ${className}`}
+    >
       <Image
-        src="/default_card_back.png"
+        src="/card/card_back.png"
         alt="Card back"
         fill
-        style={{
-          objectFit: "cover",
-        }}
+        className="object-cover"
       />
     </div>
   );

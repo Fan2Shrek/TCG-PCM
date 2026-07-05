@@ -19,6 +19,19 @@ export enum CardEffect {
   POWER_BOOST = "PowerBoost",
 }
 
+export enum CardSet {
+  ORIGINAL = "Original",
+  TBOI = "The Binding of Isaac",
+  BTD6 = "Bloons TD 6",
+}
+
+export enum CardType {
+  CHARACTER = "character",
+  MONSTER = "monster",
+  PASSIVE = "passive",
+  CONSUMABLE = "consumable",
+}
+
 export const CardSizeMap: Record<CardSize, string> = {
   [CardSize.SM]: "w-card-sm",
   [CardSize.MD]: "w-card-md",
