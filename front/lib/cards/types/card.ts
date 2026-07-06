@@ -16,6 +16,9 @@ export type BasicCard = {
   instanceId: string;
   effects: CardEffect[];
   isActive: boolean;
+  cost?: number;
+  hp?: number;
+  attack?: number;
 };
 
 export type CardLayer = {

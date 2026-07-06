@@ -26,10 +26,10 @@ export enum CardSet {
 }
 
 export enum CardType {
-  CHARACTER = "character",
-  MONSTER = "monster",
-  PASSIVE = "passive",
-  CONSUMABLE = "consumable",
+  CHARACTER = "Character",
+  MONSTER = "Monster",
+  PASSIVE = "Passive",
+  CONSUMABLE = "Consumable",
 }
 
 export const CardSizeMap: Record<CardSize, string> = {

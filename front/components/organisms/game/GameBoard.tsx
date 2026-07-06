@@ -116,7 +116,7 @@ export default function GameBoard() {
         return;
       }
 
-      const cost = (card as BasicCard & { cost?: number }).cost ?? 0;
+      const cost = card.cost ?? 0;
 
       if (currentCoins < cost) {
         actions.pushAnnouncement({

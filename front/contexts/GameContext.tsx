@@ -6,14 +6,7 @@ import { GameState } from "@/lib/game/type/gameState";
 import api from "@/lib/api/api";
 import { emitter } from "@/lib/eventBus";
 
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
 import { getCurrentUser } from "@/lib/utils";
 
@@ -60,36 +53,23 @@ export const GameContext = createContext<GameContextType>({
   },
 });
 
-export const GameProvider = ({
-  children,
-  gameId,
-  game: initialGame,
-}: Props) => {
-  const normalizeGameState = useCallback(
-    (state: GameState | null | undefined) => {
-      if (!state) {
-        return null;
-      }
+export const GameProvider = ({ children, gameId, game: initialGame }: Props) => {
+  const normalizeGameState = useCallback((state: GameState | null | undefined) => {
+    if (!state) {
+      return null;
+    }
 
-      const legacyCurrentPlayer = (
-        state as GameState & { currentPlayer?: string | number }
-      ).currentPlayer;
+    const legacyCurrentPlayer = (state as GameState & { currentPlayer?: string | number }).currentPlayer;
 
-      return {
-        ...state,
-        currentPlayerId:
-          state.currentPlayerId ||
-          (legacyCurrentPlayer !== undefined
-            ? String(legacyCurrentPlayer)
-            : ""),
-      } as GameState;
-    },
-    [],
-  );
+    const normalized = {
+      ...state,
+      currentPlayerId: state.currentPlayerId || (legacyCurrentPlayer !== undefined ? String(legacyCurrentPlayer) : ""),
+    } as GameState;
 
-  const [game, setGame] = useState<GameState | null>(
-    normalizeGameState(initialGame),
-  );
+    return normalized;
+  }, []);
+
+  const [game, setGame] = useState<GameState | null>(normalizeGameState(initialGame));
   const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
   const gameRef = useRef<GameState | null>(normalizeGameState(initialGame));
   const announcementIdRef = useRef(0);
@@ -99,21 +79,12 @@ export const GameProvider = ({
   const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
-    setAnnouncements((current: GameAnnouncement[]) => [
-      ...current,
-      { id, ...announcement },
-    ]);
+    setAnnouncements((current: GameAnnouncement[]) => [...current, { id, ...announcement }]);
 
     const timeoutId = window.setTimeout(() => {
-      setAnnouncements((current: GameAnnouncement[]) =>
-        current.filter(
-          (announcement: GameAnnouncement) => announcement.id !== id,
-        ),
-      );
+      setAnnouncements((current: GameAnnouncement[]) => current.filter((announcement: GameAnnouncement) => announcement.id !== id));
 
-      timeoutRefs.current = timeoutRefs.current.filter(
-        (currentTimeoutId: number) => currentTimeoutId !== timeoutId,
-      );
+      timeoutRefs.current = timeoutRefs.current.filter((currentTimeoutId: number) => currentTimeoutId !== timeoutId);
     }, 2200);
 
     timeoutRefs.current.push(timeoutId);
@@ -121,9 +92,7 @@ export const GameProvider = ({
 
   useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach((timeoutId: number) =>
-        window.clearTimeout(timeoutId),
-      );
+      timeoutRefs.current.forEach((timeoutId: number) => window.clearTimeout(timeoutId));
       timeoutRefs.current = [];
     };
   }, []);
@@ -143,8 +112,7 @@ export const GameProvider = ({
     try {
       await api.game.play(gameId, PlayerActionType.PLAY_CARD, { cardId });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Une erreur est survenue";
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
 
       pushAnnouncement({
         text: message,
@@ -161,16 +129,9 @@ export const GameProvider = ({
     api.game.play(gameId, PlayerActionType.END_TURN);
   };
 
-  const getPlayerKey = (
-    state: GameState,
-    playerId: string,
-  ): "player1" | "player2" =>
-    state.player1.player.id === playerId ? "player1" : "player2";
+  const getPlayerKey = (state: GameState, playerId: string): "player1" | "player2" => (state.player1.player.id === playerId ? "player1" : "player2");
 
-  const animate = (
-    state: GameState,
-    event: GameEvent,
-  ): AnnouncementPayload | null => {
+  const animate = (state: GameState, event: GameEvent): AnnouncementPayload | null => {
     if (event.type === GameEventType.DICE_ROLLED) {
       if (!event.data.faces) return null;
       const rollValue = event.data.result;
@@ -297,11 +258,9 @@ export const GameProvider = ({
 
         if (event.type === GameEventType.CARD_DISCARDED) {
           if (nextPlayer.playArea.monsterCards.includes(cardId)) {
-            nextPlayer.playArea.monsterCards =
-              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.monsterCards = nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
           } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
-            nextPlayer.playArea.passiveCards =
-              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
+            nextPlayer.playArea.passiveCards = nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
           }
 
           return {
@@ -324,13 +283,9 @@ export const GameProvider = ({
             ...nextPlayer,
             playArea: {
               passiveCards:
-                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA
-                  ? [...player.playArea.passiveCards, cardId]
-                  : player.playArea.passiveCards,
+                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA ? [...player.playArea.passiveCards, cardId] : player.playArea.passiveCards,
               monsterCards:
-                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA
-                  ? [...player.playArea.monsterCards, cardId]
-                  : player.playArea.monsterCards,
+                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA ? [...player.playArea.monsterCards, cardId] : player.playArea.monsterCards,
             },
           },
           cards: {
@@ -394,9 +349,7 @@ export const GameProvider = ({
           ...state,
           cards: {
             ...state.cards,
-            [cardId]: {
-              ...view.card,
-            },
+            [cardId]: view.card,
           },
         };
       }
