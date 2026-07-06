@@ -38,7 +38,7 @@ final class PlayerStateDTO
             drawPile: array_keys($playerState->drawPile),
             coins: $playerState->coins,
             playArea: $playerState->playArea,
-            discardPile: array_keys($playerState->discardPile),
+            discardPile: $playerState->discardPile,
         );
     }
 }
