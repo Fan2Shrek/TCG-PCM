@@ -82,7 +82,7 @@ const Card = ({
         return frontSrcs.smallStats;
       case CardType.CHARACTER:
       default:
-        return frontSrcs.fullStats;
+        return null;
     }
   };
 

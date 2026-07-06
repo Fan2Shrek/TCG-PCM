@@ -32,9 +32,6 @@ const CardTextOverlay = ({
   cardType,
   cardStats,
 }: CardTextOverlayProps) => {
-  const titleRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const descriptionRef = useRef<HTMLDivElement>(null);
   // Positioning & box for each text block
   const headerConfig: ZoneConfig = {
     y: 4,
@@ -114,10 +111,7 @@ const CardTextOverlay = ({
   return (
     <div className="absolute inset-0 overflow-hidden font-pixel text-black">
       <div
-        ref={(node) => {
-          titleRef.current = node;
-          titleFitRef.current = node;
-        }}
+        ref={titleFitRef}
         className={`header-zone absolute overflow-hidden leading-tight ${getZoneClass(headerConfig)}`}
         style={{ ...getZoneStyle(headerConfig), fontSize: titleFontSize }}
       >
@@ -126,10 +120,7 @@ const CardTextOverlay = ({
 
       {shouldShowStats && (
         <div
-          ref={(node) => {
-            statsRef.current = node;
-            statsFitRef.current = node;
-          }}
+          ref={statsFitRef}
           className={`stats-zone absolute flex flex-col items-center gap-1 leading-tight ${getZoneClass(statsConfig)}`}
           style={{ ...getZoneStyle(statsConfig), fontSize: statsFontSize }}
         >
@@ -154,10 +145,7 @@ const CardTextOverlay = ({
       )}
 
       <div
-        ref={(node) => {
-          descriptionRef.current = node;
-          descriptionFitRef.current = node;
-        }}
+        ref={descriptionFitRef}
         className={`description-zone absolute leading-tight ${getZoneClass(descriptionConfig)}`}
         style={{
           ...getZoneStyle(descriptionConfig),
