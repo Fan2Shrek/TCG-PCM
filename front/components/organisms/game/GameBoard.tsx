@@ -13,6 +13,8 @@ export default function GameBoard() {
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
+
+  console.log(game);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);

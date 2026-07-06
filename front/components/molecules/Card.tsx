@@ -4,7 +4,14 @@ import React from "react";
 import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
-import { CardRaririty, CardSet, CardType, CardSize, CardSizeMap, FoilEffects } from "@/constants/card";
+import {
+  CardRaririty,
+  CardSet,
+  CardType,
+  CardSize,
+  CardSizeMap,
+  FoilEffects,
+} from "@/constants/card";
 import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
@@ -21,7 +28,15 @@ export type CardViewProps = {
   className?: string;
 };
 
-const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, className }: CardViewProps) => {
+const Card = ({
+  card,
+  size = CardSize.MD,
+  tilt,
+  glare,
+  isHovering,
+  style,
+  className,
+}: CardViewProps) => {
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
@@ -67,7 +82,7 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
         return frontSrcs.smallStats;
       case CardType.CHARACTER:
       default:
-        return null;
+        return frontSrcs.fullStats;
     }
   };
 
@@ -141,7 +156,16 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
         } as React.CSSProperties
       }
     >
-      <CardFront layers={cardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} cardTitle={card.name} cardDescription={card.description} cardType={card.type} cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }} />
+      <CardFront
+        layers={cardLayers}
+        tilt={appliedTilt}
+        glare={appliedGlare}
+        isHovering={!!isHovering}
+        cardTitle={card.name}
+        cardDescription={card.description}
+        cardType={card.type}
+        cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
+      />
       <CardBack />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
     </div>
