@@ -141,11 +141,9 @@ const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, classN
         } as React.CSSProperties
       }
     >
-      <CardFront layers={cardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
+      <CardFront layers={cardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} cardTitle={card.name} cardDescription={card.description} cardType={card.type} cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }} />
       <CardBack />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
-      <p className='text-center absolute text-black font-pixel'>{card?.name}</p>
-      {card?.description && <p className='text-center absolute text-black top-40 font-pixel'>{convertDescriptions(card?.description)}</p>}
     </div>
   );
 };

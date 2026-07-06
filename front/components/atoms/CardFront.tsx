@@ -2,6 +2,7 @@ import Image from "./Image";
 import HoloFoil from "./HoloFoil";
 import RainbowFoil from "./RainbowFoil";
 import GoldenFoil from "./GoldenFoil";
+import CardTextOverlay from "./CardTextOverlay";
 import { Fragment } from "react/jsx-runtime";
 import { CardLayer } from "@/lib/cards/types/card";
 
@@ -10,10 +11,14 @@ export type CardFrontProps = {
   tilt: { x: number; y: number };
   glare: { x: number; y: number };
   isHovering: boolean;
+  cardTitle: string;
+  cardDescription: string;
+  cardType?: string;
+  cardStats: { hp?: number; attack?: number; cost?: number };
 };
 
-const CardFront = ({ layers, tilt, isHovering }: CardFrontProps) => (
-  <div className="absolute inset-0 overflow-hidden backface-hidden pointer-events-none select-none rounded-sm">
+const CardFront = ({ layers, tilt, isHovering, cardTitle, cardDescription, cardType, cardStats }: CardFrontProps) => (
+  <div className='absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm'>
     {[...layers]
       .sort((a, b) => a.depth - b.depth)
       .map((layer, i) => {
@@ -39,12 +44,11 @@ const CardFront = ({ layers, tilt, isHovering }: CardFrontProps) => (
                 transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
               }}
             />
-            {FoilComponent && foil && mask && (
-              <FoilComponent tilt={tilt} foil={foil} mask={mask} />
-            )}
+            {FoilComponent && foil && mask && <FoilComponent tilt={tilt} foil={foil} mask={mask} />}
           </Fragment>
         );
       })}
+    <CardTextOverlay cardTitle={cardTitle} cardDescription={cardDescription} cardType={cardType} cardStats={cardStats} />
   </div>
 );
 
