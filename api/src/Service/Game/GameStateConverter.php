@@ -9,6 +9,8 @@ use App\Api\DTO\GameStateDTO;
 use App\Api\DTO\PlayerStateDTO;
 use App\Game\Card\CardState;
 use App\Game\Card\MonsterCardState;
+use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\State\GameState;
 
 final class GameStateConverter
@@ -34,6 +36,19 @@ final class GameStateConverter
         $template = $this->cardRegistry->getCardTemplateById($state->templateId);
         $template->setState($state);
 
+        $cost = null;
+        $hp = null;
+        $attack = null;
+
+        if (!$template instanceof AbstractCharacterCard) {
+            $cost = $template->getCost();
+        }
+
+        if ($template instanceof AbstractMonsterCard) {
+            $hp = $template->getHealPoints();
+            $attack = $template->getAttack();
+        }
+
         return new CardDTO(
             name: $template->getName(),
             description: $template->getDescription(),
@@ -43,6 +58,10 @@ final class GameStateConverter
             instanceId: $state->instanceId,
             effects: $state->effects,
             isActive: $state instanceof MonsterCardState ? $state->canAttack : true,
+            type: $template->getType(),
+            cost: $cost,
+            hp: $hp,
+            attack: $attack,
         );
     }
 
