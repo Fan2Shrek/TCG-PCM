@@ -4,14 +4,7 @@ import React from "react";
 import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
 import CardGlare from "../atoms/CardGlare";
-import {
-  CardRaririty,
-  CardSet,
-  CardType,
-  CardSize,
-  CardSizeMap,
-  FoilEffects,
-} from "@/constants/card";
+import { CardRaririty, CardSet, CardType, CardSize, CardSizeMap, FoilEffects } from "@/constants/card";
 import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
@@ -28,15 +21,7 @@ export type CardViewProps = {
   className?: string;
 };
 
-const Card = ({
-  card,
-  size = CardSize.MD,
-  tilt,
-  glare,
-  isHovering,
-  style,
-  className,
-}: CardViewProps) => {
+const Card = ({ card, size = CardSize.MD, tilt, glare, isHovering, style, className }: CardViewProps) => {
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
@@ -71,22 +56,20 @@ const Card = ({
     };
   };
 
-  const getStatsSrc = (type: CardType | undefined, cardSet: CardSet) => {
-    const srcs = buildFrontSrcs(cardSet);
-    if (!type) return srcs.fullStats;
+  const frontSrcs = buildFrontSrcs(card.set);
+
+  const getStatsSrc = (type: CardType | undefined) => {
     switch (type) {
       case CardType.MONSTER:
-        return srcs.fullStats;
+        return frontSrcs.fullStats;
       case CardType.PASSIVE:
       case CardType.CONSUMABLE:
-        return srcs.smallStats;
+        return frontSrcs.smallStats;
       case CardType.CHARACTER:
       default:
         return null;
     }
   };
-
-  const frontSrcs = buildFrontSrcs(card.set);
 
   const cardLayers: CardLayer[] = [
     {
@@ -104,14 +87,14 @@ const Card = ({
       mask: foilEffect && "/card/card_mask.png",
     },
     {
-      src: frontSrcs.header,
+      src: frontSrcs.outline,
       depth: 1,
       foilEffect: null,
       foil: null,
       mask: null,
     },
     {
-      src: frontSrcs.outline,
+      src: frontSrcs.header,
       depth: 1,
       foilEffect: null,
       foil: null,
@@ -126,7 +109,7 @@ const Card = ({
     },
   ];
 
-  const statsSrc = getStatsSrc(card.type, card.set);
+  const statsSrc = getStatsSrc(card.type);
   if (statsSrc) {
     cardLayers.push({
       src: statsSrc,
@@ -158,20 +141,11 @@ const Card = ({
         } as React.CSSProperties
       }
     >
-      <CardFront
-        layers={cardLayers}
-        tilt={appliedTilt}
-        glare={appliedGlare}
-        isHovering={!!isHovering}
-      />
+      <CardFront layers={cardLayers} tilt={appliedTilt} glare={appliedGlare} isHovering={!!isHovering} />
       <CardBack />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
-      <p className="text-center absolute text-black font-pixel">{card?.name}</p>
-      {card?.description && (
-        <p className="text-center absolute text-black top-40 font-pixel">
-          {convertDescriptions(card?.description)}
-        </p>
-      )}
+      <p className='text-center absolute text-black font-pixel'>{card?.name}</p>
+      {card?.description && <p className='text-center absolute text-black top-40 font-pixel'>{convertDescriptions(card?.description)}</p>}
     </div>
   );
 };
