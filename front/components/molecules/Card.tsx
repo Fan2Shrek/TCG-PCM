@@ -51,6 +51,7 @@ const Card = ({
   const setFolderName = (cardSet: CardSet): string => {
     switch (cardSet) {
       case CardSet.BTD6:
+        console.log("lol");
         return "btd";
       case CardSet.TBOI:
         return "isaac";
@@ -59,19 +60,6 @@ const Card = ({
         return "original";
     }
   };
-
-  if (card.name === "Ballon Rouges") {
-    console.log(
-      "Ballon Rouges card detected:",
-      card,
-      "foilEffect:",
-      foilEffect,
-    );
-  }
-
-  if (card.name === "Pierrot") {
-    console.log("Pierrot card detected:", card, "foilEffect:", foilEffect);
-  }
 
   const buildFrontSrcs = (cardSet: CardSet) => {
     const folder = setFolderName(cardSet);
@@ -84,7 +72,7 @@ const Card = ({
     };
   };
 
-  const frontSrcs = buildFrontSrcs(card.set);
+  const frontSrcs = buildFrontSrcs(card.serie);
 
   const getStatsSrc = (type: CardType | undefined) => {
     switch (type) {

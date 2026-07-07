@@ -8,7 +8,7 @@ use App\Enum\CardSetEnum;
 
 final class RedBloonsMonsterCard extends AbstractMonsterCard
 {
-    public static CardSetEnum $cardSet = CardSetEnum::BTD6;
+    public static CardSetEnum $serie = CardSetEnum::BTD6;
 
     private const HEALTH_POINTS = 1;
     private const ATTACK = 1;

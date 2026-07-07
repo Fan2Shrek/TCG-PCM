@@ -95,7 +95,6 @@ export default function CardRow({
         const isSelected = selectedCardId === card?.instanceId;
         const isHovered =
           hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
-        console.log(isHovered);
         const canSelect = isLoggedPlayerSide && isControlled && card?.isActive;
         const isPlaying = playingCardIds.has(card?.instanceId || "");
 

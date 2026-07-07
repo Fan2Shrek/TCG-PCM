@@ -57,8 +57,6 @@ export default function Cemetery({
     };
   }, []);
 
-  console.log(cardIds);
-
   return (
     <div
       className={`relative w-card-md aspect-card ${className}`}

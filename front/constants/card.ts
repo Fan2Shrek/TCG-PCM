@@ -20,9 +20,9 @@ export enum CardEffect {
 }
 
 export enum CardSet {
-  ORIGINAL = "Original",
-  TBOI = "The Binding of Isaac",
-  BTD6 = "Bloons TD 6",
+  ORIGINAL = "ORIGINAL",
+  TBOI = "TBOI",
+  BTD6 = "BTD6",
 }
 
 export enum CardType {
