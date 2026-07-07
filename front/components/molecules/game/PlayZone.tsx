@@ -30,7 +30,7 @@ export default function PlayZone({
     return "MAIN_DROPZONE";
   }, []);
 
-  const { isDragging, isHovered } = useDropZone({
+  const { isDragging } = useDropZone({
     id: "PLAYZONE",
     ref: zoneRef,
     getDropResult: getDropResult,
@@ -40,8 +40,7 @@ export default function PlayZone({
     <div
       ref={zoneRef}
       className={`w-full min-h-110 transition-all duration-200 rounded-xl flex flex-col items-center justify-between p-2 ${className}
-        ${isDragging ? "ring-4 ring-blue-400/60 shadow-lg shadow-blue-400/30" : ""}
-        ${isHovered ? "ring-4 ring-yellow-300 ring-pulse" : ""}
+        ${isDragging ? "ring-4 ring-yellow-300 ring-pulse shadow-lg shadow-yellow-300/30" : ""}
       `}
     >
       <CardRow

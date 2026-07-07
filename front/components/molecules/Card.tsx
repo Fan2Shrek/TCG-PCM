@@ -61,7 +61,16 @@ const Card = ({
   };
 
   if (card.name === "Ballon Rouges") {
-    console.log("Ballon Rouges card detected:", card);
+    console.log(
+      "Ballon Rouges card detected:",
+      card,
+      "foilEffect:",
+      foilEffect,
+    );
+  }
+
+  if (card.name === "Pierrot") {
+    console.log("Pierrot card detected:", card, "foilEffect:", foilEffect);
   }
 
   const buildFrontSrcs = (cardSet: CardSet) => {

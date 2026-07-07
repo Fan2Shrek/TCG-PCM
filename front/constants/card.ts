@@ -6,11 +6,11 @@ export enum CardSize {
 }
 
 export enum CardRaririty {
-  COMMON = "Common",
-  UNCOMMON = "Uncommon",
-  RARE = "Rare",
-  EPIC = "Epic",
-  LEGENDARY = "Legendary",
+  COMMON = "COMMON",
+  UNCOMMON = "UNCOMMON",
+  RARE = "RARE",
+  EPIC = "EPIC",
+  LEGENDARY = "LEGENDARY",
 }
 
 export enum CardEffect {

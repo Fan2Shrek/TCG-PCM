@@ -1,5 +1,8 @@
 import { useEffect, RefObject, useCallback, useState } from "react";
-import { registerDropZone, unregisterDropZone } from "@/lib/dropZones/dropzoneRegistry";
+import {
+  registerDropZone,
+  unregisterDropZone,
+} from "@/lib/dropZones/dropzoneRegistry";
 import { DropZone } from "@/lib/dropZones/types/dropZone";
 import { BasicCard } from "@/lib/cards/types/card";
 import { emitter } from "@/lib/eventBus";
@@ -12,7 +15,6 @@ type UseDropZoneOptions = {
 
 export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
   const [isDragging, setIsDragging] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const getRect = useCallback(() => {
     if (!ref.current) {
@@ -37,11 +39,18 @@ export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
 
   useEffect(() => {
     const onStart = () => setIsDragging(true);
-    const onEnd = (payload: { pos: { x: number | undefined; y: number | undefined }; card: BasicCard }) => {
+    const onEnd = (payload: {
+      pos: { x: number | undefined; y: number | undefined };
+      card: BasicCard;
+    }) => {
       if (payload.pos.x === undefined || payload.pos.y === undefined) return;
 
       const rect = getRect();
-      const inside = payload.pos.x >= rect.left && payload.pos.x <= rect.right && payload.pos.y >= rect.top && payload.pos.y <= rect.bottom;
+      const inside =
+        payload.pos.x >= rect.left &&
+        payload.pos.x <= rect.right &&
+        payload.pos.y >= rect.top &&
+        payload.pos.y <= rect.bottom;
 
       if (inside) {
         const dropResult = getDropResult(payload.card);
@@ -54,29 +63,18 @@ export function useDropZone({ id, ref, getDropResult }: UseDropZoneOptions) {
       }
 
       setIsDragging(false);
-      setIsHovered(false);
-    };
-
-    const onMove = (payload: { pos: { x: number; y: number }; card: BasicCard }) => {
-      const rect = getRect();
-      const inside = payload.pos.x >= rect.left && payload.pos.x <= rect.right && payload.pos.y >= rect.top && payload.pos.y <= rect.bottom;
-
-      setIsHovered(inside);
     };
 
     emitter.on("card:drag:start", onStart);
     emitter.on("card:drag:end", onEnd);
-    emitter.on("card:drag:move", onMove);
 
     return () => {
       emitter.off("card:drag:start", onStart);
       emitter.off("card:drag:end", onEnd);
-      emitter.off("card:drag:move", onMove);
     };
   }, [getRect, id, getDropResult]);
 
   return {
     isDragging,
-    isHovered,
   };
 }
