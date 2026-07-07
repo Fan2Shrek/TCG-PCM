@@ -11,7 +11,7 @@ export type BasicCard = {
   description: string;
   image: string;
   rarity: CardRaririty;
-  set: CardSet;
+  serie: CardSet;
   type?: CardType;
   instanceId: string;
   effects: CardEffect[];

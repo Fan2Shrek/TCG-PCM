@@ -32,8 +32,8 @@ const CardTextOverlay = ({
     width: 82,
   };
   const statsConfig: ZoneConfig = {
-    y: 48.5,
-    height: 12,
+    y: 50.5,
+    height: 10,
     width: cardType === CardType.MONSTER ? 58 : 20,
   };
   const descriptionConfig: ZoneConfig = {
