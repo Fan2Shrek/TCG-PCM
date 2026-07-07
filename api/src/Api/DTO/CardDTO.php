@@ -6,6 +6,7 @@ namespace App\Api\DTO;
 
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
+use App\Enum\CardTypeEnum;
 use App\Game\Card\Effect\EffectState;
 
 final readonly class CardDTO
@@ -22,5 +23,9 @@ final readonly class CardDTO
         public string $instanceId,
         public array $effects,
         public bool $isActive = true,
+        public ?CardTypeEnum $type = null,
+        public ?int $cost = null,
+        public ?int $hp = null,
+        public ?int $attack = null,
     ) {}
 }

@@ -7,9 +7,14 @@ namespace App\Game;
 use App\Enum\CardEffectEnum;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
+use App\Enum\CardTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\AbstractCardEffect;
 use App\Game\Card\EffectCollection;
+use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Monster\AbstractMonsterCard;
+use App\Game\Card\AbstractPassiveCard;
+use App\Game\Card\AbstractPlayableCard;
 
 abstract class AbstractCard
 {
@@ -30,6 +35,24 @@ abstract class AbstractCard
     public static CardSetEnum $serie = CardSetEnum::ORIGINAL;
 
     abstract public function getId(): string;
+
+    public function getType(): CardTypeEnum
+    {
+        if ($this instanceof AbstractCharacterCard) {
+            return CardTypeEnum::CHARACTER;
+        }
+        if ($this instanceof AbstractMonsterCard) {
+            return CardTypeEnum::MONSTER;
+        }
+        if ($this instanceof AbstractPassiveCard) {
+            return CardTypeEnum::PASSIVE;
+        }
+        if ($this instanceof AbstractPlayableCard) {
+            return CardTypeEnum::CONSUMABLE;
+        }
+
+        return CardTypeEnum::CONSUMABLE;
+    }
 
     public function getInstanceId(): ?string
     {

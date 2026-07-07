@@ -96,7 +96,7 @@ export default function OpponentDrawPile({
         isVisible={showTooltip}
         count={numCards}
         isMirrored
-        label="cards left"
+        label="cartes restantes"
       />
     </div>
   );

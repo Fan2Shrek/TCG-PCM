@@ -29,6 +29,7 @@ export default function Cemetery({
   const { getCardById } = useContext(GameContext);
   const [showTooltip, setShowTooltip] = useState(false);
   const [playingCardIds, setPlayingCardIds] = useState<Set<string>>(new Set());
+
   const shadowOffsetX = mirrored
     ? -cardIds.length * 2 + 2
     : cardIds.length * 2 - 2;
@@ -55,6 +56,8 @@ export default function Cemetery({
       emitter.off("card:discarded", handleCardAnimated);
     };
   }, []);
+
+  console.log(cardIds);
 
   return (
     <div
@@ -98,7 +101,7 @@ export default function Cemetery({
         isVisible={showTooltip}
         count={cardIds.length}
         isMirrored={mirrored}
-        label="cards"
+        label="cartes"
       />
     </div>
   );

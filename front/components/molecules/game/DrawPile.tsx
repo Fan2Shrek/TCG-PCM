@@ -95,7 +95,7 @@ export default function DrawPile({
       <PileTooltip
         isVisible={showTooltip}
         count={numCards}
-        label="cards left"
+        label="cartes restantes"
       />
     </div>
   );

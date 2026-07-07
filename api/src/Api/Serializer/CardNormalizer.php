@@ -29,13 +29,23 @@ final class CardNormalizer implements NormalizerInterface
         $card = $data;
 
         $path = $card instanceof AbstractCard ? $card->getImage() : $card->image;
+        $type = $card instanceof AbstractCard ? $card->getType() : $card->type;
+        $rarity = $card instanceof AbstractCard ? $card::$rarity : $card->rarity;
+        $serie = $card instanceof AbstractCard ? $card::$serie : $card->set;
 
         return array_filter([
             'name' => $card instanceof AbstractCard ? $card->getName() : $card->name,
             'description' => $card instanceof AbstractCard ? $card->getDescription() : $card->description,
-            'rarity' => ($card instanceof AbstractCard ? $card::$rarity : $card->rarity)->label()->trans($this->translator),
-            'serie' => $card instanceof AbstractCard ? $card::$serie : $card->set,
+            'type' => $type?->name,
+            'typeLabel' => $type?->label()->trans($this->translator),
+            'rarity' => $rarity->name,
+            'rarityLabel' => $rarity->label()->trans($this->translator),
+            'serie' => $serie->name,
+            'serielabel' => $serie,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
+            'cost' => $card instanceof CardDTO ? $card->cost : null,
+            'hp' => $card instanceof CardDTO ? $card->hp : null,
+            'attack' => $card instanceof CardDTO ? $card->attack : null,
             'instanceId' => $card instanceof CardDTO ? $card->instanceId : null,
             'effects' => $card instanceof CardDTO ? $card->effects : null,
             'isActive' => $card instanceof CardDTO ? $card->isActive : null,

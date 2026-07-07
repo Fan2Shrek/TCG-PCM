@@ -13,6 +13,7 @@ export default function GameBoard() {
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
+
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
@@ -116,7 +117,7 @@ export default function GameBoard() {
         return;
       }
 
-      const cost = (card as BasicCard & { cost?: number }).cost ?? 0;
+      const cost = card.cost ?? 0;
 
       if (currentCoins < cost) {
         actions.pushAnnouncement({
