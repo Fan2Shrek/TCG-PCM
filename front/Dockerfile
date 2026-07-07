@@ -12,9 +12,10 @@ RUN npm ci
 # =========================
 # DEV
 # =========================
-FROM deps AS dev
-COPY . .
-CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
+FROM base AS dev
+COPY package.json package-lock.json* bun.lock* ./
+RUN npm install
+CMD ["sh", "-c", "npm install && npm run dev -- -H 0.0.0.0"]
 
 FROM deps AS builder
 

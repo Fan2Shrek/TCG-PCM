@@ -21,6 +21,14 @@ COVERAGE_DIR=var/phpunit
 
 # ===== Dev =====
 
+up:
+	$(COMPOSE) up -d --build --remove-orphans
+	$(PHP) composer install
+	@echo "Waiting for database..."
+	@$(PHP) bash -c 'until echo > /dev/tcp/db/3306 2>/dev/null; do sleep 1; done'
+	@$(PHP) sh -c 'test -f config/jwt/private.pem || php bin/console lexik:jwt:generate-keypair -n'
+	$(CONSOLE) doctrine:schema:update --force -n
+
 install:
 	$(COMPOSE) exec php composer install
 
