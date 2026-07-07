@@ -60,6 +60,10 @@ const Card = ({
     }
   };
 
+  if (card.name === "Ballon Rouges") {
+    console.log("Ballon Rouges card detected:", card);
+  }
+
   const buildFrontSrcs = (cardSet: CardSet) => {
     const folder = setFolderName(cardSet);
     return {

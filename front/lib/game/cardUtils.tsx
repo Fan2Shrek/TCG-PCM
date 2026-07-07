@@ -1,10 +1,33 @@
 import { createElement, type ReactNode } from "react";
 
-const markupMapping: Record<string, (content: string, key: number) => ReactNode> = {
-  value: (content, key) => createElement("span", { key, className: "font-semibold text-amber-300" }, content),
-  effect: (content, key) => createElement("span", { key, className: "font-semibold text-sky-300" }, content),
-  const: (content, key) => createElement("span", { key, className: "font-medium text-zinc-200" }, content),
-  card: (content, key) => createElement("span", { key, className: "font-semibold text-fuchsia-300" }, content),
+const markupMapping: Record<
+  string,
+  (content: string, key: number) => ReactNode
+> = {
+  value: (content, key) =>
+    createElement(
+      "span",
+      { key, className: "font-bold text-amber-300" },
+      content,
+    ),
+  effect: (content, key) =>
+    createElement(
+      "span",
+      { key, className: "font-bold text-sky-300" },
+      content,
+    ),
+  const: (content, key) =>
+    createElement(
+      "span",
+      { key, className: "font-bold text-zinc-200" },
+      content,
+    ),
+  card: (content, key) =>
+    createElement(
+      "span",
+      { key, className: "font-bold text-fuchsia-300" },
+      content,
+    ),
 };
 
 export const convertDescriptions = (description: string): ReactNode[] => {
