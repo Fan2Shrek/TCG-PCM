@@ -1,4 +1,5 @@
 import { ApiClient } from "../api";
+import { Room } from "@/types/room";
 
 export class RoomResource {
   constructor(private client: ApiClient) {}
@@ -21,7 +22,12 @@ export class RoomResource {
   }
 
   async list(page: number = 1) {
-    return this.client.get(`/waiting-rooms?page=${page}`);
+    return this.client.get(`/waiting-rooms?page=${page}`) as Promise<Room[]>;
+  }
+
+  async getActive(): Promise<Room | null> {
+    const response = (await this.client.get(`/me/room`)) as any;
+    return Array.isArray(response) ? response[0] || null : response || null;
   }
 
   async join(id: string) {
@@ -30,5 +36,21 @@ export class RoomResource {
     };
     this.setMercureCookie(data.mercure_token);
     return data;
+  }
+
+  async togglePrivate(id: string, isPrivate: boolean) {
+    return this.client.post(`/rooms/${id}/toggle-private`, { isPrivate });
+  }
+
+  async getById(id: string) {
+    return this.client.get(`/rooms/${id}`);
+  }
+
+  async leave(id: string) {
+    return this.client.post(`/rooms/${id}/leave`, {});
+  }
+
+  async removeOpponent(id: string) {
+    return this.client.post(`/rooms/${id}/remove-opponent`, {});
   }
 }

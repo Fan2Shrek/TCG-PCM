@@ -7,22 +7,24 @@ import client from "@/lib/api/api";
 import { Button } from "@/components/ui/button";
 import RoomCard from "@/components/molecules/arena/RoomCard";
 import Pagination from "@/components/molecules/Pagination";
-import { WaitingRoom, WaitingRoomsResponse } from "@/types/waitingRoom";
+import { Room } from "@/types/room";
 
 const ITEMS_PER_PAGE = 10;
 
-export default function ArenePage() {
-  const [rooms, setRooms] = useState<WaitingRoom[]>([]);
+export default function RoomsPage() {
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [joinById, setJoinById] = useState("");
+  const [isJoiningById, setIsJoiningById] = useState(false);
 
   const fetchRooms = useCallback(async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const data = (await client.room.list(page)) as WaitingRoomsResponse;
-      setRooms(data["hydra:member"] || []);
-      setTotalItems(data["hydra:totalItems"] || 0);
+      const data = await client.room.list(page);
+      setRooms(Array.isArray(data) ? data : []);
+      setTotalItems(data?.length || 0);
       setCurrentPage(page);
     } catch (error) {
       const message =
@@ -36,7 +38,7 @@ export default function ArenePage() {
   const joinRoom = async (roomId: string) => {
     try {
       await client.room.join(roomId);
-      window.location.href = `/arene/game/${roomId}`;
+      window.location.href = `/rooms/waiting/${roomId}`;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur est survenue";
@@ -47,11 +49,32 @@ export default function ArenePage() {
   const createRoom = async () => {
     try {
       const res = await client.room.create();
-      window.location.href = `/arene/waiting/${res.id}`;
+      window.location.href = `/rooms/waiting/${res.id}`;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur est survenue";
       toast.error("Erreur", { description: message });
+    }
+  };
+
+  const handleJoinById = async () => {
+    if (!joinById.trim()) {
+      toast.error("Erreur", { description: "Veuillez entrer un ID de salle" });
+      return;
+    }
+
+    setIsJoiningById(true);
+    try {
+      await client.room.join(joinById);
+      window.location.href = `/rooms/waiting/${joinById}`;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Salle non trouvée ou indisponible";
+      toast.error("Erreur", { description: message });
+    } finally {
+      setIsJoiningById(false);
     }
   };
 
@@ -65,7 +88,7 @@ export default function ArenePage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-semibold text-black">
-              Salles disponibles
+              Joueurs en attente d'adversaires
             </h2>
             <div className="flex gap-4">
               <Button
@@ -107,13 +130,35 @@ export default function ArenePage() {
             )}
           </div>
 
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalItems}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={fetchRooms}
-            isLoading={isLoading}
-          />
+          <div className="mb-6">
+            <Pagination
+              currentPage={currentPage}
+              totalItems={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={fetchRooms}
+              isLoading={isLoading}
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={joinById}
+              onChange={(e) => setJoinById(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleJoinById()}
+              placeholder="Rejoindre à partir d'un id..."
+              className="flex-1 px-3 py-2 rounded bg-white text-black placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isJoiningById}
+            />
+            <Button
+              onClick={handleJoinById}
+              disabled={isJoiningById}
+              variant="default"
+              size="lg"
+            >
+              Rejoindre
+            </Button>
+          </div>
         </div>
       </div>
     </div>

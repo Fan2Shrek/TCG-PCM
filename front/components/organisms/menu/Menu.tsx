@@ -43,7 +43,7 @@ const getAuthenticatedMenuItems = (onLogout: () => void): any[] => [
   {
     label: "Combattre",
     icon: <TbSword />,
-    linkTo: "/arene",
+    linkTo: "/rooms",
   },
   {
     label: "Déconnexion",

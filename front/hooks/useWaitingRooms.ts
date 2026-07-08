@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import client from "@/lib/api/api";
-import { WaitingRoom, WaitingRoomsResponse } from "@/types/waitingRoom";
+import { Room } from "@/types/room";
 
 export function useWaitingRooms() {
-  const [rooms, setRooms] = useState<WaitingRoom[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,9 +12,9 @@ export function useWaitingRooms() {
   const fetchRooms = useCallback(async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const data = (await client.room.list(page)) as WaitingRoomsResponse;
-      setRooms(data["hydra:member"]);
-      setTotalItems(data["hydra:totalItems"]);
+      const data = await client.room.list(page);
+      setRooms(Array.isArray(data) ? data : []);
+      setTotalItems(data?.length || 0);
       setCurrentPage(page);
     } catch (error) {
       const message =
@@ -38,7 +38,7 @@ export function useWaitingRooms() {
         mercure_token: string;
       };
       document.cookie = `mercureAuthorization=${data.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
-      window.location.href = `/arene/game/${roomId}`;
+      window.location.href = `/rooms/game/${roomId}`;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur est survenue";
@@ -53,7 +53,7 @@ export function useWaitingRooms() {
         id: string;
       };
       document.cookie = `mercureAuthorization=${res.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
-      window.location.href = `/arene/waiting/${res.id}`;
+      window.location.href = `/rooms/waiting/${res.id}`;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur est survenue";
