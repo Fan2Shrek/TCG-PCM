@@ -8,9 +8,9 @@ use App\Api\DTO\CardDTO;
 use App\Api\DTO\GameStateDTO;
 use App\Api\DTO\PlayerStateDTO;
 use App\Game\Card\CardState;
-use App\Game\Card\MonsterCardState;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Monster\AbstractMonsterCard;
+use App\Game\Card\MonsterCardState;
 use App\Game\State\GameState;
 
 final class GameStateConverter
