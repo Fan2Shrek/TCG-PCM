@@ -34,7 +34,8 @@
   }
 
   body {
-    background: var(--background);
+    background: url("/website_bg.png") repeat center;
+    background-color: #1a1a2e;
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
     @apply bg-background text-foreground;
