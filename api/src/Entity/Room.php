@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Api\Provider\GameProvider;
+use App\Api\Provider\RoomProvider;
 use App\Api\Provider\UserActiveRoomProvider;
 use App\Api\Provider\WaitingRoomProvider;
 use App\Domain\Command\Game\PlayGameCommand;
@@ -14,6 +15,7 @@ use App\Domain\Command\Room\ChangeDeckCommand;
 use App\Domain\Command\Room\CreateRoomCommand;
 use App\Domain\Command\Room\JoinRoomCommand;
 use App\Domain\Command\Room\LeaveRoomCommand;
+use App\Domain\Command\Room\RemoveOpponentCommand;
 use App\Domain\Command\Room\StartRoomCommand;
 use App\Domain\Command\Room\TogglePrivateRoomCommand;
 use App\Enum\RoomStatusEnum;
@@ -24,10 +26,10 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
-    new Get(uriTemplate: '/rooms/{id}', normalizationContext: ['groups' => 'api:room:list']),
+    new Get(uriTemplate: '/rooms/{id}', provider: RoomProvider::class),
     new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
-    new GetCollection(uriTemplate: '/me/room', provider: UserActiveRoomProvider::class, normalizationContext: ['groups' => 'api:room:list']),
-    new GetCollection(uriTemplate: '/waiting-rooms', provider: WaitingRoomProvider::class, normalizationContext: ['groups' => 'api:room:list']),
+    new GetCollection(uriTemplate: '/me/room', provider: UserActiveRoomProvider::class),
+    new GetCollection(uriTemplate: '/waiting-rooms', provider: WaitingRoomProvider::class),
 
     new Post(
         uriTemplate: '/rooms/create',
@@ -40,6 +42,7 @@ use Symfony\Component\Uid\Uuid;
     new Post(uriTemplate: '/rooms/{id}/join', messenger: 'input', input: JoinRoomCommand::class),
     new Post(uriTemplate: '/rooms/{id}/start', messenger: 'input', input: StartRoomCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/leave', messenger: 'input', input: LeaveRoomCommand::class, status: 204),
+    new Post(uriTemplate: '/rooms/{id}/remove-opponent', messenger: 'input', input: RemoveOpponentCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/change_deck', messenger: 'input', input: ChangeDeckCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/toggle-private', messenger: 'input', input: TogglePrivateRoomCommand::class, status: 204),
     new Post(uriTemplate: '/game/{id}/play', messenger: 'input', input: PlayGameCommand::class, status: 200),

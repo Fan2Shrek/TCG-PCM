@@ -48,7 +48,10 @@ final class JoinRoomHandler
             new Update($topic, json_encode([
                 'type' => 'opponent_joined',
                 'data' => [
-                    'opponent' => $user->getUsername(),
+                    'opponent' => [
+                        'id' => (string) $user->getId(),
+                        'username' => $user->getUsername(),
+                    ],
                 ],
             ])),
         );
