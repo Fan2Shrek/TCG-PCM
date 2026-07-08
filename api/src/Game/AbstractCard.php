@@ -8,13 +8,13 @@ use App\Enum\CardEffectEnum;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Enum\CardTypeEnum;
-use App\Game\Card\CardState;
-use App\Game\Card\Effect\AbstractCardEffect;
-use App\Game\Card\EffectCollection;
-use App\Game\Card\Character\AbstractCharacterCard;
-use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\AbstractPlayableCard;
+use App\Game\Card\CardState;
+use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Effect\AbstractCardEffect;
+use App\Game\Card\EffectCollection;
+use App\Game\Card\Monster\AbstractMonsterCard;
 
 abstract class AbstractCard
 {

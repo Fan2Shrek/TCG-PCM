@@ -14,6 +14,7 @@ final readonly class CardDTO
     /**
      * @param EffectState[] $effects
      */
+    // @mago-ignore lint:excessive-parameter-list
     public function __construct(
         public string $name,
         public string $description,
