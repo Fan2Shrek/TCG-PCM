@@ -24,17 +24,14 @@ final class UserActiveRoomProvider implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
         $user = $this->currentUserProvider->getCurrentUser();
-
         $qb = $this->roomRepository->createQueryBuilder('r');
-        $room = $qb
+        return $qb
             ->where('(r.owner = :user OR r.opponent = :user)')
             ->andWhere('r.status IN (:statuses)')
             ->setParameter('user', $user)
             ->setParameter('statuses', [RoomStatusEnum::WAITING, RoomStatusEnum::PLAYING])
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult();
-
-        return $room ? [$room] : [];
+            ->getResult();
     }
 }

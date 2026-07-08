@@ -10,6 +10,8 @@ use App\Service\Game\State\GameStateRepositoryInterface;
 use App\Service\RoomStarter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -20,6 +22,7 @@ final class StartRoomHandler
         private GameStateRepositoryInterface $gameStateRepository,
         private RoomStarter $roomStarter,
         private GameInitializer $gameInitializer,
+        private HubInterface $hub,
     ) {}
 
     public function __invoke(StartRoomCommand $command): void
@@ -40,6 +43,14 @@ final class StartRoomHandler
 
         $this->gameStateRepository->save($result->state, (string) $room->getId());
 
-        // maybe dispatch events
+        $topic = \sprintf('game/%s', $room->getId());
+        $payload = json_encode([
+            'type' => 'game_started',
+            'data' => [
+                'roomId' => (string) $room->getId(),
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->hub->publish(new Update($topic, $payload, true));
     }
 }

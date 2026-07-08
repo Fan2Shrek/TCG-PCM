@@ -40,6 +40,7 @@ final class LeaveRoomHandler
                 }
             } else {
                 $room->setOpponent(null);
+                $this->publishOpponentLeft($roomId);
             }
         } else {
             $otherPlayer = $room->getOwner() === $user ? $room->getOpponent() : $room->getOwner();
@@ -59,6 +60,14 @@ final class LeaveRoomHandler
     {
         $topic = "game/{$roomId}";
         $payload = json_encode(['type' => 'owner_left'], JSON_THROW_ON_ERROR);
+        $update = new Update($topic, $payload, true);
+        $this->hub->publish($update);
+    }
+
+    private function publishOpponentLeft(string $roomId): void
+    {
+        $topic = "game/{$roomId}";
+        $payload = json_encode(['type' => 'opponent_left'], JSON_THROW_ON_ERROR);
         $update = new Update($topic, $payload, true);
         $this->hub->publish($update);
     }
