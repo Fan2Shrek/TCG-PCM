@@ -22,7 +22,7 @@ final class UserRegistrar
         private UserRepository $userRepository,
     ) {}
 
-    public function register(string $username, string $password): User
+    public function register(string $username, #[\SensitiveParameter] string $password): User
     {
         if (mb_strlen($username) < 3) {
             throw HttpException::fromStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY, 'Username must be at least 3 characters.');

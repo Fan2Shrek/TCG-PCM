@@ -8,6 +8,7 @@ final class RegisterCommand
 {
     public function __construct(
         public readonly string $username,
+        #[\SensitiveParameter]
         public readonly string $password,
     ) {}
 }
