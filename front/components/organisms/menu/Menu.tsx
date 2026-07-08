@@ -1,15 +1,14 @@
-"use client";
-
 import type { MenuItemType } from "@/types/menuItem";
 import MenuItem from "@/components/atoms/menu/MenuItem";
 import { AiOutlineFolderOpen, AiOutlineStar } from "react-icons/ai";
 import { TbPlayCardStar } from "react-icons/tb";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
-import { useAuth } from "@/contexts/AuthContext";
+import { logoutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 
 type MenuProps = {
   className?: string;
+  username?: string | null;
 };
 
 const menuItems: MenuItemType[] = [
@@ -30,8 +29,8 @@ const menuItems: MenuItemType[] = [
   },
 ];
 
-export default ({ className }: MenuProps) => {
-  const { user, isAuthenticated, logout } = useAuth();
+export default ({ className, username }: MenuProps) => {
+  const isAuthenticated = !!username;
 
   return (
     <nav className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg ${className || ""}`}>
@@ -39,9 +38,11 @@ export default ({ className }: MenuProps) => {
         {isAuthenticated && menuItems.map((menuItem) => <MenuItem key={menuItem.label} label={menuItem.label} icon={menuItem.icon} linkTo={menuItem.linkTo} active={false} />)}
         {isAuthenticated ? (
           <li className='flex items-center'>
-            <Button variant='ghost' onClick={logout} className='text-white text-lg font-bold hover:bg-white/20 hover:text-white'>
-              Déconnexion
-            </Button>
+            <form action={logoutAction}>
+              <Button type='submit' variant='ghost' className='text-white text-lg font-bold hover:bg-white/20 hover:text-white'>
+                Déconnexion
+              </Button>
+            </form>
           </li>
         ) : (
           <>
@@ -58,7 +59,7 @@ export default ({ className }: MenuProps) => {
           </>
         )}
       </ul>
-      {isAuthenticated && <ProfileIcon username={user?.username} />}
+      {isAuthenticated && <ProfileIcon username={username ?? undefined} />}
     </nav>
   );
 };
