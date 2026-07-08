@@ -12,7 +12,7 @@ export class ApiClient {
   user: UserResource;
   room: RoomResource;
 
-  constructor(private baseUrl: string) {
+  constructor(public baseUrl: string) {
     this.auth = new AuthResource(this);
     this.booster = new BoosterResource(this);
     this.game = new GameResource(this);
@@ -65,7 +65,9 @@ export class ApiClient {
   }
 }
 
-const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
+const client = new ApiClient(
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
+);
 
 export const getImage = (img: string) => {
   try {

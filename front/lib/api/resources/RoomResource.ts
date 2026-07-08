@@ -1,22 +1,56 @@
 import { ApiClient } from "../api";
+import { Room } from "@/types/room";
 
 export class RoomResource {
-	constructor(private client: ApiClient) {
-	}
+  constructor(private client: ApiClient) {}
 
-	async create() {
-		return this.client.post('/rooms/create')
-	}
+  private setMercureCookie(token: string) {
+    document.cookie = `mercureAuthorization=${token}; path=/; max-age=3600; secure; samesite=strict`;
+  }
 
-	async start(id: string) {
-		return this.client.post(`/rooms/${id}/start`)
-	}
+  async create() {
+    const res = (await this.client.post("/rooms/create")) as {
+      mercure_token: string;
+      id: string;
+    };
+    this.setMercureCookie(res.mercure_token);
+    return res;
+  }
 
-	async list() {
-		return this.client.get(`/waiting-rooms`)
-	}
+  async start(id: string) {
+    return this.client.post(`/rooms/${id}/start`);
+  }
 
-	async join(id: string) {
-		return this.client.post(`/rooms/${id}/join`)
-	}
+  async list(page: number = 1) {
+    return this.client.get(`/waiting-rooms?page=${page}`) as Promise<Room[]>;
+  }
+
+  async getActive(): Promise<Room | null> {
+    const response = (await this.client.get(`/me/room`)) as any;
+    return Array.isArray(response) ? response[0] || null : response || null;
+  }
+
+  async join(id: string) {
+    const data = (await this.client.post(`/rooms/${id}/join`)) as {
+      mercure_token: string;
+    };
+    this.setMercureCookie(data.mercure_token);
+    return data;
+  }
+
+  async togglePrivate(id: string, isPrivate: boolean) {
+    return this.client.post(`/rooms/${id}/toggle-private`, { isPrivate });
+  }
+
+  async getById(id: string) {
+    return this.client.get(`/rooms/${id}`);
+  }
+
+  async leave(id: string) {
+    return this.client.post(`/rooms/${id}/leave`, {});
+  }
+
+  async removeOpponent(id: string) {
+    return this.client.post(`/rooms/${id}/remove-opponent`, {});
+  }
 }
