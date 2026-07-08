@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from "react";
-import api from "@/lib/api/api";
+import { openBoosterAction } from "@/lib/actions/booster";
 import Card from "@/components/molecules/Card";
 import { Button } from "@/components/ui/button";
+import type { BasicCard } from "@/lib/cards/types/card";
 
 export default () => {
-	const [cards, setCards] = useState(null);
+	const [cards, setCards] = useState<BasicCard[] | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const handleOpen = async () => {
 		setError(null);
 
 		try {
-			const res = await api.booster.open();
+			const res = await openBoosterAction();
 			setCards(res.cards);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'mdr ca a explosé');

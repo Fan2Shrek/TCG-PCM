@@ -5,7 +5,7 @@ type ProfileIconProps = {
 };
 
 export default ({ profilePicturePath, username, className }: ProfileIconProps) => {
-  const imagePath = profilePicturePath || "menu/default_profile_picture.webp";
+  const imagePath = profilePicturePath || "/menu/default_profile_picture.webp";
 
   return (
     <div className={`flex flex-row items-center gap-2 ${className || ""}`}>

@@ -4,7 +4,7 @@ import Image from "@/components/atoms/Image";
 import { getCurrentUser } from "@/lib/auth/session";
 
 export default async ({ children }: { children: React.ReactNode }) => {
-  const logoPath = "menu/logo.png";
+  const logoPath = "/menu/logo.png";
   const user = await getCurrentUser();
 
   return (

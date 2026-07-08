@@ -1,22 +1,19 @@
 "use client";
 
 import { use, useState } from "react";
-import { useRouter } from "next/navigation";
 import useMercure from "@/hooks/useMercure";
-import api from "@/lib/api/api";
+import { startRoomAction } from "@/lib/actions/room";
 import { Button } from "@/components/ui/button";
 
 const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const router = useRouter();
 
   const [err, setErr] = useState<string | null>(null);
   const [opponent, setOpponent] = useState<string | null>(null);
 
   const handleStart = async () => {
     try {
-      await api.room.start(id);
-      router.push(`/game/${id}`);
+      await startRoomAction(id);
     } catch (error) {
       setErr(error instanceof Error ? error.message : "Failed to start game");
     }

@@ -12,19 +12,15 @@ export type AuthActionState = {
 
 const JWT_COOKIE_MAX_AGE = 60 * 60 * 24;
 
-// TODO(étape 2/3): supprimer le cookie "token" (legacy, lisible en JS) une fois que
-// GameBoard/GameContext/lib/api/api.ts n'en dépendent plus pour authentifier leurs
-// appels côté client — c'est un pont de compatibilité, pas la source de vérité.
 async function setSessionCookie(token: string) {
   const store = await cookies();
-  const options = {
+  store.set(SESSION_COOKIE, token, {
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     path: "/",
     maxAge: JWT_COOKIE_MAX_AGE,
-  } as const;
-
-  store.set(SESSION_COOKIE, token, { ...options, httpOnly: true, sameSite: "lax" });
-  store.set("token", token, { ...options, httpOnly: false, sameSite: "strict" });
+  });
 }
 
 async function login(username: string, password: string): Promise<string> {
@@ -71,6 +67,5 @@ export async function registerAction(_prevState: AuthActionState, formData: Form
 export async function logoutAction(): Promise<void> {
   const store = await cookies();
   store.delete(SESSION_COOKIE);
-  store.delete("token");
   redirect("/login");
 }

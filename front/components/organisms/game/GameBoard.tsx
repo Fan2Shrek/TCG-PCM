@@ -1,6 +1,7 @@
+"use client";
+
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
-import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import GameMainArea from "./GameMainArea";
@@ -9,7 +10,7 @@ import CardsHand from "../CardsHand";
 import type { BasicCard } from "@/lib/cards/types/card";
 
 export default function GameBoard() {
-  const { game, getCardById, announcements, actions } = useContext(GameContext);
+  const { game, getCardById, announcements, actions, currentUsername } = useContext(GameContext);
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
@@ -19,18 +20,18 @@ export default function GameBoard() {
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
 
   const connectedPlayer =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? game?.player1.player
       : (game?.player2.player ?? null);
   const isLoggedPlayerTurn = Boolean(
     connectedPlayer && game && connectedPlayer.id === game.currentPlayerId,
   );
   const currentState =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? game?.player1
       : (game?.player2 ?? null);
   const opponentState =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;

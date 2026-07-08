@@ -1,35 +1,25 @@
-'use client'
+import { serverApiGet } from "@/lib/api/server";
+import { getCurrentUser } from "@/lib/auth/session";
+import { GameState } from "@/lib/game/type/gameState";
+import GameBoard from "@/components/organisms/game/GameBoard";
+import { GameProvider } from "@/contexts/GameContext";
 
-import { use, useEffect, useState } from 'react'
-import api from "../../../../lib/api/api";
-import { GameState } from '@/lib/game/type/gameState';
-import GameBoard from '@/components/organisms/game/GameBoard';
-import { GameProvider } from '@/contexts/GameContext';
+type GameResponse = {
+  state: GameState;
+  mercure_token: string;
+};
 
-export default ({ params }: { params: Promise<{ id: string }> }) =>  {
-  const { id } = use(params)
+export default async function GamePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  const [game, setGame] = useState<GameState|null>(null)
-
-  useEffect(() => {
-	const fetchGame = async () => {
-	  return await api.game.getGame(id) as GameState;
-	};
-
-	fetchGame().then((data) => {
-	  setGame(data.state)
-
-	  document.cookie = `mercureAuthorization=${data.mercure_token}; path=/; max-age=3600; secure; samesite=strict`;
-	}).catch(console.error)
-  }, []);
-
-  if (!game) {
-	return <div>Loading</div>
-  }
+  const [{ state, mercure_token }, user] = await Promise.all([
+    serverApiGet<GameResponse>(`/game/${id}`),
+    getCurrentUser(),
+  ]);
 
   return (
-	<GameProvider gameId={id} game={ game }>
-	  <GameBoard/>
-	</GameProvider>
-  )
+    <GameProvider gameId={id} game={state} mercureToken={mercure_token} username={user?.username}>
+      <GameBoard />
+    </GameProvider>
+  );
 }
