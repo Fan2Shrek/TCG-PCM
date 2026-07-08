@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { RoomProvider } from "@/contexts/RoomContext";
 import AuthGuard from "@/components/organisms/AuthGuard";
 
 const geistSans = Geist({
@@ -40,7 +41,9 @@ export default function RootLayout({
     >
       <body className={`antialiased bg-background`}>
         <AuthProvider>
-          <AuthGuard>{children}</AuthGuard>
+          <RoomProvider>
+            <AuthGuard>{children}</AuthGuard>
+          </RoomProvider>
         </AuthProvider>
       </body>
     </html>

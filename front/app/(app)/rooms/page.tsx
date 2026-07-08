@@ -7,17 +7,24 @@ import client from "@/lib/api/api";
 import { Button } from "@/components/ui/button";
 import RoomCard from "@/components/molecules/arena/RoomCard";
 import Pagination from "@/components/molecules/Pagination";
+import ConfirmActionModal from "@/components/molecules/ConfirmActionModal";
 import { Room } from "@/types/room";
+import { RoomStatus } from "@/types/roomStatus";
+import { useRoom } from "@/contexts/RoomContext";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function RoomsPage() {
+  const { userRoom } = useRoom();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [joinById, setJoinById] = useState("");
   const [isJoiningById, setIsJoiningById] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const fetchRooms = useCallback(async (page: number = 1) => {
     setIsLoading(true);
@@ -35,7 +42,11 @@ export default function RoomsPage() {
     }
   }, []);
 
-  const joinRoom = async (roomId: string) => {
+  useEffect(() => {
+    fetchRooms(1);
+  }, [fetchRooms]);
+
+  const performJoin = async (roomId: string) => {
     try {
       await client.room.join(roomId);
       window.location.href = `/rooms/waiting/${roomId}`;
@@ -46,14 +57,28 @@ export default function RoomsPage() {
     }
   };
 
+  const joinRoom = async (roomId: string) => {
+    if (userRoom) {
+      setShowConfirmation(true);
+      setPendingRoomId(roomId);
+    } else {
+      await performJoin(roomId);
+    }
+  };
+
   const createRoom = async () => {
-    try {
-      const res = await client.room.create();
-      window.location.href = `/rooms/waiting/${res.id}`;
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Une erreur est survenue";
-      toast.error("Erreur", { description: message });
+    if (userRoom) {
+      setShowConfirmation(true);
+      setPendingRoomId(null);
+    } else {
+      try {
+        const res = await client.room.create();
+        window.location.href = `/rooms/waiting/${res.id}`;
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Une erreur est survenue";
+        toast.error("Erreur", { description: message });
+      }
     }
   };
 
@@ -63,24 +88,49 @@ export default function RoomsPage() {
       return;
     }
 
-    setIsJoiningById(true);
-    try {
-      await client.room.join(joinById);
-      window.location.href = `/rooms/waiting/${joinById}`;
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Salle non trouvée ou indisponible";
-      toast.error("Erreur", { description: message });
-    } finally {
-      setIsJoiningById(false);
+    if (userRoom) {
+      setShowConfirmation(true);
+      setPendingRoomId(joinById);
+    } else {
+      setIsJoiningById(true);
+      try {
+        await client.room.join(joinById);
+        window.location.href = `/rooms/waiting/${joinById}`;
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Salle non trouvée ou indisponible";
+        toast.error("Erreur", { description: message });
+      } finally {
+        setIsJoiningById(false);
+      }
     }
   };
 
-  useEffect(() => {
-    fetchRooms(1);
-  }, [fetchRooms]);
+  const handleConfirmJoin = async () => {
+    setIsConfirmLoading(true);
+    try {
+      if (userRoom) {
+        await client.room.leave(userRoom.id);
+      }
+
+      if (pendingRoomId) {
+        await performJoin(pendingRoomId);
+      } else {
+        const res = await client.room.create();
+        window.location.href = `/rooms/waiting/${res.id}`;
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Une erreur est survenue";
+      toast.error("Erreur", { description: message });
+    } finally {
+      setIsConfirmLoading(false);
+      setShowConfirmation(false);
+      setPendingRoomId(null);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center flex-1">
@@ -119,14 +169,16 @@ export default function RoomsPage() {
                 <p className="text-black/60">Aucune salle disponible</p>
               </div>
             ) : (
-              rooms.map((room) => (
-                <RoomCard
-                  key={room.id}
-                  room={room}
-                  onJoin={joinRoom}
-                  isLoading={isLoading}
-                />
-              ))
+              rooms
+                .filter((room) => !userRoom || room.id !== userRoom.id)
+                .map((room) => (
+                  <RoomCard
+                    key={room.id}
+                    room={room}
+                    onJoin={joinRoom}
+                    isLoading={isLoading}
+                  />
+                ))
             )}
           </div>
 
@@ -161,6 +213,24 @@ export default function RoomsPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmActionModal
+        open={showConfirmation && !!userRoom}
+        title={pendingRoomId ? "Rejoindre une salle" : "Créer une salle"}
+        description={`Vous êtes actuellement dans une salle. Si vous ${pendingRoomId ? "rejoignez" : "créez"} une nouvelle salle, vous quitterez la salle actuelle.`}
+        warning={
+          userRoom?.status === RoomStatus.PLAYING
+            ? "Cette action comptera comme un abandon."
+            : undefined
+        }
+        confirmLabel="Confirmer"
+        onConfirm={handleConfirmJoin}
+        onCancel={() => {
+          setShowConfirmation(false);
+          setPendingRoomId(null);
+        }}
+        isLoading={isConfirmLoading}
+      />
     </div>
   );
 }
