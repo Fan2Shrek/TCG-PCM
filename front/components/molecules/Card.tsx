@@ -51,7 +51,6 @@ const Card = ({
   const setFolderName = (cardSet: CardSet): string => {
     switch (cardSet) {
       case CardSet.BTD6:
-        console.log("lol");
         return "btd";
       case CardSet.TBOI:
         return "isaac";
@@ -164,7 +163,7 @@ const Card = ({
         isHovering={!!isHovering}
         cardTitle={card.name}
         cardDescription={card.description}
-        cardType={card.type}
+        cardType={card.type ?? CardType.CONSUMABLE}
         cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
       />
       <CardBack />

@@ -14,7 +14,7 @@ export type CardFrontProps = {
   isHovering: boolean;
   cardTitle: string;
   cardDescription: string;
-  cardType?: CardType;
+  cardType: CardType;
   cardStats: { hp?: number; attack?: number; cost?: number };
 };
 
