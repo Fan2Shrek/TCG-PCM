@@ -13,5 +13,6 @@ export type Room = {
     id: string;
     username: string;
   } | null;
+  winnerId?: string | null;
   isPrivate: boolean;
 };

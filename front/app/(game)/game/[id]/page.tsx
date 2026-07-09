@@ -63,14 +63,6 @@ export default ({ params }: { params: Promise<{ id: string }> }) => {
     );
   }
 
-  if (!userRoom || userRoom.id !== id) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Vous n'avez pas accès à cette partie
-      </div>
-    );
-  }
-
   return (
     <GameProvider gameId={id} game={game}>
       <GameBoard />

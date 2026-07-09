@@ -43,7 +43,7 @@ export class RoomResource {
   }
 
   async getById(id: string) {
-    return this.client.get(`/rooms/${id}`);
+    return this.client.get(`/rooms/${id}`) as Promise<Room>;
   }
 
   async leave(id: string) {

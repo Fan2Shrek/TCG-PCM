@@ -3,13 +3,24 @@ import type { GameAnnouncement } from "@/contexts/GameContext";
 import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
 import type { BasicCard } from "@/lib/cards/types/card";
+import { useRoom } from "@/contexts/RoomContext";
+import { RoomStatus } from "@/types/roomStatus";
+import api from "@/lib/api/api";
+import WinScreen from "./WinScreen";
+import MobileGameDisclaimer from "@/components/molecules/game/MobileGameDisclaimer";
+import GameHelpTooltip from "@/components/molecules/game/GameHelpTooltip";
+import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 
 export default function GameBoard() {
+  const router = useRouter();
+  const { id } = useParams();
   const { game, getCardById, announcements, actions } = useContext(GameContext);
+  const { userRoom, clearRoom, lastEvent } = useRoom();
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   );
@@ -17,6 +28,8 @@ export default function GameBoard() {
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [winnerId, setWinnerId] = useState<string | null>(null);
 
   const connectedPlayer =
     game?.player1.player.name === getCurrentUser()?.username
@@ -34,6 +47,23 @@ export default function GameBoard() {
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(max-width: 1024px), (pointer: coarse)",
+    );
+
+    const updateDeviceType = () => {
+      setIsMobileDevice(mediaQuery.matches);
+    };
+
+    updateDeviceType();
+    mediaQuery.addEventListener("change", updateDeviceType);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateDeviceType);
+    };
+  }, []);
 
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",
@@ -121,7 +151,7 @@ export default function GameBoard() {
 
       if (currentCoins < cost) {
         actions.pushAnnouncement({
-          text: "Not enough coins",
+          text: "Vous n'avez pas assez de pièces pour jouer cette carte.",
           tone: "negative",
         });
         return;
@@ -179,6 +209,73 @@ export default function GameBoard() {
       .filter((card): card is BasicCard => Boolean(card));
   }, [currentState, getCardById]);
 
+  const winner = useMemo(() => {
+    if (!winnerId || !currentState || !opponentState) {
+      return null;
+    }
+
+    if (winnerId === currentState.player.id) {
+      return currentState.player.name;
+    }
+
+    if (winnerId === opponentState.player.id) {
+      return opponentState.player.name;
+    }
+
+    return "Joueur";
+  }, [winnerId, currentState, opponentState]);
+
+  const isGameFinished = winner !== null;
+
+  const fetchWinnerFromRoom = useCallback(() => {
+    if (!id || !currentState || !opponentState) {
+      return;
+    }
+
+    api.room
+      .getById(id as string)
+      .then((room) => {
+        if (room.status === RoomStatus.FINISHED) {
+          setWinnerId(room.winnerId ?? null);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch room by id:", error);
+      });
+  }, [id, currentState, opponentState]);
+
+  // Fetch once on first render to handle page refresh after game end.
+  useEffect(() => {
+    if (!id || !currentState || !opponentState) {
+      return;
+    }
+
+    fetchWinnerFromRoom();
+  }, [fetchWinnerFromRoom]);
+
+  useEffect(() => {
+    if (lastEvent !== "game_finished") {
+      return;
+    }
+
+    clearRoom();
+    fetchWinnerFromRoom();
+  }, [lastEvent, fetchWinnerFromRoom]);
+
+  const handleForfeit = useCallback(async () => {
+    if (!userRoom?.id) {
+      router.push("/");
+      return;
+    }
+
+    await api.room.leave(userRoom.id);
+  }, [userRoom?.id, clearRoom, router]);
+
+  const handleBackHome = useCallback(async () => {
+    clearRoom();
+    router.push("/");
+  }, [userRoom?.id, clearRoom, router]);
+
   if (!game || !connectedPlayer || !currentState || !opponentState) {
     return <div>Loading...</div>;
   }
@@ -188,6 +285,17 @@ export default function GameBoard() {
       className="relative flex flex-col h-screen bg-orange-800 text-white overflow-hidden"
       onClick={handleBackgroundClick}
     >
+      {isGameFinished && (
+        <WinScreen
+          winnerName={winner}
+          userName={connectedPlayer.name}
+          onBackHome={handleBackHome}
+        />
+      )}
+
+      <MobileGameDisclaimer isVisible={isMobileDevice} />
+      <GameHelpTooltip />
+
       <GameAnnouncements
         regularAnnouncements={regularAnnouncements}
         giantAnnouncement={giantAnnouncement}
@@ -217,13 +325,12 @@ export default function GameBoard() {
           isDisabled={!isLoggedPlayerTurn}
         />
       </div>
-      {isLoggedPlayerTurn && (
-        <button
-          className="absolute bottom-10 right-10 bg-red-500 text-white px-8 py-2 rounded text-xl cursor-pointer"
-          onClick={actions.endTurn}
-        >
-          End turn
-        </button>
+      {!winner && (
+        <GameActionButtons
+          isLoggedPlayerTurn={isLoggedPlayerTurn}
+          onEndTurn={actions.endTurn}
+          onForfeit={handleForfeit}
+        />
       )}
     </div>
   );
