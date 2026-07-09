@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { BoosterTokensProvider } from "@/contexts/BoosterTokensContext";
 import { RoomProvider } from "@/contexts/RoomContext";
 import AuthGuard from "@/components/organisms/AuthGuard";
 
@@ -42,7 +43,9 @@ export default function RootLayout({
       <body className={`antialiased bg-background`}>
         <AuthProvider>
           <RoomProvider>
-            <AuthGuard>{children}</AuthGuard>
+            <AuthGuard>
+              <BoosterTokensProvider>{children}</BoosterTokensProvider>
+            </AuthGuard>
           </RoomProvider>
         </AuthProvider>
       </body>
