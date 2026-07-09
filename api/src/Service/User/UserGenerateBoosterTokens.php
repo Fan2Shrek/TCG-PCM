@@ -28,6 +28,7 @@ class UserGenerateBoosterTokens
         $leftoverTime = $hours % self::BOOSTER_TOKEN_INTERVAL_HOURS;
 
         $userWallet->setBoosterTokens($totalTokens);
+
         $userInfo->setLastBoosterTokensAt($now->sub(new \DateInterval('PT'.$leftoverTime.'H')));
 
         $this->entityManager->flush();

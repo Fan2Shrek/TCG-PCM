@@ -12,6 +12,8 @@ use App\Service\Booster\BoosterGenerator;
 use App\Service\InventoryUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use App\Service\User\UserGenerateBoosterTokens;
+
 
 #[AsMessageHandler]
 final class OpenBoosterHandler
@@ -21,11 +23,16 @@ final class OpenBoosterHandler
         private EventDispatcherInterface $eventDispatcher,
         private InventoryUpdater $inventoryUpdater,
         private CurrentUserProviderInterface $currentUserProvider,
+        private UserGenerateBoosterTokens $userGenerateBoosterTokens,
     ) {}
 
     public function __invoke(OpenBoosterCommand $command): Booster
     {
         $user = $this->currentUserProvider->getCurrentUser();
+        // on regen les tokens ici pour éviter qu'un chenapan contourne la limite max de tokens
+        // ex un utilisateur à le nombre max de tokens et n'en a pas recup depuis des jours -> il pourrait direct taper l'endpoint open booster
+        // puis une fois qu'il est à 0 tokens utiliser generateBoosterToken pour en regénérer depuis lastBoosterTokensAt
+        $this->userGenerateBoosterTokens->generate($user);
         $wallet = $user->getUserWallet();
 
         if ($wallet->getBoosterTokens() <= 0) {
