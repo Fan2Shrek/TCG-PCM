@@ -6,6 +6,7 @@ namespace App\Domain\Command\Room;
 
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Enum\RoomStatusEnum;
+use App\Service\Game\EndGameHandlerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -19,6 +20,7 @@ final class LeaveRoomHandler
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
         private EntityManagerInterface $entityManager,
+        private EndGameHandlerInterface $endGameHandler,
         private HubInterface $hub,
     ) {}
 
@@ -42,15 +44,16 @@ final class LeaveRoomHandler
                 $room->setOpponent(null);
                 $this->publishOpponentLeft($roomId);
             }
-        } else {
+        } elseif ($room->getStatus() === RoomStatusEnum::PLAYING) {
             $otherPlayer = $room->getOwner() === $user ? $room->getOpponent() : $room->getOwner();
 
             if ($otherPlayer === null) {
                 throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'Cannot determine winner.');
             }
 
-            $room->setWinnerId((string) $otherPlayer->getId());
-            $room->setStatus(RoomStatusEnum::FINISHED);
+            $this->endGameHandler->endGame($roomId, (string) $otherPlayer->getId());
+
+            return;
         }
 
         $this->entityManager->flush();

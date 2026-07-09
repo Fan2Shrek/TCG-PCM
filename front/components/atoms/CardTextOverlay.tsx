@@ -32,7 +32,7 @@ const CardTextOverlay = ({
     width: 82,
   };
   const statsConfig: ZoneConfig = {
-    y: 50.5,
+    y: 50,
     height: 10,
     width: cardType === CardType.MONSTER ? 58 : 20,
   };
@@ -45,14 +45,17 @@ const CardTextOverlay = ({
 
   const { fontSize: titleFontSize, ref: titleFitRef } = useFitText({
     onFinish: () => undefined,
+    maxFontSize: 200,
   });
 
   const { fontSize: statsFontSize, ref: statsFitRef } = useFitText({
     onFinish: () => undefined,
+    maxFontSize: 200,
   });
 
   const { fontSize: descriptionFontSize, ref: descriptionFitRef } = useFitText({
     onFinish: () => undefined,
+    maxFontSize: 200,
   });
 
   const getZoneStyle = (config?: ZoneConfig): CSSProperties => {

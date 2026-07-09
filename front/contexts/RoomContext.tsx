@@ -117,6 +117,17 @@ export function RoomProvider({ children }: { children: ReactNode }) {
               status: RoomStatus.PLAYING,
             };
           });
+        } else if (event.type === "game_finished") {
+          setLastEvent("game_finished");
+          setUserRoom((prevRoom) => {
+            if (!prevRoom) return prevRoom;
+
+            return {
+              ...prevRoom,
+              status: RoomStatus.FINISHED,
+              winnerId: event.data?.winnerId ?? prevRoom.winnerId ?? null,
+            };
+          });
         }
       } catch (error) {
         console.error("Failed to parse Mercure event:", error);

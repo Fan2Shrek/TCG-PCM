@@ -2,7 +2,7 @@
 
 import { useContext, useState, useEffect } from "react";
 import { CardSize } from "@/constants/card";
-import Card from "../Card";
+import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
 
@@ -122,7 +122,7 @@ export default function CardRow({
                 !isLoggedPlayerSide,
               )}
             >
-              <Card card={card} size={CardSize.MD} />
+              <CardWithZoom card={card} size={CardSize.MD} />
             </div>
           )
         );

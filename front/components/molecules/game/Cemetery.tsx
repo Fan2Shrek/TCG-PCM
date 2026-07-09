@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { CardSize } from "@/constants/card";
 import Card from "../Card";
+import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import PileTooltip from "@/components/atoms/PileTooltip";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
@@ -73,6 +74,7 @@ export default function Cemetery({
         const offsetX = mirrored ? -i : i;
         const offsetY = isCardDragged ? 0 : -i * 1.3;
         const isBottomCard = i === 0;
+        const isTopCard = i === cardIds.length - 1;
         const isPlaying = playingCardIds.has(card.instanceId);
         const playOffset = mirrored ? "-200px" : "200px";
 
@@ -91,7 +93,11 @@ export default function Cemetery({
               }),
             }}
           >
-            <Card card={card} size={CardSize.MD} />
+            {isTopCard ? (
+              <CardWithZoom card={card} size={CardSize.MD} />
+            ) : (
+              <Card card={card} size={CardSize.MD} />
+            )}
           </div>
         );
       })}

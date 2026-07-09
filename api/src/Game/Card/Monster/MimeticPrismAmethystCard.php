@@ -8,7 +8,7 @@ final class MimeticPrismAmethystCard extends MimeticPrismRubyCard
 
     public function getId(): string
     {
-        return 'mimestic_prism_amethyst.webp';
+        return 'MimeticPrismAmethyst';
     }
 
     public function getHealPoints(): int
