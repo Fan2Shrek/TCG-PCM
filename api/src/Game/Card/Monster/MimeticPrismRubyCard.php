@@ -21,7 +21,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function getId(): string
     {
-        return 'mimestic_prism_ruby';
+        return 'MimeticPrismRuby';
     }
 
     public function setState(CardState $state): void
@@ -36,12 +36,12 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function getBaseAttack(): int
     {
-        return $this->damage;
+        return $this->damage ?? 0;
     }
 
     public function getHealPoints(): int
     {
-        return $this->heal;
+        return $this->heal ?? 0;
     }
 
     public function onMonsterPlayed(GameContext $context): void
