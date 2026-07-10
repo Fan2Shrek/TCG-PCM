@@ -1,5 +1,6 @@
 "use client";
 
+import NewCardBadge from "@/components/atoms/boosters/NewCardBadge";
 import InteractiveCard from "@/components/molecules/InteractiveCard";
 import { Button } from "@/components/ui/button";
 import { CardRaririty } from "@/constants/card";
@@ -20,8 +21,10 @@ type CardRevealFlowProps = {
 };
 
 const CONFETTI_BURST_DURATION_MS = 7000;
-const CONFETTI_SOURCE_WIDTH = 240;
-const CONFETTI_SOURCE_HEIGHT = 220;
+const CONFETTI_SOURCE_WIDTH_DESKTOP = 760;
+const CONFETTI_SOURCE_HEIGHT_DESKTOP = 520;
+const CONFETTI_SOURCE_WIDTH_MOBILE = 520;
+const CONFETTI_SOURCE_HEIGHT_MOBILE = 360;
 const CONFETTI_PIECES_BY_RARITY: Partial<Record<CardRaririty, number>> = {
   [CardRaririty.UNCOMMON]: 80,
   [CardRaririty.RARE]: 140,
@@ -97,6 +100,30 @@ export default function CardRevealFlow({
     return "opacity-100";
   }, [phase]);
 
+  const getCardRenderKey = (card: BasicCard, index: number) => {
+    return `${card.instanceId ?? card.name}-${index}`;
+  };
+
+  const confettiSource = useMemo(() => {
+    const sourceWidth = isSmallScreen
+      ? CONFETTI_SOURCE_WIDTH_MOBILE
+      : CONFETTI_SOURCE_WIDTH_DESKTOP;
+    const sourceHeight = isSmallScreen
+      ? CONFETTI_SOURCE_HEIGHT_MOBILE
+      : CONFETTI_SOURCE_HEIGHT_DESKTOP;
+
+    const width = Math.min(sourceWidth, viewportSize.width);
+    const height = Math.min(sourceHeight, viewportSize.height);
+
+    return {
+      x: Math.max(0, viewportSize.width / 2 - width / 2),
+      // Slightly above previous position while still around/under the revealed card.
+      y: Math.max(0, viewportSize.height / 2 - height * 0.45),
+      w: width,
+      h: height,
+    };
+  }, [isSmallScreen, viewportSize.height, viewportSize.width]);
+
   const handleNext = () => {
     if (!currentCard || isCardLeaving) {
       return;
@@ -138,12 +165,7 @@ export default function CardRevealFlow({
           gravity={0.12}
           numberOfPieces={confettiPieces}
           style={{ zIndex: 0, pointerEvents: "none" }}
-          confettiSource={{
-            x: viewportSize.width / 2 - CONFETTI_SOURCE_WIDTH / 2,
-            y: viewportSize.height / 2 - CONFETTI_SOURCE_HEIGHT / 2,
-            w: CONFETTI_SOURCE_WIDTH,
-            h: CONFETTI_SOURCE_HEIGHT,
-          }}
+          confettiSource={confettiSource}
         />
       ) : null}
 
@@ -159,10 +181,15 @@ export default function CardRevealFlow({
                 : "animate-card-reveal-in"
             }
           >
-            <InteractiveCard
-              card={currentCard}
-              size={isSmallScreen ? CardSize.XL : CardSize.XLL}
-            />
+            <div className="relative inline-flex items-center justify-center">
+              {currentCard.isNewToCollection ? (
+                <NewCardBadge className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 translate-y-[-120%]" />
+              ) : null}
+              <InteractiveCard
+                card={currentCard}
+                size={isSmallScreen ? CardSize.XL : CardSize.XLL}
+              />
+            </div>
           </div>
 
           <Button onClick={handleNext} size="lg">
@@ -178,11 +205,21 @@ export default function CardRevealFlow({
         >
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5 lg:gap-6 place-items-center">
             {cards.map((card, index) => (
-              <InteractiveCard
-                key={card.instanceId ?? `${card.name}-${index}`}
-                card={card}
-                size={isSmallScreen ? CardSize.SM : CardSize.XL}
-              />
+              <div
+                key={getCardRenderKey(card, index)}
+                className="relative inline-flex items-center justify-center"
+              >
+                {card.isNewToCollection ? (
+                  <NewCardBadge
+                    compact
+                    className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 translate-y-[-120%]"
+                  />
+                ) : null}
+                <InteractiveCard
+                  card={card}
+                  size={isSmallScreen ? CardSize.SM : CardSize.XL}
+                />
+              </div>
             ))}
           </div>
 

@@ -19,6 +19,7 @@ export type BasicCard = {
   cost?: number;
   hp?: number;
   attack?: number;
+  isNewToCollection?: boolean;
 };
 
 export type CardLayer = {
