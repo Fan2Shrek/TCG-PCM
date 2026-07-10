@@ -78,6 +78,7 @@ export default function SelectableBooster({
           onClick={handleBoosterClick}
           showGlare={isFrontBooster}
           brightness={brightness}
+          isCursorAvailable={!isSmallScreen}
           disableShadow={isFrontPreviewOpen || isAnimatingPreview}
           motionType={
             isFrontPreviewOpen

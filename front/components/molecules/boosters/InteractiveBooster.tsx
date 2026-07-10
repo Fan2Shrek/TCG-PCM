@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Booster from "./Booster";
 import { BoosterType } from "@/constants/booster";
 
@@ -18,6 +18,7 @@ type InteractiveBoosterProps = {
   brightness?: number;
   motionType?: BoosterMotionType;
   disableShadow?: boolean;
+  isCursorAvailable?: boolean;
 };
 
 export default function InteractiveBooster({
@@ -28,10 +29,27 @@ export default function InteractiveBooster({
   brightness = 100,
   motionType = BoosterMotionType.FLOAT,
   disableShadow = false,
+  isCursorAvailable = true,
 }: InteractiveBoosterProps) {
+  const BASE_SHAKE_DURATION = 0.4;
+  const HOVER_SHAKE_DURATION = 0.15;
+  const [isHovering, setIsHovering] = useState(false);
+
   const handleClick = useCallback(() => {
     onClick?.(boosterType);
   }, [boosterType, onClick]);
+
+  const handlePointerEnter = useCallback(() => {
+    if (!isCursorAvailable || motionType !== BoosterMotionType.SHAKE) {
+      return;
+    }
+
+    setIsHovering(true);
+  }, [isCursorAvailable, motionType]);
+
+  const handlePointerLeave = useCallback(() => {
+    setIsHovering(false);
+  }, []);
 
   const animationStyle = useMemo(
     () =>
@@ -41,8 +59,15 @@ export default function InteractiveBooster({
         "--rotate": `${1 + Math.random() * 1.5}deg`,
         "--rotateX": `${1 + Math.random() * 1.5}deg`,
         "--translate": `${1 + Math.random() * 1.1}px`,
+        "--shake-duration": `${
+          isCursorAvailable &&
+          motionType === BoosterMotionType.SHAKE &&
+          isHovering
+            ? HOVER_SHAKE_DURATION
+            : BASE_SHAKE_DURATION
+        }s`,
       }) as React.CSSProperties,
-    [],
+    [isCursorAvailable, motionType, isHovering],
   );
 
   const motionClass =
@@ -56,6 +81,8 @@ export default function InteractiveBooster({
     <div
       className={`cursor-pointer transition-[filter] duration-200 ease-in-out ${motionClass}`}
       onClick={handleClick}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       style={{
         filter: `drop-shadow(1px 56px 12px rgba(0,0,0,${
           disableShadow ? 0 : 0.55

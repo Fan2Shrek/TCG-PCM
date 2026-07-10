@@ -165,7 +165,7 @@
   }
 
   .animate-booster-shake {
-    animation: boosterShake 0.28s ease-in-out infinite;
+    animation: boosterShake var(--shake-duration, 0.28s) linear infinite;
   }
 }
 
