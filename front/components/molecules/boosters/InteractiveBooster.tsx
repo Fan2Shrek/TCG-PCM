@@ -4,12 +4,20 @@ import { useCallback, useMemo } from "react";
 import Booster from "./Booster";
 import { BoosterType } from "@/constants/booster";
 
+export enum BoosterMotionType {
+  FLOAT = "float",
+  SHAKE = "shake",
+  NONE = "none",
+}
+
 type InteractiveBoosterProps = {
   boosterType: BoosterType;
   className?: string;
   onClick?: (boosterType: BoosterType) => void;
   showGlare?: boolean;
-  dimmed?: boolean;
+  brightness?: number;
+  motionType?: BoosterMotionType;
+  disableShadow?: boolean;
 };
 
 export default function InteractiveBooster({
@@ -17,7 +25,9 @@ export default function InteractiveBooster({
   className,
   onClick,
   showGlare = false,
-  dimmed = false,
+  brightness = 100,
+  motionType = BoosterMotionType.FLOAT,
+  disableShadow = false,
 }: InteractiveBoosterProps) {
   const handleClick = useCallback(() => {
     onClick?.(boosterType);
@@ -35,12 +45,21 @@ export default function InteractiveBooster({
     [],
   );
 
+  const motionClass =
+    motionType === BoosterMotionType.SHAKE
+      ? "animate-booster-shake"
+      : motionType === BoosterMotionType.FLOAT
+        ? "animate-booster-float"
+        : "";
+
   return (
     <div
-      className="cursor-pointer animate-booster-float"
+      className={`cursor-pointer transition-[filter] duration-200 ease-in-out ${motionClass}`}
       onClick={handleClick}
       style={{
-        filter: "drop-shadow(1px 56px 12px rgba(0,0,0,0.55))",
+        filter: `drop-shadow(1px 56px 12px rgba(0,0,0,${
+          disableShadow ? 0 : 0.55
+        }))`,
         ...animationStyle,
       }}
     >
@@ -48,7 +67,7 @@ export default function InteractiveBooster({
         boosterType={boosterType}
         className={className}
         showGlare={showGlare}
-        dimmed={dimmed}
+        brightness={brightness}
       />
     </div>
   );

@@ -9,7 +9,7 @@ type BoosterProps = {
   style?: CSSProperties;
   className?: string;
   showGlare?: boolean;
-  dimmed?: boolean;
+  brightness?: number;
 };
 
 const getBoosterImageSources = (boosterType: BoosterType) => {
@@ -27,13 +27,13 @@ export default function Booster({
   style,
   className,
   showGlare = false,
-  dimmed = false,
+  brightness = 100,
 }: BoosterProps) {
   const srcs = getBoosterImageSources(boosterType);
 
   return (
     <div
-      className={`relative aspect-4/7 w-booster-lg transform-3d transform-gpu will-change-transform user-select-none ${className ?? ""}`}
+      className={`relative aspect-4/7 w-booster-lg transform-3d transform-gpu will-change-transform user-select-none transition-[width] duration-700 ease-in-out ${className ?? ""}`}
       style={style}
     >
       <div className="inset-0 backface-hidden">
@@ -41,13 +41,15 @@ export default function Booster({
           src={srcs.bottom}
           alt={`${boosterType} booster bottom`}
           fill
-          className={`object-cover pb-px ${dimmed ? "brightness-80" : "brightness-100"}`}
+          className="object-cover pb-px"
+          style={{ filter: `brightness(${brightness}%)` }}
         />
         <Image
           src={srcs.top}
           alt={`${boosterType} booster top`}
           fill
-          className={`object-cover ${dimmed ? "brightness-80" : "brightness-100"}`}
+          className="object-cover"
+          style={{ filter: `brightness(${brightness}%)` }}
         />
 
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -57,14 +59,6 @@ export default function Booster({
           />
         </div>
       </div>
-      {/* <div className="absolute inset-0 backface-hidden rotate-y-180 pointer-events-none select-none overflow-hidden rounded-2xl">
-        <Image
-          src={srcs.back}
-          alt={`${boosterType} booster back`}
-          fill
-          className="object-cover"
-        />
-      </div> */}
     </div>
   );
 }

@@ -25,9 +25,9 @@
     --spacing-card-sm: 7rem;
     --spacing-card-md: 9rem;
     --spacing-card-lg: 11rem;
-    --spacing-card-xl: 22rem;
+    --spacing-card-xl: 14rem;
     --spacing-booster-lg: 12rem;
-    --spacing-booster-xl: 23rem;
+    --spacing-booster-xl: 15rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -139,6 +139,33 @@
 
   .animate-booster-title-float {
     animation: boosterTitleFloat 6s ease-in-out infinite;
+  }
+
+  @keyframes boosterShake {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    20% {
+      transform: rotate(0.8deg);
+    }
+
+    40% {
+      transform: rotate(-0.9deg);
+    }
+
+    60% {
+      transform: rotate(0.7deg);
+    }
+
+    80% {
+      transform: rotate(-0.8deg);
+    }
+  }
+
+  .animate-booster-shake {
+    animation: boosterShake 0.28s ease-in-out infinite;
   }
 }
 
