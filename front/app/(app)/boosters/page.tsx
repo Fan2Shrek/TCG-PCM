@@ -1,37 +1,72 @@
-'use client';
+"use client";
 
-import { useState } from "react";
-import api from "@/lib/api/api";
-import Card from "@/components/molecules/Card";
-import { Button } from "@/components/ui/button";
+import { Booster } from "@/app/types/booster";
+import InteractiveBooster from "@/components/molecules/boosters/InteractiveBooster";
+import { BoosterType } from "@/constants/booster";
+import { useBoosterCarousel } from "@/hooks/useBoosterCarousel";
 
-export default () => {
-	const [cards, setCards] = useState(null);
-	const [error, setError] = useState<string | null>(null);
+const BOOSTERS: Booster[] = [
+  {
+    id: "btd",
+    boosterType: BoosterType.BTD,
+    description: "Monkey business.",
+  },
+  {
+    id: "original",
+    boosterType: BoosterType.ORIGINAL,
+    description: "The classic experience.",
+  },
+  {
+    id: "isaac",
+    boosterType: BoosterType.ISAAC,
+    description: "Tears everywhere.",
+  },
+  // {
+  //   boosterId: "isaac2",
+  //   boosterType: BoosterType.ISAAC,
+  //   description: "Tears everywhere.",
+  // },
+  // {
+  //   boosterId: "isaac3",
+  //   boosterType: BoosterType.ISAAC,
+  //   description: "Tears everywhere.",
+  // },
+];
 
-	const handleOpen = async () => {
-		setError(null);
+export default function BoostersPage() {
+  const { frontBooster, rotateTo, getBoosterStyle } =
+    useBoosterCarousel(BOOSTERS);
 
-		try {
-			const res = await api.booster.open();
-			setCards(res.cards);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'mdr ca a explosé');
-		}
-	};
+  return (
+    <div className="min-h-screen ">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-20 overflow-hidden">
+        <div className="relative w-full h-120" style={{ perspective: 1800 }}>
+          {BOOSTERS.map((booster, index) => (
+            <div
+              key={booster.id}
+              className="absolute transition-all duration-700 ease-out left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 "
+              style={{
+                ...getBoosterStyle(index),
+                transformOrigin: "center",
+              }}
+            >
+              <InteractiveBooster
+                boosterType={booster.boosterType}
+                onClick={() => rotateTo(index)}
+                showGlare={booster.id === frontBooster.id}
+                dimmed={booster.id !== frontBooster.id}
+              />
+            </div>
+          ))}
+        </div>
 
-	return <div className="flex flex-col items-center justify-center h-screen gap-10">
-		<Button
-			onClick={handleOpen}
-			className="px-6 py-3 h-auto rounded-full text-lg font-bold border-2 border-white hover:scale-105 transition-transform"
-		>
-			ouvrir un booster
-		</Button>
-
-		{error && <p className="text-red-500">{error}</p>}
-
-		<div className="flex flex-row flex-wrap gap-5 justify-center">
-			{cards && cards.map((card, i) => <Card key={i} card={card} />)}
-		</div>
-	</div>;
+        <div
+          key={frontBooster.id}
+          className="text-center transition-all animate-in fade-in duration-300 bg-slate-200 max-w-lg w-full min-h-32 border-2 border-primary"
+        >
+          <p className="mt-2 text-lg">{frontBooster.description}</p>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -14,7 +14,9 @@
   --spacing-card-sm: var(--spacing-card-sm);
   --spacing-card-md: var(--spacing-card-md);
   --spacing-card-lg: var(--spacing-card-lg);
+  --spacing-booster-lg: var(--spacing-booster-lg);
   --spacing-card-xl: var(--spacing-card-xl);
+  --spacing-booster-xl: var(--spacing-booster-xl);
 }
 
 @layer base {
@@ -24,6 +26,8 @@
     --spacing-card-md: 9rem;
     --spacing-card-lg: 11rem;
     --spacing-card-xl: 22rem;
+    --spacing-booster-lg: 12rem;
+    --spacing-booster-xl: 23rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -103,6 +107,23 @@
 
   .blue-pulse {
     animation: bluePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes boosterFloat {
+    0%,
+    100% {
+      transform: translateY(var(--translate)) rotate(calc(var(--rotate) * -1))
+        rotateX(var(--rotateX));
+    }
+
+    50% {
+      transform: translateY(calc(var(--translate) * -1)) rotate(var(--rotate))
+        rotateX(calc(var(--rotateX) * -1));
+    }
+  }
+
+  .animate-booster-float {
+    animation: boosterFloat var(--duration) ease-in-out var(--delay) infinite;
   }
 }
 
