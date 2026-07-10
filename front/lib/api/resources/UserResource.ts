@@ -11,6 +11,10 @@ export class UserResource {
     return this.client.get(`/user`);
   }
 
+  async getInventorySetStats() {
+    return this.client.get(`/inventory/stats`);
+  }
+
   public generateBoosterTokens() {
     return this.client.post("/user/generate_booster_tokens");
   }

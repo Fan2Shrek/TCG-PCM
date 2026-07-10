@@ -125,6 +125,21 @@
   .animate-booster-float {
     animation: boosterFloat var(--duration) ease-in-out var(--delay) infinite;
   }
+
+  @keyframes boosterTitleFloat {
+    0%,
+    100% {
+      transform: translateY(2px);
+    }
+
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+
+  .animate-booster-title-float {
+    animation: boosterTitleFloat 6s ease-in-out infinite;
+  }
 }
 
 @theme inline {

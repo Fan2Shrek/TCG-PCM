@@ -40,7 +40,7 @@ export default function InteractiveBooster({
       className="cursor-pointer animate-booster-float"
       onClick={handleClick}
       style={{
-        filter: "drop-shadow(1px 86px 12px rgba(0,0,0,0.55))",
+        filter: "drop-shadow(1px 56px 12px rgba(0,0,0,0.55))",
         ...animationStyle,
       }}
     >
