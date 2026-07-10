@@ -1,5 +1,8 @@
 "use client";
 
+import TooltipText, {
+  TooltipTextPosition,
+} from "@/components/molecules/game/TooltipText";
 import { useEffect, useRef, useState } from "react";
 import { FaRegCircleQuestion } from "react-icons/fa6";
 
@@ -43,14 +46,10 @@ export default function Tooltip({
     };
   }, []);
 
-  const positionClass =
+  const tooltipPosition =
     position === TooltipPosition.BOTTOM_CENTER
-      ? "left-1/2 -translate-x-1/2"
-      : "right-0";
-
-  const visibilityClass = isOpen
-    ? "opacity-100 pointer-events-auto"
-    : "opacity-0 pointer-events-none group-hover:opacity-100";
+      ? TooltipTextPosition.BOTTOM_CENTER
+      : TooltipTextPosition.BOTTOM_RIGHT;
 
   return (
     <div
@@ -67,11 +66,12 @@ export default function Tooltip({
         <FaRegCircleQuestion className="h-6 w-6" />
       </button>
 
-      <div
-        className={`absolute top-full mt-2 w-[min(90vw,28rem)] rounded-xl border border-white/25 bg-black/85 p-4 text-sm text-white shadow-lg transition-opacity duration-150 ${positionClass} ${visibilityClass}`}
-      >
-        {text}
-      </div>
+      <TooltipText
+        text={text}
+        isVisible={isOpen}
+        position={tooltipPosition}
+        className={!isOpen ? "group-hover:opacity-100" : ""}
+      />
     </div>
   );
 }

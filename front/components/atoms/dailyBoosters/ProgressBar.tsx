@@ -4,6 +4,7 @@ type ProgressBarProps = {
   text?: string;
   startColor?: [number, number, number];
   endColor?: [number, number, number];
+  hasMaxTokens?: boolean;
 };
 
 export default ({
@@ -12,6 +13,7 @@ export default ({
   text,
   startColor = [100, 0, 35],
   endColor = [164, 3, 83],
+  hasMaxTokens = false,
 }: ProgressBarProps) => {
   const clamped = Math.max(0, Math.min(100, progress));
 
@@ -27,7 +29,7 @@ export default ({
     startColor[2] + (endColor[2] - startColor[2]) * progressRatio,
   );
 
-  const color = `rgb(${r}, ${g}, ${b})`;
+  const color = hasMaxTokens ? "rgb(255, 0, 0)" : `rgb(${r}, ${g}, ${b})`;
 
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   const textColor = luminance > 0.5 ? "black" : "white";
@@ -37,7 +39,7 @@ export default ({
     >
       <div
         className={`rounded-full h-full`}
-        style={{ width: `${progress}%`, backgroundColor: `${color}` }}
+        style={{ width: `${clamped}%`, backgroundColor: `${color}` }}
       ></div>
 
       {text && (
