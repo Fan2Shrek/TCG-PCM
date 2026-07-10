@@ -135,7 +135,7 @@ const Card = ({
     });
   }
 
-  if (!card?.isActive) {
+  if (!card.isActive) {
     cardLayers.push({
       src: "/cross.webp",
       depth: 20,

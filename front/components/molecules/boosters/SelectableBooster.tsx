@@ -4,6 +4,11 @@ import type { Booster } from "@/app/types/booster";
 import InteractiveBooster, {
   BoosterMotionType,
 } from "@/components/molecules/boosters/InteractiveBooster";
+import {
+  BoosterOpeningPhase,
+  isOpeningAnimationPhase,
+  isRevealPhase,
+} from "@/lib/boosterOpening/phases";
 import { useEffect, useRef, useState } from "react";
 
 type SelectableBoosterProps = {
@@ -11,9 +16,12 @@ type SelectableBoosterProps = {
   index: number;
   frontBoosterId: string;
   isPreviewOpen: boolean;
+  openingPhase: BoosterOpeningPhase;
+  shotCardCount: number;
   isSmallScreen: boolean;
   onRotateTo: (index: number) => void;
   onPreviewChange: (open: boolean) => void;
+  onConfirmOpen: () => void;
 };
 
 const TRANSITION_DURATION = 700;
@@ -22,12 +30,20 @@ export default function SelectableBooster({
   index,
   frontBoosterId,
   isPreviewOpen,
+  openingPhase,
+  shotCardCount,
   isSmallScreen,
   onRotateTo,
   onPreviewChange,
+  onConfirmOpen,
 }: SelectableBoosterProps) {
   const isFrontBooster = booster.id === frontBoosterId;
   const isFrontPreviewOpen = isPreviewOpen && isFrontBooster;
+  const isFrontOpeningAnimating =
+    isFrontBooster && isOpeningAnimationPhase(openingPhase);
+  const isFrontRevealActive = isFrontBooster && isRevealPhase(openingPhase);
+  const shouldStayInPreviewPosition =
+    isFrontPreviewOpen || isFrontOpeningAnimating;
   const brightness = isFrontBooster ? 100 : isPreviewOpen ? 60 : 80;
   const wasFrontPreviewOpenRef = useRef(isFrontPreviewOpen);
   const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
@@ -50,6 +66,10 @@ export default function SelectableBooster({
 
   const handleBoosterClick = () => {
     if (isPreviewOpen) {
+      if (isFrontBooster) {
+        onConfirmOpen();
+      }
+
       return;
     }
 
@@ -62,11 +82,11 @@ export default function SelectableBooster({
   };
 
   return (
-    <div>
+    <div className={isFrontRevealActive ? "invisible pointer-events-none" : ""}>
       <div
         className="relative transition-transform duration-700 ease-in-out"
         style={{
-          transform: isFrontPreviewOpen
+          transform: shouldStayInPreviewPosition
             ? isSmallScreen
               ? "translateY(-110px) rotate(1080deg)"
               : "translateX(-220px) rotate(1080deg)"
@@ -78,16 +98,18 @@ export default function SelectableBooster({
           onClick={handleBoosterClick}
           showGlare={isFrontBooster}
           brightness={brightness}
+          openingPhase={isFrontBooster ? openingPhase : undefined}
+          shotCardCount={isFrontBooster ? shotCardCount : 0}
           isCursorAvailable={!isSmallScreen}
-          disableShadow={isFrontPreviewOpen || isAnimatingPreview}
+          disableShadow={shouldStayInPreviewPosition || isAnimatingPreview}
           motionType={
-            isFrontPreviewOpen
+            shouldStayInPreviewPosition
               ? BoosterMotionType.SHAKE
               : isAnimatingPreview
                 ? BoosterMotionType.NONE
                 : BoosterMotionType.FLOAT
           }
-          className={isFrontPreviewOpen ? "w-booster-xl" : ""}
+          className={shouldStayInPreviewPosition ? "w-booster-xl" : ""}
         />
 
         <p

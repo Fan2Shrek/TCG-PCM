@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Booster from "./Booster";
 import { BoosterType } from "@/constants/booster";
+import { BoosterOpeningPhase } from "@/lib/boosterOpening/phases";
 
 export enum BoosterMotionType {
   FLOAT = "float",
@@ -16,6 +17,8 @@ type InteractiveBoosterProps = {
   onClick?: (boosterType: BoosterType) => void;
   showGlare?: boolean;
   brightness?: number;
+  openingPhase?: BoosterOpeningPhase;
+  shotCardCount?: number;
   motionType?: BoosterMotionType;
   disableShadow?: boolean;
   isCursorAvailable?: boolean;
@@ -27,6 +30,8 @@ export default function InteractiveBooster({
   onClick,
   showGlare = false,
   brightness = 100,
+  openingPhase,
+  shotCardCount = 0,
   motionType = BoosterMotionType.FLOAT,
   disableShadow = false,
   isCursorAvailable = true,
@@ -95,6 +100,8 @@ export default function InteractiveBooster({
         className={className}
         showGlare={showGlare}
         brightness={brightness}
+        openingPhase={openingPhase}
+        shotCardCount={shotCardCount}
       />
     </div>
   );

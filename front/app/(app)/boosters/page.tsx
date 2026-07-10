@@ -4,12 +4,15 @@ import { Booster, InventorySetStat } from "@/app/types/booster";
 import LoadingSpinner from "@/components/atoms/LoadingSpinner";
 import SelectableBooster from "@/components/molecules/boosters/SelectableBooster";
 import BoosterTitleOverlay from "@/components/molecules/boosters/BoosterTitleOverlay";
+import CardRevealFlow from "@/components/organisms/boosters/CardRevealFlow";
 import Tooltip, { TooltipPosition } from "@/components/molecules/game/tooltip";
 import { BoosterType } from "@/constants/booster";
+import { useBoosterOpeningFlow } from "@/lib/boosterOpening/hooks/useBoosterOpeningFlow";
 import { useBoosterCarousel } from "@/hooks/useBoosterCarousel";
 import { useWindowWidth } from "@/hooks/useWindowWidth";
 import api from "@/lib/api/api";
-import { useEffect, useMemo, useState } from "react";
+import { BoosterOpeningPhase } from "@/lib/boosterOpening/phases";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaTrophy } from "react-icons/fa";
 
 const BOOSTERS: Booster[] = [
@@ -43,32 +46,57 @@ export default function BoostersPage() {
     Record<string, InventorySetStat>
   >({});
   const [isLoadingStats, setIsLoadingStats] = useState(true);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const previousFlowActiveRef = useRef(false);
+  const {
+    phase,
+    obtainedCards,
+    currentCardIndex,
+    isFlowActive,
+    isPreviewOpen,
+    isRevealRunning,
+    openPreview,
+    closePreview,
+    confirmOpen,
+    nextRevealedCard,
+    confirmAllCards,
+  } = useBoosterOpeningFlow();
+
+  const loadInventorySetStats = useCallback(async () => {
+    setIsLoadingStats(true);
+
+    try {
+      const response =
+        (await api.user.getInventorySetStats()) as InventorySetStat[];
+
+      const recStatsBySet = response.reduce<Record<string, InventorySetStat>>(
+        (acc, setStat) => {
+          acc[setStat.set] = setStat;
+          return acc;
+        },
+        {},
+      );
+
+      setStatsBySet(recStatsBySet);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingStats(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadInventorySetStats = async () => {
-      try {
-        const response =
-          (await api.user.getInventorySetStats()) as InventorySetStat[];
+    void loadInventorySetStats();
+  }, [loadInventorySetStats]);
 
-        const recStatsBySet = response.reduce<Record<string, InventorySetStat>>(
-          (acc, setStat) => {
-            acc[setStat.set] = setStat;
-            return acc;
-          },
-          {},
-        );
+  useEffect(() => {
+    const wasFlowActive = previousFlowActiveRef.current;
 
-        setStatsBySet(recStatsBySet);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoadingStats(false);
-      }
-    };
+    if (wasFlowActive && !isFlowActive) {
+      void loadInventorySetStats();
+    }
 
-    loadInventorySetStats();
-  }, []);
+    previousFlowActiveRef.current = isFlowActive;
+  }, [isFlowActive, loadInventorySetStats]);
 
   const currentSetStats = useMemo(() => {
     return statsBySet[frontBooster.id];
@@ -87,24 +115,25 @@ export default function BoostersPage() {
   const progressColorClass = hasAllCards
     ? "text-yellow-500"
     : completionRatio >= 0.75
-      ? "text-slate-400"
+      ? "text-slate-500"
       : completionRatio >= 0.5
         ? "text-amber-700"
         : "text-slate-900";
 
-  const closePreview = () => {
-    setIsPreviewOpen(false);
-  };
+  const canInteractWithCarousel =
+    phase === BoosterOpeningPhase.IDLE || phase === BoosterOpeningPhase.PREVIEW;
 
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center overflow-hidden">
       <div
-        className={`fixed inset-0 h-screen w-screen bg-black/70 transition-opacity duration-500 z-20 ${isPreviewOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        onClick={closePreview}
+        className={`fixed inset-0 h-screen w-screen bg-black/70 transition-opacity duration-500 z-20 ${isFlowActive ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={isPreviewOpen ? closePreview : undefined}
       />
 
       <div
-        className="relative w-full h-120 z-30"
+        className={`relative w-full h-120 z-30 ${
+          canInteractWithCarousel ? "" : "pointer-events-none"
+        }`}
         style={{ perspective: 1800 }}
         onClick={isPreviewOpen ? closePreview : undefined}
       >
@@ -124,7 +153,11 @@ export default function BoostersPage() {
               <BoosterTitleOverlay
                 image={TITLE_IMAGE_BY_TYPE[booster.boosterType]}
                 alt={`${booster.id} title`}
-                isVisible={booster.id === frontBooster.id && !isPreviewOpen}
+                isVisible={
+                  booster.id === frontBooster.id &&
+                  phase === BoosterOpeningPhase.IDLE &&
+                  !isPreviewOpen
+                }
               />
 
               <SelectableBooster
@@ -132,18 +165,40 @@ export default function BoostersPage() {
                 index={index}
                 frontBoosterId={frontBooster.id}
                 isPreviewOpen={isPreviewOpen}
+                openingPhase={phase}
+                shotCardCount={obtainedCards.length}
                 isSmallScreen={isSmallScreen}
                 onRotateTo={rotateTo}
-                onPreviewChange={setIsPreviewOpen}
+                onPreviewChange={(open) => {
+                  if (open) {
+                    openPreview();
+                    return;
+                  }
+
+                  closePreview();
+                }}
+                onConfirmOpen={() => {
+                  void confirmOpen(frontBooster.boosterType);
+                }}
               />
             </div>
           );
         })}
       </div>
 
+      {isRevealRunning ? (
+        <CardRevealFlow
+          phase={phase}
+          cards={obtainedCards}
+          currentCardIndex={currentCardIndex}
+          onNextCard={nextRevealedCard}
+          onConfirmAll={confirmAllCards}
+        />
+      ) : null}
+
       <div
-        className={`flex flex-col gap-1 items-center z-10 transition-opacity duration-300 ${
-          isPreviewOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        className={`flex flex-col gap-1 items-center z-10 transition-opacity duration-300 mt-12 ${
+          isFlowActive ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
         <p
