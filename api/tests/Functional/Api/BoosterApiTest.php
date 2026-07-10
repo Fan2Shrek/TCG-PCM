@@ -27,6 +27,17 @@ final class BoosterApiTest extends FunctionalTestCase
         $data = json_decode($response->getContent() ?? '', true);
         self::assertArrayHasKey('cards', $data);
         self::assertCount(5, $data['cards']);
+
+        foreach ($data['cards'] as $card) {
+            self::assertArrayHasKey('name', $card);
+            self::assertArrayHasKey('description', $card);
+            self::assertArrayHasKey('rarity', $card);
+
+            self::assertTrue(
+                array_key_exists('cost', $card) || array_key_exists('hp', $card) || array_key_exists('attack', $card),
+                'Opened card should expose at least one visible stat field (cost, hp, or attack).'
+            );
+        }
     }
 
     public function testOpenBoosterAddedToInventory(): void

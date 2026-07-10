@@ -6,6 +6,7 @@ namespace App\Domain\Model;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
+use App\Api\DTO\BoosterOpenedCardDTO;
 use App\Domain\Command\Booster\OpenBoosterCommand;
 use App\Game\AbstractCard;
 
@@ -15,14 +16,14 @@ use App\Game\AbstractCard;
 final class Booster
 {
     /**
-     * @param array<AbstractCard> $cards
+     * @param array<AbstractCard|BoosterOpenedCardDTO> $cards
      */
     public function __construct(
         private array $cards,
     ) {}
 
     /**
-     * @return array<AbstractCard>
+     * @return array<AbstractCard|BoosterOpenedCardDTO>
      */
     public function getCards(): array
     {

@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Booster;
 
+use App\Api\DTO\BoosterOpenedCardDTO;
 use App\Domain\Exception\NotEnoughTokenException;
 use App\Domain\Model\Booster;
+use App\Entity\Inventory\Inventory;
 use App\Event\Badge\BoosterOpenedEvent;
+use App\Game\AbstractCard;
+use App\Game\Card\Character\AbstractCharacterCard;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Booster\BoosterGenerator;
 use App\Service\InventoryUpdater;
@@ -29,6 +34,7 @@ final class OpenBoosterHandler
     public function __invoke(OpenBoosterCommand $command): Booster
     {
         $user = $this->currentUserProvider->getCurrentUser();
+        $ownedCardIds = $this->getOwnedCardIds($user->getInventory());
         // on regen les tokens ici pour éviter qu'un chenapan contourne la limite max de tokens
         // ex un utilisateur à le nombre max de tokens et n'en a pas recup depuis des jours -> il pourrait direct taper l'endpoint open booster
         // puis une fois qu'il est à 0 tokens utiliser generateBoosterToken pour en regénérer depuis lastBoosterTokensAt
@@ -46,6 +52,55 @@ final class OpenBoosterHandler
 
         $this->inventoryUpdater->addCards($booster->getCards());
 
-        return $booster;
+        return new Booster(array_map(
+            fn (AbstractCard $card): BoosterOpenedCardDTO => $this->createOpenedCardDTO($card, $ownedCardIds),
+            $booster->getCards(),
+        ));
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    private function getOwnedCardIds(Inventory $inventory): array
+    {
+        $ownedCardIds = [];
+        foreach ($inventory->getCards() as $cardInventory) {
+            $ownedCardIds[$cardInventory->getCard()] = true;
+        }
+
+        return $ownedCardIds;
+    }
+
+    /**
+     * @param array<string, true> $ownedCardIds
+     */
+    private function createOpenedCardDTO(AbstractCard $card, array $ownedCardIds): BoosterOpenedCardDTO
+    {
+        $cost = null;
+        $hp = null;
+        $attack = null;
+
+        if (!$card instanceof AbstractCharacterCard) {
+            $cost = $card->getCost();
+        }
+
+        if ($card instanceof AbstractMonsterCard) {
+            $hp = $card->getHealPoints();
+            $attack = $card->getAttack();
+        }
+
+        return new BoosterOpenedCardDTO(
+            name: $card->getName(),
+            description: $card->getDescription(),
+            image: $card->getImage(),
+            rarity: $card::$rarity,
+            set: $card::$serie,
+            instanceId: $card->getInstanceId() ?? $card->getId(),
+            type: $card->getType(),
+            cost: $cost,
+            hp: $hp,
+            attack: $attack,
+            isNewToCollection: !isset($ownedCardIds[$card->getId()]),
+        );
     }
 }
