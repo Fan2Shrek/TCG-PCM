@@ -154,16 +154,28 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('HEAL requires a amount integer');
         }
 
-        $targetPlayerState = $gameState->getPlayer($target);
-        $newHealth = $targetPlayerState->healthPoints + $amount;
+        $targetState = match ($target) {
+            $gameState->player1->player->id, $gameState->player1->characterCardId => $gameState->player1,
+            $gameState->player2->player->id, $gameState->player2->characterCardId => $gameState->player2,
+            default => $gameState->getCardState($target),
+        };
 
-        if ($newHealth > $targetPlayerState->maxHealthPoints) {
-            $newHealth = $targetPlayerState->maxHealthPoints;
+        if ($targetState instanceof PlayerState) {
+            $newHealth = $targetState->healthPoints + $amount;
+            if ($newHealth > $targetState->maxHealthPoints) {
+                $newHealth = $targetState->maxHealthPoints;
+            }
+
+            $newPlayerState = $targetState->withUpdatedHealth($newHealth);
+
+            return $gameState->withUpdatedPlayer($newPlayerState);
         }
 
-        $newPlayerState = $targetPlayerState->withUpdatedHealth($newHealth);
+        if ($targetState instanceof MonsterCardState) {
+            return $gameState->withUpdatedCardState($targetState->withCurrentHealthPoints($targetState->currentHealthPoints + $amount));
+        }
 
-        return $gameState->withUpdatedPlayer($newPlayerState);
+        throw new \LogicException('HEAL target must be a player or a monster card');
     }
 
     private function applyTurnEnded(GameEvent $event, GameState $gameState): GameState

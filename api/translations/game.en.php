@@ -42,6 +42,10 @@ return [
             'name' => 'Pierre Said "No Monster Zone"',
             'description' => 'Discard all active monsters',
         ],
+        'Pillules' => [
+            'name' => 'Pillules!',
+            'description' => 'Random effect: lose 5 HP, heal 10 HP, give +5 damage to one ally monster, heal one ally monster by 5, give -3 damage to one ally monster, or deal 3 damage to one ally monster.',
+        ],
         'Placenta' => [
             'name' => 'Placenta',
             'description' => 'Heal {{value}} HP at the start of each turn.',
@@ -53,6 +57,18 @@ return [
         'Justice' => [
             'name' => 'Justice',
             'description' => 'Make current player draw has many cards equal to the number of cards in other player hand.',
+        ],
+        'Clotty' => [
+            'name' => 'Clotty',
+            'description' => 'Dangerous small critter.',
+        ],
+        'GrilledClotty' => [
+            'name' => 'Grilled Clotty',
+            'description' => 'Loses 1 HP at the end of every turn.',
+        ],
+        'Henry' => [
+            'name' => 'Henry',
+            'description' => 'Discarded at the start of its owner\'s next turn.',
         ],
         'ConsolationPrice' => [
             'name' => 'Consolation Price',

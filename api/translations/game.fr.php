@@ -42,6 +42,10 @@ return [
             'name' => 'Pierre a dit "Pas de Zone Monstre"',
             'description' => 'Défaussez tous les monstres actifs',
         ],
+        'Pillules' => [
+            'name' => 'Pillules !',
+            'description' => 'Effet aléatoire : perdre 5 PV, récupérer 10 PV, donner +5 dégâts à un de vos monstres, soigner un de vos monstres de 5 PV, donner -3 dégâts à un de vos monstres, ou infliger 3 dégâts à un de vos monstres.',
+        ],
         'Placenta' => [
             'name' => 'Placenta',
             'description' => 'Soigne {{value}} PV au début de chaque tour.',
@@ -54,6 +58,18 @@ return [
             'name' => 'Justice',
             'description' => 'Faites piocher au joueur actuel autant de cartes que le nombre de cartes dans la main de l\'autre joueur.',
         ],
+        'Clotty' => [
+            'name' => 'Coagulé',
+            'description' => 'Un petit monstre dangereux.',
+        ],
+            'GrilledClotty' => [
+                'name' => 'Coagulé grillé',
+                'description' => 'Perd 1 PV à la fin de chaque tour.',
+            ],
+            'Henry' => [
+                'name' => 'Henry',
+                'description' => 'Est défaussé au début du prochain tour de son propriétaire.',
+            ],
         'ConsolationPrice' => [
             'name' => 'Prix de consolation',
             'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
