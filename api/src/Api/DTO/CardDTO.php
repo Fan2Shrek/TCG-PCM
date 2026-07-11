@@ -19,6 +19,7 @@ final readonly class CardDTO
         public string $name,
         public string $description,
         public string $image,
+        public bool $requiresTarget,
         public CardRarityEnum $rarity,
         public CardSetEnum $set,
         public string $instanceId,

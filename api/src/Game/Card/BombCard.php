@@ -4,17 +4,25 @@ namespace App\Game\Card;
 
 use App\Enum\CardSetEnum;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 use Override;
 
 final class BombCard extends AbstractPlayableCard
 {
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
-    private const DAMAGE = 1;
+    private const DAMAGE = 5;
 
     public function getId(): string
     {
         return 'Bomb';
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::DAMAGE, true),
+        ]);
     }
 
     #[Override]

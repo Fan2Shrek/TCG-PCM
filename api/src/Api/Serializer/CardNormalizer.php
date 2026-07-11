@@ -44,6 +44,7 @@ final class CardNormalizer implements NormalizerInterface
             'serie' => $serie->name,
             'serielabel' => $serie,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
+            'requiresTarget' => $card instanceof AbstractCard ? $card->requiresTarget() : ($card instanceof CardDTO ? $card->requiresTarget : null),
             'cost' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->cost : null,
             'hp' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->hp : null,
             'attack' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->attack : null,
@@ -51,7 +52,7 @@ final class CardNormalizer implements NormalizerInterface
             'effects' => $card instanceof CardDTO ? $card->effects : null,
             'isActive' => $card instanceof CardDTO ? $card->isActive : null,
             'isNewToCollection' => $card instanceof CollectionCardDTO ? $card->isNewToCollection : null,
-        ]);
+        ], static fn(mixed $value): bool => null !== $value);
     }
 
     public function getSupportedTypes(?string $format): array

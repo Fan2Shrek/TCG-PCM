@@ -14,7 +14,7 @@ export type PlayerState = {
   drawPile: string[];
   coins: number;
   playArea: PlayArea;
-  discardPile: string[];
+  discardPile: Record<string, string>;
 };
 
 export type Player = {

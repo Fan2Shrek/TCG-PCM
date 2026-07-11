@@ -5,8 +5,10 @@ import { BasicCard, CardWithPosition } from "@/lib/cards/types/card";
 import { CardSize } from "@/constants/card";
 import { getCardWidthPx } from "@/lib/cards/cardUtils";
 import HandCard from "../molecules/HandCard";
+import Card from "../molecules/Card";
 import { useHandPositions } from "@/hooks/useHandPositions";
 import { useDebouncedValue } from "@/hooks/useDebounceValue";
+import { useIdlePrewarm } from "@/hooks/useIdlePrewarm";
 import { emitter } from "@/lib/eventBus";
 
 export type CardsHandProps = {
@@ -28,15 +30,23 @@ export default function CardsHand({
   const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(
     null,
   );
+  const [hasHoveredOnce, setHasHoveredOnce] = useState(false);
   const isHovered = useDebouncedValue(isPendingHovered, 50);
+  const shouldPrewarmHover = useIdlePrewarm({
+    disabled: hasHoveredOnce,
+    timeout: 300,
+  });
 
   useEffect(() => {
     if (isHovered) {
+      if (!hasHoveredOnce) {
+        setHasHoveredOnce(true);
+      }
       onMouseEnter?.();
     } else {
       onMouseLeave?.();
     }
-  }, [isHovered, onMouseEnter, onMouseLeave]);
+  }, [isHovered, hasHoveredOnce, onMouseEnter, onMouseLeave]);
 
   useEffect(() => {
     const handleCardDrawn = () => {
@@ -80,6 +90,21 @@ export default function CardsHand({
 
   return (
     <div className={`relative w-82 h-62 ${className}`}>
+      {shouldPrewarmHover && !hasHoveredOnce && (
+        <div
+          className="absolute -z-10 opacity-0 pointer-events-none"
+          aria-hidden
+        >
+          {cards.map((card) => (
+            <Card
+              key={`prewarm-${card.instanceId}`}
+              card={card}
+              size={CardSize.LG}
+            />
+          ))}
+        </div>
+      )}
+
       {positionedCards.map((positionedCard, i) => (
         <HandCard
           key={positionedCard?.card?.instanceId ?? i}

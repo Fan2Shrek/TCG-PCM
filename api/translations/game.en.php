@@ -10,6 +10,14 @@ return [
             'name' => 'Benjamin',
             'description' => 'Apply {{effect}} to {{value}} card',
         ],
+        'Banana' => [
+            'name' => 'Banana',
+            'description' => 'Heal your character by {{value}} HP.',
+        ],
+        'BananaFarm' => [
+            'name' => 'Banana Farm',
+            'description' => 'Gain {{value}} coin at the start of each turn.',
+        ],
         'Pierrot' => [
             'name' => 'Pierrot',
             'description' => 'Apply {{effect}} {{value1}} card every {{value2}} turns.',
@@ -34,6 +42,30 @@ return [
             'name' => 'Red Bloons',
             'description' => 'A cute little balloon',
         ],
+        'CamoBloon' => [
+            'name' => 'Camo Bloon',
+            'description' => 'Has a {{value}}% chance to dodge incoming damage.',
+        ],
+        'MOAB' => [
+            'name' => 'MOAB',
+            'description' => 'A massive bloon.',
+        ],
+        'LeadBloon' => [
+            'name' => 'Lead Bloon',
+            'description' => 'Reduces incoming damage by {{value}}.',
+        ],
+        'DartMonkey' => [
+            'name' => 'Dart Monkey',
+            'description' => 'A cute monkey.',
+        ],
+        'BoomerangMonkey' => [
+            'name' => 'Boomerang Monkey',
+            'description' => 'Loses {{value}} HP after attacking.',
+        ],
+        'SuperMonkey' => [
+            'name' => 'Super Monkey',
+            'description' => 'Gains +{{value}} attack and HP for each monkey on your side when played.',
+        ],
         'HackedZone' => [
             'name' => 'Hacked Zone',
             'description' => 'Apply {{effect}} to all cards in both side',
@@ -41,6 +73,22 @@ return [
         'PierreSaidNoMonsterZone' => [
             'name' => 'Pierre Said "No Monster Zone"',
             'description' => 'Discard all active monsters',
+        ],
+        'Bomb' => [
+            'name' => 'Bomb',
+            'description' => 'Deal {{value}} damage to all monsters in play.',
+        ],
+        'Dart' => [
+            'name' => 'Dart',
+            'description' => 'Deal {{value}} damage to a targeted card.',
+        ],
+        'Pills' => [
+            'name' => 'Pills!',
+            'description' => 'Random effect!',
+        ],
+        'Horsepill' => [
+            'name' => 'Horsepill!',
+                'description' => 'Very random effect!!!',
         ],
         'Placenta' => [
             'name' => 'Placenta',
@@ -54,7 +102,31 @@ return [
             'name' => 'Justice',
             'description' => 'Make current player draw has many cards equal to the number of cards in other player hand.',
         ],
+        'Clotty' => [
+            'name' => 'Clotty',
+            'description' => 'Dangerous small critter.',
+        ],
+        'GrilledClotty' => [
+            'name' => 'Grilled Clotty',
+            'description' => 'Loses 1 HP at the end of every turn.',
+        ],
+        'Henry' => [
+            'name' => 'Henry',
+            'description' => 'Discarded at the start of its owner\'s next turn.',
+        ],
+        'HoneyBee' => [
+            'name' => 'Honey Bee',
+            'description' => 'When it attacks, heal your character by {{value}} HP.',
+        ],
+        'RadicalRat' => [
+            'name' => 'Radical Rat',
+            'description' => 'When it is played or dies, it deals {{value}} damage to every opposing monster and the opposing character at the same time.',
+        ],
         'ConsolationPrice' => [
+            'name' => 'Consolation Price',
+            'description' => 'Each monster death grans {{value}} gold to the player.',
+        ],
+        'consolation_prices' => [
             'name' => 'Consolation Price',
             'description' => 'Each monster death grans {{value}} gold to the player.',
         ],
@@ -81,6 +153,10 @@ return [
         'Necromancian' => [
             'name' => 'Necromancian',
             'description' => 'Redrawn a card, at the end of turn.',
+        ],
+        'Isaac' => [
+            'name' => 'Isaac',
+            'description' => 'Deal 5 damage to a random opponent card each turn.',
         ],
         'Communism' => [
             'name' => 'Communism',

@@ -5,6 +5,7 @@ import { CardSize } from "@/constants/card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
+import useTargetingMode from "@/hooks/useTargetingMode";
 
 type CardRowProps = {
   cardIds: string[];
@@ -79,11 +80,11 @@ export default function CardRow({
   onSelectTarget,
   hoveredTargetId,
 }: CardRowProps) {
+  const isTargeting = useTargetingMode();
   const { getCardById } = useContext(GameContext);
   const playingCardIds = useCardPlayAnimation();
   const isControlled =
     selectedCardId !== undefined && onSelectCard !== undefined;
-  const isTargeting = selectedCardId !== null;
 
   return (
     <div
@@ -95,7 +96,8 @@ export default function CardRow({
         const isSelected = selectedCardId === card?.instanceId;
         const isHovered =
           hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
-        const canSelect = isLoggedPlayerSide && isControlled && card?.isActive;
+        const canSelect =
+          isLoggedPlayerSide && isControlled && card?.isActive && !isTargeting;
         const isPlaying = playingCardIds.has(card?.instanceId || "");
 
         return (
@@ -104,10 +106,10 @@ export default function CardRow({
               key={card.instanceId}
               onClick={(e) => {
                 e.stopPropagation();
-                if (canSelect) {
-                  onSelectCard?.(isSelected ? null : card.instanceId);
-                } else if (isTargeting && card?.isActive) {
+                if (isTargeting) {
                   onSelectTarget?.(card.instanceId);
+                } else if (canSelect) {
+                  onSelectCard?.(isSelected ? null : card.instanceId);
                 }
               }}
               onMouseEnter={() =>

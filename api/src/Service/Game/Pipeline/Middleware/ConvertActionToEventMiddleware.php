@@ -38,14 +38,20 @@ final class ConvertActionToEventMiddleware implements GameMiddlewareInterface
     private function playCardAction(PlayerAction $action, GameState $state): GameEvent
     {
         $card = $action->payload['cardId'] ?? null;
+        $data = $action->payload['data'] ?? [];
 
         if (!\is_string($card)) {
             throw new \InvalidArgumentException('cardId is required in payload and must be a string');
         }
 
+        if (!\is_array($data)) {
+            throw new \InvalidArgumentException('data must be an object payload');
+        }
+
         return GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
             'playerId' => $action->authorId,
             'cardId' => $card,
+            'data' => $data,
         ]);
     }
 

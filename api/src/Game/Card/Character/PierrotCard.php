@@ -23,7 +23,7 @@ final class PierrotCard extends AbstractCharacterCard implements TurnAwareInterf
 
     public function getHealthPoints(): int
     {
-        return 3300;
+        return 200;
     }
 
     public function onTurnAction(GameContext $gameContext): void

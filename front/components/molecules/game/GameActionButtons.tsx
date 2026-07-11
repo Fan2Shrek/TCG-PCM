@@ -4,6 +4,8 @@ import { useState } from "react";
 
 type GameActionButtonsProps = {
   isLoggedPlayerTurn: boolean;
+  showCancel?: boolean;
+  onCancel?: () => void;
   onEndTurn: () => void;
   onForfeit: () => void;
 };
@@ -12,6 +14,8 @@ const FORFEIT_CONFIRMATION_TIMEOUT = 3000;
 
 export default function GameActionButtons({
   isLoggedPlayerTurn,
+  showCancel = false,
+  onCancel,
   onEndTurn,
   onForfeit,
 }: GameActionButtonsProps) {
@@ -33,6 +37,15 @@ export default function GameActionButtons({
   };
   return (
     <div className="flex flex-col gap-3 min-w-3xs">
+      {showCancel && onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className={`${baseButtonClassName} bg-slate-600 hover:bg-slate-500`}
+        >
+          Annuler
+        </button>
+      )}
       {isLoggedPlayerTurn && (
         <button
           type="button"

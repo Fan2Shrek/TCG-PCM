@@ -10,6 +10,7 @@ type PlayZoneProps = {
   className?: string;
   selectedCardId?: string | null;
   onSelectCard?: (cardId: string | null) => void;
+  onSelectTarget?: (cardId: string) => void;
   hoveredTargetId?: string | null;
 };
 
@@ -19,6 +20,7 @@ export default function PlayZone({
   className = "",
   selectedCardId,
   onSelectCard,
+  onSelectTarget,
   hoveredTargetId,
 }: PlayZoneProps) {
   const zoneRef = useRef<HTMLDivElement>(null);
@@ -48,6 +50,7 @@ export default function PlayZone({
         isLoggedPlayerSide
         selectedCardId={selectedCardId}
         onSelectCard={onSelectCard}
+        onSelectTarget={onSelectTarget}
         hoveredTargetId={hoveredTargetId}
       />
       <CardRow
@@ -55,6 +58,7 @@ export default function PlayZone({
         isLoggedPlayerSide
         selectedCardId={selectedCardId}
         onSelectCard={onSelectCard}
+        onSelectTarget={onSelectTarget}
         hoveredTargetId={hoveredTargetId}
       />
     </div>

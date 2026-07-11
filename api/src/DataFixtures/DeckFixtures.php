@@ -6,6 +6,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Deck;
 use App\Entity\User;
+use App\Enum\CardTypeEnum;
 use App\Game\Card\Character\PierrotCard;
 use App\Game\Card\Character\StonksCard;
 use App\Service\DeckValidator;
@@ -22,7 +23,10 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
 
     public function getData(): iterable
     {
-        $allCards = array_values(array_filter($this->cardRegistry->getAllBy([]), static fn($card) => !\in_array($card, ['Pierrot', 'Stonks'], true)));
+        $allCards = array_values(array_filter(
+            $this->cardRegistry->getAllBy([]),
+            fn(string $cardId): bool => CardTypeEnum::CHARACTER !== $this->cardRegistry->getCardTemplateById($cardId)->getType(),
+        ));
         $cards = [];
 
         $count = count($allCards);

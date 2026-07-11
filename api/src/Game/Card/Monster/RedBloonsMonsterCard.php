@@ -10,8 +10,8 @@ final class RedBloonsMonsterCard extends AbstractMonsterCard
 {
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const HEALTH_POINTS = 1;
-    private const ATTACK = 1;
+    private const HEALTH_POINTS = 10;
+    private const ATTACK = 5;
 
     public function getId(): string
     {

@@ -10,6 +10,7 @@ export type BasicCard = {
   name: string;
   description: string;
   image: string;
+  requiresTarget?: boolean;
   rarity: CardRaririty;
   serie: CardSet;
   type?: CardType;

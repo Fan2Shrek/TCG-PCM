@@ -10,6 +10,14 @@ return [
             'name' => 'Benjamin',
             'description' => 'Applique {{effect}} à {{value}} carte',
         ],
+        'Banana' => [
+            'name' => 'Banane',
+            'description' => 'Soigne votre personnage de {{value}} PV.',
+        ],
+        'BananaFarm' => [
+            'name' => 'Ferme à bananes',
+            'description' => 'Gagne {{value}} pièce(s) au debut de chaque tour.',
+        ],
         'Pierrot' => [
             'name' => 'Pierrot',
             'description' => 'Applique {{effect}} à {{value1}} carte tous les {{value2}} tours.',
@@ -34,6 +42,30 @@ return [
             'name' => 'Ballon Rouge',
             'description' => 'Potit ballon tout mignon',
         ],
+        'CamoBloon' => [
+            'name' => 'Ballon Camo',
+            'description' => 'A {{value}}% de chances d\'esquiver les dégâts reçus.',
+        ],
+        'MOAB' => [
+            'name' => 'MOAB',
+            'description' => 'Un énorme ballon.',
+        ],
+        'LeadBloon' => [
+            'name' => 'Ballon de Plomb',
+            'description' => 'Réduit les dégâts reçus de {{value}}.',
+        ],
+        'DartMonkey' => [
+            'name' => 'Singe',
+            'description' => 'Un potit singe.',
+        ],
+        'BoomerangMonkey' => [
+            'name' => 'Singe Boomerang',
+            'description' => 'Perd {{value}} PV après avoir attaqué.',
+        ],
+        'SuperMonkey' => [
+            'name' => 'Super singe',
+            'description' => 'Gagne +{{value}} attaque et PV pour chaque singe de votre côté lors de son arrivée en jeu.',
+        ],
         'HackedZone' => [
             'name' => 'Zone Piratée',
             'description' => 'Applique {{effect}} à toutes les cartes des deux côtés',
@@ -41,6 +73,22 @@ return [
         'PierreSaidNoMonsterZone' => [
             'name' => 'Pierre a dit "Pas de Zone Monstre"',
             'description' => 'Défaussez tous les monstres actifs',
+        ],
+        'Bomb' => [
+            'name' => 'Bombe',
+            'description' => 'Inflige {{value}} dégâts à tous les monstres en jeu.',
+        ],
+        'Dart' => [
+            'name' => 'Fléchette',
+            'description' => 'Inflige {{value}} dégâts à une carte ciblée.',
+        ],
+        'Pills' => [
+            'name' => 'Pillules !',
+            'description' => 'Effet aléatoire !',
+        ],
+        'Horsepill' => [
+            'name' => 'Pillule de cheval !!!',
+            'description' => 'Effet très aléatoire !!!',
         ],
         'Placenta' => [
             'name' => 'Placenta',
@@ -54,7 +102,31 @@ return [
             'name' => 'Justice',
             'description' => 'Faites piocher au joueur actuel autant de cartes que le nombre de cartes dans la main de l\'autre joueur.',
         ],
+        'Clotty' => [
+            'name' => 'Coagulé',
+            'description' => 'Un potit monstre.',
+        ],
+            'GrilledClotty' => [
+                'name' => 'Coagulé grillé',
+                'description' => 'Perd 1 PV à la fin de chaque tour.',
+            ],
+            'Henry' => [
+                'name' => 'Henry',
+                'description' => 'Est défaussé au début du prochain tour de son propriétaire.',
+            ],
+            'HoneyBee' => [
+                'name' => 'Abeille de miel',
+                'description' => 'Quand elle attaque, soigne votre personnage de {{value}} PV.',
+            ],
+            'RadicalRat' => [
+                'name' => 'Rat Radical',
+                'description' => 'Lorsqu\'il est joué ou qu\'il meurt, inflige {{value}} dégâts à tous les monstres et personnages adverses.',
+            ],
         'ConsolationPrice' => [
+            'name' => 'Prix de consolation',
+            'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
+        ],
+        'consolation_prices' => [
             'name' => 'Prix de consolation',
             'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
         ],
@@ -72,7 +144,7 @@ return [
         ],
         'StackyStackito' => [
             'name' => 'Stacky Stackito',
-            'description' => 'Chaque {{value}} tours, fait le nombre de piece comme dégats.',
+            'description' => 'Chaque {{value}} tours, fait le nombre de pièces comme dégats.',
         ],
         'RiskyBet' => [
             'name' => 'Pari risqué',
@@ -81,6 +153,10 @@ return [
         'Necromancian' => [
             'name' => 'Nécromancien',
             'description' => 'Ressuscite une carte aléatoire à la fin du tour.',
+        ],
+        'Isaac' => [
+            'name' => 'Isaac',
+            'description' => 'Inflige 5 dégâts à une carte adverse aléatoire à chaque tour.',
         ],
         'Communism' => [
             'name' => 'Communisme',

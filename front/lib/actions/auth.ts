@@ -24,11 +24,17 @@ async function setSessionCookie(token: string) {
 }
 
 async function login(username: string, password: string): Promise<string> {
-  const response = await serverApiPost<{ token: string }>("/login_check", { username, password });
+  const response = await serverApiPost<{ token: string }>("/login_check", {
+    username,
+    password,
+  });
   return response.token;
 }
 
-export async function loginAction(_prevState: AuthActionState, formData: FormData): Promise<AuthActionState> {
+export async function loginAction(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
   const username = String(formData.get("username") || "");
   const password = String(formData.get("password") || "");
 
@@ -40,10 +46,13 @@ export async function loginAction(_prevState: AuthActionState, formData: FormDat
   }
 
   await setSessionCookie(token);
-  redirect("/");
+  redirect("/boosters");
 }
 
-export async function registerAction(_prevState: AuthActionState, formData: FormData): Promise<AuthActionState> {
+export async function registerAction(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
   const username = String(formData.get("username") || "");
   const password = String(formData.get("password") || "");
   const confirmPassword = String(formData.get("confirmPassword") || "");
@@ -57,15 +66,18 @@ export async function registerAction(_prevState: AuthActionState, formData: Form
     await serverApiPost("/register", { username, password });
     token = await login(username, password);
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Une erreur est survenue." };
+    return {
+      error: err instanceof Error ? err.message : "Une erreur est survenue.",
+    };
   }
 
   await setSessionCookie(token);
-  redirect("/");
+  redirect("/boosters");
 }
 
 export async function logoutAction(): Promise<void> {
   const store = await cookies();
   store.delete(SESSION_COOKIE);
+  store.delete("mercureAuthorization");
   redirect("/login");
 }

@@ -8,13 +8,20 @@ use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Card\MonsterCardState;
+use App\Game\GameContext;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\CardRuntimeMap;
 
 class GameEventApplier implements GameEventApplierInterface
 {
+    public function __construct(
+        private CardRuntimeMap $cardRuntimeMap,
+    ) {}
+
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
         $gameState = match ($event->type) {
@@ -132,6 +139,14 @@ class GameEventApplier implements GameEventApplierInterface
             $newState = $state->withUpdatedHealth($state->healthPoints - $damage);
             $newGameState = $gameState->withUpdatedPlayer($newState);
         } elseif ($state instanceof MonsterCardState) {
+            $card = $this->cardRuntimeMap->getByState($state);
+
+            if ($card instanceof AbstractMonsterCard) {
+                $ctx = new GameContext($gameState, $state->ownerId);
+
+                $damage = max(0, $card->reduceDamage($ctx, $damage));
+            }
+
             $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
             $newGameState = $gameState->withUpdatedCardState($newState);
         } else {
@@ -154,16 +169,28 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('HEAL requires a amount integer');
         }
 
-        $targetPlayerState = $gameState->getPlayer($target);
-        $newHealth = $targetPlayerState->healthPoints + $amount;
+        $targetState = match ($target) {
+            $gameState->player1->player->id, $gameState->player1->characterCardId => $gameState->player1,
+            $gameState->player2->player->id, $gameState->player2->characterCardId => $gameState->player2,
+            default => $gameState->getCardState($target),
+        };
 
-        if ($newHealth > $targetPlayerState->maxHealthPoints) {
-            $newHealth = $targetPlayerState->maxHealthPoints;
+        if ($targetState instanceof PlayerState) {
+            $newHealth = $targetState->healthPoints + $amount;
+            if ($newHealth > $targetState->maxHealthPoints) {
+                $newHealth = $targetState->maxHealthPoints;
+            }
+
+            $newPlayerState = $targetState->withUpdatedHealth($newHealth);
+
+            return $gameState->withUpdatedPlayer($newPlayerState);
         }
 
-        $newPlayerState = $targetPlayerState->withUpdatedHealth($newHealth);
+        if ($targetState instanceof MonsterCardState) {
+            return $gameState->withUpdatedCardState($targetState->withCurrentHealthPoints($targetState->currentHealthPoints + $amount));
+        }
 
-        return $gameState->withUpdatedPlayer($newPlayerState);
+        throw new \LogicException('HEAL target must be a player or a monster card');
     }
 
     private function applyTurnEnded(GameEvent $event, GameState $gameState): GameState
