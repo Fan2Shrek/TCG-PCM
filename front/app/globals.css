@@ -10,26 +10,26 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-pixel: var(--font-geist-pixel);
-  --aspect-card: var(--aspect-card);
-  --spacing-card-sm: var(--spacing-card-sm);
-  --spacing-card-md: var(--spacing-card-md);
-  --spacing-card-lg: var(--spacing-card-lg);
-  --spacing-booster-lg: var(--spacing-booster-lg);
-  --spacing-card-xl: var(--spacing-card-xl);
-  --spacing-card-2xl: var(--spacing-card-2xl);
-  --spacing-booster-xl: var(--spacing-booster-xl);
+  --aspect-card: var(--base-aspect-card);
+  --spacing-card-sm: var(--base-spacing-card-sm);
+  --spacing-card-md: var(--base-spacing-card-md);
+  --spacing-card-lg: var(--base-spacing-card-lg);
+  --spacing-booster-lg: var(--base-spacing-booster-lg);
+  --spacing-card-xl: var(--base-spacing-card-xl);
+  --spacing-card-2xl: var(--base-spacing-card-2xl);
+  --spacing-booster-xl: var(--base-spacing-booster-xl);
 }
 
 @layer base {
   :root {
-    --aspect-card: 5/7;
-    --spacing-card-sm: 7rem;
-    --spacing-card-md: 9rem;
-    --spacing-card-lg: 11rem;
-    --spacing-card-xl: 14rem;
-    --spacing-card-2xl: 20rem;
-    --spacing-booster-lg: 12rem;
-    --spacing-booster-xl: 15rem;
+    --base-aspect-card: 5/7;
+    --base-spacing-card-sm: 7rem;
+    --base-spacing-card-md: 9rem;
+    --base-spacing-card-lg: 11rem;
+    --base-spacing-card-xl: 14rem;
+    --base-spacing-card-2xl: 20rem;
+    --base-spacing-booster-lg: 12rem;
+    --base-spacing-booster-xl: 15rem;
   }
 
   @media (prefers-color-scheme: dark) {
