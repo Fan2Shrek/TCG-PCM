@@ -21,7 +21,8 @@ import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 export default function GameBoard() {
   const router = useRouter();
   const { id } = useParams();
-  const { game, getCardById, announcements, actions, currentUsername } = useContext(GameContext);
+  const { game, getCardById, announcements, actions, currentUsername } =
+    useContext(GameContext);
   const { userRoom, clearRoom, lastEvent } = useRoom();
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
@@ -327,6 +328,8 @@ export default function GameBoard() {
     return <div>Loading...</div>;
   }
 
+  console.log(game);
+
   return (
     <div
       className="relative flex flex-col h-screen bg-orange-800 text-white overflow-hidden"
@@ -342,7 +345,11 @@ export default function GameBoard() {
 
       <MobileGameDisclaimer isVisible={isMobileDevice} />
       <div className="top-5 right-5 absolute z-20">
-        <Tooltip text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. A chaque tour, vous piochez une carte et gagnez de l'or. L'or sert à jouer vos cartes. Pour cibler une carte avec une des votres, cliquez d'abord sur votre carte puis sur la cible. Vous pouvez aussi double-cliquer sur une carte pour l'afficher en grand. Cliquez en dehors de la carte pour dézoomer." />
+        <Tooltip
+          text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or. 
+        L'or sert à jouer vos cartes. Certaines cartes peuvent infliger des status: Hacké réduit ou perturbe les effets de la carte, Tordu signale une carte altérée par un effet spécial, et Boost de puissance augmente ses dégâts. 
+        Pour cibler une carte avec une des vôtres, cliquez d'abord sur votre carte puis sur la cible. Vous pouvez aussi double-cliquer sur une carte pour l'afficher en grand. Cliquez en dehors de la carte pour dézoomer."
+        />
       </div>
 
       <GameAnnouncements

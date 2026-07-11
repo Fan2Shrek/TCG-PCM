@@ -6,6 +6,7 @@ use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Trait\DeathAwareTrait;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class ImStillStandingCard extends AbstractPassiveCard implements DeathAwareInterface
 {
@@ -23,6 +24,13 @@ final class ImStillStandingCard extends AbstractPassiveCard implements DeathAwar
     public function getImage(): string
     {
         return 'https://www.discogs.com/fr/release/590760-Elton-John-Im-Still-Standing/image/SW1hZ2U6NDMwMTU3Mjk=';
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::REVIVE_HP_PERCENTAGE, true),
+        ]);
     }
 
     public function onPlayerDeath(GameContext $gameContext, string $deadPlayerId): void
