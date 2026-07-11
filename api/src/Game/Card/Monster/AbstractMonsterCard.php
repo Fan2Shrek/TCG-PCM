@@ -18,9 +18,14 @@ abstract class AbstractMonsterCard extends AbstractCard
     protected bool $canAttack = true;
 
     protected int $bonusAttack = 0;
+    protected ?int $forcedAttack = null;
 
     public function getAttack(): int
     {
+        if (null !== $this->forcedAttack) {
+            return max(0, $this->forcedAttack);
+        }
+
         $value = $this->getValue($this->getBaseAttack() + $this->bonusAttack, true);
 
         /** @var PowerBoostEffect|null $boost */
@@ -46,6 +51,7 @@ abstract class AbstractMonsterCard extends AbstractCard
         $this->currentHealthPoints = $state->currentHealthPoints;
         $this->canAttack = $state->canAttack;
         $this->bonusAttack = (int) ($state->values['bonusAttack'] ?? 0);
+        $this->forcedAttack = isset($state->values['forcedAttack']) ? (int) $state->values['forcedAttack'] : null;
     }
 
     public function onMonsterPlayed(GameContext $context): void
@@ -61,6 +67,11 @@ abstract class AbstractMonsterCard extends AbstractCard
     public function canAttack(): bool
     {
         return $this->canAttack;
+    }
+
+    public function attacksAllOpponents(): bool
+    {
+        return false;
     }
 
     public function getCurrentHealthPoints(): int

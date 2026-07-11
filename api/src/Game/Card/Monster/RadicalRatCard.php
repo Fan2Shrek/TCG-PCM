@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Game\Card\Monster;
+
+use App\Enum\CardRarityEnum;
+use App\Enum\CardSetEnum;
+use App\Game\GameContext;
+use App\Game\GameUtils;
+
+final class RadicalRatCard extends AbstractMonsterCard
+{
+    public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
+
+    private const HEALTH_POINTS = 12;
+    private const ATTACK = 5;
+
+    public function getId(): string
+    {
+        return 'RadicalRat';
+    }
+
+    public function getBaseAttack(): int
+    {
+        return self::ATTACK;
+    }
+
+    public function getHealPoints(): int
+    {
+        return self::HEALTH_POINTS;
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::ATTACK, true),
+        ]);
+    }
+
+    public function onMonsterPlayed(GameContext $context): void
+    {
+        $this->damageAllOpponents($context);
+    }
+
+    public function onMonsterDeath(GameContext $context): void
+    {
+        $this->damageAllOpponents($context);
+    }
+
+    private function damageAllOpponents(GameContext $context): void
+    {
+        $opponentState = $context->getPlayerStateById($context->getOtherPlayerId($this->getOwnerId()));
+
+        foreach ([...$opponentState->playArea->monsterCards, $opponentState->characterCardId] as $targetId) {
+            $context->damageCard($targetId, $this->getValue(self::ATTACK, true));
+        }
+    }
+}

@@ -42,9 +42,17 @@ return [
             'name' => 'Pierre a dit "Pas de Zone Monstre"',
             'description' => 'Défaussez tous les monstres actifs',
         ],
-        'Pillules' => [
+        'Bomb' => [
+            'name' => 'Bombe',
+            'description' => 'Inflige {{value}} dégâts à tous les monstres en jeu.',
+        ],
+        'Pills' => [
             'name' => 'Pillules !',
-            'description' => 'Effet aléatoire : perdre 5 PV, récupérer 10 PV, donner +5 dégâts à un de vos monstres, soigner un de vos monstres de 5 PV, donner -3 dégâts à un de vos monstres, ou infliger 3 dégâts à un de vos monstres.',
+            'description' => 'Effet aléatoire !',
+        ],
+        'Horsepill' => [
+            'name' => 'Pillule de cheval !!!',
+            'description' => 'Effet très aléatoire !!!',
         ],
         'Placenta' => [
             'name' => 'Placenta',
@@ -60,7 +68,7 @@ return [
         ],
         'Clotty' => [
             'name' => 'Coagulé',
-            'description' => 'Un petit monstre dangereux.',
+            'description' => 'Un potit monstre.',
         ],
             'GrilledClotty' => [
                 'name' => 'Coagulé grillé',
@@ -70,7 +78,15 @@ return [
                 'name' => 'Henry',
                 'description' => 'Est défaussé au début du prochain tour de son propriétaire.',
             ],
+            'RadicalRat' => [
+                'name' => 'Rat Radical',
+                'description' => 'Lorsqu\'il est joué ou qu\'il meurt, inflige {{value}} dégâts à tous les monstres et personnages adverses.',
+            ],
         'ConsolationPrice' => [
+            'name' => 'Prix de consolation',
+            'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
+        ],
+        'consolation_prices' => [
             'name' => 'Prix de consolation',
             'description' => 'Chaque mort de monstre accorde {{value}} pièces au joueur.',
         ],
@@ -97,6 +113,10 @@ return [
         'Necromancian' => [
             'name' => 'Nécromancien',
             'description' => 'Ressuscite une carte aléatoire à la fin du tour.',
+        ],
+        'Isaac' => [
+            'name' => 'Isaac',
+            'description' => 'Inflige 5 dégâts à une carte adverse aléatoire à chaque tour.',
         ],
         'Communism' => [
             'name' => 'Communisme',

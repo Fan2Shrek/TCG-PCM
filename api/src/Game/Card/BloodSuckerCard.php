@@ -24,7 +24,7 @@ final class BloodSuckerCard extends AbstractPassiveCard implements TurnAwareInte
     public function getDescription(): string
     {
         return GameUtils::formatDescription(parent::getDescription(), [
-            $this->getValue(self::DAMAGE, true),
+            'value' => $this->getValue(self::DAMAGE, true),
         ]);
     }
 

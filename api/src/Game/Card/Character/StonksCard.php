@@ -26,7 +26,7 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
 
     public function getHealthPoints(): int
     {
-        return 3000;
+        return 150;
     }
 
     public function getDescription(): string

@@ -21,7 +21,7 @@ final class NecromancianCard extends AbstractCharacterCard implements TurnAwareI
 
     public function getHealthPoints(): int
     {
-        return 2500;
+        return 150;
     }
 
     public function onTurnEnd(GameContext $gameContext): void

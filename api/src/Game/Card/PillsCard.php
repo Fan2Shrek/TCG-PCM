@@ -21,7 +21,7 @@ final class PillsCard extends AbstractPlayableCard
 
     public function getId(): string
     {
-        return 'Pillules';
+        return 'Pills';
     }
 
     public function play(GameContext $context, array $data = []): void

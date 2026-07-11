@@ -42,9 +42,17 @@ return [
             'name' => 'Pierre Said "No Monster Zone"',
             'description' => 'Discard all active monsters',
         ],
-        'Pillules' => [
-            'name' => 'Pillules!',
-            'description' => 'Random effect: lose 5 HP, heal 10 HP, give +5 damage to one ally monster, heal one ally monster by 5, give -3 damage to one ally monster, or deal 3 damage to one ally monster.',
+        'Bomb' => [
+            'name' => 'Bomb',
+            'description' => 'Deal {{value}} damage to all monsters in play.',
+        ],
+        'Pills' => [
+            'name' => 'Pills!',
+            'description' => 'Random effect!',
+        ],
+        'Horsepill' => [
+            'name' => 'Horsepill!',
+                'description' => 'Very random effect!!!',
         ],
         'Placenta' => [
             'name' => 'Placenta',
@@ -70,7 +78,15 @@ return [
             'name' => 'Henry',
             'description' => 'Discarded at the start of its owner\'s next turn.',
         ],
+        'RadicalRat' => [
+            'name' => 'Radical Rat',
+            'description' => 'When it is played or dies, it deals {{value}} damage to every opposing monster and the opposing character at the same time.',
+        ],
         'ConsolationPrice' => [
+            'name' => 'Consolation Price',
+            'description' => 'Each monster death grans {{value}} gold to the player.',
+        ],
+        'consolation_prices' => [
             'name' => 'Consolation Price',
             'description' => 'Each monster death grans {{value}} gold to the player.',
         ],
@@ -97,6 +113,10 @@ return [
         'Necromancian' => [
             'name' => 'Necromancian',
             'description' => 'Redrawn a card, at the end of turn.',
+        ],
+        'Isaac' => [
+            'name' => 'Isaac',
+            'description' => 'Deal 5 damage to a random opponent card each turn.',
         ],
         'Communism' => [
             'name' => 'Communism',
