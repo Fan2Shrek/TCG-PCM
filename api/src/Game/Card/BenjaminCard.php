@@ -33,6 +33,11 @@ final class BenjaminCard extends AbstractPlayableCard
         ]);
     }
 
+    public function requiresTarget(): bool
+    {
+        return true;
+    }
+
     public function play(GameContext $context, array $data = []): void
     {
         for ($i = 0; $i < $this->getValue(self::CARD_COUNT, true); $i++) {

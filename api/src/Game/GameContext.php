@@ -228,9 +228,9 @@ class GameContext
         $this->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, ['playerId' => $playerId, 'cardTemplateId' => $cardId, 'cardInstanceId' => $id]);
     }
 
-    public function damageCard(string $cardId, int $damage): void
+    public function damageCard(string $targetId, int $damage): void
     {
-        $this->pushGameEvent(GameEventTypeEnum::ATTACK, ['cardId' => $cardId, 'damage' => $damage]);
+        $this->pushGameEvent(GameEventTypeEnum::DAMAGE, ['targetId' => $targetId, 'damage' => $damage]);
     }
 
     public function getPlayerStateById(string $playerId): PlayerState
