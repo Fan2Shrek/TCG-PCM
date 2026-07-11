@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
+import { BoosterTokensProvider } from "@/contexts/BoosterTokensContext";
+import { RoomProvider } from "@/contexts/RoomContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}>
+    <html
+      lang="fr"
+      className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}
+    >
       <body className={`antialiased bg-background`}>
-        {children}
+        <Toaster />
+        <RoomProvider>
+          <BoosterTokensProvider>{children}</BoosterTokensProvider>
+        </RoomProvider>
       </body>
     </html>
   );

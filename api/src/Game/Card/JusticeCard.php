@@ -3,11 +3,13 @@
 namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 
 final class JusticeCard extends AbstractPlayableCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::RARE;
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     public function getId(): string
     {

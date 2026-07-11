@@ -5,6 +5,7 @@ namespace App\Entity\Inventory;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Api\Provider\InventoryProvider;
+use App\Api\Provider\InventorySetStatsProvider;
 use App\Entity\User;
 use App\Repository\Inventory\InventoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: InventoryRepository::class)]
 #[ApiResource(operations: [
     new Get(uriTemplate: '/inventory', provider: InventoryProvider::class),
+    new Get(uriTemplate: '/inventory/stats', provider: InventorySetStatsProvider::class),
 ])]
 class Inventory
 {

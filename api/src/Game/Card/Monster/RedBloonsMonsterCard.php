@@ -18,11 +18,6 @@ final class RedBloonsMonsterCard extends AbstractMonsterCard
         return 'Redbloons';
     }
 
-    public function getImage(): string
-    {
-        return 'https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fbloons-td-battles.fandom.com%2Fwiki%2FRed_Bloon&ved=0CBYQjRxqFwoTCOjs45WFnZMDFQAAAAAdAAAAABAH&opi=89978449';
-    }
-
     public function getBaseAttack(): int
     {
         return self::ATTACK;

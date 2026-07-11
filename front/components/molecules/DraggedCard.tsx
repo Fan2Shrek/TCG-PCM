@@ -74,7 +74,12 @@ export default function DraggedCard({
 
   const portal = (
     <div style={style}>
-      <Card card={card} size={currentSize} tilt={currentTilt} />
+      <Card
+        card={card}
+        size={currentSize}
+        tilt={currentTilt}
+        showLoadingUntilReady
+      />
     </div>
   );
 

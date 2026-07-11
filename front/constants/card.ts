@@ -3,6 +3,7 @@ export enum CardSize {
   MD = "md",
   LG = "lg",
   XL = "xl",
+  XLL = "2xl",
 }
 
 export enum CardRaririty {
@@ -37,6 +38,7 @@ export const CardSizeMap: Record<CardSize, string> = {
   [CardSize.MD]: "w-card-md",
   [CardSize.LG]: "w-card-lg",
   [CardSize.XL]: "w-card-xl",
+  [CardSize.XLL]: "w-card-2xl",
 } as const;
 
 export enum FoilEffects {

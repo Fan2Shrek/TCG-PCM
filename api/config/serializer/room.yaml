@@ -8,3 +8,15 @@ App\Entity\Room:
             groups:
                 - api:room:create
                 - api:room:list
+        opponent:
+            groups:
+                - api:room:list
+        status:
+            groups:
+                - api:room:list
+        winnerId:
+            groups:
+                - api:room:list
+        isPrivate:
+            groups:
+                - api:room:list

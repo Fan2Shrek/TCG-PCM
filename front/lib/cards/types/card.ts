@@ -19,11 +19,13 @@ export type BasicCard = {
   cost?: number;
   hp?: number;
   attack?: number;
+  isNewToCollection?: boolean;
 };
 
 export type CardLayer = {
   src: string;
   depth: number;
+  isIllustration?: boolean;
   alt?: string | null;
   foilEffect?: FoilEffect | null;
   foil?: string | null;

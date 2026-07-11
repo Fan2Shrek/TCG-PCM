@@ -1,14 +1,24 @@
 import Image from "../Image";
 
 type BoosterSlotProps = {
-  className?: string,
+  className?: string;
+  animationDurationMs?: number;
 };
 
-export default ({ className }: BoosterSlotProps) => {
-
-    const boosterPath: string = 'menu/booster_pending.jpg';
+export default ({
+  className,
+  animationDurationMs = 6000,
+}: BoosterSlotProps) => {
+  const boosterPath: string = "/booster/pending_booster.webp";
 
   return (
-    <Image src={boosterPath} alt="Booster" width={32} height={32} className={`${className || ''}`} />
+    <Image
+      src={boosterPath}
+      alt="Booster"
+      width={32}
+      height={32}
+      className={`animate-booster-title-float ${className || ""}`}
+      style={{ animationDuration: `${animationDurationMs}ms` }}
+    />
   );
-}
+};

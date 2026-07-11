@@ -1,9 +1,9 @@
 import { serverApiGet } from "@/lib/api/server";
 import InteractiveCard from "@/components/molecules/InteractiveCard";
-import { CardModel } from "@/lib/cards/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 
 type InventoryResponse = {
-	cards: { card: CardModel; quantity: number }[];
+	cards: { card: BasicCard; quantity: number }[];
 };
 
 export default async function Inventory() {

@@ -26,7 +26,6 @@ final class EndGameMiddleware implements GameMiddlewareInterface
 
             $this->endGameHandler->endGame(
                 $gameId,
-                $gamePipelineContext->getGameState(),
                 $player1->healthPoints <= 0 ? $player2->player->id : $player1->player->id,
             );
         }

@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Enum\RoomStatusEnum;
-use App\Game\State\GameState;
 use App\Repository\RoomRepository;
 use App\Service\Game\EndGameHandlerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 final class EndGameHandler implements EndGameHandlerInterface
 {
     public function __construct(
         private RoomRepository $roomRepository,
         private EntityManagerInterface $em,
+        private HubInterface $hub,
     ) {}
 
-    public function endGame(string $gameId, GameState $gameState, string $winnerId): void
+    public function endGame(string $gameId, string $winnerId): void
     {
         if (!($room = $this->roomRepository->find($gameId))) {
             throw new \LogicException('Room not found for game ID: '.$gameId);
@@ -27,5 +29,16 @@ final class EndGameHandler implements EndGameHandlerInterface
         $room->setWinnerId($winnerId);
 
         $this->em->flush();
+
+        $topic = \sprintf('game/%s', $gameId);
+        $payload = json_encode([
+            'type' => 'game_finished',
+            'data' => [
+                'roomId' => $gameId,
+                'winnerId' => $winnerId,
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->hub->publish(new Update($topic, $payload, true));
     }
 }

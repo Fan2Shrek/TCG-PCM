@@ -22,6 +22,7 @@ final class GenerateBoosterTokensHandler
 
         return [
             'tokens' => $this->userGenerateBoosterTokens->generate($user),
+            'lastBoosterTokensAt' => $user->getUserInfo()->getLastBoosterTokensAt(),
         ];
     }
 }

@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import { GameContext } from "@/contexts/GameContext";
 import { PlayerState } from "@/lib/game/type/gameState";
-import Card from "../Card";
+import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { CardSize } from "@/constants/card";
 import { emitter } from "@/lib/eventBus";
 
@@ -46,7 +46,7 @@ export default function PlayerCharacterDisplay({
       }}
     >
       <div className={isHovered ? "blue-pulse rounded-xl" : ""}>
-        <Card card={playerCard} size={CardSize.LG} />
+        <CardWithZoom card={playerCard} size={CardSize.LG} />
       </div>
     </div>
   );

@@ -19,11 +19,12 @@ export const CARD_HAND_MIN_ARC_ANGLE = 10;
 export const CARD_HAND_ARC_ANGLE_SCALE = 10;
 export const DEGREES_TO_RADIANS = Math.PI / 180;
 
-export const CARD_WIDTH_PX = {
-  sm: 112,
-  md: 144,
-  lg: 176,
-  xl: 352,
+export const CARD_WIDTH_PX: Record<CardSize, number> = {
+  [CardSize.SM]: 112,
+  [CardSize.MD]: 144,
+  [CardSize.LG]: 176,
+  [CardSize.XL]: 352,
+  [CardSize.XLL]: 704,
 };
 
 export const CARD_ASPECT_RATIO = 5 / 7;

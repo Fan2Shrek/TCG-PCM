@@ -1,24 +1,46 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 
 type MenuItemProps = {
-  label: string,
-  icon: ReactNode,
-  linkTo: string,
-  active: boolean,
-  className?: string,
+  label: string;
+  icon: ReactNode;
+  linkTo?: string;
+  onClick?: () => void;
+  active: boolean;
+  className?: string;
 };
 
-export default ({ label, icon, linkTo, active, className }: MenuItemProps) => {
-
+export default function MenuItem({
+  label,
+  icon,
+  linkTo,
+  onClick,
+  active,
+  className,
+}: MenuItemProps) {
   return (
-    <li className={`flex flex-row flex-nowrap items-center text-white ${className || ''}`}>
+    <li className={`flex items-center gap-1 text-white ${className ?? ""}`}>
       <span className="text-3xl">{icon}</span>
-      <a
-        href={linkTo}
-        className={`text-lg font-bold hover:underline ${active ? 'text-yellow-400 decoration-yellow-400' : 'text-white'}`}
-      >
-        {label}
-      </a>
+
+      {onClick ? (
+        <button
+          onClick={onClick}
+          className={`text-lg font-bold hover:underline whitespace-nowrap cursor-pointer ${
+            active ? "text-yellow-400 decoration-yellow-400" : "text-white"
+          }`}
+        >
+          {label}
+        </button>
+      ) : (
+        <Link
+          href={linkTo!}
+          className={`text-lg font-bold hover:underline whitespace-nowrap ${
+            active ? "text-yellow-400 decoration-yellow-400" : "text-white"
+          }`}
+        >
+          {label}
+        </Link>
+      )}
     </li>
   );
 }
