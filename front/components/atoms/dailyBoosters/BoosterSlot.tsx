@@ -9,7 +9,7 @@ export default ({
   className,
   animationDurationMs = 6000,
 }: BoosterSlotProps) => {
-  const boosterPath: string = "/menu/booster_pending.jpg";
+  const boosterPath: string = "/booster/pending_booster.webp";
 
   return (
     <Image

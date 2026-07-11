@@ -11,6 +11,7 @@ import { useBoosterOpeningFlow } from "@/lib/boosterOpening/hooks/useBoosterOpen
 import { useBoosterCarousel } from "@/hooks/useBoosterCarousel";
 import { useWindowWidth } from "@/hooks/useWindowWidth";
 import api from "@/lib/api/api";
+import { BasicCard } from "@/lib/cards/types/card";
 import { BoosterOpeningPhase } from "@/lib/boosterOpening/phases";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaTrophy } from "react-icons/fa";
@@ -36,6 +37,12 @@ const TITLE_IMAGE_BY_TYPE: Record<BoosterType, string> = {
   [BoosterType.ISAAC]: "/booster/isaac_title.webp",
 };
 
+const TITLE_TEXT_BY_TYPE: Record<BoosterType, string> = {
+  [BoosterType.BTD]: "Bloon Tower Defense",
+  [BoosterType.ORIGINAL]: "Original",
+  [BoosterType.ISAAC]: "The Binding of Isaac",
+};
+
 export default function BoostersPage() {
   const { frontBooster, rotateTo, getBoosterStyle } =
     useBoosterCarousel(BOOSTERS);
@@ -44,6 +51,9 @@ export default function BoostersPage() {
 
   const [statsBySet, setStatsBySet] = useState<
     Record<string, InventorySetStat>
+  >({});
+  const [boosterCardsByType, setBoosterCardsByType] = useState<
+    Partial<Record<BoosterType, BasicCard[]>>
   >({});
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const previousFlowActiveRef = useRef(false);
@@ -84,9 +94,39 @@ export default function BoostersPage() {
     }
   }, []);
 
+  const loadBoosterCardsForType = useCallback(
+    async (boosterType: BoosterType) => {
+      if (boosterCardsByType[boosterType] !== undefined) {
+        return;
+      }
+
+      try {
+        const response = (await api.booster.getObtainableCards(
+          boosterType,
+        )) as { cards: BasicCard[] };
+
+        setBoosterCardsByType((previous) => ({
+          ...previous,
+          [boosterType]: response.cards,
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [boosterCardsByType],
+  );
+
   useEffect(() => {
     void loadInventorySetStats();
   }, [loadInventorySetStats]);
+
+  useEffect(() => {
+    if (!isPreviewOpen) {
+      return;
+    }
+
+    void loadBoosterCardsForType(frontBooster.boosterType);
+  }, [frontBooster.boosterType, isPreviewOpen, loadBoosterCardsForType]);
 
   useEffect(() => {
     const wasFlowActive = previousFlowActiveRef.current;
@@ -101,6 +141,11 @@ export default function BoostersPage() {
   const currentSetStats = useMemo(() => {
     return statsBySet[frontBooster.id];
   }, [frontBooster, statsBySet]);
+
+  const previewCards = boosterCardsByType[frontBooster.boosterType] ?? [];
+  const previewTitle = TITLE_TEXT_BY_TYPE[frontBooster.boosterType];
+  const isPreviewLoading =
+    isPreviewOpen && boosterCardsByType[frontBooster.boosterType] === undefined;
 
   const completionRatio =
     currentSetStats && currentSetStats.totalCards > 0
@@ -131,7 +176,7 @@ export default function BoostersPage() {
       />
 
       <div
-        className={`relative w-full h-120 z-30 ${
+        className={`relative md:mt-30 w-full h-120 z-30 ${
           canInteractWithCarousel ? "" : "pointer-events-none"
         }`}
         style={{ perspective: 1800 }}
@@ -168,6 +213,11 @@ export default function BoostersPage() {
                 openingPhase={phase}
                 shotCardCount={obtainedCards.length}
                 isSmallScreen={isSmallScreen}
+                previewCards={previewCards}
+                previewTitle={previewTitle}
+                ownedCards={currentSetStats?.ownedCards ?? 0}
+                totalCards={currentSetStats?.totalCards ?? 0}
+                isPreviewLoading={isPreviewLoading}
                 onRotateTo={rotateTo}
                 onPreviewChange={(open) => {
                   if (open) {

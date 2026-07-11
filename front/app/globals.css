@@ -293,6 +293,20 @@
   .animate-cards-results-exit {
     animation: cardsResultsExit 0.5s ease-in forwards;
   }
+
+  @keyframes boosterPreviewMarquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-booster-preview-marquee {
+    animation: boosterPreviewMarquee 28s linear infinite;
+  }
 }
 
 @theme inline {

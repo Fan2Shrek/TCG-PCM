@@ -1,6 +1,8 @@
 "use client";
 
 import type { Booster } from "@/app/types/booster";
+import type { BasicCard } from "@/lib/cards/types/card";
+import BoosterPreviewPanel from "./BoosterPreviewPanel";
 import InteractiveBooster, {
   BoosterMotionType,
 } from "@/components/molecules/boosters/InteractiveBooster";
@@ -19,6 +21,11 @@ type SelectableBoosterProps = {
   openingPhase: BoosterOpeningPhase;
   shotCardCount: number;
   isSmallScreen: boolean;
+  previewCards: BasicCard[];
+  previewTitle: string;
+  ownedCards: number;
+  totalCards: number;
+  isPreviewLoading: boolean;
   onRotateTo: (index: number) => void;
   onPreviewChange: (open: boolean) => void;
   onConfirmOpen: () => void;
@@ -33,6 +40,11 @@ export default function SelectableBooster({
   openingPhase,
   shotCardCount,
   isSmallScreen,
+  previewCards,
+  previewTitle,
+  ownedCards,
+  totalCards,
+  isPreviewLoading,
   onRotateTo,
   onPreviewChange,
   onConfirmOpen,
@@ -89,7 +101,7 @@ export default function SelectableBooster({
           transform: shouldStayInPreviewPosition
             ? isSmallScreen
               ? "translateY(-110px) rotate(1080deg)"
-              : "translateX(-220px) rotate(1080deg)"
+              : "translateX(-160px) rotate(1080deg)"
             : "translate(0, 0) rotate(0deg)",
         }}
       >
@@ -119,23 +131,17 @@ export default function SelectableBooster({
         </p>
       </div>
 
-      <div
-        className={`absolute transition-opacity duration-700 ease-in-out
-          ${
-            isSmallScreen
-              ? "left-1/2 -translate-x-1/2 top-[calc(50%+190px)] w-[min(90vw,24rem)]"
-              : "left-12.5 top-1/2 -translate-y-1/2 w-[min(40vw,26rem)]"
-          } ${isFrontPreviewOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div
-          className={`border-2 border-white bg-primary text-white rounded-xl p-4 transition-transform duration-700 ease-in-out ${
-            isFrontPreviewOpen ? "translate-x-0" : "translate-x-[120vw]"
-          }`}
-        >
-          Texte a venir
-        </div>
-      </div>
+      <BoosterPreviewPanel
+        isVisible={isFrontPreviewOpen}
+        isSmallScreen={isSmallScreen}
+        title={previewTitle}
+        cards={previewCards}
+        ownedCards={ownedCards}
+        totalCards={totalCards}
+        isLoading={isPreviewLoading}
+        shouldRenderCards={!isAnimatingPreview}
+        onBack={() => onPreviewChange(false)}
+      />
     </div>
   );
 }

@@ -15,8 +15,10 @@ import {
 import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
+import LoadingSpinner from "@/components/atoms/LoadingSpinner";
 
 import { convertDescriptions } from "@/lib/game/cardUtils";
+import { useEffect, useState } from "react";
 
 export type CardViewProps = {
   card: BasicCard;
@@ -26,6 +28,7 @@ export type CardViewProps = {
   isHovering?: boolean;
   style?: React.CSSProperties;
   className?: string;
+  showLoadingUntilReady?: boolean;
 };
 
 const Card = ({
@@ -36,7 +39,14 @@ const Card = ({
   isHovering,
   style,
   className,
+  showLoadingUntilReady = false,
 }: CardViewProps) => {
+  const [isCardReady, setIsCardReady] = useState(!showLoadingUntilReady);
+
+  useEffect(() => {
+    setIsCardReady(!showLoadingUntilReady);
+  }, [card, showLoadingUntilReady, size]);
+
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
@@ -165,9 +175,19 @@ const Card = ({
         cardDescription={card.description}
         cardType={card.type ?? CardType.CONSUMABLE}
         cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
+        onReadyStateChange={
+          showLoadingUntilReady
+            ? (isReady) => setIsCardReady(isReady)
+            : undefined
+        }
       />
       <CardBack />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
+      {showLoadingUntilReady && !isCardReady ? (
+        <div className="absolute inset-0 z-50 flex items-center justify-center rounded-sm bg-black/35">
+          <LoadingSpinner className="h-6 w-6" />
+        </div>
+      ) : null}
     </div>
   );
 };
