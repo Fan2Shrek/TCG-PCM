@@ -5,6 +5,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { BoosterTokensProvider } from "@/contexts/BoosterTokensContext";
 import { RoomProvider } from "@/contexts/RoomContext";
+import { getCurrentUser } from "@/lib/auth/session";
+import { serverApiGet } from "@/lib/api/server";
+import { Room } from "@/types/room";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +32,28 @@ export const metadata: Metadata = {
   description: "Bla bla bla",
 };
 
-export default function RootLayout({
+async function getInitialRoom(): Promise<Room | null> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return null;
+  }
+
+  try {
+    const response = await serverApiGet<Room[] | Room | null>("/me/room");
+    return Array.isArray(response) ? (response[0] ?? null) : (response ?? null);
+  } catch {
+    return null;
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialRoom = await getInitialRoom();
+
   return (
     <html
       lang="fr"
@@ -41,7 +61,7 @@ export default function RootLayout({
     >
       <body className={`antialiased bg-background`}>
         <Toaster />
-        <RoomProvider>
+        <RoomProvider initialRoom={initialRoom}>
           <BoosterTokensProvider>{children}</BoosterTokensProvider>
         </RoomProvider>
       </body>

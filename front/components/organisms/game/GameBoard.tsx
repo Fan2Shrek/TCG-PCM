@@ -5,6 +5,7 @@ import type { GameAnnouncement } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
@@ -65,6 +66,13 @@ export default function GameBoard() {
       mediaQuery.removeEventListener("change", updateDeviceType);
     };
   }, []);
+
+  useEffect(() => {
+    if (userRoom && currentUsername && userRoom.id !== id) {
+      router.push("/rooms");
+      toast.error("Vous n'avez pas accès à cette partie");
+    }
+  }, [userRoom, id, currentUsername, router]);
 
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",

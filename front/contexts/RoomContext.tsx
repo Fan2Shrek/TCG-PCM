@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   ReactNode,
 } from "react";
@@ -22,11 +23,17 @@ interface RoomContextType {
 
 const RoomContext = createContext<RoomContextType | undefined>(undefined);
 
-export function RoomProvider({ children }: { children: ReactNode }) {
+type RoomProviderProps = {
+  children: ReactNode;
+  initialRoom?: Room | null;
+};
+
+export function RoomProvider({ children, initialRoom = null }: RoomProviderProps) {
   const { user: currentUser } = useCurrentUser();
-  const [userRoom, setUserRoom] = useState<Room | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userRoom, setUserRoom] = useState<Room | null>(initialRoom);
+  const [isLoading, setIsLoading] = useState(initialRoom === null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
+  const hasHydrated = useRef(false);
 
   const clearRoom = () => {
     setUserRoom(null);
@@ -44,6 +51,12 @@ export function RoomProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (!hasHydrated.current && initialRoom !== null) {
+      hasHydrated.current = true;
+      return;
+    }
+
+    hasHydrated.current = true;
     refetchRoom().then(() => setIsLoading(false));
   }, []);
 
