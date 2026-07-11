@@ -45,7 +45,9 @@ final class GameStateConverter
         }
 
         if ($template instanceof AbstractMonsterCard) {
-            $hp = $template->getHealPoints();
+            $hp = $state instanceof MonsterCardState
+                ? $template->getCurrentHealthPoints()
+                : $template->getHealPoints();
             $attack = $template->getAttack();
         }
 

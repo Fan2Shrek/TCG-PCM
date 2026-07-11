@@ -57,8 +57,9 @@ final class GameEventPresenter
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
                 'total' => $state->getPlayer($player)->coins,
             ],
-            GameEventTypeEnum::HEAL, GameEventTypeEnum::DAMAGE => [
-                'total' => $state->getPlayer($player)->healthPoints,
+            GameEventTypeEnum::HEAL, GameEventTypeEnum::DAMAGE => $this->healthView($event, $state),
+            GameEventTypeEnum::MONSTER_DIED => [
+                'cardId' => $event->data['cardId'] ?? null,
             ],
             default => [],
         };
@@ -132,5 +133,27 @@ final class GameEventPresenter
             'effects' => $card->effects,
             'isActive' => $card->isActive,
         ], static fn(mixed $value): bool => null !== $value);
+    }
+
+    private function healthView(GameEvent $event, GameState $state): array
+    {
+        $targetId = $event->data['targetId'] ?? null;
+
+        if (!\is_string($targetId)) {
+            return [];
+        }
+
+        $cardState = $state->getCardState($targetId);
+
+        if (null !== $cardState) {
+            return [
+                'cardId' => $targetId,
+                'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($cardState)),
+            ];
+        }
+
+        return [
+            'total' => $state->getPlayer($targetId)->healthPoints,
+        ];
     }
 }
