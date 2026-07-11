@@ -205,17 +205,14 @@ export default function CardRevealFlow({
           onClick={(event) => event.stopPropagation()}
           className={`relative z-10 w-full max-w-6xl flex flex-col items-center gap-6 transition-opacity duration-500 ${cardsContainerClassName}`}
         >
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5 lg:gap-6 place-items-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 place-items-center">
             {cards.map((card, index) => (
               <div
                 key={getCardRenderKey(card, index)}
                 className="relative inline-flex items-center justify-center"
               >
                 {card.isNewToCollection ? (
-                  <NewCardBadge
-                    compact
-                    className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 translate-y-[-120%]"
-                  />
+                  <NewCardBadge className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 translate-y-[-120%]" />
                 ) : null}
                 <InteractiveCard
                   card={card}

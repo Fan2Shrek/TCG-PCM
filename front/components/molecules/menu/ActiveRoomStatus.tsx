@@ -9,7 +9,11 @@ import { toast } from "sonner";
 import { useState } from "react";
 import ConfirmActionModal from "@/components/molecules/ConfirmActionModal";
 
-export default function ActiveRoomStatus() {
+type ActiveRoomStatusProps = {
+  className?: string;
+};
+
+export default function ActiveRoomStatus({ className }: ActiveRoomStatusProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { userRoom, clearRoom } = useRoom();
@@ -65,7 +69,11 @@ export default function ActiveRoomStatus() {
 
   return (
     <>
-      <div className="mt-2 rounded-lg border border-black/20 bg-slate-100 p-3 flex items-center justify-between max-w-md ml-auto">
+      <div
+        className={`mt-2 rounded-lg border border-black/20 bg-slate-100 p-3 flex items-center justify-between max-w-md ml-auto ${
+          className ?? ""
+        }`}
+      >
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <span className="text-sm font-medium text-black">

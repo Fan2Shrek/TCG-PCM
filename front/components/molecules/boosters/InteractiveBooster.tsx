@@ -38,6 +38,25 @@ export default function InteractiveBooster({
   const HOVER_SHAKE_DURATION = 0.15;
   const [isHovering, setIsHovering] = useState(false);
 
+  const seededMotion = useMemo(() => {
+    const seedSource = `${boosterType}:${className ?? ""}`;
+    let hash = 0;
+
+    for (let i = 0; i < seedSource.length; i += 1) {
+      hash = (hash * 31 + seedSource.charCodeAt(i)) >>> 0;
+    }
+
+    const unit = (offset: number) => ((hash >> offset) & 1023) / 1023;
+
+    return {
+      duration: 4.5 + unit(0) * 1.5,
+      delay: -unit(10) * 5,
+      rotate: 1 + unit(20) * 1.5,
+      rotateX: 1 + unit(4) * 1.5,
+      translate: 1 + unit(14) * 1.1,
+    };
+  }, [boosterType, className]);
+
   const handleClick = useCallback(() => {
     onClick?.(boosterType);
   }, [boosterType, onClick]);
@@ -57,11 +76,11 @@ export default function InteractiveBooster({
   const animationStyle = useMemo(
     () =>
       ({
-        "--duration": `${4.5 + Math.random() * 1.5}s`,
-        "--delay": `${-Math.random() * 5}s`,
-        "--rotate": `${1 + Math.random() * 1.5}deg`,
-        "--rotateX": `${1 + Math.random() * 1.5}deg`,
-        "--translate": `${1 + Math.random() * 1.1}px`,
+        "--duration": `${seededMotion.duration}s`,
+        "--delay": `${seededMotion.delay}s`,
+        "--rotate": `${seededMotion.rotate}deg`,
+        "--rotateX": `${seededMotion.rotateX}deg`,
+        "--translate": `${seededMotion.translate}px`,
         "--shake-duration": `${
           isCursorAvailable &&
           motionType === BoosterMotionType.SHAKE &&
@@ -70,7 +89,7 @@ export default function InteractiveBooster({
             : BASE_SHAKE_DURATION
         }s`,
       }) as React.CSSProperties,
-    [isCursorAvailable, motionType, isHovering],
+    [seededMotion, isCursorAvailable, motionType, isHovering],
   );
 
   const motionClass =

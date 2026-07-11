@@ -4,7 +4,7 @@ framework:
 
     default_locale: fr
     enabled_locales: ["en", "fr"]
-    set_locale_from_accept_language: true
+    set_locale_from_accept_language: false
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true

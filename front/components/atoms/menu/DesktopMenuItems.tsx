@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 
-type MenuItemProps = {
+type DesktopMenuItemsProps = {
   label: string;
   icon: ReactNode;
   linkTo?: string;
@@ -10,14 +10,14 @@ type MenuItemProps = {
   className?: string;
 };
 
-export default function MenuItem({
+export default function DesktopMenuItems({
   label,
   icon,
   linkTo,
   onClick,
   active,
   className,
-}: MenuItemProps) {
+}: DesktopMenuItemsProps) {
   return (
     <li className={`flex items-center gap-1 text-white ${className ?? ""}`}>
       <span className="text-3xl">{icon}</span>
@@ -25,8 +25,8 @@ export default function MenuItem({
       {onClick ? (
         <button
           onClick={onClick}
-          className={`text-lg font-bold hover:underline whitespace-nowrap cursor-pointer ${
-            active ? "text-yellow-400 decoration-yellow-400" : "text-white"
+          className={`text-lg font-bold whitespace-nowrap cursor-pointer underline-offset-4 ${
+            active ? "underline" : "hover:underline"
           }`}
         >
           {label}
@@ -34,8 +34,8 @@ export default function MenuItem({
       ) : (
         <Link
           href={linkTo!}
-          className={`text-lg font-bold hover:underline whitespace-nowrap ${
-            active ? "text-yellow-400 decoration-yellow-400" : "text-white"
+          className={`text-lg font-bold whitespace-nowrap underline-offset-4 ${
+            active ? "underline" : "hover:underline"
           }`}
         >
           {label}

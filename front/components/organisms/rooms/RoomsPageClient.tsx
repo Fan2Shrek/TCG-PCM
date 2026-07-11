@@ -18,7 +18,9 @@ type RoomsPageClientProps = {
   initialRooms: Room[];
 };
 
-export default function RoomsPageClient({ initialRooms }: RoomsPageClientProps) {
+export default function RoomsPageClient({
+  initialRooms,
+}: RoomsPageClientProps) {
   const { userRoom } = useRoom();
   const [rooms, setRooms] = useState<Room[]>(initialRooms);
   const [currentPage, setCurrentPage] = useState(1);
@@ -144,9 +146,9 @@ export default function RoomsPageClient({ initialRooms }: RoomsPageClientProps) 
 
   return (
     <div className="flex flex-col items-center justify-center flex-1">
-      <div className="w-full max-w-4xl rounded-lg bg-slate-100 border border-black/40 overflow-hidden">
+      <div className="w-full max-w-4xl rounded-lg bg-slate-100 border border-black/40 overflow-hidden mx-2">
         <div className="p-6">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 flex-wrap">
             <h2 className="text-2xl font-semibold text-black">
               Joueurs en attente d'adversaires
             </h2>
