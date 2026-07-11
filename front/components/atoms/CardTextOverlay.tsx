@@ -13,6 +13,7 @@ type ZoneConfig = {
 };
 
 export type CardTextOverlayProps = {
+  readinessKey: string;
   cardTitle: string;
   cardDescription: string;
   cardType: CardType;
@@ -21,6 +22,7 @@ export type CardTextOverlayProps = {
 };
 
 const CardTextOverlay = ({
+  readinessKey,
   cardTitle,
   cardDescription,
   cardType,
@@ -55,6 +57,7 @@ const CardTextOverlay = ({
     setIsStatsReady(!shouldShowStats);
     setIsDescriptionReady(cardDescription.trim().length === 0);
   }, [
+    readinessKey,
     cardDescription,
     cardTitle,
     shouldShowStats,

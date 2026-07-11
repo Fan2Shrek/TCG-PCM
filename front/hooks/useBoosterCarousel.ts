@@ -29,10 +29,6 @@ export function useBoosterCarousel(
 
       let relative = index - frontIndex;
 
-      console.log("index", index);
-      console.log("frontIndex", frontIndex);
-
-      console.log(relative);
       const angle = (relative / count) * Math.PI * 2;
 
       const screenWidth = useWindowWidth();

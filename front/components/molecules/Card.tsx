@@ -16,8 +16,6 @@ import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
 import LoadingSpinner from "@/components/atoms/LoadingSpinner";
-
-import { convertDescriptions } from "@/lib/game/cardUtils";
 import { useEffect, useState } from "react";
 
 export type CardViewProps = {
@@ -45,7 +43,7 @@ const Card = ({
 
   useEffect(() => {
     setIsCardReady(!showLoadingUntilReady);
-  }, [card, showLoadingUntilReady, size]);
+  }, [card.instanceId, showLoadingUntilReady]);
 
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
@@ -171,6 +169,7 @@ const Card = ({
         tilt={appliedTilt}
         glare={appliedGlare}
         isHovering={!!isHovering}
+        readinessKey={card.instanceId}
         cardTitle={card.name}
         cardDescription={card.description}
         cardType={card.type ?? CardType.CONSUMABLE}

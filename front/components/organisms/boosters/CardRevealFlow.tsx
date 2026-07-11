@@ -186,6 +186,7 @@ export default function CardRevealFlow({
                 <NewCardBadge className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 translate-y-[-120%]" />
               ) : null}
               <InteractiveCard
+                key={getCardRenderKey(currentCard, currentCardIndex)}
                 card={currentCard}
                 size={isSmallScreen ? CardSize.XL : CardSize.XLL}
                 showLoadingUntilReady
