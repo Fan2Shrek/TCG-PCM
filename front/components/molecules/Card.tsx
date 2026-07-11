@@ -93,6 +93,9 @@ const Card = ({
         return null;
     }
   };
+  if (card.name === "Henry") {
+    console.log(card);
+  }
 
   const cardLayers: CardLayer[] = [
     {

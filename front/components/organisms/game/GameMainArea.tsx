@@ -32,6 +32,10 @@ const objectToArray = (value: object): string[] => {
   return Object.values(value).filter((v): v is string => typeof v === "string");
 };
 
+const objectKeysToArray = (value: object): string[] => {
+  return Object.keys(value);
+};
+
 export default function GameMainArea({
   className,
   selectedAttackerId,
@@ -68,7 +72,9 @@ export default function GameMainArea({
           {/* finally, this div contains the actual play area where everything happens. */}
           <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3">
             <div className="flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2">
-              <Cemetery cardIds={objectToArray(opponentState.discardPile)} />
+              <Cemetery
+                cardIds={objectKeysToArray(opponentState.discardPile)}
+              />
               <OpponentDrawPile
                 numCards={opponentState.drawPile.length}
                 isCardDragged={isCardDragged}
@@ -96,7 +102,6 @@ export default function GameMainArea({
               />
               <PlayerCharacterDisplay
                 player={opponentState}
-                isTargeting={selectedAttackerId !== null}
                 hoveredTargetId={hoveredTargetId}
                 onSelectTarget={onSelectTarget}
               />
@@ -107,7 +112,6 @@ export default function GameMainArea({
             <div className="flex flex-col col-span-1 items-center gap-2">
               <PlayerCharacterDisplay
                 player={currentState}
-                isTargeting={selectedAttackerId !== null}
                 hoveredTargetId={hoveredTargetId}
                 onSelectTarget={onSelectTarget}
               />
@@ -126,6 +130,7 @@ export default function GameMainArea({
                 )}
                 selectedCardId={selectedAttackerId}
                 onSelectCard={onSelectAttacker}
+                onSelectTarget={onSelectTarget}
                 hoveredTargetId={hoveredTargetId}
               />
             </div>
@@ -135,7 +140,7 @@ export default function GameMainArea({
                 isCardDragged={isCardDragged}
                 playerId={currentState.player.id}
               />
-              <Cemetery cardIds={objectToArray(currentState.discardPile)} />
+              <Cemetery cardIds={objectKeysToArray(currentState.discardPile)} />
             </div>
           </div>
         </div>

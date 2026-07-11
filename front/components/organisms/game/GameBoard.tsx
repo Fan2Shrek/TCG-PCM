@@ -28,6 +28,9 @@ export default function GameBoard() {
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
+  const [pendingPlayCardId, setPendingPlayCardId] = useState<string | null>(
+    null,
+  );
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
 
@@ -96,6 +99,14 @@ export default function GameBoard() {
 
   const handleAttackTarget = useCallback(
     (targetId: string) => {
+      if (pendingPlayCardId) {
+        actions.playCard(pendingPlayCardId, { target: targetId });
+        setPendingPlayCardId(null);
+        setHoveredTargetId(null);
+        setSelectedAttackerId(null);
+        return;
+      }
+
       if (!selectedAttackerId) {
         return;
       }
@@ -104,8 +115,13 @@ export default function GameBoard() {
       setHoveredTargetId(null);
       setSelectedAttackerId(null);
     },
-    [actions, selectedAttackerId],
+    [actions, pendingPlayCardId, selectedAttackerId],
   );
+
+  const cancelPendingPlayTarget = useCallback(() => {
+    setPendingPlayCardId(null);
+    setHoveredTargetId(null);
+  }, []);
 
   // Gère la sélection de cibles
   useEffect(() => {
@@ -118,7 +134,7 @@ export default function GameBoard() {
     };
 
     const handleTargetClick = (targetId: string) => {
-      if (selectedAttackerId) {
+      if (selectedAttackerId || pendingPlayCardId) {
         handleAttackTarget(targetId);
       }
     };
@@ -132,7 +148,7 @@ export default function GameBoard() {
       emitter.off("target:leave", handleTargetLeave);
       emitter.off("target:click", handleTargetClick);
     };
-  }, [selectedAttackerId, handleAttackTarget]);
+  }, [selectedAttackerId, pendingPlayCardId, handleAttackTarget]);
 
   // Gère quand carte laché dans zone de jeu
   useEffect(() => {
@@ -153,6 +169,17 @@ export default function GameBoard() {
         actions.pushAnnouncement({
           text: "Vous n'avez pas assez de pièces pour jouer cette carte.",
           tone: "negative",
+        });
+        return;
+      }
+
+      if (card.requiresTarget) {
+        setPendingPlayCardId(cardId);
+        setSelectedAttackerId(null);
+        setHoveredTargetId(null);
+        actions.pushAnnouncement({
+          text: "Choisissez une cible pour cette carte.",
+          tone: "neutral",
         });
         return;
       }
@@ -193,11 +220,22 @@ export default function GameBoard() {
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
 
   const handleBackgroundClick = () => {
-    if (selectedAttackerId) {
+    if (selectedAttackerId || pendingPlayCardId) {
       setHoveredTargetId(null);
       setSelectedAttackerId(null);
+      setPendingPlayCardId(null);
     }
   };
+
+  const isTargeting = selectedAttackerId !== null || pendingPlayCardId !== null;
+
+  useEffect(() => {
+    emitter.emit("game:targeting-changed", isTargeting);
+
+    return () => {
+      emitter.emit("game:targeting-changed", false);
+    };
+  }, [isTargeting]);
 
   const handCards = useMemo(() => {
     if (!currentState) {
@@ -331,6 +369,8 @@ export default function GameBoard() {
         <div className="absolute bottom-10 right-10 z-20">
           <GameActionButtons
             isLoggedPlayerTurn={isLoggedPlayerTurn}
+            showCancel={pendingPlayCardId !== null}
+            onCancel={cancelPendingPlayTarget}
             onEndTurn={actions.endTurn}
             onForfeit={handleForfeit}
           />

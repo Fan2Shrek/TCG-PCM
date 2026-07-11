@@ -6,11 +6,11 @@ import { PlayerState } from "@/lib/game/type/gameState";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { CardSize } from "@/constants/card";
 import { emitter } from "@/lib/eventBus";
+import useTargetingMode from "@/hooks/useTargetingMode";
 
 type PlayerCharacterDisplayProps = {
   player: PlayerState;
   className?: string;
-  isTargeting?: boolean;
   hoveredTargetId?: string | null;
   onSelectTarget?: (targetId: string) => void;
 };
@@ -18,10 +18,10 @@ type PlayerCharacterDisplayProps = {
 export default function PlayerCharacterDisplay({
   player,
   className = "",
-  isTargeting = false,
   hoveredTargetId,
   onSelectTarget,
 }: PlayerCharacterDisplayProps) {
+  const isTargeting = useTargetingMode();
   const { getCardById } = useContext(GameContext);
 
   const playerCard = getCardById(player.characterCardId);
