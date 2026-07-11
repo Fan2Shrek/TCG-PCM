@@ -23,6 +23,7 @@ export type InteractiveCardProps = {
   size?: CardSize;
   onHover?: (cardId: string) => void;
   onClick?: (cardId: string) => void;
+  showLoadingUntilReady?: boolean;
 };
 
 export default function InteractiveCard({
@@ -30,6 +31,7 @@ export default function InteractiveCard({
   size = CardSize.MD,
   onHover,
   onClick,
+  showLoadingUntilReady = false,
 }: InteractiveCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [tilt, setTilt] = useState(DEFAULT_TILT);
@@ -140,6 +142,7 @@ export default function InteractiveCard({
         glare={glare}
         isHovering={isHovering}
         style={style}
+        showLoadingUntilReady={showLoadingUntilReady}
       />
     </div>
   );

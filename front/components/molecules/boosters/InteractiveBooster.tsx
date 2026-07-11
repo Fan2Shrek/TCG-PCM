@@ -15,7 +15,6 @@ type InteractiveBoosterProps = {
   boosterType: BoosterType;
   className?: string;
   onClick?: (boosterType: BoosterType) => void;
-  showGlare?: boolean;
   brightness?: number;
   openingPhase?: BoosterOpeningPhase;
   shotCardCount?: number;
@@ -28,7 +27,6 @@ export default function InteractiveBooster({
   boosterType,
   className,
   onClick,
-  showGlare = false,
   brightness = 100,
   openingPhase,
   shotCardCount = 0,
@@ -98,7 +96,6 @@ export default function InteractiveBooster({
       <Booster
         boosterType={boosterType}
         className={className}
-        showGlare={showGlare}
         brightness={brightness}
         openingPhase={openingPhase}
         shotCardCount={shotCardCount}

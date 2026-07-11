@@ -9,7 +9,6 @@ type BoosterProps = {
   boosterType: BoosterType;
   style?: CSSProperties;
   className?: string;
-  showGlare?: boolean;
   brightness?: number;
   openingPhase?: BoosterOpeningPhase;
   shotCardCount?: number;
@@ -29,7 +28,6 @@ export default function Booster({
   boosterType,
   style,
   className,
-  showGlare = false,
   brightness = 100,
   openingPhase,
   shotCardCount = 0,
@@ -96,13 +94,6 @@ export default function Booster({
           } z-20`}
           style={{ filter: `brightness(${brightness}%)` }}
         />
-
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div
-            className={`h-full w-full bg-glare-effect mix-blend-screen transition-opacity duration-300  ${showGlare ? "opacity-100" : "opacity-0"}`}
-            style={{ transform: "translate(0%, 0%)" }}
-          />
-        </div>
       </div>
     </div>
   );

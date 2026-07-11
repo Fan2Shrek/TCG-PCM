@@ -188,6 +188,7 @@ export default function CardRevealFlow({
               <InteractiveCard
                 card={currentCard}
                 size={isSmallScreen ? CardSize.XL : CardSize.XLL}
+                showLoadingUntilReady
               />
             </div>
           </div>
@@ -218,16 +219,21 @@ export default function CardRevealFlow({
                 <InteractiveCard
                   card={card}
                   size={isSmallScreen ? CardSize.SM : CardSize.XL}
+                  showLoadingUntilReady
                 />
               </div>
             ))}
           </div>
 
-          {phase === BoosterOpeningPhase.REVEAL_ALL ? (
-            <Button onClick={onConfirmAll} size="lg">
+          <div className="flex h-9 items-center justify-center">
+            <Button
+              onClick={onConfirmAll}
+              size="lg"
+              className={`transition-opacity duration-300 ${phase === BoosterOpeningPhase.REVEAL_ALL ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            >
               Confirmer
             </Button>
-          ) : null}
+          </div>
         </div>
       ) : null}
     </div>
