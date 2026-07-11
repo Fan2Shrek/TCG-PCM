@@ -167,7 +167,7 @@ return [
             'description' => 'Inflige {{value}} à tous les joueurs à chaque début de tour',
         ],
         'TheHand' => [
-            'nam' => 'La main',
+            'name' => 'La main',
             'description' => 'Défausse une carte aléatoire de la zone de jeu de votre adversaire.',
         ],
         'Coins' => [

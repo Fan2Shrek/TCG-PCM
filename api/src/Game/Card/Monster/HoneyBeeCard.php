@@ -40,6 +40,6 @@ final class HoneyBeeCard extends AbstractMonsterCard
 
     public function onAttack(GameContext $context): void
     {
-        $context->heal($this->getValue(self::CHARACTER_REGEN_ON_ATTACK, true));
+        $context->heal($this->getValue(self::CHARACTER_REGEN_ON_ATTACK, true), $this->getOwnerId());
     }
 }
