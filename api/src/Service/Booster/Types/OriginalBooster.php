@@ -17,7 +17,7 @@ final class OriginalBooster implements BoosterInterface
     public function getCardsCriteria(): array
     {
         return [
-            'series' => CardSetEnum::ORIGINAL,
+            'serie' => CardSetEnum::ORIGINAL,
         ];
     }
 }

@@ -16,7 +16,7 @@ final class BtdBooster implements BoosterInterface
     public function getCardsCriteria(): array
     {
         return [
-            'series' => CardSetEnum::BTD6,
+            'serie' => CardSetEnum::BTD6,
         ];
     }
 }

@@ -31,7 +31,7 @@ return [
             'description' => 'Lancez un dé à six faces et inflige {{value}} fois autant de dégâts',
         ],
         'Redbloons' => [
-            'name' => 'Ballon Rouges',
+            'name' => 'Ballon Rouge',
             'description' => 'Potit ballon tout mignon',
         ],
         'HackedZone' => [

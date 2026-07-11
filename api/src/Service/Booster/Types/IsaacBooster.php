@@ -16,7 +16,7 @@ final class IsaacBooster implements BoosterInterface
     public function getCardsCriteria(): array
     {
         return [
-            'series' => CardSetEnum::TBOI,
+            'serie' => CardSetEnum::TBOI,
         ];
     }
 }
