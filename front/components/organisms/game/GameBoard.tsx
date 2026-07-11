@@ -1,9 +1,11 @@
+"use client";
+
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
-import { getCurrentUser } from "@/lib/utils";
 import { emitter } from "@/lib/eventBus";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
@@ -19,7 +21,7 @@ import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 export default function GameBoard() {
   const router = useRouter();
   const { id } = useParams();
-  const { game, getCardById, announcements, actions } = useContext(GameContext);
+  const { game, getCardById, announcements, actions, currentUsername } = useContext(GameContext);
   const { userRoom, clearRoom, lastEvent } = useRoom();
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
@@ -32,18 +34,18 @@ export default function GameBoard() {
   const [winnerId, setWinnerId] = useState<string | null>(null);
 
   const connectedPlayer =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? game?.player1.player
       : (game?.player2.player ?? null);
   const isLoggedPlayerTurn = Boolean(
     connectedPlayer && game && connectedPlayer.id === game.currentPlayerId,
   );
   const currentState =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? game?.player1
       : (game?.player2 ?? null);
   const opponentState =
-    game?.player1.player.name === getCurrentUser()?.username
+    game?.player1.player.name === currentUsername
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;
@@ -64,6 +66,13 @@ export default function GameBoard() {
       mediaQuery.removeEventListener("change", updateDeviceType);
     };
   }, []);
+
+  useEffect(() => {
+    if (userRoom && currentUsername && userRoom.id !== id) {
+      router.push("/rooms");
+      toast.error("Vous n'avez pas accès à cette partie");
+    }
+  }, [userRoom, id, currentUsername, router]);
 
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",

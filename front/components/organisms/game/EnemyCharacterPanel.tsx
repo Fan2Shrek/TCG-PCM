@@ -1,7 +1,7 @@
 import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
 import { PlayerState } from "@/lib/game/type/gameState";
-import { BasicCard } from "@/components/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar"; // Import PlayerHealthBar
 import Card from "@/components/molecules/Card";
 

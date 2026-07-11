@@ -1,8 +1,8 @@
 "use client";
 
 import DummyFaceDownCard from "@/components/molecules/game/DummyFaceDownCard";
-import { CardSize } from "@/constants/card";
-import { CardModel } from "@/lib/cards/types/card";
+import { CardRaririty, CardSet, CardSize } from "@/constants/card";
+import { BasicCard } from "@/lib/cards/types/card";
 import { useHandPositions } from "@/hooks/useHandPositions";
 import { getCardWidthPx } from "@/lib/cards/cardUtils";
 import { useState, useEffect } from "react";
@@ -43,15 +43,14 @@ export default function OpponentHand({ numCards, className = "", currentPlayerId
     };
   }, [displayNumCards, currentPlayerId]);
 
-  const dummyCards: CardModel[] = Array.from({ length: displayNumCards }, (_, i) => ({
-    id: `opponent-card-${i}`,
+  const dummyCards: BasicCard[] = Array.from({ length: displayNumCards }, (_, i) => ({
     instanceId: `opponent-card-${i}`,
     name: "",
     description: "",
     cost: 0,
     image: "",
-    rarity: "",
-    set: "",
+    rarity: CardRaririty.COMMON,
+    serie: CardSet.ORIGINAL,
     effects: [],
     isActive: true,
   }));

@@ -30,6 +30,11 @@ export default ({
       <div className="flex gap-2">
         {cards.map((cardId) => {
           const card = getCardById(cardId);
+
+          if (!card) {
+            return null;
+          }
+
           const cardDisabled =
             !clickable || isCardDisabled?.(cardId) || card?.isActive === false;
 

@@ -39,6 +39,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api
       NEXT_PUBLIC_MERCURE_URL: http://localhost:8080/.well-known/mercure
+      API_INTERNAL_URL: http://php/api
 
   redis:
     image: redis:7

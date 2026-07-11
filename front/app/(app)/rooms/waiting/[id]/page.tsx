@@ -3,7 +3,7 @@
 import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MdContentCopy, MdPlayArrow, MdLogout } from "react-icons/md";
-import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRoom } from "@/contexts/RoomContext";
 import api from "@/lib/api/api";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { toast } from "sonner";
 const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const router = useRouter();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser } = useCurrentUser();
   const {
     userRoom,
     isLoading: isContextLoading,

@@ -1,57 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
-import api from "@/lib/api/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { loginAction, type AuthActionState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 
-export default () => {
-	const [data, setData] = useState({ username: "", password: "" });
-	const [error, setError] = useState<string | null>(null);
-	const { login } = useAuth();
-	const router = useRouter();
+const initialState: AuthActionState = { error: null };
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setData(prev => ({ ...prev, [name]: value }))
-	}
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
-
-		try {
-			const response = await api.auth.login(data.username, data.password)
-			login(response.token);
-			router.push('/');
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'mdr ca a explosé');
-		}
-	}
+function SubmitButton() {
+	const { pending } = useFormStatus();
 
 	return (
-		<form onSubmit={handleSubmit} className="w-full max-w-sm">
+		<Button type="submit" className="rounded-full" disabled={pending}>
+			{pending ? "Connexion..." : "Login"}
+		</Button>
+	);
+}
+
+export default () => {
+	const [state, formAction] = useActionState(loginAction, initialState);
+
+	return (
+		<form action={formAction} className="w-full max-w-sm">
 			<FieldGroup>
 				<Field>
 					<FieldLabel htmlFor="username">Username</FieldLabel>
-					<Input id="username" name="username" onChange={handleChange} />
+					<Input id="username" name="username" />
 				</Field>
 
 				<Field>
 					<FieldLabel htmlFor="password">Password</FieldLabel>
-					<Input id="password" name="password" type="password" onChange={handleChange} />
+					<Input id="password" name="password" type="password" />
 				</Field>
 
-				{error && <FieldError>{error}</FieldError>}
+				{state.error && <FieldError>{state.error}</FieldError>}
 
 				<Field>
-					<Button type="submit" className="rounded-full">
-						Login
-					</Button>
+					<SubmitButton />
 				</Field>
 
 				<p className="text-sm text-center">
