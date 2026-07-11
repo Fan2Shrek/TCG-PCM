@@ -47,15 +47,16 @@ type BoostersPageClientProps = {
   initialStatsBySet: Record<string, InventorySetStat>;
 };
 
-export default function BoostersPageClient({ initialStatsBySet }: BoostersPageClientProps) {
+export default function BoostersPageClient({
+  initialStatsBySet,
+}: BoostersPageClientProps) {
   const { frontBooster, rotateTo, getBoosterStyle } =
     useBoosterCarousel(BOOSTERS);
   const screenWidth = useWindowWidth();
   const isSmallScreen = screenWidth < 768;
 
-  const [statsBySet, setStatsBySet] = useState<
-    Record<string, InventorySetStat>
-  >(initialStatsBySet);
+  const [statsBySet, setStatsBySet] =
+    useState<Record<string, InventorySetStat>>(initialStatsBySet);
   const [boosterCardsByType, setBoosterCardsByType] = useState<
     Partial<Record<BoosterType, BasicCard[]>>
   >({});
@@ -176,7 +177,7 @@ export default function BoostersPageClient({ initialStatsBySet }: BoostersPageCl
       />
 
       <div
-        className={`relative md:mt-30 w-full h-120 z-30 ${
+        className={`relative mt-22 md:mt-30 w-full h-120 z-30 ${
           canInteractWithCarousel ? "" : "pointer-events-none"
         }`}
         style={{ perspective: 1800 }}

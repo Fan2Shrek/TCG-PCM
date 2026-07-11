@@ -17,7 +17,7 @@ export default ({ pendingBoosters, className }: PendingBoostersListProps) => {
 
   return (
     <div
-      className={`w-auto  flex flex-row items-center gap-2 px-2 py-1 ${className || ""}`}
+      className={`w-auto flex flex-row items-center gap-2 px-2 py-1 ${className || ""}`}
     >
       {Array.from({ length: pendingBoosters }).map((_, i) => (
         <BoosterSlot key={i} animationDurationMs={getSlotDurationMs(i)} />

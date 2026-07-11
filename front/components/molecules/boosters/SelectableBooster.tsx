@@ -171,11 +171,19 @@ export default function SelectableBooster({
         ref={boosterWrapperRef}
         className="relative transition-transform duration-700 ease-in-out"
         style={{
-          transform: shouldStayInPreviewPosition
-            ? isSmallScreen
-              ? "translateY(-110px) rotate(1080deg)"
-              : "translateX(-160px) rotate(1080deg)"
-            : "translate(0, 0) rotate(0deg)",
+          ...(shouldStayInPreviewPosition && isSmallScreen
+            ? {
+                position: "fixed",
+                left: "50%",
+                top: "50%",
+                zIndex: 65,
+                transform: "translate(-50%, -50%) rotate(1080deg)",
+              }
+            : {
+                transform: shouldStayInPreviewPosition
+                  ? "translateX(-160px) rotate(1080deg)"
+                  : "translate(0, 0) rotate(0deg)",
+              }),
         }}
       >
         <div
@@ -196,7 +204,7 @@ export default function SelectableBooster({
         </div>
 
         <p
-          className={`absolute -bottom-14 left-1/2 -translate-x-1/2 text-white text-sm text-center whitespace-nowrap transition-opacity duration-200 ${isFrontPreviewOpen && !isAnimatingPreview ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          className={`absolute -bottom-8 left-1/2 -translate-x-1/2 text-white text-sm text-center whitespace-nowrap transition-opacity duration-200 ${isFrontPreviewOpen && !isAnimatingPreview ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
           Cliquer une seconde fois pour confirmer votre choix
         </p>
@@ -235,17 +243,19 @@ export default function SelectableBooster({
           )
         : null}
 
-      <BoosterPreviewPanel
-        isVisible={isFrontPreviewOpen}
-        isSmallScreen={isSmallScreen}
-        title={previewTitle}
-        cards={previewCards}
-        ownedCards={ownedCards}
-        totalCards={totalCards}
-        isLoading={isPreviewLoading}
-        shouldRenderCards={!isAnimatingPreview}
-        onBack={() => onPreviewChange(false)}
-      />
+      {!isSmallScreen && (
+        <BoosterPreviewPanel
+          isVisible={isFrontPreviewOpen}
+          isSmallScreen={isSmallScreen}
+          title={previewTitle}
+          cards={previewCards}
+          ownedCards={ownedCards}
+          totalCards={totalCards}
+          isLoading={isPreviewLoading}
+          shouldRenderCards={!isAnimatingPreview}
+          onBack={() => onPreviewChange(false)}
+        />
+      )}
     </div>
   );
 }

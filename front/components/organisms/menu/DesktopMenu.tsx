@@ -1,7 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import MenuItem from "@/components/atoms/menu/MenuItem";
+import { usePathname } from "next/navigation";
+import DesktopMenuItems from "@/components/atoms/menu/DesktopMenuItems";
 import {
   AiOutlineFolderOpen,
   AiOutlineLogin,
@@ -13,7 +14,7 @@ import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
 import { logoutAction } from "@/lib/actions/auth";
 
-type MenuProps = {
+type DesktopMenuProps = {
   className?: string;
   username?: string;
 };
@@ -61,8 +62,21 @@ const getAuthenticatedMenuItems = (onLogout: () => void): MenuItemData[] => [
   },
 ];
 
-export default ({ className, username }: MenuProps) => {
+const isActiveMenuItem = (pathname: string, linkTo?: string): boolean => {
+  if (!linkTo) {
+    return false;
+  }
+
+  if ("/rooms" === linkTo) {
+    return pathname.startsWith("/rooms");
+  }
+
+  return pathname === linkTo || pathname.startsWith(`${linkTo}/`);
+};
+
+export default function DesktopMenu({ className, username }: DesktopMenuProps) {
   const isAuthenticated = !!username;
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logoutAction();
@@ -79,13 +93,13 @@ export default ({ className, username }: MenuProps) => {
       >
         <ul className="flex items-center gap-2 px-4">
           {menuItems.map((menuItem) => (
-            <MenuItem
+            <DesktopMenuItems
               key={menuItem.label}
               label={menuItem.label}
               icon={menuItem.icon}
               linkTo={menuItem.linkTo}
               onClick={menuItem.onClick}
-              active={false}
+              active={isActiveMenuItem(pathname, menuItem.linkTo)}
             />
           ))}
         </ul>
@@ -95,4 +109,4 @@ export default ({ className, username }: MenuProps) => {
       {isAuthenticated && <ActiveRoomStatus />}
     </div>
   );
-};
+}
