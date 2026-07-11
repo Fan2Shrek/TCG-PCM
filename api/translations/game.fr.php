@@ -10,6 +10,14 @@ return [
             'name' => 'Benjamin',
             'description' => 'Applique {{effect}} à {{value}} carte',
         ],
+        'Banana' => [
+            'name' => 'Banane',
+            'description' => 'Soigne votre personnage de {{value}} PV.',
+        ],
+        'BananaFarm' => [
+            'name' => 'Ferme a bananes',
+            'description' => 'Gagne {{value}} piece au debut de chaque tour.',
+        ],
         'Pierrot' => [
             'name' => 'Pierrot',
             'description' => 'Applique {{effect}} à {{value1}} carte tous les {{value2}} tours.',
@@ -34,6 +42,30 @@ return [
             'name' => 'Ballon Rouge',
             'description' => 'Potit ballon tout mignon',
         ],
+        'CamoBloon' => [
+            'name' => 'Ballon Camo',
+            'description' => 'A {{value}}% de chances d\'esquiver les dégâts reçus.',
+        ],
+        'MOAB' => [
+            'name' => 'MOAB',
+            'description' => 'Un énorme ballon.',
+        ],
+        'LeadBloon' => [
+            'name' => 'Ballon de Plomb',
+            'description' => 'Réduit les dégâts reçus de {{value}}.',
+        ],
+        'DartMonkey' => [
+            'name' => 'Singe',
+            'description' => 'Un potit singe.',
+        ],
+        'BoomerangMonkey' => [
+            'name' => 'Singe Boomerang',
+            'description' => 'Perd {{value}} PV après avoir attaqué.',
+        ],
+        'SuperMonkey' => [
+            'name' => 'Super singe',
+            'description' => 'Gagne +{{value}} attaque et PV pour chaque singe de votre côté lors de son arrivée en jeu.',
+        ],
         'HackedZone' => [
             'name' => 'Zone Piratée',
             'description' => 'Applique {{effect}} à toutes les cartes des deux côtés',
@@ -45,6 +77,10 @@ return [
         'Bomb' => [
             'name' => 'Bombe',
             'description' => 'Inflige {{value}} dégâts à tous les monstres en jeu.',
+        ],
+        'Dart' => [
+            'name' => 'Fléchette',
+            'description' => 'Inflige {{value}} dégâts à une carte ciblée.',
         ],
         'Pills' => [
             'name' => 'Pillules !',

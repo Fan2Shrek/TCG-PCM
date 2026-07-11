@@ -6,16 +6,16 @@ namespace App\Game\Card\Monster;
 
 use App\Enum\CardSetEnum;
 
-final class RedBloonsMonsterCard extends AbstractMonsterCard
+final class DartMonkeyCard extends AbstractMonsterCard
 {
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const HEALTH_POINTS = 10;
-    private const ATTACK = 5;
+    private const HEALTH_POINTS = 5;
+    private const ATTACK = 10;
 
     public function getId(): string
     {
-        return 'Redbloons';
+        return 'DartMonkey';
     }
 
     public function getBaseAttack(): int

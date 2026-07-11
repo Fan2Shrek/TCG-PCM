@@ -8,13 +8,20 @@ use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Effect\EffectState;
+use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\Card\MonsterCardState;
+use App\Game\GameContext;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
+use App\Service\Game\CardRuntimeMap;
 
 class GameEventApplier implements GameEventApplierInterface
 {
+    public function __construct(
+        private CardRuntimeMap $cardRuntimeMap,
+    ) {}
+
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
         $gameState = match ($event->type) {
@@ -132,6 +139,14 @@ class GameEventApplier implements GameEventApplierInterface
             $newState = $state->withUpdatedHealth($state->healthPoints - $damage);
             $newGameState = $gameState->withUpdatedPlayer($newState);
         } elseif ($state instanceof MonsterCardState) {
+            $card = $this->cardRuntimeMap->getByState($state);
+
+            if ($card instanceof AbstractMonsterCard) {
+                $ctx = new GameContext($gameState, $state->ownerId);
+
+                $damage = max(0, $card->reduceDamage($ctx, $damage));
+            }
+
             $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
             $newGameState = $gameState->withUpdatedCardState($newState);
         } else {

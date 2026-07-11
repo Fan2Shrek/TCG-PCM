@@ -276,13 +276,16 @@ class GameEventResolver
             'sourceId' => $attackerId,
         ]);
 
-        return [
+        $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
+        $card->onAttack($ctx);
+
+        return array_merge([
             $event,
             GameEvent::game(GameEventTypeEnum::UPDATE_CARD_STATE, [
                 'cardId' => $attackerId,
                 'canAttack' => false,
             ]),
-        ];
+        ], $ctx->flushEvents());
     }
 
     /**

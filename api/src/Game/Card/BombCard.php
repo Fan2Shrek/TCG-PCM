@@ -11,7 +11,7 @@ final class BombCard extends AbstractPlayableCard
 {
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
-    private const DAMAGE = 1;
+    private const DAMAGE = 5;
 
     public function getId(): string
     {

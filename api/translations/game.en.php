@@ -10,6 +10,14 @@ return [
             'name' => 'Benjamin',
             'description' => 'Apply {{effect}} to {{value}} card',
         ],
+        'Banana' => [
+            'name' => 'Banana',
+            'description' => 'Heal your character by {{value}} HP.',
+        ],
+        'BananaFarm' => [
+            'name' => 'Banana Farm',
+            'description' => 'Gain {{value}} coin at the start of each turn.',
+        ],
         'Pierrot' => [
             'name' => 'Pierrot',
             'description' => 'Apply {{effect}} {{value1}} card every {{value2}} turns.',
@@ -34,6 +42,30 @@ return [
             'name' => 'Red Bloons',
             'description' => 'A cute little balloon',
         ],
+        'CamoBloon' => [
+            'name' => 'Camo Bloon',
+            'description' => 'Has a {{value}}% chance to dodge incoming damage.',
+        ],
+        'MOAB' => [
+            'name' => 'MOAB',
+            'description' => 'A massive bloon.',
+        ],
+        'LeadBloon' => [
+            'name' => 'Lead Bloon',
+            'description' => 'Reduces incoming damage by {{value}}.',
+        ],
+        'DartMonkey' => [
+            'name' => 'Dart Monkey',
+            'description' => 'A cute monkey.',
+        ],
+        'BoomerangMonkey' => [
+            'name' => 'Boomerang Monkey',
+            'description' => 'Loses {{value}} HP after attacking.',
+        ],
+        'SuperMonkey' => [
+            'name' => 'Super Monkey',
+            'description' => 'Gains +{{value}} attack and HP for each monkey on your side when played.',
+        ],
         'HackedZone' => [
             'name' => 'Hacked Zone',
             'description' => 'Apply {{effect}} to all cards in both side',
@@ -45,6 +77,10 @@ return [
         'Bomb' => [
             'name' => 'Bomb',
             'description' => 'Deal {{value}} damage to all monsters in play.',
+        ],
+        'Dart' => [
+            'name' => 'Dart',
+            'description' => 'Deal {{value}} damage to a targeted card.',
         ],
         'Pills' => [
             'name' => 'Pills!',

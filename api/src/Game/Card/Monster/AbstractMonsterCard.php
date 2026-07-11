@@ -64,14 +64,19 @@ abstract class AbstractMonsterCard extends AbstractCard
         // no-op
     }
 
+    public function onAttack(GameContext $context): void
+    {
+        // no-op
+    }
+
     public function canAttack(): bool
     {
         return $this->canAttack;
     }
 
-    public function attacksAllOpponents(): bool
+    public function reduceDamage(GameContext $context, int $damage): int
     {
-        return false;
+        return $damage;
     }
 
     public function getCurrentHealthPoints(): int
