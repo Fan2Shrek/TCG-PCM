@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useRef } from "react";
+import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import useFitText from "use-fit-text";
 import { CardType } from "@/constants/card";
 import { convertDescriptions } from "@/lib/game/cardUtils";
@@ -13,17 +13,21 @@ type ZoneConfig = {
 };
 
 export type CardTextOverlayProps = {
+  readinessKey: string;
   cardTitle: string;
   cardDescription: string;
   cardType: CardType;
   cardStats: { hp?: number; attack?: number; cost?: number };
+  onLayoutReady?: () => void;
 };
 
 const CardTextOverlay = ({
+  readinessKey,
   cardTitle,
   cardDescription,
   cardType,
   cardStats,
+  onLayoutReady,
 }: CardTextOverlayProps) => {
   // Positioning & size for each text block
   const headerConfig: ZoneConfig = {
@@ -42,19 +46,62 @@ const CardTextOverlay = ({
     height: cardType === CardType.CHARACTER ? 32 : 37,
   };
   const shouldShowStats = cardType !== CardType.CHARACTER;
+  const [isTitleReady, setIsTitleReady] = useState(false);
+  const [isStatsReady, setIsStatsReady] = useState(!shouldShowStats);
+  const [isDescriptionReady, setIsDescriptionReady] = useState(false);
+  const hasNotifiedReadyRef = useRef(false);
+
+  useEffect(() => {
+    hasNotifiedReadyRef.current = false;
+    setIsTitleReady(cardTitle.trim().length === 0);
+    setIsStatsReady(!shouldShowStats);
+    setIsDescriptionReady(cardDescription.trim().length === 0);
+  }, [
+    readinessKey,
+    cardDescription,
+    cardTitle,
+    shouldShowStats,
+    cardType,
+    cardStats.attack,
+    cardStats.cost,
+    cardStats.hp,
+  ]);
+
+  useEffect(() => {
+    if (!onLayoutReady || hasNotifiedReadyRef.current) {
+      return;
+    }
+
+    if (isTitleReady && isStatsReady && isDescriptionReady) {
+      hasNotifiedReadyRef.current = true;
+      onLayoutReady();
+    }
+  }, [isDescriptionReady, isStatsReady, isTitleReady, onLayoutReady]);
+
+  const handleTitleFitFinished = useCallback(() => {
+    setIsTitleReady(true);
+  }, []);
+
+  const handleStatsFitFinished = useCallback(() => {
+    setIsStatsReady(true);
+  }, []);
+
+  const handleDescriptionFitFinished = useCallback(() => {
+    setIsDescriptionReady(true);
+  }, []);
 
   const { fontSize: titleFontSize, ref: titleFitRef } = useFitText({
-    onFinish: () => undefined,
+    onFinish: handleTitleFitFinished,
     maxFontSize: 200,
   });
 
   const { fontSize: statsFontSize, ref: statsFitRef } = useFitText({
-    onFinish: () => undefined,
+    onFinish: handleStatsFitFinished,
     maxFontSize: 200,
   });
 
   const { fontSize: descriptionFontSize, ref: descriptionFitRef } = useFitText({
-    onFinish: () => undefined,
+    onFinish: handleDescriptionFitFinished,
     maxFontSize: 200,
   });
 

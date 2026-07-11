@@ -41,7 +41,7 @@ export default function CardWithZoom({
           setIsZoomed(true);
         }}
       >
-        <Card card={card} size={size} />
+        <Card card={card} size={size} showLoadingUntilReady />
       </div>
 
       {isZoomed &&
@@ -51,7 +51,11 @@ export default function CardWithZoom({
             onClick={() => setIsZoomed(false)}
           >
             <div onClick={(event) => event.stopPropagation()}>
-              <InteractiveCard card={card} size={CardSize.XL} />
+              <InteractiveCard
+                card={card}
+                size={CardSize.XLL}
+                showLoadingUntilReady
+              />
             </div>
           </div>,
           document.body,

@@ -13,7 +13,7 @@ import { RoomStatus } from "@/types/roomStatus";
 import api from "@/lib/api/api";
 import WinScreen from "./WinScreen";
 import MobileGameDisclaimer from "@/components/molecules/game/MobileGameDisclaimer";
-import GameHelpTooltip from "@/components/molecules/game/GameHelpTooltip";
+import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 
 export default function GameBoard() {
@@ -294,7 +294,9 @@ export default function GameBoard() {
       )}
 
       <MobileGameDisclaimer isVisible={isMobileDevice} />
-      <GameHelpTooltip />
+      <div className="top-5 right-5 absolute z-20">
+        <Tooltip text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. A chaque tour, vous piochez une carte et gagnez de l'or. L'or sert à jouer vos cartes. Pour cibler une carte avec une des votres, cliquez d'abord sur votre carte puis sur la cible. Vous pouvez aussi double-cliquer sur une carte pour l'afficher en grand. Cliquez en dehors de la carte pour dézoomer." />
+      </div>
 
       <GameAnnouncements
         regularAnnouncements={regularAnnouncements}
@@ -326,11 +328,13 @@ export default function GameBoard() {
         />
       </div>
       {!winner && (
-        <GameActionButtons
-          isLoggedPlayerTurn={isLoggedPlayerTurn}
-          onEndTurn={actions.endTurn}
-          onForfeit={handleForfeit}
-        />
+        <div className="absolute bottom-10 right-10 z-20">
+          <GameActionButtons
+            isLoggedPlayerTurn={isLoggedPlayerTurn}
+            onEndTurn={actions.endTurn}
+            onForfeit={handleForfeit}
+          />
+        </div>
       )}
     </div>
   );

@@ -13,7 +13,10 @@ type HandCardProps = {
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
   onDragCard?: (e: MouseEvent) => void;
-  onDragEnd?: (card: CardWithPosition, pointerPos: { x: number; y: number }) => void;
+  onDragEnd?: (
+    card: CardWithPosition,
+    pointerPos: { x: number; y: number },
+  ) => void;
   isDisabled?: boolean;
   isHandHovered?: boolean;
   isAnimatingDraw?: boolean;
@@ -36,7 +39,11 @@ export default function HandCard({
 }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   //for drag
-  const [cardCenter, setCardCenter] = useState<{ x: number; y: number; z: number } | null>(null);
+  const [cardCenter, setCardCenter] = useState<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
   const [isDropped, setIsDropped] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -75,7 +82,12 @@ export default function HandCard({
         });
       }
       //this if for when a card is no longer dragged basically
-    } else if (prevDraggingRef.current && !isDragging && cardRef.current && pointerPos) {
+    } else if (
+      prevDraggingRef.current &&
+      !isDragging &&
+      cardRef.current &&
+      pointerPos
+    ) {
       const rect = cardRef.current.getBoundingClientRect();
       setCardCenter({
         x: rect.left + rect.width / 2,
@@ -121,6 +133,7 @@ export default function HandCard({
       <Card
         card={positionedCard.card}
         size={cardSize}
+        showLoadingUntilReady
         tilt={{
           x: 0,
           y: 0,

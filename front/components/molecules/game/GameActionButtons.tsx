@@ -32,7 +32,7 @@ export default function GameActionButtons({
     }
   };
   return (
-    <div className="absolute bottom-10 right-10 z-20 flex flex-col gap-3 min-w-3xs">
+    <div className="flex flex-col gap-3 min-w-3xs">
       {isLoggedPlayerTurn && (
         <button
           type="button"

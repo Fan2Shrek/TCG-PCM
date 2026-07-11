@@ -2,11 +2,14 @@
 
 namespace App\Game\Card;
 
+use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 use Override;
 
 final class BombCard extends AbstractPlayableCard
 {
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
+
     private const DAMAGE = 1;
 
     public function getId(): string

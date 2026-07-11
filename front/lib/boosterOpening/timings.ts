@@ -1,0 +1,6 @@
+export const OPENING_DROP_TOP_MS = 550;
+export const OPENING_SHOOT_BACK_CARDS_MS = 550;
+export const OPENING_DROP_EMPTY_BOOSTER_MS = 450;
+
+export const CARD_REVEAL_TRANSITION_MS = 420;
+export const CONFIRM_EXIT_MS = 520;

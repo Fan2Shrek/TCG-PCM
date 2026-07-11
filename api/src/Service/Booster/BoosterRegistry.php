@@ -7,10 +7,9 @@ namespace App\Service\Booster;
 final class BoosterRegistry
 {
     private const BOOSTER_TYPES = [
-        'default' => Types\DefaultBooster::class,
-        'character' => Types\CharacterBooster::class,
-        'big' => Types\BigBooster::class,
+        'original' => Types\OriginalBooster::class,
         'isaac' => Types\IsaacBooster::class,
+        'btd' => Types\BtdBooster::class,
     ];
 
     public function getBoosterType(string $type): string

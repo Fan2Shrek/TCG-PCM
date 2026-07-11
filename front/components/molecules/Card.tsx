@@ -15,8 +15,8 @@ import {
 import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
-
-import { convertDescriptions } from "@/lib/game/cardUtils";
+import LoadingSpinner from "@/components/atoms/LoadingSpinner";
+import { useEffect, useState } from "react";
 
 export type CardViewProps = {
   card: BasicCard;
@@ -26,6 +26,7 @@ export type CardViewProps = {
   isHovering?: boolean;
   style?: React.CSSProperties;
   className?: string;
+  showLoadingUntilReady?: boolean;
 };
 
 const Card = ({
@@ -36,7 +37,14 @@ const Card = ({
   isHovering,
   style,
   className,
+  showLoadingUntilReady = false,
 }: CardViewProps) => {
+  const [isCardReady, setIsCardReady] = useState(!showLoadingUntilReady);
+
+  useEffect(() => {
+    setIsCardReady(!showLoadingUntilReady);
+  }, [card.instanceId, showLoadingUntilReady]);
+
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
@@ -90,6 +98,7 @@ const Card = ({
     {
       src: card?.image && getImage(card.image),
       depth: -5,
+      isIllustration: true,
       foilEffect: null,
       foil: null,
       mask: null,
@@ -135,7 +144,7 @@ const Card = ({
     });
   }
 
-  if (!card?.isActive) {
+  if (!card.isActive) {
     cardLayers.push({
       src: "/cross.webp",
       depth: 20,
@@ -161,13 +170,24 @@ const Card = ({
         tilt={appliedTilt}
         glare={appliedGlare}
         isHovering={!!isHovering}
+        readinessKey={card.instanceId}
         cardTitle={card.name}
         cardDescription={card.description}
         cardType={card.type ?? CardType.CONSUMABLE}
         cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
+        onReadyStateChange={
+          showLoadingUntilReady
+            ? (isReady) => setIsCardReady(isReady)
+            : undefined
+        }
       />
       <CardBack />
       <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
+      {showLoadingUntilReady && !isCardReady ? (
+        <div className="absolute inset-0 z-50 flex items-center justify-center rounded-sm bg-black/35">
+          <LoadingSpinner className="h-6 w-6" />
+        </div>
+      ) : null}
     </div>
   );
 };

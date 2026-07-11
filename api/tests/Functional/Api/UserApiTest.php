@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Api;
 
+use App\Enum\CardSetEnum;
+use App\Service\Game\CardRegistryInterface;
 use App\Service\User\UserGenerateBoosterTokens;
 use App\Tests\Functional\FunctionalTestCase;
 use App\Tests\Resources\Fixtures\ThereIs;
@@ -12,6 +14,7 @@ final class UserApiTest extends FunctionalTestCase
 {
     private const LOGIN_URI = '/api/login_check';
     private const INVENTORY_URI = '/api/inventory';
+    private const INVENTORY_SET_STATS_URI = '/api/inventory/stats';
     private const CURRENT_USER_URI = '/api/user';
 
     private UserGenerateBoosterTokens $userGenerateBoosterTokens;
@@ -79,6 +82,42 @@ final class UserApiTest extends FunctionalTestCase
         self::assertSame(2, $content['cards'][0]['quantity']);
         self::assertSame('Pierrot', $content['cards'][1]['card']['name']);
         self::assertSame(1, $content['cards'][1]['quantity']);
+    }
+
+    public function testGetInventorySetStats()
+    {
+        $inventory = ThereIs::anInventory()
+            ->withCard('D6', 2)
+            ->withCard('SpicyD6', 3)
+            ->withCard('Pierrot', 1)
+            ->build();
+        $user = ThereIs::anUser()->withInventory($inventory)->build();
+        $this->client->loginUser($user);
+
+        /** @var CardRegistryInterface $cardRegistry */
+        $cardRegistry = static::getContainer()->get(CardRegistryInterface::class);
+        $totalTboiCards = count($cardRegistry->getAllBy(['serie' => CardSetEnum::TBOI]));
+        $totalOriginalCards = count($cardRegistry->getAllBy(['serie' => CardSetEnum::ORIGINAL]));
+        $totalBtd6Cards = count($cardRegistry->getAllBy(['serie' => CardSetEnum::BTD6]));
+
+        $response = $this->get(static::INVENTORY_SET_STATS_URI);
+        $content = $response->toArray();
+
+        $statsBySet = [];
+        foreach ($content['sets'] as $setStats) {
+            $statsBySet[$setStats['set']] = $setStats;
+        }
+
+        self::assertArrayHasKey('ORIGINAL', $statsBySet);
+        self::assertArrayHasKey('TBOI', $statsBySet);
+        self::assertArrayHasKey('BTD6', $statsBySet);
+
+        self::assertSame(1, $statsBySet['ORIGINAL']['ownedCards']);
+        self::assertSame($totalOriginalCards, $statsBySet['ORIGINAL']['totalCards']);
+        self::assertSame(2, $statsBySet['TBOI']['ownedCards']);
+        self::assertSame($totalTboiCards, $statsBySet['TBOI']['totalCards']);
+        self::assertSame(0, $statsBySet['BTD6']['ownedCards']);
+        self::assertSame($totalBtd6Cards, $statsBySet['BTD6']['totalCards']);
     }
 
     public function testGetCurrentUser()

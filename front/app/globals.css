@@ -14,7 +14,10 @@
   --spacing-card-sm: var(--spacing-card-sm);
   --spacing-card-md: var(--spacing-card-md);
   --spacing-card-lg: var(--spacing-card-lg);
+  --spacing-booster-lg: var(--spacing-booster-lg);
   --spacing-card-xl: var(--spacing-card-xl);
+  --spacing-card-2xl: var(--spacing-card-2xl);
+  --spacing-booster-xl: var(--spacing-booster-xl);
 }
 
 @layer base {
@@ -23,7 +26,10 @@
     --spacing-card-sm: 7rem;
     --spacing-card-md: 9rem;
     --spacing-card-lg: 11rem;
-    --spacing-card-xl: 22rem;
+    --spacing-card-xl: 14rem;
+    --spacing-card-2xl: 20rem;
+    --spacing-booster-lg: 12rem;
+    --spacing-booster-xl: 15rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -103,6 +109,203 @@
 
   .blue-pulse {
     animation: bluePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes boosterFloat {
+    0%,
+    100% {
+      transform: translateY(var(--translate)) rotate(calc(var(--rotate) * -1))
+        rotateX(var(--rotateX));
+    }
+
+    50% {
+      transform: translateY(calc(var(--translate) * -1)) rotate(var(--rotate))
+        rotateX(calc(var(--rotateX) * -1));
+    }
+  }
+
+  .animate-booster-float {
+    animation: boosterFloat var(--duration) ease-in-out var(--delay) infinite;
+  }
+
+  @keyframes boosterTitleFloat {
+    0%,
+    100% {
+      transform: translateY(2px);
+    }
+
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+
+  .animate-booster-title-float {
+    animation: boosterTitleFloat 6s ease-in-out infinite;
+  }
+
+  @keyframes boosterShake {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    20% {
+      transform: rotate(0.8deg);
+    }
+
+    40% {
+      transform: rotate(-0.9deg);
+    }
+
+    60% {
+      transform: rotate(0.7deg);
+    }
+
+    80% {
+      transform: rotate(-0.8deg);
+    }
+  }
+
+  .animate-booster-shake {
+    animation: boosterShake var(--shake-duration, 0.28s) linear infinite;
+  }
+
+  @keyframes boosterCapDrop {
+    0% {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(125vh) rotate(-20deg);
+    }
+  }
+
+  .animate-booster-cap-drop {
+    animation: boosterCapDrop 0.55s ease-in forwards;
+  }
+
+  @keyframes boosterBackCardShoot {
+    0% {
+      opacity: 1;
+      transform: translate(calc(-40% + var(--card-launch-x, 0px)), -50%)
+        rotate(0deg);
+    }
+
+    85% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(
+          calc(
+            -36% + var(--card-launch-x, 0px) + (var(--card-offset, 0) * 4.5vw)
+          ),
+          calc(-185vh + (var(--card-offset, 0) * 0.8vh))
+        )
+        scale(1.05) rotate(calc((var(--card-index, 0) - 2) * 6deg));
+    }
+  }
+
+  .animate-booster-back-card-shoot {
+    animation: boosterBackCardShoot 0.7s ease-out forwards;
+    animation-delay: calc(var(--card-index, 0) * 45ms);
+  }
+
+  @keyframes boosterEmptyDrop {
+    0% {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(120vh) rotate(8deg);
+    }
+  }
+
+  .animate-booster-empty-drop {
+    animation: boosterEmptyDrop 0.45s ease-in forwards;
+  }
+
+  @keyframes cardRevealIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-120vh);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-card-reveal-in {
+    animation: cardRevealIn 0.42s ease-out forwards;
+  }
+
+  @keyframes cardRevealOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(120vh);
+    }
+  }
+
+  .animate-card-reveal-out {
+    animation: cardRevealOut 0.42s ease-in forwards;
+  }
+
+  @keyframes cardsResultsEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(120vh);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-cards-results-enter {
+    animation: cardsResultsEnter 0.45s ease-out forwards;
+  }
+
+  @keyframes cardsResultsExit {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateX(120vw);
+    }
+  }
+
+  .animate-cards-results-exit {
+    animation: cardsResultsExit 0.5s ease-in forwards;
+  }
+
+  @keyframes boosterPreviewMarquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-booster-preview-marquee {
+    animation: boosterPreviewMarquee 28s linear infinite;
   }
 }
 
