@@ -25,6 +25,7 @@ export type BasicCard = {
 export type CardLayer = {
   src: string;
   depth: number;
+  isIllustration?: boolean;
   alt?: string | null;
   foilEffect?: FoilEffect | null;
   foil?: string | null;

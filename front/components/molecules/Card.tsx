@@ -98,6 +98,7 @@ const Card = ({
     {
       src: card?.image && getImage(card.image),
       depth: -5,
+      isIllustration: true,
       foilEffect: null,
       foil: null,
       mask: null,

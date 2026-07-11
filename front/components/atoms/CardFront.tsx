@@ -8,6 +8,13 @@ import { useEffect, useMemo, useState } from "react";
 import { CardLayer } from "@/lib/cards/types/card";
 import { CardType } from "@/constants/card";
 
+const ILLUSTRATION_ZONE_STYLE = {
+  top: "9%",
+  left: "3%",
+  width: "95%",
+  height: "45%",
+} as const;
+
 export type CardFrontProps = {
   layers: CardLayer[];
   tilt: { x: number; y: number };
@@ -104,6 +111,7 @@ const CardFront = ({
     <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm">
       {sortedLayers.map((layer, i) => {
         const depthFactor = (layer.depth / 100) * 5;
+        const isIllustrationLayer = !!layer.isIllustration;
 
         const { foilEffect, foil, mask } = layer;
 
@@ -116,15 +124,32 @@ const CardFront = ({
 
         return (
           <Fragment key={i}>
-            <Image
-              src={layer.src}
-              alt={layer.alt ?? `layer-${i}`}
-              fill
-              className={`object-cover ${!isHovering ? "transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]" : ""} z-0`}
-              style={{
-                transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
-              }}
-            />
+            {isIllustrationLayer ? (
+              <div
+                className="absolute overflow-hidden"
+                style={ILLUSTRATION_ZONE_STYLE}
+              >
+                <Image
+                  src={layer.src}
+                  alt={layer.alt ?? `layer-${i}`}
+                  fill
+                  className={`object-cover ${!isHovering ? "transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]" : ""} z-0`}
+                  style={{
+                    transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
+                  }}
+                />
+              </div>
+            ) : (
+              <Image
+                src={layer.src}
+                alt={layer.alt ?? `layer-${i}`}
+                fill
+                className={`object-cover ${!isHovering ? "transition-transform duration-300 ease-[cubic-bezier(.2,.9,.2,1)]" : ""} z-0`}
+                style={{
+                  transform: `translateX(${tilt.y * depthFactor}px) translateY(${tilt.x * depthFactor}px)`,
+                }}
+              />
+            )}
             {FoilComponent && foil && mask && (
               <FoilComponent tilt={tilt} foil={foil} mask={mask} />
             )}
