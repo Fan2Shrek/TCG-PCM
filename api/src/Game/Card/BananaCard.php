@@ -12,7 +12,7 @@ final class BananaCard extends AbstractPlayableCard
 {
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const HEAL_AMOUNT = 5;
+    private const HEAL_AMOUNT = 10;
 
     public function getId(): string
     {

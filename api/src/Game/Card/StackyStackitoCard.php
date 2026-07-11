@@ -6,6 +6,7 @@ use App\Enum\CardRarityEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class StackyStackitoCard extends AbstractPassiveCard implements TurnAwareInterface
 {
@@ -13,7 +14,7 @@ final class StackyStackitoCard extends AbstractPassiveCard implements TurnAwareI
 
     public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
 
-    private const DELAY = 10;
+    private const DELAY = 5;
 
     private int $delay = self::DELAY;
 
@@ -22,7 +23,14 @@ final class StackyStackitoCard extends AbstractPassiveCard implements TurnAwareI
         return 'StackyStackito';
     }
 
-    public function onTurnAction(GameContext $gameContext): void
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getTurnDelay(),
+        ]);
+    }
+
+    private function onTurnAction(GameContext $gameContext): void
     {
         $damage = $gameContext->state->getPlayer($this->getOwnerId())->coins;
         $gameContext->attack($damage);

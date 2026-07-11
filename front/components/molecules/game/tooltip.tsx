@@ -3,7 +3,7 @@
 import TooltipText, {
   TooltipTextPosition,
 } from "@/components/molecules/game/TooltipText";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaRegCircleQuestion } from "react-icons/fa6";
 
 export enum TooltipPosition {
@@ -23,7 +23,28 @@ export default function Tooltip({
   position = TooltipPosition.BOTTOM_RIGHT,
 }: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [shouldFlip, setShouldFlip] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const updateFlipState = useCallback(() => {
+    const container = containerRef.current;
+    const tooltip = tooltipRef.current;
+
+    if (!container || !tooltip) {
+      return;
+    }
+
+    const triggerRect = container.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - triggerRect.bottom;
+    const spaceAbove = triggerRect.top;
+    const requiredSpace = tooltipRect.height + 8;
+
+    setShouldFlip(spaceBelow < requiredSpace && spaceAbove > spaceBelow);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
@@ -46,8 +67,23 @@ export default function Tooltip({
     };
   }, []);
 
-  const tooltipPosition =
-    position === TooltipPosition.BOTTOM_CENTER
+  useEffect(() => {
+    updateFlipState();
+
+    window.addEventListener("resize", updateFlipState);
+    window.addEventListener("scroll", updateFlipState, true);
+
+    return () => {
+      window.removeEventListener("resize", updateFlipState);
+      window.removeEventListener("scroll", updateFlipState, true);
+    };
+  }, [isOpen, text, updateFlipState]);
+
+  const tooltipPosition = shouldFlip
+    ? position === TooltipPosition.BOTTOM_CENTER
+      ? TooltipTextPosition.TOP_CENTER
+      : TooltipTextPosition.TOP_RIGHT
+    : position === TooltipPosition.BOTTOM_CENTER
       ? TooltipTextPosition.BOTTOM_CENTER
       : TooltipTextPosition.BOTTOM_RIGHT;
 
@@ -70,6 +106,7 @@ export default function Tooltip({
         text={text}
         isVisible={isOpen}
         position={tooltipPosition}
+        tooltipRef={tooltipRef}
         className={!isOpen ? "group-hover:opacity-100" : ""}
       />
     </div>

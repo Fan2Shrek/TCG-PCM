@@ -45,6 +45,6 @@ final class BoomerangMonkeyCard extends AbstractMonsterCard
             return;
         }
 
-        $context->attack($this->getValue(self::SELF_DAMAGE_ON_ATTACK, true), $instanceId);
+        $context->damageCard($instanceId, $this->getValue(self::SELF_DAMAGE_ON_ATTACK, true));
     }
 }

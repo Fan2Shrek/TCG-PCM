@@ -3,6 +3,7 @@
 namespace App\Game\Card;
 
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class RiskyBetCard extends AbstractPlayableCard
 {
@@ -12,6 +13,14 @@ final class RiskyBetCard extends AbstractPlayableCard
     public function getId(): string
     {
         return 'RiskyBet';
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::OTHER_DAMAGE, true),
+            'value2' => $this->getValue(self::SELF_DAMAGE, true),
+        ]);
     }
 
     public function play(GameContext $context, array $data = []): void

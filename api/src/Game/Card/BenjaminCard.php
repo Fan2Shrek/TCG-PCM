@@ -6,6 +6,7 @@ namespace App\Game\Card;
 
 use App\Enum\CardEffectEnum;
 use App\Enum\CardSetEnum;
+use App\Game\Card\Effect\HackedCardEffect;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
@@ -33,18 +34,23 @@ final class BenjaminCard extends AbstractPlayableCard
         ]);
     }
 
+    public function requiresTarget(): bool
+    {
+        return true;
+    }
+
     public function play(GameContext $context, array $data = []): void
     {
+        $target = $data['target'] ?? null;
+
+        if (!\is_string($target)) {
+            throw new \InvalidArgumentException('Missing target card for Benjamin card effect');
+        }
+
         for ($i = 0; $i < $this->getValue(self::CARD_COUNT, true); $i++) {
-            if (!($card = $data['cards'][$i] ?? null)) {
-                throw new \InvalidArgumentException('Missing card data for Benjamin card effect');
-            }
-
-            if (!\is_string($card)) {
-                throw new \InvalidArgumentException('Invalid card data for Benjamin card effect');
-            }
-
-            $context->addEffect(CardEffectEnum::HACKED, $card);
+            $context->addEffect(CardEffectEnum::HACKED, $target, [
+                'value' => $context->randomBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
+            ]);
         }
     }
 }

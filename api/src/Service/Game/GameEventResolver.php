@@ -189,7 +189,7 @@ class GameEventResolver
             throw new \LogicException('playerId is required to play a card');
         }
 
-        $card = $this->cardRuntimeMap->create($cardState->templateId);
+        $card = $this->cardRuntimeMap->getByState($cardState);
         $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
         $data = $event->data['data'] ?? [];
         $events = [];
