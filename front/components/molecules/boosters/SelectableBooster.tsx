@@ -55,9 +55,13 @@ export default function SelectableBooster({
   const isFrontOpeningAnimating =
     isFrontBooster && isOpeningAnimationPhase(openingPhase);
   const isFrontRevealActive = isFrontBooster && isRevealPhase(openingPhase);
+  const shouldDimOtherBoosters =
+    isPreviewOpen ||
+    isOpeningAnimationPhase(openingPhase) ||
+    isRevealPhase(openingPhase);
   const shouldStayInPreviewPosition =
     isFrontPreviewOpen || isFrontOpeningAnimating;
-  const brightness = isFrontBooster ? 100 : isPreviewOpen ? 60 : 80;
+  const brightness = isFrontBooster ? 100 : shouldDimOtherBoosters ? 60 : 80;
   const wasFrontPreviewOpenRef = useRef(isFrontPreviewOpen);
   const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
   const [portalRect, setPortalRect] = useState<{
