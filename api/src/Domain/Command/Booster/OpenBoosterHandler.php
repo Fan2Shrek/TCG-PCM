@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Booster;
 
-use App\Api\DTO\BoosterOpenedCardDTO;
+use App\Api\DTO\CollectionCardDTO;
 use App\Domain\Exception\NotEnoughTokenException;
 use App\Domain\Model\Booster;
 use App\Entity\Inventory\Inventory;
@@ -53,7 +53,7 @@ final class OpenBoosterHandler
         $this->inventoryUpdater->addCards($booster->getCards());
 
         return new Booster(array_map(
-            fn (AbstractCard $card): BoosterOpenedCardDTO => $this->createOpenedCardDTO($card, $ownedCardIds),
+            fn (AbstractCard $card): CollectionCardDTO => $this->createOpenedCardDTO($card, $ownedCardIds),
             $booster->getCards(),
         ));
     }
@@ -74,7 +74,7 @@ final class OpenBoosterHandler
     /**
      * @param array<string, true> $ownedCardIds
      */
-    private function createOpenedCardDTO(AbstractCard $card, array $ownedCardIds): BoosterOpenedCardDTO
+    private function createOpenedCardDTO(AbstractCard $card, array $ownedCardIds): CollectionCardDTO
     {
         $cost = null;
         $hp = null;
@@ -89,7 +89,7 @@ final class OpenBoosterHandler
             $attack = $card->getAttack();
         }
 
-        return new BoosterOpenedCardDTO(
+        return new CollectionCardDTO(
             name: $card->getName(),
             description: $card->getDescription(),
             image: $card->getImage(),

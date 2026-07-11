@@ -12,6 +12,60 @@ use App\Tests\Resources\Fixtures\ThereIs;
 final class BoosterApiTest extends FunctionalTestCase
 {
     private const URI = '/api/boosters/open';
+    private const LIST_URI = '/api/boosters/cards';
+
+    public function testGetObtainableBoosterCards(): void
+    {
+        $user = ThereIs::anUser()->build();
+        $this->client->loginUser($user);
+
+        $this->get(self::LIST_URI);
+
+        $response = $this->client->getResponse();
+        self::assertResponseIsSuccessful();
+
+        $data = json_decode($response->getContent() ?? '', true);
+        self::assertArrayHasKey('cards', $data);
+        self::assertArrayHasKey('total', $data);
+        self::assertArrayHasKey('offset', $data);
+        self::assertArrayHasKey('step', $data);
+        self::assertIsArray($data['cards']);
+        self::assertIsInt($data['total']);
+        self::assertSame(0, $data['offset']);
+        self::assertNull($data['step']);
+
+        if ([] !== $data['cards']) {
+            $card = $data['cards'][0];
+            self::assertArrayHasKey('name', $card);
+            self::assertArrayHasKey('description', $card);
+            self::assertArrayHasKey('rarity', $card);
+            self::assertArrayHasKey('type', $card);
+            self::assertTrue(
+                array_key_exists('cost', $card) || array_key_exists('hp', $card) || array_key_exists('attack', $card),
+                'Listed card should expose at least one visible stat field (cost, hp, or attack).'
+            );
+        }
+    }
+
+    public function testGetObtainableBoosterCardsWithPagination(): void
+    {
+        $user = ThereIs::anUser()->build();
+        $this->client->loginUser($user);
+
+        $this->get(self::LIST_URI.'?offset=1&step=2&type=default');
+
+        $response = $this->client->getResponse();
+        self::assertResponseIsSuccessful();
+
+        $data = json_decode($response->getContent() ?? '', true);
+        self::assertSame(1, $data['offset']);
+        self::assertSame(2, $data['step']);
+        self::assertArrayHasKey('total', $data);
+        self::assertArrayHasKey('cards', $data);
+
+        $expectedCount = max(0, min(2, $data['total'] - 1));
+        self::assertCount($expectedCount, $data['cards']);
+    }
 
     public function testSuccessfulBoosterOpen(): void
     {

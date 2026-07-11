@@ -8,7 +8,7 @@ use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Enum\CardTypeEnum;
 
-final readonly class BoosterOpenedCardDTO
+final readonly class CollectionCardDTO
 {
     // @mago-ignore lint:excessive-parameter-list
     public function __construct(
