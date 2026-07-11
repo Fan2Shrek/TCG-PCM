@@ -10,13 +10,17 @@ export default async ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <div className="hidden md:grid grid-cols-3 items-center fixed w-full pt-3 px-5 z-10">
-        <PendingBoosters className="justify-self-start" />
-        <Image src={logoPath} alt="Logo" width={275} height={275} className="justify-self-center" />
+        <div>{user && <PendingBoosters className="justify-self-start" />}</div>
+        <Image
+          src={logoPath}
+          alt="Logo"
+          width={275}
+          height={275}
+          className="justify-self-center"
+        />
         <Menu className="justify-self-end" username={user?.username} />
       </div>
-      <div className="md:pt-32 min-h-screen flex flex-col">
-        {children}
-      </div>
+      <div className="md:pt-32 min-h-screen flex flex-col">{children}</div>
     </>
   );
 };

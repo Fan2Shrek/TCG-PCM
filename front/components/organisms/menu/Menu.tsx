@@ -1,18 +1,44 @@
-import type { MenuItemType } from "@/types/menuItem";
+"use client";
+
+import type { ReactNode } from "react";
 import MenuItem from "@/components/atoms/menu/MenuItem";
-import { AiOutlineFolderOpen } from "react-icons/ai";
+import {
+  AiOutlineFolderOpen,
+  AiOutlineLogin,
+  AiOutlineLogout,
+} from "react-icons/ai";
 import { TbPlayCardStar, TbSword } from "react-icons/tb";
+import { MdAppRegistration } from "react-icons/md";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
 import { logoutAction } from "@/lib/actions/auth";
-import { Button } from "@/components/ui/button";
 
 type MenuProps = {
   className?: string;
-  username?: string | null;
+  username?: string;
 };
 
-const menuItems: MenuItemType[] = [
+type MenuItemData = {
+  label: string;
+  icon: ReactNode;
+  linkTo?: string;
+  onClick?: () => void;
+};
+
+const unauthenticatedMenuItems: MenuItemData[] = [
+  {
+    label: "Connexion",
+    icon: <AiOutlineLogin />,
+    linkTo: "/login",
+  },
+  {
+    label: "Inscription",
+    icon: <MdAppRegistration />,
+    linkTo: "/register",
+  },
+];
+
+const getAuthenticatedMenuItems = (onLogout: () => void): MenuItemData[] => [
   {
     label: "Boosters",
     icon: <TbPlayCardStar />,
@@ -28,40 +54,42 @@ const menuItems: MenuItemType[] = [
     icon: <TbSword />,
     linkTo: "/rooms",
   },
+  {
+    label: "Déconnexion",
+    icon: <AiOutlineLogout />,
+    onClick: onLogout,
+  },
 ];
 
 export default ({ className, username }: MenuProps) => {
   const isAuthenticated = !!username;
 
+  const handleLogout = async () => {
+    await logoutAction();
+  };
+
+  const menuItems = isAuthenticated
+    ? getAuthenticatedMenuItems(handleLogout)
+    : unauthenticatedMenuItems;
+
   return (
     <div>
-      <nav className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg min-h-15 ${className || ""}`}>
-        <ul className='flex items-center gap-2 px-4'>
-          {isAuthenticated && menuItems.map((menuItem) => <MenuItem key={menuItem.label} label={menuItem.label} icon={menuItem.icon} linkTo={menuItem.linkTo} active={false} />)}
-          {isAuthenticated ? (
-            <li className='flex items-center'>
-              <form action={logoutAction}>
-                <Button type='submit' variant='ghost' className='text-white text-lg font-bold hover:bg-white/20 hover:text-white'>
-                  Déconnexion
-                </Button>
-              </form>
-            </li>
-          ) : (
-            <>
-              <li className='flex items-center'>
-                <Button asChild variant='ghost' className='text-white text-lg font-bold hover:bg-white/20 hover:text-white'>
-                  <a href='/login'>Login</a>
-                </Button>
-              </li>
-              <li className='flex items-center'>
-                <Button asChild variant='ghost' className='text-white text-lg font-bold hover:bg-white/20 hover:text-white'>
-                  <a href='/register'>Register</a>
-                </Button>
-              </li>
-            </>
-          )}
+      <nav
+        className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg min-h-15 ${className || ""}`}
+      >
+        <ul className="flex items-center gap-2 px-4">
+          {menuItems.map((menuItem) => (
+            <MenuItem
+              key={menuItem.label}
+              label={menuItem.label}
+              icon={menuItem.icon}
+              linkTo={menuItem.linkTo}
+              onClick={menuItem.onClick}
+              active={false}
+            />
+          ))}
         </ul>
-        {isAuthenticated && <ProfileIcon username={username ?? undefined} />}
+        {isAuthenticated && <ProfileIcon username={username} />}
       </nav>
 
       {isAuthenticated && <ActiveRoomStatus />}

@@ -6,6 +6,7 @@ const PUBLIC_PATHS = ["/login", "/register"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
   const hasSession = request.cookies.has(SESSION_COOKIE);
   const isPublicPath = PUBLIC_PATHS.includes(pathname);
 
@@ -14,7 +15,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (hasSession && isPublicPath) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/boosters", request.url));
   }
 
   return NextResponse.next();

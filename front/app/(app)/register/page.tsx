@@ -2,8 +2,10 @@ import RegisterForm from "@/components/molecules/form/RegisterForm";
 
 export default function Register() {
   return (
-      <main className="flex flex-col items-center gap-12 p-24 sm:items-start">
+    <main className="flex  justify-center sm:mt-32 ">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl border border-black/10">
         <RegisterForm />
-      </main>
+      </div>
+    </main>
   );
 }

@@ -68,23 +68,20 @@ export const GameProvider = ({
   children,
   gameId,
   game: initialGame,
+  username,
+  mercureToken,
 }: Props) => {
-  const normalizeGameState = useCallback(
-    (state: GameState | null | undefined) => {
-      if (!state) {
-        return null;
-      }
-export const GameProvider = ({ children, gameId, game: initialGame, username, mercureToken }: Props) => {
   useEffect(() => {
     if (!mercureToken) return;
 
     document.cookie = `mercureAuthorization=${mercureToken}; path=/; max-age=3600; secure; samesite=strict`;
   }, [mercureToken]);
 
-  const normalizeGameState = useCallback((state: GameState | null | undefined) => {
-    if (!state) {
-      return null;
-    }
+  const normalizeGameState = useCallback(
+    (state: GameState | null | undefined) => {
+      if (!state) {
+        return null;
+      }
 
       const legacyCurrentPlayer = (
         state as GameState & { currentPlayer?: string | number }
@@ -160,7 +157,10 @@ export const GameProvider = ({ children, gameId, game: initialGame, username, me
     data: Record<string, unknown> = {},
   ) => {
     try {
-      await playGameAction(gameId, PlayerActionType.PLAY_CARD, { cardId, data });
+      await playGameAction(gameId, PlayerActionType.PLAY_CARD, {
+        cardId,
+        data,
+      });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur est survenue";
