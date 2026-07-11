@@ -2,6 +2,7 @@
 
 namespace App\Game\Card;
 
+use App\Enum\CardSetEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
@@ -10,6 +11,8 @@ use App\Game\GameUtils;
 final class BloodSuckerCard extends AbstractPassiveCard implements TurnAwareInterface
 {
     use TurnAwareTrait;
+
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     public const int DAMAGE = 10;
 
