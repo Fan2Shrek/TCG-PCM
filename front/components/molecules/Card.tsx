@@ -10,6 +10,7 @@ import {
   CardType,
   CardSize,
   CardSizeMap,
+  CardEffect,
   FoilEffects,
 } from "@/constants/card";
 import { BasicCard, CardLayer } from "@/lib/cards/types/card";
@@ -93,9 +94,30 @@ const Card = ({
         return null;
     }
   };
-  if (card.name === "Henry") {
-    console.log(card);
-  }
+
+  const statusLayerSources: Partial<Record<CardEffect, string>> = {
+    [CardEffect.HACKED]: "/card/status/hacked.webp",
+    [CardEffect.TORNED]: "/card/status/thorn.webp",
+    [CardEffect.POWER_BOOST]: "/card/status/powerBoost.webp",
+  };
+
+  const statusLayers: CardLayer[] = card.effects.flatMap((effect) => {
+    const src = statusLayerSources[effect];
+
+    if (!src) {
+      return [];
+    }
+
+    return [
+      {
+        src,
+        depth: 2,
+        foilEffect: null,
+        foil: null,
+        mask: null,
+      },
+    ];
+  });
 
   const cardLayers: CardLayer[] = [
     {
@@ -146,6 +168,8 @@ const Card = ({
       mask: null,
     });
   }
+
+  cardLayers.push(...statusLayers);
 
   if (!card.isActive) {
     cardLayers.push({
