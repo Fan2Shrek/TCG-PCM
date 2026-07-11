@@ -1,19 +1,17 @@
-import { AuthResource } from "./resources/AuthResource";
 import { BoosterResource } from "./resources/BoosterResource";
 import { GameResource } from "./resources/GameResource";
 import { RoomResource } from "./resources/RoomResource";
 import { UserResource } from "./resources/UserResource";
-import { getToken } from "@/lib/utils";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export class ApiClient {
-  auth: AuthResource;
   booster: BoosterResource;
   game: GameResource;
   user: UserResource;
   room: RoomResource;
 
   constructor(public baseUrl: string) {
-    this.auth = new AuthResource(this);
     this.booster = new BoosterResource(this);
     this.game = new GameResource(this);
     this.user = new UserResource(this);
@@ -21,28 +19,20 @@ export class ApiClient {
   }
 
   async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const token = getToken();
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`/api/proxy${endpoint}`, {
       ...options,
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      },
     });
 
     if (!response.ok) {
-      if (response.status === 400) {
-        const errorBody = (await response.json().catch(() => null)) as {
-          detail?: string;
-        } | null;
+      const errorBody = (await response.json().catch(() => null)) as {
+        detail?: string;
+      } | null;
 
-        if (errorBody?.detail) {
-          throw new Error(errorBody.detail);
-        }
-      }
-
-      throw new Error(`API request failed with status ${response.status}`);
+      throw new Error(errorBody?.detail || `API request failed with status ${response.status}`);
     }
 
     if (response.status === 204) {
@@ -59,22 +49,19 @@ export class ApiClient {
   async post<T>(endpoint: string, body: any = {}): Promise<T> {
     return this.request<T>(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
   }
 }
 
-const client = new ApiClient(
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
-);
+const client = new ApiClient(baseUrl);
 
 export const getImage = (img: string) => {
   try {
     new URL(img);
     return img;
   } catch {
-    return `${client.baseUrl.replaceAll("api", "")}${img}`;
+    return `${baseUrl.replaceAll("api", "")}${img}`;
   }
 };
 

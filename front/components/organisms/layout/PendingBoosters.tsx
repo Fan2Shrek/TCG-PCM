@@ -1,3 +1,5 @@
+"use client";
+
 import ProgressBar from "@/components/atoms/dailyBoosters/ProgressBar";
 import PendingBoostersList from "@/components/molecules/dailyBoosters/PendingBoostersList";
 import TooltipText, {

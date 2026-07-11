@@ -10,7 +10,7 @@ export function useDropZoneHighlight(getRect: () => DOMRect) {
     const onStart = () => setIsDragging(true);
     const onEnd = () => setIsDragging(false);
 
-    const onMove = (pos: { x: number; y: number }, card: BasicCard) => {
+    const onMove = ({ pos }: { pos: { x: number; y: number }; card: BasicCard }) => {
       const rect = getRect();
 
       const inside =

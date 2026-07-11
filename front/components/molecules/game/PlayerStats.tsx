@@ -3,7 +3,7 @@ import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 import CardsHand from "../../organisms/CardsHand";
 import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
-import { BasicCard } from "@/components/types/card";
+import { BasicCard } from "@/lib/cards/types/card";
 
 type PlayerStatsProps = {
   playerCard: BasicCard;
