@@ -132,13 +132,12 @@ const CardTextOverlay = ({
           style={{ ...getZoneStyle(statsConfig), fontSize: statsFontSize }}
         >
           <div className="flex flex-row gap-px justify-center items-center">
+            {cardType === CardType.MONSTER && cardStats.hp !== undefined && (
+              <span>{cardStats.hp}❤️</span>
+            )}
             {cardType === CardType.MONSTER &&
-              cardStats.hp &&
-              cardStats.attack && (
-                <>
-                  <span>{cardStats.hp}❤️</span>
-                  <span>{cardStats.attack}⚔️</span>
-                </>
+              cardStats.attack !== undefined && (
+                <span>{cardStats.attack}⚔️</span>
               )}
             {cardStats.cost !== undefined && <span>{cardStats.cost}🪙</span>}
           </div>
