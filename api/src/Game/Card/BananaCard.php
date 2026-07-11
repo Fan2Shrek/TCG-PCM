@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
+use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
 final class BananaCard extends AbstractPlayableCard
 {
+    public static CardSetEnum $serie = CardSetEnum::BTD6;
+
     private const HEAL_AMOUNT = 5;
 
     public function getId(): string

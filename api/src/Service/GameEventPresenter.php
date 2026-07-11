@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Api\DTO\CardDTO;
 use App\Enum\GameEventTypeEnum;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
@@ -11,6 +12,8 @@ use App\Service\Game\GameStateConverter;
 
 final class GameEventPresenter
 {
+    private const CARD_IMAGE_BASE_URL = 'cards/';
+
     private int $player1Offset = 0;
     private int $player2Offset = 0;
 
@@ -49,7 +52,7 @@ final class GameEventPresenter
                 'cardId' => $event->data['cardId'] ?? null,
                 'card' => GameEventTypeEnum::CARD_DISCARDED === $event->type
                     ? null
-                    : $this->gameStateConverter->createCardDTO($state->cards[$event->data['cardId']]),
+                    : $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($state->cards[$event->data['cardId']])),
             ],
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => [
                 'total' => $state->getPlayer($player)->coins,
@@ -67,7 +70,7 @@ final class GameEventPresenter
             GameEventTypeEnum::UPDATE_CARD_STATE => [
                 // @var string $cardId
                 'cardId' => $cardId = $event->data['cardId'],
-                'card' => $this->gameStateConverter->createCardDTO($state->getCardState($cardId)),
+                'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($state->getCardState($cardId))),
             ],
             default => [],
         };
@@ -104,9 +107,30 @@ final class GameEventPresenter
                 throw new \LogicException(\sprintf('Card %s not found in state', $cardId));
             }
 
-            $view['card'] = $this->gameStateConverter->createCardDTO($cardState);
+            $view['card'] = $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($cardState));
         }
 
         return $view;
+    }
+
+    private function normalizeCardDTO(CardDTO $card): array
+    {
+        $path = $card->image;
+
+        return array_filter([
+            'name' => $card->name,
+            'description' => $card->description,
+            'type' => $card->type?->name,
+            'rarity' => $card->rarity->name,
+            'serie' => $card->set->name,
+            'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
+            'requiresTarget' => $card->requiresTarget,
+            'cost' => $card->cost,
+            'hp' => $card->hp,
+            'attack' => $card->attack,
+            'instanceId' => $card->instanceId,
+            'effects' => $card->effects,
+            'isActive' => $card->isActive,
+        ], static fn(mixed $value): bool => null !== $value);
     }
 }

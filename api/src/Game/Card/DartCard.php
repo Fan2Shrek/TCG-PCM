@@ -27,6 +27,10 @@ final class DartCard extends AbstractPlayableCard
             'value' => $this->getValue(self::DAMAGE, true),
         ]);
     }
+    public function requiresTarget(): bool
+    {
+        return true;
+    }
 
     public function play(GameContext $context, array $data = []): void
     {

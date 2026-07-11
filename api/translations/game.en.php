@@ -114,6 +114,10 @@ return [
             'name' => 'Henry',
             'description' => 'Discarded at the start of its owner\'s next turn.',
         ],
+        'HoneyBee' => [
+            'name' => 'Honey Bee',
+            'description' => 'When it attacks, heal your character by {{value}} HP.',
+        ],
         'RadicalRat' => [
             'name' => 'Radical Rat',
             'description' => 'When it is played or dies, it deals {{value}} damage to every opposing monster and the opposing character at the same time.',

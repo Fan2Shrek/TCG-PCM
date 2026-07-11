@@ -18,6 +18,7 @@ return [
 	'Dart' => Card\DartCard::class,
 	'D6' => Card\D6Card::class,
 	'Gitman' => Card\GitmanCard::class,
+	'HoneyBee' => Card\Monster\HoneyBeeCard::class,
 	'Henry' => Card\Monster\HenryCard::class,
 	'RadicalRat' => Card\Monster\RadicalRatCard::class,
 	'HackedZone' => Card\HackedZoneCard::class,

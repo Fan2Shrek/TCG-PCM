@@ -15,8 +15,8 @@ return [
             'description' => 'Soigne votre personnage de {{value}} PV.',
         ],
         'BananaFarm' => [
-            'name' => 'Ferme a bananes',
-            'description' => 'Gagne {{value}} piece au debut de chaque tour.',
+            'name' => 'Ferme à bananes',
+            'description' => 'Gagne {{value}} pièce(s) au debut de chaque tour.',
         ],
         'Pierrot' => [
             'name' => 'Pierrot',
@@ -114,6 +114,10 @@ return [
                 'name' => 'Henry',
                 'description' => 'Est défaussé au début du prochain tour de son propriétaire.',
             ],
+            'HoneyBee' => [
+                'name' => 'Abeille de miel',
+                'description' => 'Quand elle attaque, soigne votre personnage de {{value}} PV.',
+            ],
             'RadicalRat' => [
                 'name' => 'Rat Radical',
                 'description' => 'Lorsqu\'il est joué ou qu\'il meurt, inflige {{value}} dégâts à tous les monstres et personnages adverses.',
@@ -140,7 +144,7 @@ return [
         ],
         'StackyStackito' => [
             'name' => 'Stacky Stackito',
-            'description' => 'Chaque {{value}} tours, fait le nombre de piece comme dégats.',
+            'description' => 'Chaque {{value}} tours, fait le nombre de pièces comme dégats.',
         ],
         'RiskyBet' => [
             'name' => 'Pari risqué',
