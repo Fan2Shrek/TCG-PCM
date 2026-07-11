@@ -101,8 +101,10 @@ const Card = ({
     [CardEffect.POWER_BOOST]: "/card/status/powerBoost.webp",
   };
 
-  const statusLayers: CardLayer[] = card.effects.flatMap((effect) => {
-    const src = statusLayerSources[effect];
+  const cardEffects = card.effects ?? [];
+
+  const statusLayers: CardLayer[] = cardEffects.flatMap((effect) => {
+    const src = statusLayerSources[effect.effect];
 
     if (!src) {
       return [];

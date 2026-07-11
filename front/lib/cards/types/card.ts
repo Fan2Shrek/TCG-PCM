@@ -6,6 +6,11 @@ import {
   FoilEffects,
 } from "@/constants/card";
 
+export type CardEffectState = {
+  effect: CardEffect;
+  data: unknown[];
+};
+
 export type BasicCard = {
   name: string;
   description: string;
@@ -15,7 +20,7 @@ export type BasicCard = {
   serie: CardSet;
   type?: CardType;
   instanceId: string;
-  effects: CardEffect[];
+  effects: CardEffectState[];
   isActive: boolean;
   cost?: number;
   hp?: number;
