@@ -1,8 +1,7 @@
-import { GameState, PlayerState } from "@/lib/game/type/gameState";
+import { useMemo } from "react";
+import { PlayerState } from "@/lib/game/type/gameState";
 import PlayZone from "@/components/molecules/game/PlayZone";
-import OpponentPlayZone from "@/components/molecules/game/OpponentPlayZone";
 import DrawPile from "@/components/molecules/game/DrawPile";
-import OpponentDrawPile from "@/components/molecules/game/OpponentDrawPile";
 import Cemetery from "@/components/molecules/game/Cemetery";
 import PlayerCharacterDisplay from "@/components/molecules/game/PlayerCharacterDisplay";
 import {
@@ -10,42 +9,30 @@ import {
   GAMEBOARD_ANIMATION_DURATION,
   GAMEBOARD_ANIMATION_TIMING,
 } from "@/constants/gameArea";
-import { BasicCard } from "@/lib/cards/types/card";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
 import OpponentHand from "@/components/molecules/game/OpponentHand";
 
 type GameMainAreaProps = {
-  game: GameState | null;
-  selectedAttackerId: string | null;
-  onSelectAttacker: (cardId: string | null) => void;
-  onSelectTarget: (cardId: string) => void;
-  getCardById: (id: string) => BasicCard | undefined;
-  selectedAttackerCard: BasicCard | undefined;
   opponentState: PlayerState;
   currentState: PlayerState;
   className?: string;
   isCardDragged: boolean;
-  hoveredTargetId?: string | null;
-};
-
-const objectToArray = (value: object): string[] => {
-  return Object.values(value).filter((v): v is string => typeof v === "string");
-};
-
-const objectKeysToArray = (value: object): string[] => {
-  return Object.keys(value);
 };
 
 export default function GameMainArea({
   className,
-  selectedAttackerId,
-  onSelectAttacker,
-  onSelectTarget,
   opponentState,
   currentState,
   isCardDragged,
-  hoveredTargetId,
 }: GameMainAreaProps) {
+  const opponentDiscardCardIds = useMemo(
+    () => Object.keys(opponentState.discardPile),
+    [opponentState.discardPile],
+  );
+  const currentDiscardCardIds = useMemo(
+    () => Object.keys(currentState.discardPile),
+    [currentState.discardPile],
+  );
   return (
     <div
       className={`game-main-area relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}
@@ -72,27 +59,19 @@ export default function GameMainArea({
           {/* finally, this div contains the actual play area where everything happens. */}
           <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3">
             <div className="flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2">
-              <Cemetery
-                cardIds={objectKeysToArray(opponentState.discardPile)}
-              />
-              <OpponentDrawPile
+              <Cemetery cardIds={opponentDiscardCardIds} />
+              <DrawPile
                 numCards={opponentState.drawPile.length}
                 isCardDragged={isCardDragged}
-                currentPlayerId={currentState.player.id}
+                playerId={currentState.player.id}
+                isOpponent
               />
             </div>
             <div className="flex flex-col col-span-3 items-center">
-              <OpponentPlayZone
-                passiveCardIds={objectToArray(
-                  opponentState.playArea.passiveCards,
-                )}
-                monsterCardIds={objectToArray(
-                  opponentState.playArea.monsterCards,
-                )}
-                selectedCardId={selectedAttackerId}
-                onSelectCard={onSelectAttacker}
-                onSelectTarget={onSelectTarget}
-                hoveredTargetId={hoveredTargetId}
+              <PlayZone
+                passiveCardIds={opponentState.playArea.passiveCards}
+                monsterCardIds={opponentState.playArea.monsterCards}
+                isOpponent
               />
             </div>
             <div className="flex flex-col col-span-1 items-center gap-2">
@@ -100,21 +79,13 @@ export default function GameMainArea({
                 money={opponentState.coins}
                 health={opponentState.healthPoints}
               />
-              <PlayerCharacterDisplay
-                player={opponentState}
-                hoveredTargetId={hoveredTargetId}
-                onSelectTarget={onSelectTarget}
-              />
+              <PlayerCharacterDisplay player={opponentState} />
             </div>
           </div>
 
           <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-blue-600 p-3">
             <div className="flex flex-col col-span-1 items-center gap-2">
-              <PlayerCharacterDisplay
-                player={currentState}
-                hoveredTargetId={hoveredTargetId}
-                onSelectTarget={onSelectTarget}
-              />
+              <PlayerCharacterDisplay player={currentState} />
               <PlayerStatsDisplay
                 money={currentState.coins}
                 health={currentState.healthPoints}
@@ -122,16 +93,8 @@ export default function GameMainArea({
             </div>
             <div className="flex flex-col col-span-3 items-center h-full">
               <PlayZone
-                passiveCardIds={objectToArray(
-                  currentState.playArea.passiveCards,
-                )}
-                monsterCardIds={objectToArray(
-                  currentState.playArea.monsterCards,
-                )}
-                selectedCardId={selectedAttackerId}
-                onSelectCard={onSelectAttacker}
-                onSelectTarget={onSelectTarget}
-                hoveredTargetId={hoveredTargetId}
+                passiveCardIds={currentState.playArea.passiveCards}
+                monsterCardIds={currentState.playArea.monsterCards}
               />
             </div>
             <div className="flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2">
@@ -140,7 +103,7 @@ export default function GameMainArea({
                 isCardDragged={isCardDragged}
                 playerId={currentState.player.id}
               />
-              <Cemetery cardIds={objectKeysToArray(currentState.discardPile)} />
+              <Cemetery cardIds={currentDiscardCardIds} />
             </div>
           </div>
         </div>

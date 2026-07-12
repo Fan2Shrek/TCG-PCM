@@ -22,19 +22,20 @@ import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
 export default function GameBoard() {
   const router = useRouter();
   const { id } = useParams();
-  const { game, getCardById, announcements, actions, currentUsername } =
-    useContext(GameContext);
+  const {
+    game,
+    getCardById,
+    announcements,
+    actions,
+    currentUsername,
+    isLoggedPlayerTurn,
+    targeting,
+    targetingActions,
+  } = useContext(GameContext);
   const { userRoom, clearRoom, lastEvent } = useRoom();
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
-    null,
-  );
 
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
-  const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
-  const [pendingPlayCardId, setPendingPlayCardId] = useState<string | null>(
-    null,
-  );
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const rewardedWinnerIdRef = useRef<string | null>(null);
@@ -44,9 +45,6 @@ export default function GameBoard() {
     game?.player1.player.name === currentUsername
       ? game?.player1.player
       : (game?.player2.player ?? null);
-  const isLoggedPlayerTurn = Boolean(
-    connectedPlayer && game && connectedPlayer.id === game.currentPlayerId,
-  );
   const currentState =
     game?.player1.player.name === currentUsername
       ? game?.player1
@@ -95,7 +93,7 @@ export default function GameBoard() {
     const handleDragStart = ({ card }: { card: BasicCard }) => {
       if (!isLoggedPlayerTurn) return;
       setDraggedCard(card);
-      setSelectedAttackerId(null);
+      targetingActions.clearSelectedAttacker();
     };
     const handleDragEnd = () => {
       setDraggedCard(null);
@@ -108,60 +106,7 @@ export default function GameBoard() {
       emitter.off("card:drag:start", handleDragStart);
       emitter.off("card:drag:end", handleDragEnd);
     };
-  }, [isLoggedPlayerTurn]);
-
-  const handleAttackTarget = useCallback(
-    (targetId: string) => {
-      if (pendingPlayCardId) {
-        actions.playCard(pendingPlayCardId, { target: targetId });
-        setPendingPlayCardId(null);
-        setHoveredTargetId(null);
-        setSelectedAttackerId(null);
-        return;
-      }
-
-      if (!selectedAttackerId) {
-        return;
-      }
-
-      actions.attack(selectedAttackerId, targetId);
-      setHoveredTargetId(null);
-      setSelectedAttackerId(null);
-    },
-    [actions, pendingPlayCardId, selectedAttackerId],
-  );
-
-  const cancelPendingPlayTarget = useCallback(() => {
-    setPendingPlayCardId(null);
-    setHoveredTargetId(null);
-  }, []);
-
-  // Gère la sélection de cibles
-  useEffect(() => {
-    const handleTargetHover = (targetId: string) => {
-      setHoveredTargetId(targetId);
-    };
-
-    const handleTargetLeave = () => {
-      setHoveredTargetId(null);
-    };
-
-    const handleTargetClick = (targetId: string) => {
-      if (selectedAttackerId || pendingPlayCardId) {
-        handleAttackTarget(targetId);
-      }
-    };
-
-    emitter.on("target:hover", handleTargetHover);
-    emitter.on("target:leave", handleTargetLeave);
-    emitter.on("target:click", handleTargetClick);
-
-    return () => {
-      emitter.off("target:hover", handleTargetHover);
-      emitter.off("target:leave", handleTargetLeave);
-      emitter.off("target:click", handleTargetClick);
-    };
-  }, [selectedAttackerId, pendingPlayCardId, handleAttackTarget]);
+  }, [isLoggedPlayerTurn, targetingActions]);
 
   // Gère quand carte laché dans zone de jeu
   useEffect(() => {
@@ -187,9 +132,7 @@ export default function GameBoard() {
       }
 
       if (card.requiresTarget) {
-        setPendingPlayCardId(cardId);
-        setSelectedAttackerId(null);
-        setHoveredTargetId(null);
+        targetingActions.requestCardTarget(cardId);
         actions.pushAnnouncement({
           text: "Choisissez une cible pour cette carte.",
           tone: "neutral",
@@ -203,52 +146,15 @@ export default function GameBoard() {
     emitter.on("card:dropped", handleCardDropped);
 
     return () => emitter.off("card:dropped", handleCardDropped);
-  }, [getCardById, actions, currentCoins]);
-
-  const selectedAttackerCard = useMemo(() => {
-    if (!selectedAttackerId) return undefined;
-
-    const card = getCardById(selectedAttackerId);
-
-    if (card?.isActive === false) {
-      return undefined;
-    }
-
-    return card;
-  }, [getCardById, selectedAttackerId]);
-
-  const handleSelectAttacker = (cardId: string | null) => {
-    if (!isLoggedPlayerTurn) return;
-
-    if (selectedAttackerId === cardId) {
-      setHoveredTargetId(null);
-      setSelectedAttackerId(null);
-      return;
-    }
-
-    setHoveredTargetId(null);
-    setSelectedAttackerId(cardId);
-  };
+  }, [getCardById, actions, currentCoins, targetingActions]);
 
   const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
 
   const handleBackgroundClick = () => {
-    if (selectedAttackerId || pendingPlayCardId) {
-      setHoveredTargetId(null);
-      setSelectedAttackerId(null);
-      setPendingPlayCardId(null);
+    if (targeting.selectedAttackerId || targeting.pendingPlayCardId) {
+      targetingActions.clearAllTargeting();
     }
   };
-
-  const isTargeting = selectedAttackerId !== null || pendingPlayCardId !== null;
-
-  useEffect(() => {
-    emitter.emit("game:targeting-changed", isTargeting);
-
-    return () => {
-      emitter.emit("game:targeting-changed", false);
-    };
-  }, [isTargeting]);
 
   const handCards = useMemo(() => {
     if (!currentState) {
@@ -337,12 +243,12 @@ export default function GameBoard() {
     }
 
     await api.room.leave(userRoom.id);
-  }, [userRoom?.id, clearRoom, router]);
+  }, [userRoom, router]);
 
   const handleBackHome = useCallback(async () => {
     clearRoom();
     router.push("/");
-  }, [userRoom?.id, clearRoom, router]);
+  }, [clearRoom, router]);
 
   if (!game || !connectedPlayer || !currentState || !opponentState) {
     return <div>Loading...</div>;
@@ -364,8 +270,8 @@ export default function GameBoard() {
       <MobileGameDisclaimer isVisible={isMobileDevice} />
       <div className="top-5 right-5 absolute z-20">
         <Tooltip
-          text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or. 
-        L'or sert à jouer vos cartes. Certaines cartes peuvent infliger des status: Hacké change les valeurs d'une carte, une carte Tordu n'activera parfois pas sons effet, et Boost de puissance augmente ses dégâts. 
+          text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or.
+        L'or sert à jouer vos cartes. Certaines cartes peuvent infliger des status: Hacké change les valeurs d'une carte, une carte Tordu n'activera parfois pas sons effet, et Boost de puissance augmente ses dégâts.
         Pour cibler une carte avec une des vôtres, cliquez d'abord sur votre carte puis sur la cible. Vous pouvez aussi double-cliquer sur une carte pour l'afficher en grand. Cliquez en dehors de la carte pour dézoomer."
         />
       </div>
@@ -373,20 +279,12 @@ export default function GameBoard() {
       <GameAnnouncements
         regularAnnouncements={regularAnnouncements}
         giantAnnouncement={giantAnnouncement}
-        selectedAttackerId={selectedAttackerId}
       />
       <div className="h-full flex flex-row justify-center items-center pointer-events-auto">
         <GameMainArea
-          selectedAttackerId={selectedAttackerId}
-          onSelectAttacker={handleSelectAttacker}
-          onSelectTarget={handleAttackTarget}
-          selectedAttackerCard={selectedAttackerCard}
-          getCardById={getCardById}
-          game={game}
           opponentState={opponentState}
           currentState={currentState}
           isCardDragged={!!draggedCard}
-          hoveredTargetId={hoveredTargetId}
         />
       </div>
       <div
@@ -403,8 +301,8 @@ export default function GameBoard() {
         <div className="absolute z-20 top-4 left-4 lg:top-auto lg:left-auto lg:bottom-10 lg:right-10">
           <GameActionButtons
             isLoggedPlayerTurn={isLoggedPlayerTurn}
-            showCancel={pendingPlayCardId !== null}
-            onCancel={cancelPendingPlayTarget}
+            showCancel={targeting.pendingPlayCardId !== null}
+            onCancel={targetingActions.cancelPendingCardTarget}
             onEndTurn={actions.endTurn}
             onForfeit={handleForfeit}
           />

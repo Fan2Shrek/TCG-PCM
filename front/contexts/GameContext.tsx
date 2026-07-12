@@ -2,32 +2,32 @@
 
 import { BasicCard } from "@/lib/cards/types/card";
 import useMercure from "@/hooks/useMercure";
-import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { GameState } from "@/lib/game/type/gameState";
 import { playGameAction } from "@/lib/api/gameProxy";
-import { emitter } from "@/lib/eventBus";
+import {
+  AnnouncementPayload,
+  AnnouncementTone,
+  animateGameEvent,
+  applyGameView,
+} from "@/lib/game/gameEventReducer";
 
 import {
   createContext,
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
 
-export type AnnouncementTone = "neutral" | "positive" | "negative";
+export type { AnnouncementTone };
 
 export type GameAnnouncement = {
   id: number;
-  text: string;
-  tone: AnnouncementTone;
-  presentation?: "normal" | "giant";
-};
-
-type AnnouncementPayload = Omit<GameAnnouncement, "id">;
+} & AnnouncementPayload;
 
 type ActionObject = {
   playCard: (cardId: string, data?: Record<string, unknown>) => void;
@@ -36,12 +36,32 @@ type ActionObject = {
   pushAnnouncement: (announcement: AnnouncementPayload) => void;
 };
 
+export type TargetingState = {
+  selectedAttackerId: string | null;
+  hoveredTargetId: string | null;
+  pendingPlayCardId: string | null;
+  isTargeting: boolean;
+};
+
+export type TargetingActions = {
+  selectAttacker: (cardId: string | null) => void;
+  clearSelectedAttacker: () => void;
+  hoverTarget: (targetId: string | null) => void;
+  requestCardTarget: (cardId: string) => void;
+  handleTargetClick: (targetId: string) => void;
+  cancelPendingCardTarget: () => void;
+  clearAllTargeting: () => void;
+};
+
 type GameContextType = {
   game: GameState | null;
   getCardById: (cardId: string) => BasicCard | undefined;
   announcements: GameAnnouncement[];
   actions: ActionObject;
   currentUsername?: string;
+  isLoggedPlayerTurn: boolean;
+  targeting: TargetingState;
+  targetingActions: TargetingActions;
 };
 
 type Props = {
@@ -61,6 +81,22 @@ export const GameContext = createContext<GameContextType>({
     attack: () => undefined,
     endTurn: () => undefined,
     pushAnnouncement: () => undefined,
+  },
+  isLoggedPlayerTurn: false,
+  targeting: {
+    selectedAttackerId: null,
+    hoveredTargetId: null,
+    pendingPlayCardId: null,
+    isTargeting: false,
+  },
+  targetingActions: {
+    selectAttacker: () => undefined,
+    clearSelectedAttacker: () => undefined,
+    hoverTarget: () => undefined,
+    requestCardTarget: () => undefined,
+    handleTargetClick: () => undefined,
+    cancelPendingCardTarget: () => undefined,
+    clearAllTargeting: () => undefined,
   },
 });
 
@@ -152,356 +188,149 @@ export const GameProvider = ({
     [game],
   );
 
-  const playCard = async (
-    cardId: string,
-    data: Record<string, unknown> = {},
-  ) => {
-    try {
-      await playGameAction(gameId, PlayerActionType.PLAY_CARD, {
-        cardId,
-        data,
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Une erreur est survenue";
-
-      pushAnnouncement({
-        text: message,
-        tone: "negative",
-      });
-    }
-  };
-
-  const attack = (cardId: string, targetId: string) => {
-    playGameAction(gameId, PlayerActionType.ATTACK, { cardId, targetId });
-  };
-
-  const endTurn = () => {
-    playGameAction(gameId, PlayerActionType.END_TURN);
-  };
-
-  const getPlayerKey = (
-    state: GameState,
-    playerId: string,
-  ): "player1" | "player2" =>
-    state.player1.player.id === playerId ? "player1" : "player2";
-
-  const animate = (
-    state: GameState,
-    event: GameEvent,
-  ): AnnouncementPayload | null => {
-    if (event.type === GameEventType.DICE_ROLLED) {
-      if (!event.data.faces) return null;
-      const rollValue = event.data.result;
-
-      return {
-        text: rollValue === null ? "🎲 Lancer de dés" : `🎲 ${rollValue}`,
-        tone: "neutral",
-        presentation: "giant",
-      };
-    }
-
-    if (!event.view) return null;
-
-    const view = event.view;
-
-    switch (event.type) {
-      case GameEventType.TURN_STARTED: {
-        const player = getPlayerKey(state, String(view.currentPlayer));
-        return {
-          text: `Tour de ${state[player].player.name}`,
-          tone: "neutral",
-        };
-      }
-
-      case GameEventType.COINS_GAINED:
-      case GameEventType.COINS_LOST: {
-        const playerKey = getPlayerKey(state, view.playerId);
-        const previousCoins = state[playerKey].coins;
-        const nextCoins = view.total;
-
-        if (nextCoins !== previousCoins) {
-          const delta = nextCoins - previousCoins;
-          return {
-            text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} pièces`,
-            tone: delta > 0 ? "positive" : "negative",
-          };
-        }
-
-        return null;
-      }
-
-      case GameEventType.HEAL:
-      case GameEventType.DAMAGE: {
-        if (typeof view.total !== "number") {
-          return null;
-        }
-
-        const playerKey = getPlayerKey(state, view.playerId);
-        const previousHealth = state[playerKey].healthPoints;
-        const nextHealth = view.total;
-
-        if (nextHealth !== previousHealth) {
-          const delta = nextHealth - previousHealth;
-          return {
-            text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} PV`,
-            tone: delta > 0 ? "positive" : "negative",
-          };
-        }
-
-        return null;
-      }
-
-      default:
-        return null;
-    }
-  };
-
-  const applyView = (state: GameState, event: GameEvent): GameState => {
-    if (!event.view) return state;
-
-    const next = { ...state };
-    const view = event.view;
-
-    switch (event.type) {
-      case GameEventType.CARD_DRAWN: {
-        const playerKey = getPlayerKey(state, view.playerId);
-        const player = state[playerKey];
-        // skip
-        if (!view.card && player.player.name === username) {
-          return next;
-        }
-
-        const newHand = [...player.hand, view.cardId];
-
-        const newDrawPile = player.drawPile.filter((id) => id !== view.cardId);
-
-        next[playerKey] = {
-          ...player,
-          hand: newHand,
-          drawPile: newDrawPile,
-        };
-
-        if (view.card) {
-          next.cards = {
-            ...next.cards,
-            [view.card.instanceId]: view.card,
-          };
-        }
-
-        emitter.emit("game:card-drawn", {
-          playerId: view.playerId,
-          cardId: view.cardId,
+  const playCard = useCallback(
+    async (cardId: string, data: Record<string, unknown> = {}) => {
+      try {
+        await playGameAction(gameId, PlayerActionType.PLAY_CARD, {
+          cardId,
+          data,
         });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Une erreur est survenue";
 
-        return next;
-      }
-
-      case GameEventType.TURN_STARTED: {
-        return {
-          ...state,
-          currentPlayerId: String(view.currentPlayer),
-        };
-      }
-
-      case GameEventType.CARD_DISCARDED:
-      case GameEventType.CARD_PLACE_IN_PLAY_AREA:
-      case GameEventType.CARD_PLACE_IN_MONSTER_AREA: {
-        const cardId = view.cardId;
-        const card = state.cards[cardId];
-
-        const playerKey = getPlayerKey(state, view.playerId);
-        const player = state[playerKey];
-
-        const nextPlayer = {
-          ...player,
-          hand: player.hand.filter((id) => id !== cardId),
-        };
-
-        if (event.type === GameEventType.CARD_DISCARDED) {
-          if (nextPlayer.playArea.monsterCards.includes(cardId)) {
-            nextPlayer.playArea.monsterCards =
-              nextPlayer.playArea.monsterCards.filter((id) => id !== cardId);
-          } else if (nextPlayer.playArea.passiveCards.includes(cardId)) {
-            nextPlayer.playArea.passiveCards =
-              nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
-          }
-
-          return {
-            ...state,
-            [playerKey]: {
-              ...nextPlayer,
-              discardPile: {
-                ...player.discardPile,
-                [cardId]: card?.instanceId ?? cardId,
-              },
-            },
-          };
-        }
-
-        const cardToEmit = view.card || card;
-        if (cardToEmit) {
-          emitter.emit("card:played", { card: cardToEmit });
-        }
-
-        return {
-          ...state,
-          [playerKey]: {
-            ...nextPlayer,
-            playArea: {
-              passiveCards:
-                event.type === GameEventType.CARD_PLACE_IN_PLAY_AREA
-                  ? [...player.playArea.passiveCards, cardId]
-                  : player.playArea.passiveCards,
-              monsterCards:
-                event.type === GameEventType.CARD_PLACE_IN_MONSTER_AREA
-                  ? [...player.playArea.monsterCards, cardId]
-                  : player.playArea.monsterCards,
-            },
-          },
-          cards: {
-            ...state.cards,
-            ...(view.card ? { [cardId]: view.card } : {}),
-          },
-        };
-      }
-
-      case GameEventType.COINS_GAINED:
-      case GameEventType.COINS_LOST: {
-        const nextCoins = view.total;
-
-        const playerKey = getPlayerKey(state, view.playerId);
-        const player = state[playerKey];
-        const previousCoins = player.coins;
-        const delta = nextCoins - previousCoins;
-
-        emitter.emit("game:coins-changed", {
-          playerId: view.playerId,
-          delta,
+        pushAnnouncement({
+          text: message,
+          tone: "negative",
         });
-
-        return {
-          ...state,
-          [playerKey]: {
-            ...state[playerKey],
-            coins: nextCoins,
-          },
-        };
       }
-
-      case GameEventType.HEAL:
-      case GameEventType.DAMAGE: {
-        if (view.cardId && view.card) {
-          return {
-            ...state,
-            cards: {
-              ...state.cards,
-              [view.cardId]: view.card,
-            },
-          };
-        }
-
-        if (typeof view.total !== "number") {
-          return state;
-        }
-
-        const nextHealth = view.total;
-
-        const playerKey = getPlayerKey(state, view.playerId);
-        const player = state[playerKey];
-        const previousHealth = player.healthPoints;
-        const delta = nextHealth - previousHealth;
-
-        emitter.emit("game:health-changed", {
-          playerId: view.playerId,
-          delta,
-          type: event.type === GameEventType.DAMAGE ? "damage" : "heal",
-        });
-
-        return {
-          ...state,
-          [playerKey]: {
-            ...state[playerKey],
-            healthPoints: nextHealth,
-          },
-        };
-      }
-
-      case GameEventType.EFFECT_ADDED:
-      case GameEventType.UPDATE_CARD_STATE: {
-        const cardId = view.cardId;
-
-        if (!cardId || !view.card) {
-          return state;
-        }
-
-        return {
-          ...state,
-          cards: {
-            ...state.cards,
-            [cardId]: view.card,
-          },
-        };
-      }
-
-      case GameEventType.MONSTER_DIED: {
-        const cardId = view.cardId;
-        const playerKey = getPlayerKey(state, view.playerId);
-        const player = state[playerKey];
-
-        return {
-          ...state,
-          [playerKey]: {
-            ...player,
-            playArea: {
-              ...player.playArea,
-              monsterCards: player.playArea.monsterCards.filter(
-                (id) => id !== cardId,
-              ),
-            },
-            discardPile: {
-              ...player.discardPile,
-              [cardId]: cardId,
-            },
-          },
-        };
-      }
-
-      default:
-        return state;
-    }
-  };
-
-  useMercure(
-    `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${username === game?.player1.player.name ? "1" : "2"}`, // @todo change
-    {
-      game_events: (e: { events: GameEvent[] }) => {
-        const previousGame = gameRef.current;
-
-        if (!previousGame) {
-          return;
-        }
-
-        let next = { ...previousGame };
-
-        for (const event of e.events) {
-          const previous = next;
-          const announcement = animate(previous, event);
-
-          if (announcement) {
-            pushAnnouncement(announcement);
-          }
-
-          next = applyView(next, event);
-        }
-
-        const normalizedNext = normalizeGameState(next);
-
-        gameRef.current = normalizedNext;
-        setGame(normalizedNext);
-      },
     },
+    [gameId, pushAnnouncement],
   );
+
+  const attack = useCallback(
+    (cardId: string, targetId: string) => {
+      playGameAction(gameId, PlayerActionType.ATTACK, { cardId, targetId });
+    },
+    [gameId],
+  );
+
+  const endTurn = useCallback(() => {
+    playGameAction(gameId, PlayerActionType.END_TURN);
+  }, [gameId]);
+
+  const isLoggedPlayerTurn = useMemo(() => {
+    if (!game || !username) return false;
+
+    const connectedPlayerId =
+      game.player1.player.name === username
+        ? game.player1.player.id
+        : game.player2.player.id;
+
+    return connectedPlayerId === game.currentPlayerId;
+  }, [game, username]);
+
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
+    null,
+  );
+  const [hoveredTargetId, setHoveredTargetId] = useState<string | null>(null);
+  const [pendingPlayCardId, setPendingPlayCardId] = useState<string | null>(
+    null,
+  );
+
+  const isTargeting = selectedAttackerId !== null || pendingPlayCardId !== null;
+
+  const selectAttacker = useCallback(
+    (cardId: string | null) => {
+      if (!isLoggedPlayerTurn) return;
+
+      setSelectedAttackerId((current) => (current === cardId ? null : cardId));
+      setHoveredTargetId(null);
+    },
+    [isLoggedPlayerTurn],
+  );
+
+  const clearSelectedAttacker = useCallback(() => {
+    setSelectedAttackerId(null);
+  }, []);
+
+  const hoverTarget = useCallback((targetId: string | null) => {
+    setHoveredTargetId(targetId);
+  }, []);
+
+  const requestCardTarget = useCallback((cardId: string) => {
+    setPendingPlayCardId(cardId);
+    setSelectedAttackerId(null);
+    setHoveredTargetId(null);
+  }, []);
+
+  const handleTargetClick = useCallback(
+    (targetId: string) => {
+      if (pendingPlayCardId) {
+        playCard(pendingPlayCardId, { target: targetId });
+        setPendingPlayCardId(null);
+        setHoveredTargetId(null);
+        setSelectedAttackerId(null);
+        return;
+      }
+
+      if (!selectedAttackerId) return;
+
+      attack(selectedAttackerId, targetId);
+      setHoveredTargetId(null);
+      setSelectedAttackerId(null);
+    },
+    [pendingPlayCardId, selectedAttackerId, playCard, attack],
+  );
+
+  const cancelPendingCardTarget = useCallback(() => {
+    setPendingPlayCardId(null);
+    setHoveredTargetId(null);
+  }, []);
+
+  const clearAllTargeting = useCallback(() => {
+    setHoveredTargetId(null);
+    setSelectedAttackerId(null);
+    setPendingPlayCardId(null);
+  }, []);
+
+  const playerNumber = useMemo(() => {
+    if (!initialGame || !username) return null;
+
+    return username === initialGame.player1.player.name ? "1" : "2";
+  }, [initialGame, username]);
+
+  const mercureUrl = playerNumber
+    ? `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}&topic=game/${gameId}-${playerNumber}`
+    : `${process.env.NEXT_PUBLIC_MERCURE_URL}?topic=game/${gameId}`;
+
+  useMercure(mercureUrl, {
+    game_events: (e: { events: GameEvent[] }) => {
+      const previousGame = gameRef.current;
+
+      if (!previousGame) {
+        return;
+      }
+
+      let next = { ...previousGame };
+
+      for (const event of e.events) {
+        const previous = next;
+        const announcement = animateGameEvent(previous, event);
+
+        if (announcement) {
+          pushAnnouncement(announcement);
+        }
+
+        next = applyGameView(next, event, username);
+      }
+
+      const normalizedNext = normalizeGameState(next);
+
+      gameRef.current = normalizedNext;
+      setGame(normalizedNext);
+    },
+  });
 
   useEffect(() => {
     gameRef.current = normalizeGameState(game);
@@ -515,6 +344,22 @@ export const GameProvider = ({
         announcements,
         actions: { playCard, attack, endTurn, pushAnnouncement },
         currentUsername: username,
+        isLoggedPlayerTurn,
+        targeting: {
+          selectedAttackerId,
+          hoveredTargetId,
+          pendingPlayCardId,
+          isTargeting,
+        },
+        targetingActions: {
+          selectAttacker,
+          clearSelectedAttacker,
+          hoverTarget,
+          requestCardTarget,
+          handleTargetClick,
+          cancelPendingCardTarget,
+          clearAllTargeting,
+        },
       }}
     >
       {children}

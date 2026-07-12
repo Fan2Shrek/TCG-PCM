@@ -1,41 +1,34 @@
 "use client";
 
-import { CSSProperties } from "react";
+import { CSSProperties, memo, useContext } from "react";
 import { CardSize } from "@/constants/card";
 import type { BasicCard } from "@/lib/cards/types/card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
-import { emitter } from "@/lib/eventBus";
+import { GameContext } from "@/contexts/GameContext";
 
 type GameCardProps = {
   card: BasicCard;
   targetId: string;
   size?: CardSize;
-  isTargeting: boolean;
-  hoveredTargetId?: string | null;
-  selectedSourceId?: string | null;
   canSelectSource?: boolean;
   disableSelfTarget?: boolean;
-  onSelectSource?: (cardId: string | null) => void;
-  onSelectTarget?: (targetId: string) => void;
   className?: string;
   style?: CSSProperties;
 };
 
-export default function GameCard({
+function GameCard({
   card,
   targetId,
   size = CardSize.MD,
-  isTargeting,
-  hoveredTargetId,
-  selectedSourceId,
   canSelectSource = false,
   disableSelfTarget = false,
-  onSelectSource,
-  onSelectTarget,
   className,
   style,
 }: GameCardProps) {
-  const isSelectedSource = selectedSourceId === card.instanceId;
+  const { targeting, targetingActions } = useContext(GameContext);
+  const { isTargeting, hoveredTargetId, selectedAttackerId } = targeting;
+
+  const isSelectedSource = selectedAttackerId === card.instanceId;
   const isHovered =
     hoveredTargetId === targetId && isTargeting && !isSelectedSource;
 
@@ -45,24 +38,26 @@ export default function GameCard({
         e.stopPropagation();
 
         if (isTargeting) {
-          if (disableSelfTarget && selectedSourceId === targetId) {
+          if (disableSelfTarget && selectedAttackerId === targetId) {
             return;
           }
 
-          onSelectTarget?.(targetId);
+          targetingActions.handleTargetClick(targetId);
           return;
         }
 
-        if (canSelectSource && onSelectSource) {
-          onSelectSource(isSelectedSource ? null : card.instanceId);
+        if (canSelectSource) {
+          targetingActions.selectAttacker(
+            isSelectedSource ? null : card.instanceId,
+          );
         }
       }}
       onMouseEnter={() => {
         if (isTargeting) {
-          emitter.emit("target:hover", targetId);
+          targetingActions.hoverTarget(targetId);
         }
       }}
-      onMouseLeave={() => emitter.emit("target:leave")}
+      onMouseLeave={() => targetingActions.hoverTarget(null)}
       className={`card-selected ${canSelectSource || isTargeting ? "cursor-pointer" : ""} ${isHovered ? "blue-pulse" : ""} ${className ?? ""}`}
       style={style}
     >
@@ -70,3 +65,5 @@ export default function GameCard({
     </div>
   );
 }
+
+export default memo(GameCard);
