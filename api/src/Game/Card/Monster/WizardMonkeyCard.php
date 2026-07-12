@@ -42,15 +42,18 @@ final class WizardMonkeyCard extends AbstractMonsterCard
 
     public function onMonsterPlayed(GameContext $context): void
     {
-        $ownerId = $this->getOwnerId();
+        $this->damageAllOpponents($context);
+    }
 
-        if (null === $ownerId) {
+    private function damageAllOpponents(GameContext $context): void
+    {
+        if (null === ($ownerId = $this->getOwnerId())) {
             return;
         }
 
         $opponentState = $context->getPlayerStateById($context->getOtherPlayerId($ownerId));
 
-        foreach ($opponentState->playArea->monsterCards as $targetId) {
+        foreach ([...$opponentState->playArea->monsterCards, $opponentState->characterCardId] as $targetId) {
             $context->damageCard($targetId, $this->getValue(self::AOE_DAMAGE, true));
         }
     }
