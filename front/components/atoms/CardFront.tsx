@@ -6,7 +6,7 @@ import CardTextOverlay from "./CardTextOverlay";
 import { Fragment } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { CardLayer } from "@/lib/cards/types/card";
-import { CardType } from "@/constants/card";
+import { CardRaririty, CardType } from "@/constants/card";
 
 const ILLUSTRATION_ZONE_STYLE = {
   top: "9%",
@@ -24,6 +24,7 @@ export type CardFrontProps = {
   cardTitle: string;
   cardDescription: string;
   cardType: CardType;
+  cardRarity: CardRaririty;
   cardStats: { hp?: number; attack?: number; cost?: number };
   onReadyStateChange?: (isReady: boolean) => void;
 };
@@ -36,6 +37,7 @@ const CardFront = ({
   cardTitle,
   cardDescription,
   cardType,
+  cardRarity,
   cardStats,
   onReadyStateChange,
 }: CardFrontProps) => {
@@ -162,6 +164,7 @@ const CardFront = ({
         cardTitle={cardTitle}
         cardDescription={cardDescription}
         cardType={cardType}
+        cardRarity={cardRarity}
         cardStats={cardStats}
         onLayoutReady={() => setIsTextReady(true)}
       />

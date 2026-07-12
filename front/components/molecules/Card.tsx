@@ -194,6 +194,7 @@ const Card = ({
         cardTitle={card.name}
         cardDescription={card.description}
         cardType={card.type ?? CardType.CONSUMABLE}
+        cardRarity={card.rarity}
         cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
         onReadyStateChange={
           showLoadingUntilReady

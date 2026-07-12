@@ -70,6 +70,11 @@ export default function CollectionPageClient({
     });
   }, [entries, search, setFilter, rarityFilter, typeFilter]);
 
+  const unlockedFilteredCount = useMemo(
+    () => filteredEntries.filter(({ quantity }) => quantity > 0).length,
+    [filteredEntries],
+  );
+
   return (
     <div className="mx-2 flex flex-col gap-6 rounded-2xl border-2 border-slate-400/40 bg-slate-200/75 p-6 shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] backdrop-blur-sm sm:mx-4 my-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center pt-6">
@@ -126,7 +131,7 @@ export default function CollectionPageClient({
         </select>
 
         <p className="text-sm text-muted-foreground sm:ml-auto">
-          {filteredEntries.length} / {entries.length} cartes
+          {unlockedFilteredCount} / {filteredEntries.length} cartes debloquées
         </p>
       </div>
 
