@@ -67,6 +67,6 @@ Workflows GitHub Actions (`.github/workflows/`) : qualité de code API (Mago lin
 - [x] Blocage après tentatives de connexion infructueuses
 - [ ] Authentification avancée (OAuth2, lien magique) + 2FA
 - [ ] Monitoring erreurs (Sentry/GlitchTip) et analytique
-- [ ] Pages légales (CGU/CGV/Contact) et bandeau cookies
+- [x] Pages légales (CGU/CGV/Contact) et bandeau cookies
 - [ ] Tests frontend
 - [x] Nom de domaine + certificat SSL en prod
