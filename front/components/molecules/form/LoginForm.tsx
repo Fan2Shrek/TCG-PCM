@@ -42,6 +42,14 @@ export default () => {
 					<SubmitButton />
 				</Field>
 
+				<Field>
+					<Button asChild variant="outline" className="rounded-full">
+						<a href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/google/redirect`}>
+							Se connecter avec Google
+						</a>
+					</Button>
+				</Field>
+
 				<p className="text-sm text-center">
 					<a href="/forgot-password" className="text-primary hover:underline">Mot de passe oublié ?</a>
 				</p>

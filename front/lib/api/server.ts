@@ -6,6 +6,15 @@ import { SESSION_COOKIE } from "@/lib/auth/constants";
 
 const API_INTERNAL_URL = process.env.API_INTERNAL_URL || "http://php/api";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+  }
+}
+
 export async function getServerToken(): Promise<string | null> {
   const store = await cookies();
   return store.get(SESSION_COOKIE)?.value ?? null;
@@ -32,16 +41,16 @@ export async function serverApiFetch<T>(endpoint: string, options?: RequestInit)
     } | null;
 
     if (errorBody?.detail) {
-      throw new Error(errorBody.detail);
+      throw new ApiError(errorBody.detail, response.status);
     }
 
     // Lexik's login failure handler (invalid credentials, throttling) returns
     // { code, message } instead of API Platform's { detail }.
     if (errorBody?.message) {
-      throw new Error(errorBody.message);
+      throw new ApiError(errorBody.message, response.status);
     }
 
-    throw new Error(`API request failed with status ${response.status}`);
+    throw new ApiError(`API request failed with status ${response.status}`, response.status);
   }
 
   if (response.status === 204) {
