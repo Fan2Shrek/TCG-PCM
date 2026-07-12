@@ -147,7 +147,11 @@ final class UserApiTest extends FunctionalTestCase
         $this->userGenerateBoosterTokens->generate($user);
 
         self::assertSame(4, $user->getUserWallet()->getBoosterTokens());
-    }
+        self::assertEqualsWithDelta(
+            $twoHoursAgo->getTimestamp(),
+            $user->getUserInfo()->getLastBoosterTokensAt()->getTimestamp(),
+            1,
+        );
 
     public function testGenerateBoosterTokensSpareTimeKept()
     {

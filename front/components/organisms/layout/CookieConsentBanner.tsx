@@ -28,11 +28,14 @@ export default function CookieConsentBanner() {
     <div className="fixed inset-x-0 bottom-0 z-[100] flex justify-center px-3 pb-3">
       <div className="flex w-full max-w-3xl flex-col items-center gap-3 rounded-2xl border-2 border-slate-400/40 bg-slate-100 p-4 text-sm text-black shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] md:flex-row md:justify-between">
         <p className="text-black/70">
-          Ce site utilise uniquement des cookies essentiels au fonctionnement
-          du Service (authentification, session de jeu). Aucun cookie de
-          mesure d&apos;audience ou publicitaire n&apos;est déposé. En savoir
-          plus sur notre{" "}
-          <Link href="/legal/cgu" className="font-semibold text-primary underline">
+          Ce site utilise uniquement des cookies essentiels au fonctionnement du
+          Service (authentification, session de jeu). Aucun cookie de mesure
+          d&apos;audience ou publicitaire n&apos;est déposé. En savoir plus sur
+          notre{" "}
+          <Link
+            href="/legal/cgu"
+            className="font-semibold text-primary underline"
+          >
             page CGU
           </Link>
           .
