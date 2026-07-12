@@ -276,7 +276,6 @@ class GameEventResolver
             'sourceId' => $attackerId,
         ]);
 
-
         $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
         $card->onAttack($ctx);
 

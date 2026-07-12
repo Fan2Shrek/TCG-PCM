@@ -68,18 +68,25 @@ final class GameEventPresenter
     private function handleAnonymousEvent(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId): array
     {
         return match ($event->type) {
-            GameEventTypeEnum::EFFECT_ADDED => [
-                // @var string $cardId
-                'cardId' => $cardId = $event->data['cardId'],
-                'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($state->getCardState($cardId))),
-            ],
-            GameEventTypeEnum::UPDATE_CARD_STATE => [
-                // @var string $cardId
-                'cardId' => $cardId = $event->data['cardId'],
-                'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($state->getCardState($cardId))),
-            ],
+            GameEventTypeEnum::EFFECT_ADDED, GameEventTypeEnum::UPDATE_CARD_STATE => $this->cardStateView($event, $state),
             default => [],
         };
+    }
+
+    private function cardStateView(GameEvent $event, GameState $state): array
+    {
+        /** @var string $cardId */
+        $cardId = $event->data['cardId'];
+        $cardState = $state->getCardState($cardId);
+
+        if (null === $cardState) {
+            return ['cardId' => $cardId];
+        }
+
+        return [
+            'cardId' => $cardId,
+            'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($cardState)),
+        ];
     }
 
     private function cardDrawnView(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId = null): array

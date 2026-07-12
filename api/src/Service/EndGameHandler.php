@@ -13,6 +13,8 @@ use Symfony\Component\Mercure\Update;
 
 final class EndGameHandler implements EndGameHandlerInterface
 {
+    private const int WIN_BOOSTER_TOKEN_REWARD = 1;
+
     public function __construct(
         private RoomRepository $roomRepository,
         private EntityManagerInterface $em,
@@ -27,6 +29,13 @@ final class EndGameHandler implements EndGameHandlerInterface
 
         $room->setStatus(RoomStatusEnum::FINISHED);
         $room->setWinnerId($winnerId);
+
+        $winner = match ($winnerId) {
+            (string) $room->getOwner()->getId() => $room->getOwner(),
+            (string) $room->getOpponent()?->getId() => $room->getOpponent(),
+            default => null,
+        };
+        $winner?->getUserWallet()->addBoosterToken(self::WIN_BOOSTER_TOKEN_REWARD);
 
         $this->em->flush();
 
