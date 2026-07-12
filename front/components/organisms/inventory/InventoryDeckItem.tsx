@@ -132,68 +132,70 @@ export default function InventoryDeckItem({
         aria-hidden={!isExpanded}
       >
         <div className="overflow-hidden">
-          <div className="space-y-5 border-t border-slate-200 px-4 py-4">
-            <div className="text-center">
-              <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Carte personnage
-              </p>
-              {characterCard ? (
-                <div className="inline-flex flex-col items-center gap-2">
-                  <CardWithZoom
-                    card={{
-                      ...characterCard,
-                      isActive: true,
-                      effects: [],
-                    }}
-                    size={CardSize.MD}
-                    zoomOnSingleClick
-                  />
-                  <span className="text-xs text-slate-700">
-                    {characterCard.name}
-                  </span>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-600">
-                  Carte inconnue: {deck.characterCard}
+          {isExpanded ? (
+            <div className="space-y-5 border-t border-slate-200 px-4 py-4">
+              <div className="text-center">
+                <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Carte personnage
                 </p>
-              )}
-            </div>
+                {characterCard ? (
+                  <div className="inline-flex flex-col items-center gap-2">
+                    <CardWithZoom
+                      card={{
+                        ...characterCard,
+                        isActive: true,
+                        effects: [],
+                      }}
+                      size={CardSize.MD}
+                      zoomOnSingleClick
+                    />
+                    <span className="text-xs text-slate-700">
+                      {characterCard.name}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-600">
+                    Carte inconnue: {deck.characterCard}
+                  </p>
+                )}
+              </div>
 
-            <div>
-              <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                CARTES DU DECK
-              </p>
-              <div className="grid grid-cols-2 justify-items-center gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {deck.cards.map((cardId, index) => {
-                  const card = cardsById.get(cardId);
-                  const key = `${cardId}-${index}`;
+              <div>
+                <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  CARTES DU DECK
+                </p>
+                <div className="grid grid-cols-2 justify-items-center gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                  {deck.cards.map((cardId, index) => {
+                    const card = cardsById.get(cardId);
+                    const key = `${cardId}-${index}`;
 
-                  return card ? (
-                    <div
-                      key={key}
-                      className="flex flex-col items-center gap-1 text-center"
-                    >
-                      <CardWithZoom
-                        card={{ ...card, isActive: true, effects: [] }}
-                        size={CardSize.SM}
-                        zoomOnSingleClick
-                      />
-                      <span className="text-xs text-slate-700">
-                        {card.name}
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      key={key}
-                      className="rounded-md border border-slate-300 bg-slate-100 p-2 text-center text-xs text-slate-600"
-                    >
-                      {cardId}
-                    </div>
-                  );
-                })}
+                    return card ? (
+                      <div
+                        key={key}
+                        className="flex flex-col items-center gap-1 text-center"
+                      >
+                        <CardWithZoom
+                          card={{ ...card, isActive: true, effects: [] }}
+                          size={CardSize.SM}
+                          zoomOnSingleClick
+                        />
+                        <span className="text-xs text-slate-700">
+                          {card.name}
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        key={key}
+                        className="rounded-md border border-slate-300 bg-slate-100 p-2 text-center text-xs text-slate-600"
+                      >
+                        {cardId}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>
