@@ -46,8 +46,8 @@ class Deck
     #[ORM\Column]
     private array $cards = [];
 
-    #[ORM\Column]
-    private ?bool $isFavorite = null;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isFavorite = false;
 
     #[ORM\Column(options: ['default' => false])]
     private bool $isDeleted = false;
@@ -61,6 +61,7 @@ class Deck
         $this->name = $name;
         $this->characterCard = $characterCard;
         $this->cards = $cards;
+        $this->isFavorite = false;
     }
 
     public function getId(): int
@@ -115,7 +116,7 @@ class Deck
         return $this;
     }
 
-    public function getIsFavorite(): ?bool
+    public function getIsFavorite(): bool
     {
         return $this->isFavorite;
     }
