@@ -78,6 +78,38 @@ return [
             'name' => 'Super singe',
             'description' => 'Gagne +{{value}} attaque et PV pour chaque singe de votre côté lors de son arrivée en jeu.',
         ],
+        'NinjaMonkey' => [
+            'name' => 'Singe Ninja',
+            'description' => 'Esquive la première attaque qu\'il subit après avoir été joué.',
+        ],
+        'SniperMonkey' => [
+            'name' => 'Singe Sniper',
+            'description' => 'Un singe de précision au tir mortel.',
+        ],
+        'WizardMonkey' => [
+            'name' => 'Singe Sorcier',
+            'description' => 'Quand il est joué, inflige {{value}} dégâts à tous les monstres adverses.',
+        ],
+        'MonkeyVillage' => [
+            'name' => 'Village de Singes',
+            'description' => 'Au début de chacun de vos tours, donne +{{value}} attaque à tous les singes alliés.',
+        ],
+        'BlackBloon' => [
+            'name' => 'Ballon Noir',
+            'description' => 'Réduit les dégâts reçus de {{value}}.',
+        ],
+        'CeramicBloon' => [
+            'name' => 'Ballon en Céramique',
+            'description' => 'Un ballon résistant à la coque épaisse.',
+        ],
+        'DDT' => [
+            'name' => 'DDT',
+            'description' => 'A {{value}}% de chances d\'esquiver les dégâts reçus, sinon les réduit de {{value2}}.',
+        ],
+        'BFB' => [
+            'name' => 'BFB',
+            'description' => 'Un colosse volant brutal.',
+        ],
         'HackedZone' => [
             'name' => 'Zone Piratée',
             'description' => 'Applique {{effect}} à toutes les cartes des deux côtés',
