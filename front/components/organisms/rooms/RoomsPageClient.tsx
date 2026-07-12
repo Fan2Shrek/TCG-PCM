@@ -158,7 +158,7 @@ export default function RoomsPageClient({
                 asChild
                 variant="default"
                 size="lg"
-                className="px-8 bg-slate-800 text-white hover:bg-slate-700"
+                className="px-8 bg-blue-800 text-white hover:bg-blue-600"
               >
                 <Link href="/inventory?tab=decks">Gérer mes decks</Link>
               </Button>
