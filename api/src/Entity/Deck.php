@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Api\DTO\CreateDeckInput;
 use App\Api\Processor\CreateDeckProcessor;
+use App\Api\Processor\DeleteDeckProcessor;
 use App\Api\Provider\UserDecksProvider;
 use App\Repository\DeckRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
     new GetCollection(uriTemplate: '/decks', provider: UserDecksProvider::class),
     new Get(uriTemplate: '/decks/{id}', security: 'object.getUser() == user'),
     new Patch(uriTemplate: '/decks/{id}', security: 'object.getUser() == user'),
+    new Delete(uriTemplate: '/decks/{id}', security: 'object.getUser() == user', processor: DeleteDeckProcessor::class, status: 204),
 ])]
 #[ORM\Entity(repositoryClass: DeckRepository::class)]
 class Deck
@@ -45,6 +48,9 @@ class Deck
 
     #[ORM\Column]
     private ?bool $isFavorite = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isDeleted = false;
 
     /**
      * @param string[] $cards
@@ -124,5 +130,17 @@ class Deck
     public function setIsFavorite(bool $isFavorite): static
     {
         return $this->setFavorite($isFavorite);
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
     }
 }

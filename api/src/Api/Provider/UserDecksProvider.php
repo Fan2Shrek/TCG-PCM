@@ -7,6 +7,7 @@ namespace App\Api\Provider;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Deck;
+use App\Repository\DeckRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 
 /**
@@ -16,10 +17,11 @@ final class UserDecksProvider implements ProviderInterface
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private DeckRepository $deckRepository,
     ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        return $this->currentUserProvider->getCurrentUser()->getDecks()->toArray();
+        return $this->deckRepository->findActiveByUser($this->currentUserProvider->getCurrentUser());
     }
 }

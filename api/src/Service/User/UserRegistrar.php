@@ -45,7 +45,7 @@ final class UserRegistrar
 
         $inventory = new Inventory($user);
         $starterMonkeyCard = (new CardInventory($inventory, 'DartMonkey'))->setQuantity(25);
-        $starterBloonCard = (new CardInventory($inventory, 'Redbloons'))->setQuantity(25);
+        $starterBloonCard = (new CardInventory($inventory, 'Clotty'))->setQuantity(25);
         $inventory->addCard($starterMonkeyCard);
         $inventory->addCard($starterBloonCard);
 
