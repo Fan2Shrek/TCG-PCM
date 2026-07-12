@@ -5,7 +5,7 @@ import { BasicCard } from "@/lib/cards/types/card";
 
 type UseDragOptions = {
   card: BasicCard;
-  onDrag?: (e: MouseEvent) => void;
+  onDrag?: (e: PointerEvent) => void;
   onDragEnd?: () => void;
 };
 
@@ -22,7 +22,7 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
   const prevPos = useRef<{ x: number; y: number } | null>(null);
   const resetTiltTimer = useRef<number | null>(null);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -34,8 +34,8 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
     });
   };
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
+  const handlePointerMove = useCallback(
+    (e: PointerEvent) => {
       if (!dragStart) return;
 
       const x = e.clientX - dragStart.x;
@@ -71,7 +71,7 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
     [dragStart, onDrag, card],
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     if (dragStart) {
       setIsDragging(false);
       setDragStart(null);
@@ -89,19 +89,21 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
   useEffect(() => {
     if (!dragStart) return;
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [dragStart, handleMouseMove, handleMouseUp]);
+  }, [dragStart, handlePointerMove, handlePointerUp]);
 
   return {
     isDragging,
     pointerPos,
     tilt,
-    handleMouseDown,
+    handlePointerDown,
   };
 }

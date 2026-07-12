@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Card from "@/components/molecules/Card";
 import InteractiveCard from "@/components/molecules/InteractiveCard";
@@ -19,6 +19,19 @@ export default function CardWithZoom({
   zoomOnSingleClick = false,
 }: CardWithZoomProps) {
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isTouchOpenedZoom, setIsTouchOpenedZoom] = useState(false);
+  const lastTouchTapAtRef = useRef(0);
+  const openedAtRef = useRef(0);
+
+  const openZoom = (
+    event?: { stopPropagation: () => void },
+    openedByTouch = false,
+  ) => {
+    event?.stopPropagation();
+    setIsTouchOpenedZoom(openedByTouch);
+    openedAtRef.current = Date.now();
+    setIsZoomed(true);
+  };
 
   useEffect(() => {
     if (!isZoomed) {
@@ -44,12 +57,24 @@ export default function CardWithZoom({
             return;
           }
 
-          event.stopPropagation();
-          setIsZoomed(true);
+          openZoom(event, false);
         }}
         onDoubleClick={(event) => {
-          event.stopPropagation();
-          setIsZoomed(true);
+          openZoom(event, false);
+        }}
+        onPointerUp={(event) => {
+          if (event.pointerType !== "touch") {
+            return;
+          }
+
+          const now = Date.now();
+          const elapsed = now - lastTouchTapAtRef.current;
+          lastTouchTapAtRef.current = now;
+
+          if (elapsed > 0 && elapsed <= 320) {
+            event.preventDefault();
+            openZoom(event, true);
+          }
         }}
       >
         <Card card={card} size={size} showLoadingUntilReady />
@@ -59,13 +84,21 @@ export default function CardWithZoom({
         createPortal(
           <div
             className="fixed inset-0 z-1000 flex items-center justify-center bg-black/70 p-4"
-            onClick={() => setIsZoomed(false)}
+            onClick={() => {
+              if (Date.now() - openedAtRef.current < 200) {
+                return;
+              }
+
+              setIsTouchOpenedZoom(false);
+              setIsZoomed(false);
+            }}
           >
             <div onClick={(event) => event.stopPropagation()}>
               <InteractiveCard
                 card={card}
                 size={CardSize.XLL}
                 showLoadingUntilReady
+                disableFlip={isTouchOpenedZoom}
               />
             </div>
           </div>,

@@ -36,7 +36,7 @@ export default function GameActionButtons({
     }
   };
   return (
-    <div className="flex flex-col gap-3 min-w-3xs">
+    <div className="flex flex-col-reverse lg:flex-col gap-3 min-w-3xs">
       {showCancel && onCancel && (
         <button
           type="button"

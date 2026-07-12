@@ -13,7 +13,7 @@ export default function GameAnnouncements({
 }: GameAnnouncementsProps) {
   return (
     <>
-      <div className="pointer-events-none absolute left-1/2 top-4 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
+      <div className="pointer-events-none absolute left-1/2 top-30 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4 lg:top-4">
         {regularAnnouncements.map((announcement: GameAnnouncement) => (
           <div
             key={announcement.id}

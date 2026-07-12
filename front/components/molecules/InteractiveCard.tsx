@@ -24,6 +24,7 @@ export type InteractiveCardProps = {
   onHover?: (cardId: string) => void;
   onClick?: (cardId: string) => void;
   showLoadingUntilReady?: boolean;
+  disableFlip?: boolean;
 };
 
 export default function InteractiveCard({
@@ -32,6 +33,7 @@ export default function InteractiveCard({
   onHover,
   onClick,
   showLoadingUntilReady = false,
+  disableFlip = false,
 }: InteractiveCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [tilt, setTilt] = useState(DEFAULT_TILT);
@@ -41,6 +43,7 @@ export default function InteractiveCard({
   const rootRef = useRef<HTMLDivElement | null>(null);
   const tiltBackTimeoutRef = useRef<number | null>(null);
   const restoreTransitionTimeoutRef = useRef<number | null>(null);
+  const lastPointerTypeRef = useRef<string | null>(null);
 
   const clearTimeouts = () => {
     if (tiltBackTimeoutRef.current) {
@@ -59,6 +62,8 @@ export default function InteractiveCard({
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+
       const rootElement = rootRef.current;
       if (!rootElement) return;
 
@@ -85,7 +90,9 @@ export default function InteractiveCard({
     [onHover, card.instanceId, tilt.y],
   );
 
-  const handlePointerLeave = useCallback(() => {
+  const handlePointerLeave = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+
     setIsHovering(false);
 
     clearTimeouts();
@@ -118,6 +125,19 @@ export default function InteractiveCard({
   }, [tilt.y]);
 
   const handleClick = useCallback(() => {
+    if (disableFlip) {
+      onClick?.(card.instanceId);
+      return;
+    }
+
+    if (
+      lastPointerTypeRef.current === "touch" ||
+      lastPointerTypeRef.current === "pen"
+    ) {
+      onClick?.(card.instanceId);
+      return;
+    }
+
     const newRotationY =
       tilt.y > HALF_ROTATION ? tilt.y - FLIP_DEG : tilt.y + FLIP_DEG;
 
@@ -125,12 +145,15 @@ export default function InteractiveCard({
     setTilt((prev) => ({ ...prev, y: newRotationY }));
 
     onClick?.(card.instanceId);
-  }, [onClick, card.instanceId, tilt.y]);
+  }, [disableFlip, onClick, card.instanceId, tilt.y]);
 
   return (
     <div
       ref={rootRef}
       onClick={handleClick}
+      onPointerDown={(e) => {
+        lastPointerTypeRef.current = e.pointerType;
+      }}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       className="cursor-pointer"

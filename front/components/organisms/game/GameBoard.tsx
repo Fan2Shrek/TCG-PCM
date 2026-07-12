@@ -3,7 +3,7 @@
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import GameMainArea from "./GameMainArea";
@@ -17,6 +17,7 @@ import WinScreen from "./WinScreen";
 import MobileGameDisclaimer from "@/components/molecules/game/MobileGameDisclaimer";
 import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
+import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
 
 export default function GameBoard() {
   const router = useRouter();
@@ -36,6 +37,8 @@ export default function GameBoard() {
   );
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
+  const rewardedWinnerIdRef = useRef<string | null>(null);
+  const { refresh: refreshBoosterTokens } = useBoosterTokensContext();
 
   const connectedPlayer =
     game?.player1.player.name === currentUsername
@@ -275,6 +278,23 @@ export default function GameBoard() {
 
   const isGameFinished = winner !== null;
 
+  useEffect(() => {
+    if (
+      !winnerId ||
+      rewardedWinnerIdRef.current === winnerId ||
+      !connectedPlayer
+    ) {
+      return;
+    }
+
+    if (winnerId !== connectedPlayer.id) {
+      return;
+    }
+
+    rewardedWinnerIdRef.current = winnerId;
+    refreshBoosterTokens().catch(() => {});
+  }, [winnerId, connectedPlayer, refreshBoosterTokens]);
+
   const fetchWinnerFromRoom = useCallback(() => {
     if (!id || !currentState || !opponentState) {
       return;
@@ -380,7 +400,7 @@ export default function GameBoard() {
         />
       </div>
       {!winner && (
-        <div className="absolute bottom-10 right-10 z-20">
+        <div className="absolute z-20 top-4 left-4 lg:top-auto lg:left-auto lg:bottom-10 lg:right-10">
           <GameActionButtons
             isLoggedPlayerTurn={isLoggedPlayerTurn}
             showCancel={pendingPlayCardId !== null}
