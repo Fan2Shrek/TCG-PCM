@@ -37,17 +37,24 @@ const TYPE_LABELS: Record<CardType, string> = {
 
 const ALL = "ALL" as const;
 
-export default function CollectionPageClient({ entries }: CollectionPageClientProps) {
+export default function CollectionPageClient({
+  entries,
+}: CollectionPageClientProps) {
   const [search, setSearch] = useState("");
   const [setFilter, setSetFilter] = useState<CardSet | typeof ALL>(ALL);
-  const [rarityFilter, setRarityFilter] = useState<CardRaririty | typeof ALL>(ALL);
+  const [rarityFilter, setRarityFilter] = useState<CardRaririty | typeof ALL>(
+    ALL,
+  );
   const [typeFilter, setTypeFilter] = useState<CardType | typeof ALL>(ALL);
 
   const filteredEntries = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return entries.filter(({ card }) => {
-      if (normalizedSearch && !card.name.toLowerCase().includes(normalizedSearch)) {
+      if (
+        normalizedSearch &&
+        !card.name.toLowerCase().includes(normalizedSearch)
+      ) {
         return false;
       }
       if (setFilter !== ALL && card.serie !== setFilter) {
@@ -64,8 +71,8 @@ export default function CollectionPageClient({ entries }: CollectionPageClientPr
   }, [entries, search, setFilter, rarityFilter, typeFilter]);
 
   return (
-    <div className="flex flex-col gap-6 px-4 pb-8 md:px-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+    <div className="mx-2 flex flex-col gap-6 rounded-2xl border-2 border-slate-400/40 bg-slate-200/75 p-6 shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] backdrop-blur-sm sm:mx-4 my-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center pt-6">
         <Input
           placeholder="Rechercher une carte..."
           value={search}
@@ -75,7 +82,9 @@ export default function CollectionPageClient({ entries }: CollectionPageClientPr
 
         <select
           value={setFilter}
-          onChange={(event) => setSetFilter(event.target.value as CardSet | typeof ALL)}
+          onChange={(event) =>
+            setSetFilter(event.target.value as CardSet | typeof ALL)
+          }
           className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
         >
           <option value={ALL}>Tous les sets</option>
@@ -88,7 +97,9 @@ export default function CollectionPageClient({ entries }: CollectionPageClientPr
 
         <select
           value={rarityFilter}
-          onChange={(event) => setRarityFilter(event.target.value as CardRaririty | typeof ALL)}
+          onChange={(event) =>
+            setRarityFilter(event.target.value as CardRaririty | typeof ALL)
+          }
           className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
         >
           <option value={ALL}>Toutes les raretés</option>
@@ -101,7 +112,9 @@ export default function CollectionPageClient({ entries }: CollectionPageClientPr
 
         <select
           value={typeFilter}
-          onChange={(event) => setTypeFilter(event.target.value as CardType | typeof ALL)}
+          onChange={(event) =>
+            setTypeFilter(event.target.value as CardType | typeof ALL)
+          }
           className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
         >
           <option value={ALL}>Tous les types</option>
@@ -118,19 +131,37 @@ export default function CollectionPageClient({ entries }: CollectionPageClientPr
       </div>
 
       {0 === filteredEntries.length ? (
-        <p className="text-center text-muted-foreground">Aucune carte ne correspond à ces filtres.</p>
+        <p className="text-center text-muted-foreground">
+          Aucune carte ne correspond à ces filtres.
+        </p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {filteredEntries.map(({ card, quantity }) => {
-            const displayedCard: BasicCard = { ...card, isActive: true, effects: [] };
+            const displayedCard: BasicCard = {
+              ...card,
+              isActive: true,
+              effects: [],
+            };
             const isOwned = quantity > 0;
 
             return (
-              <div key={card.instanceId} className="relative flex justify-center">
+              <div
+                key={card.instanceId}
+                className="relative flex justify-center"
+              >
                 {isOwned ? (
                   <>
-                    <CardWithZoom card={displayedCard} size={CardSize.MD} />
-                    <CardQuantityBadge quantity={quantity} className="absolute -top-2 -right-2" />
+                    <div className="transform-gpu transition-transform duration-200 ease-out hover:z-10 hover:scale-110">
+                      <CardWithZoom
+                        card={displayedCard}
+                        size={CardSize.MD}
+                        zoomOnSingleClick
+                      />
+                    </div>
+                    <CardQuantityBadge
+                      quantity={quantity}
+                      className="absolute -top-2 -right-2"
+                    />
                   </>
                 ) : (
                   <div className="relative grayscale opacity-60 pointer-events-none select-none">

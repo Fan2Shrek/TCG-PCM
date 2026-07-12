@@ -64,7 +64,7 @@ return [
         ],
         'MechaPainter' => [
             'name' => 'Mecha-Peintre',
-            'description' => 'Reduit les degats recus de {{value}}. A la fin de chaque tour, inflige aleatoirement {{value2}} degats a une carte alliee.',
+            'description' => 'Reduit les degats recus de {{value}}. A la fin de chaque tour, inflige aleatoirement {{value2}} degats à une carte alliee.',
         ],
         'DartMonkey' => [
             'name' => 'Singe',
