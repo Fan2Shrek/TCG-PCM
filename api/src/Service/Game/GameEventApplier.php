@@ -146,7 +146,7 @@ class GameEventApplier implements GameEventApplierInterface
                 $ctx = new GameContext($gameState, $state->ownerId);
 
                 $damage = max(0, $card->reduceDamage($ctx, $damage));
-                $queuedEvents = $ctx->flushEvents();
+                $queuedEvents = array_merge($queuedEvents, $ctx->flushEvents());
             }
 
             $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);

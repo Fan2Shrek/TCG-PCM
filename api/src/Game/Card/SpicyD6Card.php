@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Game\Card;
 
+use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
 final class SpicyD6Card extends AbstractPlayableCard
 {
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     private const DAMAGE_MULTIPLIER = 10;
@@ -28,11 +30,22 @@ final class SpicyD6Card extends AbstractPlayableCard
     {
         return GameUtils::formatDescription(parent::getDescription(), [
             'value' => $this->getValue(self::DAMAGE_MULTIPLIER, true),
+            'value2' => intdiv($this->getValue(self::DAMAGE_MULTIPLIER, true), 2),
         ]);
     }
 
     public function play(GameContext $context, array $data = []): void
     {
-        $context->attack($context->rollDice(6) * $this->getValue(self::DAMAGE_MULTIPLIER, true));
+        $rolled = $context->rollDice(6);
+        $damage = $rolled * $this->getValue(self::DAMAGE_MULTIPLIER, true);
+
+        $context->attack($damage);
+
+        $ownerId = $this->getOwnerId();
+        if (null === $ownerId) {
+            return;
+        }
+
+        $context->attack(intdiv($damage, 2), $ownerId);
     }
 }

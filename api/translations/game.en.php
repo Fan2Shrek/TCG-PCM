@@ -36,7 +36,7 @@ return [
         ],
         'Spicy-D6' => [
             'name' => 'Spicy D6',
-            'description' => 'Roll a six-sided dice and does {{value}} time that many damage',
+            'description' => 'Roll a six-sided dice and deal {{value}} times that result as damage. Then take half of the inflicted damage.',
         ],
         'Redbloons' => [
             'name' => 'Red Bloons',
@@ -126,6 +126,10 @@ return [
             'name' => 'Dart',
             'description' => 'Deal {{value}} damage to a targeted card.',
         ],
+        'Fortnite' => [
+            'name' => 'Fortnite',
+            'description' => 'Pick a random monster in play (if there is only one, it is picked automatically), discard all other cards in play, then give it Victory royale (+{{health}} HP and +{{attack}} attack).',
+        ],
         'Pills' => [
             'name' => 'Pills!',
             'description' => 'Random effect!',
@@ -214,9 +218,17 @@ return [
             'name' => 'The hand',
             'description' => 'Discard a random card from your opponent play area.',
         ],
+        'TheLost' => [
+            'name' => 'The Lost',
+            'description' => 'Dodges the first attack it takes after being played.',
+        ],
         'Coins' => [
             'name' => 'Coins',
             'description' => 'Gains {{value}} coins.',
+        ],
+        'Chaos' => [
+            'name' => 'Chaos',
+            'description' => 'Replaces every card in play with random other cards.',
         ],
         'Crypto4Noob' => [
             'name' => 'Crypto4Noob',
