@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { PASSWORD_EXPIRED_COOKIE, SESSION_COOKIE } from "@/lib/auth/constants";
 
-// Pages accessibles sans session, en plus de rester consultables une fois connecté.
-const PUBLIC_PATHS = ["/how-to-play"];
+// Pages (ou sections, via préfixe) accessibles sans session, en plus de rester consultables une fois connecté.
+const PUBLIC_PATHS = ["/how-to-play", "/legal", "/oauth/callback"];
 // Pages réservées aux visiteurs non connectés (redirigées vers /boosters une fois connecté).
 const GUEST_ONLY_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
 // Page toujours accessible une fois connecté, même avec un mot de passe expiré.
@@ -13,7 +13,9 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const hasSession = request.cookies.has(SESSION_COOKIE);
-  const isPublicPath = PUBLIC_PATHS.includes(pathname);
+  const isPublicPath = PUBLIC_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
   const isGuestOnlyPath = GUEST_ONLY_PATHS.includes(pathname);
 
   if (!hasSession && !isPublicPath && !isGuestOnlyPath) {

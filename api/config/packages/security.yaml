@@ -30,7 +30,10 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            entry_point: jwt
             jwt: ~
+            refresh_jwt:
+                check_path: /api/token/refresh
 
     # Note: Only the *first* matching rule is applied
     access_control:
@@ -39,6 +42,9 @@ security:
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/forgot-password, roles: PUBLIC_ACCESS }
         - { path: ^/api/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/api/oauth/google, roles: PUBLIC_ACCESS }
+        - { path: ^/api/decks/limits, roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api$, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 

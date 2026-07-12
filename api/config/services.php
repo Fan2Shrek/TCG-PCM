@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Controller\GoogleOAuthController;
 use App\Service\BadgeManager;
 use App\Service\PublishEventMiddleware;
 use App\Service\Redis\RedisConnection;
@@ -47,6 +48,15 @@ return App::config([
             'arguments' => [
                 '$resetPasswordFrontUrl' => '%env(RESET_PASSWORD_FRONT_URL)%',
                 '$mailerFrom' => '%env(MAILER_FROM)%',
+            ],
+        ],
+        GoogleOAuthController::class => [
+            'arguments' => [
+                '$clientId' => '%env(GOOGLE_OAUTH_CLIENT_ID)%',
+                '$clientSecret' => '%env(GOOGLE_OAUTH_CLIENT_SECRET)%',
+                '$redirectUri' => '%env(GOOGLE_OAUTH_REDIRECT_URI)%',
+                '$frontUrl' => '%env(GOOGLE_OAUTH_FRONT_URL)%',
+                '$refreshTokenTtl' => '%env(int:REFRESH_TOKEN_TTL)%',
             ],
         ],
         PublishEventMiddleware::class => [

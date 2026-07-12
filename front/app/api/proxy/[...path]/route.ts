@@ -1,22 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { serverApiFetch } from "@/lib/api/server";
+import { refreshAccessToken } from "@/lib/actions/auth";
+import { ApiError, serverApiFetch } from "@/lib/api/server";
+
+function errorResponse(err: unknown) {
+  const message = err instanceof Error ? err.message : "API request failed";
+  const status = err instanceof ApiError ? err.status : 400;
+  return NextResponse.json({ detail: message }, { status });
+}
 
 async function handle(request: NextRequest, path: string[]) {
   const endpoint = `/${path.join("/")}${request.nextUrl.search}`;
   const hasBody = request.method !== "GET" && request.method !== "HEAD";
   const contentType = request.headers.get("content-type");
+  const body = hasBody ? await request.text() : undefined;
 
-  try {
-    const result = await serverApiFetch(endpoint, {
+  const forward = () =>
+    serverApiFetch(endpoint, {
       method: request.method,
-      body: hasBody ? await request.text() : undefined,
+      body,
       headers: contentType ? { "Content-Type": contentType } : undefined,
     });
-    return NextResponse.json(result);
+
+  try {
+    return NextResponse.json(await forward());
   } catch (err) {
-    const message = err instanceof Error ? err.message : "API request failed";
-    return NextResponse.json({ detail: message }, { status: 400 });
+    if (!(err instanceof ApiError) || err.status !== 401 || !(await refreshAccessToken())) {
+      return errorResponse(err);
+    }
+
+    try {
+      return NextResponse.json(await forward());
+    } catch (retryErr) {
+      return errorResponse(retryErr);
+    }
   }
 }
 

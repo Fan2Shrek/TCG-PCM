@@ -58,6 +58,28 @@ final class UserRegistrar
         $this->em->persist($user);
         $this->em->flush();
 
+        $this->provisionNewAccount($user);
+
+        return $user;
+    }
+
+    public function registerViaGoogle(string $googleId, string $email, string $name): User
+    {
+        $username = $this->deriveUniqueUsername($name, $email);
+
+        $user = new User($username, $email);
+        $user->setGoogleId($googleId);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->provisionNewAccount($user);
+
+        return $user;
+    }
+
+    private function provisionNewAccount(User $user): void
+    {
         $inventory = new Inventory($user);
         $starterDistribution = $this->buildStarterCardDistribution();
 
@@ -87,8 +109,30 @@ final class UserRegistrar
         $this->em->persist($inventory);
         $this->em->persist($starterDeck);
         $this->em->flush();
+    }
 
-        return $user;
+    private function deriveUniqueUsername(string $name, string $email): string
+    {
+        $localPart = explode('@', $email)[0];
+        $base = mb_strtolower((string) preg_replace('/[^a-zA-Z0-9]/', '', $localPart));
+
+        if ('' === $base) {
+            $base = mb_strtolower((string) preg_replace('/[^a-zA-Z0-9]/', '', $name));
+        }
+
+        if (mb_strlen($base) < 3) {
+            $base = str_pad($base, 3, '0');
+        }
+
+        $username = $base;
+        $suffix = 1;
+
+        while (null !== $this->userRepository->findOneBy(['username' => $username])) {
+            ++$suffix;
+            $username = $base.$suffix;
+        }
+
+        return $username;
     }
 
     /**
