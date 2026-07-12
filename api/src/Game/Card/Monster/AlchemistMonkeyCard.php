@@ -47,10 +47,6 @@ final class AlchemistMonkeyCard extends AbstractMonsterCard implements TurnAware
 
     public function onTurnEnd(GameContext $gameContext): void
     {
-        if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
-            return;
-        }
-
         $instanceId = $this->getInstanceId();
         $ownerId = $this->getOwnerId();
 
@@ -58,11 +54,12 @@ final class AlchemistMonkeyCard extends AbstractMonsterCard implements TurnAware
             return;
         }
 
+        if ($gameContext->isCurrentPlayer($ownerId)) {
+            return;
+        }
+
         $ownerState = $gameContext->getPlayerStateById($ownerId);
-        $pool = array_values(array_filter(
-            $ownerState->playArea->monsterCards,
-            static fn(string $cardId): bool => $cardId !== $instanceId,
-        ));
+        $pool = array_values(array_filter($ownerState->playArea->monsterCards, static fn(string $cardId): bool => $cardId !== $instanceId));
 
         if ([] === $pool) {
             return;
