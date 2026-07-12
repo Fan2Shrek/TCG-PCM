@@ -14,6 +14,15 @@ export type AuthActionState = {
 const JWT_COOKIE_MAX_AGE = 60 * 60 * 24;
 const REFRESH_TOKEN_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
+// Le refresh token est à usage unique côté API (single_use: true) : si plusieurs requêtes
+// concurrentes échouent en 401 sur le même token expiré, elles doivent partager un seul appel
+// à /token/refresh au lieu de courir chacune vers l'API, sous peine que la seconde échoue et
+// supprime un refresh token qui vient tout juste d'être renouvelé avec succès par la première.
+const inflightRefreshes = new Map<
+  string,
+  Promise<{ token: string; refreshToken: string }>
+>();
+
 async function setSessionCookie(token: string) {
   const store = await cookies();
   store.set(SESSION_COOKIE, token, {
@@ -206,17 +215,25 @@ export async function refreshAccessToken(): Promise<boolean> {
     return false;
   }
 
-  try {
-    const response = await serverApiPost<{
-      token: string;
-      refresh_token: string;
-    }>("/token/refresh", { refresh_token: refreshToken });
+  let pending = inflightRefreshes.get(refreshToken);
+  if (!pending) {
+    pending = serverApiPost<{ token: string; refresh_token: string }>("/token/refresh", {
+      refresh_token: refreshToken,
+    })
+      .then((response) => ({ token: response.token, refreshToken: response.refresh_token }))
+      .finally(() => {
+        inflightRefreshes.delete(refreshToken);
+      });
+    inflightRefreshes.set(refreshToken, pending);
+  }
 
-    await setSessionCookie(response.token);
-    await setRefreshTokenCookie(response.refresh_token);
+  try {
+    const result = await pending;
+    await setSessionCookie(result.token);
+    await setRefreshTokenCookie(result.refreshToken);
     return true;
   } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
+    if (err instanceof ApiError && err.status === 401 && store.get(REFRESH_TOKEN_COOKIE)?.value === refreshToken) {
       store.delete(REFRESH_TOKEN_COOKIE);
     }
     return false;
