@@ -2,7 +2,7 @@
 
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import useFitText from "use-fit-text";
-import { CardType } from "@/constants/card";
+import { CardRaririty, CardType } from "@/constants/card";
 import { convertDescriptions } from "@/lib/game/cardUtils";
 
 type ZoneConfig = {
@@ -12,11 +12,17 @@ type ZoneConfig = {
   height?: number;
 };
 
+const RARITY_LABEL_TEXT_OUTLINE: CSSProperties = {
+  textShadow:
+    "0.5px 0 0 rgba(255,255,255,0.9), -0.5px 0 0 rgba(255,255,255,0.9), 0 0.5px 0 rgba(255,255,255,0.9), 0 -0.5px 0 rgba(255,255,255,0.9)",
+};
+
 export type CardTextOverlayProps = {
   readinessKey: string;
   cardTitle: string;
   cardDescription: string;
   cardType: CardType;
+  cardRarity: CardRaririty;
   cardStats: { hp?: number; attack?: number; cost?: number };
   onLayoutReady?: () => void;
 };
@@ -28,11 +34,20 @@ const CARD_TYPE_LABELS: Record<CardType, string> = {
   [CardType.CONSUMABLE]: "CONSUMABLE",
 };
 
+const CARD_RARITY_COLORS: Record<CardRaririty, string> = {
+  [CardRaririty.COMMON]: "text-zinc-600",
+  [CardRaririty.UNCOMMON]: "text-emerald-700",
+  [CardRaririty.RARE]: "text-sky-700",
+  [CardRaririty.EPIC]: "text-rose-700",
+  [CardRaririty.LEGENDARY]: "text-amber-700",
+};
+
 const CardTextOverlay = ({
   readinessKey,
   cardTitle,
   cardDescription,
   cardType,
+  cardRarity,
   cardStats,
   onLayoutReady,
 }: CardTextOverlayProps) => {
@@ -162,8 +177,18 @@ const CardTextOverlay = ({
         {cardDescription && convertDescriptions(cardDescription)}
       </div>
 
-      <div className="absolute bottom-[4%] right-[6%] text-[9px] leading-none tracking-tight text-black/80 font-bold">
+      <div
+        className="absolute bottom-[4%] right-[6%] text-[10px] leading-none tracking-tight text-black/80 font-bold"
+        style={RARITY_LABEL_TEXT_OUTLINE}
+      >
         {CARD_TYPE_LABELS[cardType]}
+      </div>
+
+      <div
+        className={`absolute bottom-[4%] left-[6%] text-[10px] leading-none tracking-tight font-bold uppercase ${CARD_RARITY_COLORS[cardRarity]}`}
+        style={RARITY_LABEL_TEXT_OUTLINE}
+      >
+        {cardRarity}
       </div>
     </div>
   );
