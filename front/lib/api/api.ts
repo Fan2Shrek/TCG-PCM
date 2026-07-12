@@ -70,6 +70,10 @@ export class ApiClient {
       headers,
     });
   }
+
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: "DELETE" });
+  }
 }
 
 const client = new ApiClient(baseUrl);

@@ -25,7 +25,10 @@ export default function InventoryDecksPanel({
   const [expandedDeckId, setExpandedDeckId] = useState<number | null>(null);
   const [localDecks, setLocalDecks] = useState<Deck[]>(decks);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingDeckId, setEditingDeckId] = useState<number | null>(null);
   const [isCreatingDeck, setIsCreatingDeck] = useState(false);
+  const [isSavingDeck, setIsSavingDeck] = useState(false);
+  const [deletingDeckId, setDeletingDeckId] = useState<number | null>(null);
 
   useEffect(() => {
     setLocalDecks(decks);
@@ -54,6 +57,11 @@ export default function InventoryDecksPanel({
         return a.name.localeCompare(b.name, "fr", { sensitivity: "base" });
       }),
     [localDecks],
+  );
+
+  const editingDeck = useMemo(
+    () => localDecks.find((deck) => deck.id === editingDeckId) ?? null,
+    [editingDeckId, localDecks],
   );
 
   const handleToggleFavorite = async (deckId: number, nextValue: boolean) => {
@@ -93,7 +101,7 @@ export default function InventoryDecksPanel({
       setLocalDecks((prev) => [createdDeck, ...prev]);
       setExpandedDeckId(createdDeck.id);
       setIsCreating(false);
-      toast.success("Le deck a ete cree.");
+      toast.success("Deck créé.");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Impossible de creer le deck.";
@@ -103,9 +111,72 @@ export default function InventoryDecksPanel({
     }
   };
 
+  const handleEditDeck = (deckId: number) => {
+    setIsCreating(false);
+    setEditingDeckId(deckId);
+  };
+
+  const handleSaveEditedDeck = async (draft: DeckDraft) => {
+    if (!editingDeck) {
+      return;
+    }
+
+    setIsSavingDeck(true);
+
+    try {
+      const updatedDeck = await client.deck.update(editingDeck.id, draft);
+      setLocalDecks((prev) =>
+        prev.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck)),
+      );
+      setEditingDeckId(null);
+      toast.success("Le deck a été modifié.");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Impossible de modifier le deck.";
+      toast.error("Erreur", { description: message });
+    } finally {
+      setIsSavingDeck(false);
+    }
+  };
+
+  const handleDeleteDeck = async (deckId: number) => {
+    if (localDecks.length <= 1) {
+      toast.error("Suppression impossible", {
+        description: "Vous devez conserver au moins un deck.",
+      });
+      return;
+    }
+
+    setDeletingDeckId(deckId);
+
+    try {
+      await client.deck.delete(deckId);
+      setLocalDecks((prev) => prev.filter((deck) => deck.id !== deckId));
+      if (expandedDeckId === deckId) {
+        setExpandedDeckId(null);
+      }
+      if (editingDeckId === deckId) {
+        setEditingDeckId(null);
+      }
+      toast.success("Le deck a été supprimé.");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Impossible de supprimer le deck.";
+      toast.error("Erreur", { description: message });
+    } finally {
+      setDeletingDeckId(null);
+    }
+  };
+
+  const isBuilderOpen = isCreating || null !== editingDeck;
+
   return (
     <div className="space-y-4 min-h-[70vh]">
-      {!isCreating ? (
+      {!isBuilderOpen ? (
         <div className="flex justify-end">
           <Button type="button" onClick={() => setIsCreating(true)}>
             Nouveau Deck
@@ -124,6 +195,23 @@ export default function InventoryDecksPanel({
         />
       ) : null}
 
+      {editingDeck ? (
+        <InventoryDeckBuilder
+          entries={entries}
+          limits={limits}
+          submitLabel="Enregistrer les modifications"
+          initialDraft={{
+            name: editingDeck.name,
+            characterCard: editingDeck.characterCard,
+            cards: editingDeck.cards,
+            isFavorite: Boolean(editingDeck.isFavorite),
+          }}
+          submitting={isSavingDeck}
+          onCancel={() => setEditingDeckId(null)}
+          onSubmit={handleSaveEditedDeck}
+        />
+      ) : null}
+
       {sortedDecks.length === 0 ? (
         <div className="rounded-xl border border-slate-300/60 bg-white/50 p-8 text-center text-slate-600">
           Aucun deck pour le moment.
@@ -139,7 +227,10 @@ export default function InventoryDecksPanel({
             deck={deck}
             isExpanded={isExpanded}
             onToggle={() => setExpandedDeckId(isExpanded ? null : deck.id)}
+            onEdit={handleEditDeck}
+            onDelete={handleDeleteDeck}
             onToggleFavorite={handleToggleFavorite}
+            isDeleting={deletingDeckId === deck.id}
             cardsById={cardsById}
           />
         );

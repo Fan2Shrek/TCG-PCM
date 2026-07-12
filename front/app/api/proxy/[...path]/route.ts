@@ -36,3 +36,8 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const { path } = await params;
   return handle(request, path);
 }
+
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
+  const { path } = await params;
+  return handle(request, path);
+}

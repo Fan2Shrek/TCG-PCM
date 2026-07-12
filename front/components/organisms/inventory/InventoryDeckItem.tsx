@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 
@@ -12,7 +13,10 @@ type InventoryDeckItemProps = {
   deck: Deck;
   isExpanded: boolean;
   onToggle: () => void;
+  onEdit: (deckId: number) => void;
+  onDelete: (deckId: number) => void;
   onToggleFavorite: (deckId: number, nextValue: boolean) => void;
+  isDeleting?: boolean;
   cardsById: Map<string, BasicCard>;
 };
 
@@ -20,11 +24,41 @@ export default function InventoryDeckItem({
   deck,
   isExpanded,
   onToggle,
+  onEdit,
+  onDelete,
   onToggleFavorite,
+  isDeleting = false,
   cardsById,
 }: InventoryDeckItemProps) {
+  const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
   const characterCard = cardsById.get(deck.characterCard);
   const isFavorite = Boolean(deck.isFavorite);
+
+  useEffect(() => {
+    if (!isDeleteConfirming) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setIsDeleteConfirming(false);
+    }, 2500);
+
+    return () => window.clearTimeout(timeout);
+  }, [isDeleteConfirming]);
+
+  const handleDeleteClick = () => {
+    if (isDeleting) {
+      return;
+    }
+
+    if (!isDeleteConfirming) {
+      setIsDeleteConfirming(true);
+      return;
+    }
+
+    onDelete(deck.id);
+    setIsDeleteConfirming(false);
+  };
 
   return (
     <section className="overflow-hidden rounded-xl border border-slate-300/70 bg-white/80">
@@ -55,13 +89,38 @@ export default function InventoryDeckItem({
           ) : null}
         </div>
 
-        <button
-          type="button"
-          onClick={onToggle}
-          className="cursor-pointer rounded-md px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-        >
-          {isExpanded ? "Masquer" : "Voir"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onEdit(deck.id)}
+            className="cursor-pointer rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+          >
+            Modifier
+          </button>
+          <button
+            type="button"
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+            className={`cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold transition ${
+              isDeleteConfirming
+                ? "border-red-700 bg-red-600 text-white hover:bg-red-700"
+                : "border-red-300 bg-red-100 text-red-700 hover:bg-red-200"
+            } disabled:cursor-not-allowed disabled:opacity-60`}
+          >
+            {isDeleting
+              ? "Suppression..."
+              : isDeleteConfirming
+                ? "Confirmer"
+                : "Supprimer"}
+          </button>
+          <button
+            type="button"
+            onClick={onToggle}
+            className="cursor-pointer rounded-md px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+          >
+            {isExpanded ? "Masquer" : "Voir"}
+          </button>
+        </div>
       </div>
 
       <div

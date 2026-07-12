@@ -34,4 +34,14 @@ export class DeckResource {
   async create(deck: DeckDraft): Promise<DeckCreateResponse> {
     return this.client.post("/decks", deck);
   }
+
+  async update(deckId: number, deck: DeckDraft): Promise<Deck> {
+    return this.client.patch(`/decks/${deckId}`, deck, {
+      "Content-Type": "application/merge-patch+json",
+    });
+  }
+
+  async delete(deckId: number): Promise<void> {
+    await this.client.delete(`/decks/${deckId}`);
+  }
 }
