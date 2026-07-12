@@ -78,6 +78,38 @@ return [
             'name' => 'Super Monkey',
             'description' => 'Gains +{{value}} attack and HP for each monkey on your side when played.',
         ],
+        'NinjaMonkey' => [
+            'name' => 'Ninja Monkey',
+            'description' => 'Dodges the first attack it takes after being played.',
+        ],
+        'SniperMonkey' => [
+            'name' => 'Sniper Monkey',
+            'description' => 'A high-precision monkey with a deadly shot.',
+        ],
+        'WizardMonkey' => [
+            'name' => 'Wizard Monkey',
+            'description' => 'When played, deals {{value}} damage to all opposing monsters.',
+        ],
+        'MonkeyVillage' => [
+            'name' => 'Monkey Village',
+            'description' => 'At the start of each of your turns, gives +{{value}} attack to every allied monkey.',
+        ],
+        'BlackBloon' => [
+            'name' => 'Black Bloon',
+            'description' => 'Reduces incoming damage by {{value}}.',
+        ],
+        'CeramicBloon' => [
+            'name' => 'Ceramic Bloon',
+            'description' => 'A tough bloon with a thick ceramic shell.',
+        ],
+        'DDT' => [
+            'name' => 'DDT',
+            'description' => 'Has a {{value}}% chance to dodge incoming damage, otherwise reduces it by {{value2}}.',
+        ],
+        'BFB' => [
+            'name' => 'BFB',
+            'description' => 'A brutal floating behemoth.',
+        ],
         'HackedZone' => [
             'name' => 'Hacked Zone',
             'description' => 'Apply {{effect}} to all cards in both side',

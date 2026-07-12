@@ -72,11 +72,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             $cards = $data['cards'];
             $characterCard = $data['characterCard'];
 
-            $this->synchronizeInventoryForDeck(
-                manager: $manager,
-                inventory: $user->getInventory(),
-                cards: [...$cards, $characterCard],
-            );
+            $this->synchronizeInventoryForDeck(manager: $manager, inventory: $user->getInventory(), cards: [...$cards, $characterCard]);
 
             $deck = new Deck($user, $data['name'], $characterCard, $cards);
             $deck->setIsFavorite($data['isFavorite']);

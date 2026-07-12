@@ -32,11 +32,7 @@ class BoosterGenerator
         $boosterType ??= 'default';
         $boosterClass = $this->boosterRegistry->getBoosterType($boosterType);
 
-        if (
-            !class_exists($boosterClass)
-            || interface_exists($boosterClass)
-            || !is_subclass_of($boosterClass, BoosterInterface::class, true)
-        ) {
+        if (!class_exists($boosterClass) || interface_exists($boosterClass) || !is_subclass_of($boosterClass, BoosterInterface::class, true)) {
             throw new \InvalidArgumentException(\sprintf('Booster type "%s" must implement BoosterInterface.', $boosterType));
         }
 

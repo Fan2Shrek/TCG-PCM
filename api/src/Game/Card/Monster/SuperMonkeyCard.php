@@ -24,6 +24,9 @@ final class SuperMonkeyCard extends AbstractMonsterCard
         'BoomerangMonkey',
         'SuperMonkey',
         'AlchemistMonkey',
+        'NinjaMonkey',
+        'SniperMonkey',
+        'WizardMonkey',
     ];
 
     private int $playBonus = 0;

@@ -24,6 +24,10 @@ final class ZeppelinCard extends AbstractMonsterCard
         'MOAB',
         'LeadBloon',
         'CamoBloon',
+        'BlackBloon',
+        'CeramicBloon',
+        'DDT',
+        'BFB',
     ];
 
     public function getId(): string
