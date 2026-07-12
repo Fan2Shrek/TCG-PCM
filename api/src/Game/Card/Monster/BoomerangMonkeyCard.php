@@ -14,7 +14,7 @@ final class BoomerangMonkeyCard extends AbstractMonsterCard
 
     private const HEALTH_POINTS = 10;
     private const ATTACK = 20;
-    private const SELF_DAMAGE_ON_ATTACK = 1;
+    private const SELF_DAMAGE_ON_ATTACK = 3;
 
     public function getId(): string
     {

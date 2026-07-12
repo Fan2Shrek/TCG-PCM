@@ -12,9 +12,9 @@ final class HoneyBeeCard extends AbstractMonsterCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::RARE;
 
-    private const HEALTH_POINTS = 10;
+    private const HEALTH_POINTS = 15;
     private const ATTACK = 5;
-    private const CHARACTER_REGEN_ON_ATTACK = 2;
+    private const CHARACTER_REGEN_ON_ATTACK = 5;
 
     public function getId(): string
     {

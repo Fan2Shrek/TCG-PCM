@@ -3,10 +3,9 @@
 import { useContext } from "react";
 import { GameContext } from "@/contexts/GameContext";
 import { PlayerState } from "@/lib/game/type/gameState";
-import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { CardSize } from "@/constants/card";
-import { emitter } from "@/lib/eventBus";
 import useTargetingMode from "@/hooks/useTargetingMode";
+import GameCard from "./GameCard";
 
 type PlayerCharacterDisplayProps = {
   player: PlayerState;
@@ -32,22 +31,16 @@ export default function PlayerCharacterDisplay({
   }
 
   return (
-    <div
-      className={`flex flex-col items-center gap-2 ${className} ${isTargeting ? "cursor-pointer" : ""}`}
-      onMouseEnter={() =>
-        isTargeting && emitter.emit("target:hover", player.player.id)
-      }
-      onMouseLeave={() => emitter.emit("target:leave")}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (isTargeting) {
-          onSelectTarget?.(player.player.id);
-        }
-      }}
-    >
-      <div className={isHovered ? "blue-pulse rounded-xl" : ""}>
-        <CardWithZoom card={playerCard} size={CardSize.LG} />
-      </div>
+    <div className={`flex flex-col items-center gap-2 ${className}`}>
+      <GameCard
+        card={playerCard}
+        size={CardSize.LG}
+        targetId={player.player.id}
+        isTargeting={isTargeting}
+        hoveredTargetId={hoveredTargetId}
+        onSelectTarget={onSelectTarget}
+        className={isHovered ? "rounded-xl" : undefined}
+      />
     </div>
   );
 }

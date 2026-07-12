@@ -6,6 +6,7 @@ use App\Game\AbstractCard;
 use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Trait\CardAwareTrait;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class Play2HurtCard extends AbstractPassiveCard implements CardAwareInterface
 {
@@ -16,6 +17,13 @@ final class Play2HurtCard extends AbstractPassiveCard implements CardAwareInterf
     public function getId(): string
     {
         return 'Play2Hurt';
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::DAMAGE_AMOUNT, true),
+        ]);
     }
 
     public function onCardPlayed(AbstractCard $card, GameContext $gameContext): void

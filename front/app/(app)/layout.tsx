@@ -26,7 +26,7 @@ export default async ({ children }: { children: React.ReactNode }) => {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-80 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
         <MobileMenu username={user?.username} />
       </div>
-      <div className="pt-24 pb-64 md:pt-32 md:pb-0 min-h-screen flex flex-col">
+      <div className="pt-24 pb-18 not-only-of-type:md:pt-32 md:pb-0 min-h-screen flex flex-col">
         {children}
       </div>
     </>

@@ -91,7 +91,7 @@ final class HorsepillCard extends AbstractPlayableCard
                 return;
 
             case 'discard_owner_hand':
-                $this->discardHand($context, $ownerState->hand);
+                $this->discardHand($context, $ownerState->hand, $this->getInstanceId());
 
                 return;
 
@@ -108,9 +108,17 @@ final class HorsepillCard extends AbstractPlayableCard
     /**
      * @param string[] $hand
      */
-    private function discardHand(GameContext $context, array $hand): void
+    private function discardHand(GameContext $context, array $hand, ?string $excludedCardId = null): void
     {
         foreach ($hand as $cardId) {
+            if ($excludedCardId === $cardId) {
+                continue;
+            }
+
+            if (null === $context->state->getCardState($cardId)) {
+                continue;
+            }
+
             $context->discardCard($cardId);
         }
     }

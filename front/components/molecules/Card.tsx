@@ -113,7 +113,8 @@ const Card = ({
     return [
       {
         src,
-        depth: 2,
+        depth: -1,
+        isIllustration: true,
         foilEffect: null,
         foil: null,
         mask: null,
@@ -173,20 +174,10 @@ const Card = ({
 
   cardLayers.push(...statusLayers);
 
-  if (!card.isActive) {
-    cardLayers.push({
-      src: "/cross.webp",
-      depth: 20,
-      foilEffect: null,
-      foil: null,
-      mask: null,
-    });
-  }
-
   return (
     <div
       id={card?.instanceId}
-      className={`relative rounded-sm aspect-card ${cardSizeInfo} transform-3d transform-gpu will-change-transform user-select-none${className ?? ""}`}
+      className={`relative rounded-sm aspect-card ${cardSizeInfo} transform-3d transform-gpu will-change-transform user-select-none ${className ?? ""}`}
       style={
         {
           transform: `perspective(1000px) rotateX(${appliedTilt.x}deg) rotateY(${appliedTilt.y}deg) rotateZ(${appliedTilt.z}deg)`,

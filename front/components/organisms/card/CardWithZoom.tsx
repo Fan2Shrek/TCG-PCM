@@ -10,11 +10,13 @@ import { CardSize } from "@/constants/card";
 export type CardWithZoomProps = {
   card: BasicCard;
   size?: CardSize;
+  zoomOnSingleClick?: boolean;
 };
 
 export default function CardWithZoom({
   card,
   size = CardSize.MD,
+  zoomOnSingleClick = false,
 }: CardWithZoomProps) {
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -36,6 +38,15 @@ export default function CardWithZoom({
   return (
     <>
       <div
+        className="cursor-pointer"
+        onClick={(event) => {
+          if (!zoomOnSingleClick) {
+            return;
+          }
+
+          event.stopPropagation();
+          setIsZoomed(true);
+        }}
         onDoubleClick={(event) => {
           event.stopPropagation();
           setIsZoomed(true);

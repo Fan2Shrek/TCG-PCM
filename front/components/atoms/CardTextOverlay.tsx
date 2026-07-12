@@ -21,6 +21,13 @@ export type CardTextOverlayProps = {
   onLayoutReady?: () => void;
 };
 
+const CARD_TYPE_LABELS: Record<CardType, string> = {
+  [CardType.CHARACTER]: "PERSONNAGE",
+  [CardType.MONSTER]: "MONSTRE",
+  [CardType.PASSIVE]: "PASSIF",
+  [CardType.CONSUMABLE]: "CONSUMABLE",
+};
+
 const CardTextOverlay = ({
   readinessKey,
   cardTitle,
@@ -43,7 +50,7 @@ const CardTextOverlay = ({
   const descriptionConfig: ZoneConfig = {
     y: cardType === CardType.CHARACTER ? 54 : 60,
     width: 90,
-    height: cardType === CardType.CHARACTER ? 32 : 37,
+    height: cardType === CardType.CHARACTER ? 34 : 28,
   };
   const shouldShowStats = cardType !== CardType.CHARACTER;
   const [isTitleReady, setIsTitleReady] = useState(false);
@@ -149,10 +156,14 @@ const CardTextOverlay = ({
         className="description-zone absolute leading-tight text-center left-1/2 -translate-x-1/2 gap-x-1"
         style={{
           ...getZoneStyle(descriptionConfig),
-          fontSize: descriptionFontSize,
+          fontSize: `calc(${descriptionFontSize} * 0.93)`,
         }}
       >
         {cardDescription && convertDescriptions(cardDescription)}
+      </div>
+
+      <div className="absolute bottom-[4%] right-[6%] text-[9px] leading-none tracking-tight text-black/80 font-bold">
+        {CARD_TYPE_LABELS[cardType]}
       </div>
     </div>
   );

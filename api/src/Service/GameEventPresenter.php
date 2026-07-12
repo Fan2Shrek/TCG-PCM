@@ -68,6 +68,11 @@ final class GameEventPresenter
     private function handleAnonymousEvent(GameEvent $event, GameState $state, bool $isPrivate, ?string $viewerId): array
     {
         return match ($event->type) {
+            GameEventTypeEnum::EFFECT_ADDED => [
+                // @var string $cardId
+                'cardId' => $cardId = $event->data['cardId'],
+                'card' => $this->normalizeCardDTO($this->gameStateConverter->createCardDTO($state->getCardState($cardId))),
+            ],
             GameEventTypeEnum::UPDATE_CARD_STATE => [
                 // @var string $cardId
                 'cardId' => $cardId = $event->data['cardId'],
@@ -144,6 +149,20 @@ final class GameEventPresenter
 
         if (!\is_string($targetId)) {
             return [];
+        }
+
+        if ($targetId === $state->player1->characterCardId) {
+            return [
+                'playerId' => $state->player1->player->id,
+                'total' => $state->player1->healthPoints,
+            ];
+        }
+
+        if ($targetId === $state->player2->characterCardId) {
+            return [
+                'playerId' => $state->player2->player->id,
+                'total' => $state->player2->healthPoints,
+            ];
         }
 
         $cardState = $state->getCardState($targetId);

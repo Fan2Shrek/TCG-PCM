@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Debug\Card;
 
+use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\GameContext;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class TraceableMonsterCard extends AbstractMonsterCard
+final class TraceableMonsterCard extends AbstractMonsterCard implements TurnAwareInterface
 {
     /** @use TraceableCardTrait<AbstractMonsterCard> */
     use TraceableCardTrait;
@@ -42,6 +43,19 @@ final class TraceableMonsterCard extends AbstractMonsterCard
     {
         $this->methodCalled[] = __METHOD__;
         $this->card->onMonsterDeath($context);
+    }
+
+    public function onAttack(GameContext $context): void
+    {
+        $this->methodCalled[] = __METHOD__;
+        $this->card->onAttack($context);
+    }
+
+    public function reduceDamage(GameContext $context, int $damage): int
+    {
+        $this->methodCalled[] = __METHOD__;
+
+        return $this->card->reduceDamage($context, $damage);
     }
 
     public function canAttack(): bool
