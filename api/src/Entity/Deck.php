@@ -31,6 +31,9 @@ class Deck
     #[ORM\Column]
     private array $cards = [];
 
+    #[ORM\Column]
+    private ?bool $isFavorite = null;
+
     /**
      * @param string[] $cards
      */
@@ -90,6 +93,18 @@ class Deck
     public function setCards(array $cards): static
     {
         $this->cards = $cards;
+
+        return $this;
+    }
+
+    public function isFavorite(): ?bool
+    {
+        return $this->isFavorite;
+    }
+
+    public function setIsFavorite(bool $isFavorite): static
+    {
+        $this->isFavorite = $isFavorite;
 
         return $this;
     }

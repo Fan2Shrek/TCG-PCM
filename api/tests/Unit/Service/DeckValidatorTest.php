@@ -72,7 +72,7 @@ final class DeckValidatorTest extends TestCase
         $this->expectException(InvalidDeckException::class);
         $this->expectExceptionMessage('Card "nonexistent-card" does not exist');
 
-        $cards = array_merge(array_fill(0, 49, 'card-1'), ['nonexistent-card']);
+        $cards = array_merge(['nonexistent-card'], $this->generateUniqueCardIds(49, 'existing-card'));
         $deck = $this->createDeckWithCards('character-card', $cards);
 
         $this->cardRegistry
@@ -88,13 +88,34 @@ final class DeckValidatorTest extends TestCase
         $this->expectExceptionMessage('Deck cannot have more than 3 legendary cards');
 
         // Create 50 cards with 4 legendary cards (exceeds limit of 3)
-        $cards = array_merge(array_fill(0, 46, 'common-card'), ['legendary-card-1', 'legendary-card-2', 'legendary-card-3', 'legendary-card-4']);
+        $cards = array_merge(
+            array_fill(0, 5, 'common-card-1'),
+            array_fill(0, 5, 'common-card-2'),
+            array_fill(0, 5, 'common-card-3'),
+            array_fill(0, 5, 'common-card-4'),
+            array_fill(0, 5, 'common-card-5'),
+            array_fill(0, 5, 'common-card-6'),
+            array_fill(0, 5, 'common-card-7'),
+            array_fill(0, 5, 'common-card-8'),
+            array_fill(0, 5, 'common-card-9'),
+            ['common-card-10'],
+            ['legendary-card-1', 'legendary-card-2', 'legendary-card-3', 'legendary-card-4'],
+        );
 
         $deck = $this->createDeckWithCards('character-card', $cards);
 
         // Setup card registry with different rarities
         $this->setupCardRegistryWithRarities([
-            'common-card' => CardRarityEnum::COMMON,
+            'common-card-1' => CardRarityEnum::COMMON,
+            'common-card-2' => CardRarityEnum::COMMON,
+            'common-card-3' => CardRarityEnum::COMMON,
+            'common-card-4' => CardRarityEnum::COMMON,
+            'common-card-5' => CardRarityEnum::COMMON,
+            'common-card-6' => CardRarityEnum::COMMON,
+            'common-card-7' => CardRarityEnum::COMMON,
+            'common-card-8' => CardRarityEnum::COMMON,
+            'common-card-9' => CardRarityEnum::COMMON,
+            'common-card-10' => CardRarityEnum::COMMON,
             'character-card' => CardRarityEnum::COMMON,
             'legendary-card-1' => CardRarityEnum::LEGENDARY,
             'legendary-card-2' => CardRarityEnum::LEGENDARY,
@@ -109,7 +130,7 @@ final class DeckValidatorTest extends TestCase
 
     public function testValidateDeckWithExactlyTwoCopiesIsValid(): void
     {
-        $cards = array_merge(['card-1', 'card-1'], array_fill(0, 48, 'other-card'));
+        $cards = array_merge(['card-1', 'card-1'], $this->generateUniqueCardIds(48, 'other-card'));
 
         $deck = $this->createDeckWithCards('character-card', $cards);
 
@@ -126,7 +147,7 @@ final class DeckValidatorTest extends TestCase
     {
         $this->expectException(InvalidDeckException::class);
 
-        $cards = array_merge(['card-1', 'card-1'], array_fill(0, 48, 'other-card'));
+        $cards = array_merge(['card-1', 'card-1'], $this->generateUniqueCardIds(48, 'other-card'));
 
         $deck = $this->createDeckWithCards('character-card', $cards);
 
@@ -157,13 +178,20 @@ final class DeckValidatorTest extends TestCase
         // Test witha valid complex distribution:
         // - 35 common cards
         // - 7 uncommon cards (at max limit)
-        // - 4 rare cards (below max limit of 6)
+        // - 4 rare cards (below max limit of 7)
         // - 3 epic cards (below max limit of 5)
         // - 1 legendary card (below max limit of 3)
 
         $cards = array_merge(
-            array_fill(0, 35, 'common'),
-            array_fill(0, 7, 'uncommon-1'),
+            array_fill(0, 5, 'common-1'),
+            array_fill(0, 5, 'common-2'),
+            array_fill(0, 5, 'common-3'),
+            array_fill(0, 5, 'common-4'),
+            array_fill(0, 5, 'common-5'),
+            array_fill(0, 5, 'common-6'),
+            array_fill(0, 5, 'common-7'),
+            array_fill(0, 5, 'uncommon-1'),
+            array_fill(0, 2, 'uncommon-2'),
             array_fill(0, 4, 'rare-1'),
             array_fill(0, 3, 'epic-1'),
             ['legendary-1'],
@@ -172,8 +200,15 @@ final class DeckValidatorTest extends TestCase
         $deck = $this->createDeckWithCards('character-card', $cards);
 
         $this->setupCardRegistryWithRarities([
-            'common' => CardRarityEnum::COMMON,
+            'common-1' => CardRarityEnum::COMMON,
+            'common-2' => CardRarityEnum::COMMON,
+            'common-3' => CardRarityEnum::COMMON,
+            'common-4' => CardRarityEnum::COMMON,
+            'common-5' => CardRarityEnum::COMMON,
+            'common-6' => CardRarityEnum::COMMON,
+            'common-7' => CardRarityEnum::COMMON,
             'uncommon-1' => CardRarityEnum::UNCOMMON,
+            'uncommon-2' => CardRarityEnum::UNCOMMON,
             'rare-1' => CardRarityEnum::RARE,
             'epic-1' => CardRarityEnum::EPIC,
             'legendary-1' => CardRarityEnum::LEGENDARY,
@@ -187,9 +222,44 @@ final class DeckValidatorTest extends TestCase
         self::assertTrue($result);
     }
 
+    public function testValidateDeckExceedsMaxCopiesPerCard(): void
+    {
+        $this->expectException(InvalidDeckException::class);
+        $this->expectExceptionMessage('Deck cannot have more than 5 copies of card "card-1"');
+
+        $cards = array_merge(array_fill(0, 6, 'card-1'), $this->generateUniqueCardIds(44, 'other-card'));
+
+        $deck = $this->createDeckWithCards('character-card', $cards);
+
+        $this->setupCardRegistry($cards, 'character-card');
+        $this->setupUserInventoryWithCards($deck->getUser(), $cards);
+
+        $this->deckValidator->validateDeck($deck);
+    }
+
     private function createValidCardsList(): array
     {
-        return array_merge(array_fill(0, 46, 'common-card'), ['rare-card-1', 'rare-card-2', 'epic-card-1', 'legendary-card-1']);
+        $cards = [];
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $cards = array_merge($cards, array_fill(0, 5, \sprintf('common-card-%d', $i)));
+        }
+
+        return $cards;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function generateUniqueCardIds(int $count, string $prefix): array
+    {
+        $ids = [];
+
+        for ($i = 1; $i <= $count; ++$i) {
+            $ids[] = \sprintf('%s-%d', $prefix, $i);
+        }
+
+        return $ids;
     }
 
     private function createDeckWithCards(string $characterCard, array $cards): Deck

@@ -11,7 +11,7 @@ use App\Game\GameUtils;
 
 final class CamoBloonCard extends AbstractMonsterCard
 {
-    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
+    public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
     private const HEALTH_POINTS = 5;

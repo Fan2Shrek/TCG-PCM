@@ -12,10 +12,11 @@ use App\Service\Game\CardRegistryInterface;
 final class DeckValidator
 {
     public const DECK_SIZE = 50;
+    public const MAX_CARD_COPIES = 5;
 
     private const array RARITY_LIMITS = [
-        CardRarityEnum::UNCOMMON->value => 7,
-        CardRarityEnum::RARE->value => 6,
+        CardRarityEnum::UNCOMMON->value => 15,
+        CardRarityEnum::RARE->value => 7,
         CardRarityEnum::EPIC->value => 5,
         CardRarityEnum::LEGENDARY->value => 3,
     ];
@@ -56,6 +57,17 @@ final class DeckValidator
             }
 
             ++$cardsMap[$card];
+
+            if ($cardsMap[$card] > self::MAX_CARD_COPIES) {
+                throw new InvalidDeckException(
+                    \sprintf(
+                        'Deck cannot have more than %d copies of card "%s" (currently %d)',
+                        self::MAX_CARD_COPIES,
+                        $card,
+                        $cardsMap[$card],
+                    ),
+                );
+            }
 
             $rarity = $template::$rarity->value;
             $rarityCount[$rarity]++;

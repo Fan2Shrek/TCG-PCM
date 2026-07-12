@@ -45,6 +45,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             'name' => 'deck_1',
             'cards' => $cards,
             'characterCard' => $pierrotCardId,
+            'isFavorite' => true,
         ];
 
         yield [
@@ -52,6 +53,7 @@ final class DeckFixtures extends AbstractFixtures implements DependentFixtureInt
             'name' => 'deck_2',
             'cards' => $cards,
             'characterCard' => $stonksCardId,
+            'isFavorite' => false,
         ];
     }
 
