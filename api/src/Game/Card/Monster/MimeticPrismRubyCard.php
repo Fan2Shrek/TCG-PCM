@@ -46,7 +46,13 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function onMonsterPlayed(GameContext $context): void
     {
-        $copyId = $context->selectRandomCardIn($context->getPlayerStateById($this->ownerId)->playArea->monsterCards);
+        $pool = $context->getPlayerStateById($this->ownerId)->playArea->monsterCards;
+
+        if ([] === $pool) {
+            return;
+        }
+
+        $copyId = $context->selectRandomCardIn($pool);
         $state = $context->state->getCardState($copyId);
 
         if (!$state) {
@@ -66,7 +72,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
     protected function getMimedCard(): void
     {
         /** @var AbstractMonsterCard $card */
-        $card = GameUtils::getService('card')->getCardTemplate($this->copyTemplateId);
+        $card = GameUtils::getService('card')->getCardTemplateById($this->copyTemplateId);
 
         $this->damage = (int) round($card->getBaseAttack() * self::ATTACK_MULTIPLIER);
         $this->heal = (int) round($card->getHealPoints() * self::HEALTH_POINTS_MULTIPLIER);

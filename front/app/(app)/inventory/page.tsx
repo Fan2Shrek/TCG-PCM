@@ -1,4 +1,4 @@
-import { serverApiGet } from "@/lib/api/server";
+import { authApiGet } from "@/lib/api/authServer";
 import CollectionPageClient from "@/components/organisms/collection/CollectionPageClient";
 import { CardCollectionResponse } from "@/app/types/collection";
 import {
@@ -16,11 +16,11 @@ type InventoryPageProps = {
 export default async function InventoryPage({
   searchParams,
 }: InventoryPageProps) {
-  const { entries } = await serverApiGet<CardCollectionResponse>(
+  const { entries } = await authApiGet<CardCollectionResponse>(
     "/inventory/collection",
   );
-  const decksResponse = await serverApiGet<DeckCollectionResponse>("/decks");
-  const deckLimits = await serverApiGet<DeckLimits>("/decks/limits");
+  const decksResponse = await authApiGet<DeckCollectionResponse>("/decks");
+  const deckLimits = await authApiGet<DeckLimits>("/decks/limits");
   const decks = normalizeDeckCollection(decksResponse);
   const { tab } = await searchParams;
 

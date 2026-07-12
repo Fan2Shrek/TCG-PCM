@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import Card from "@/components/molecules/Card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import CardQuantityBadge from "@/components/atoms/collection/CardQuantityBadge";
+import LazyMount from "@/components/atoms/LazyMount";
 
 type InventoryCardsPanelProps = {
   entries: CardCollectionEntry[];
@@ -155,28 +156,30 @@ export default function InventoryCardsPanel({
                 key={card.instanceId}
                 className="relative flex justify-center"
               >
-                {isOwned ? (
-                  <>
-                    <div className="transform-gpu transition-transform duration-200 ease-out hover:z-10 hover:scale-110">
-                      <CardWithZoom
-                        card={displayedCard}
-                        size={CardSize.MD}
-                        zoomOnSingleClick
+                <LazyMount placeholderClassName="aspect-card w-card-md">
+                  {isOwned ? (
+                    <>
+                      <div className="transform-gpu transition-transform duration-200 ease-out hover:z-10 hover:scale-110">
+                        <CardWithZoom
+                          card={displayedCard}
+                          size={CardSize.MD}
+                          zoomOnSingleClick
+                        />
+                      </div>
+                      <CardQuantityBadge
+                        quantity={quantity}
+                        className="absolute -top-2 -right-2"
                       />
+                    </>
+                  ) : (
+                    <div className="relative grayscale opacity-60 pointer-events-none select-none">
+                      <Card card={displayedCard} size={CardSize.MD} />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <AiOutlineLock className="h-8 w-8 text-white drop-shadow" />
+                      </div>
                     </div>
-                    <CardQuantityBadge
-                      quantity={quantity}
-                      className="absolute -top-2 -right-2"
-                    />
-                  </>
-                ) : (
-                  <div className="relative grayscale opacity-60 pointer-events-none select-none">
-                    <Card card={displayedCard} size={CardSize.MD} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <AiOutlineLock className="h-8 w-8 text-white drop-shadow" />
-                    </div>
-                  </div>
-                )}
+                  )}
+                </LazyMount>
               </div>
             );
           })}

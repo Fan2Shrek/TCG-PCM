@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default () => {
+export default function RegisterForm() {
   const [state, formAction] = useActionState(registerAction, initialState);
   const [clientError, setClientError] = useState<string | null>(null);
 

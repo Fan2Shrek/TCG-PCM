@@ -1,16 +1,15 @@
-import Card from "@/components/molecules/Card";
-import PlayerHealthBar from "@/components/molecules/game/PlayerHealthBar";
 import CardsHand from "../../organisms/CardsHand";
 import { GameContext } from "@/contexts/GameContext";
 import { useContext } from "react";
 import PlayerStats from "@/components/molecules/game/PlayerStats";
+import { PlayerState } from "@/lib/game/type/gameState";
 
 type Props = {
-  player: any;
+  player: PlayerState;
   asOpponent?: boolean;
 };
 
-export default ({ player, asOpponent = false }: Props) => {
+export default function PlayerPanel({ player, asOpponent = false }: Props) {
   const { getCardById } = useContext(GameContext);
 
 	const playerCard = getCardById(player.characterCardId);
@@ -22,7 +21,11 @@ export default ({ player, asOpponent = false }: Props) => {
 
 				{!asOpponent && (
 					<div className="relative flex gap-2 mt-4 justify-center">
-					<CardsHand cards={player.hand.map((cardId: string) => getCardById(cardId))} />
+					<CardsHand
+						cards={player.hand
+							.map((cardId: string) => getCardById(cardId))
+							.filter((card): card is NonNullable<typeof card> => card !== undefined)}
+					/>
 					</div>
 				)}
 			</div>

@@ -12,7 +12,7 @@ type BoardRowProps = {
   className?: string;
 };
 
-export default ({
+export default function BoardRow({
   title,
   cards,
   onCardClick,
@@ -20,7 +20,7 @@ export default ({
   clickable = false,
   isCardDisabled,
   className,
-}: BoardRowProps) => {
+}: BoardRowProps) {
   const { getCardById } = useContext(GameContext);
 
   return (

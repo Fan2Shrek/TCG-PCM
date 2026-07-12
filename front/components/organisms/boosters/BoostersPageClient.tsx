@@ -126,6 +126,7 @@ export default function BoostersPageClient({
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loadBoosterCardsForType awaits a network call before setting state, it isn't synchronous
     void loadBoosterCardsForType(frontBooster.boosterType);
   }, [frontBooster.boosterType, isPreviewOpen, loadBoosterCardsForType]);
 

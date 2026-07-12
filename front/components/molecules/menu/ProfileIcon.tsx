@@ -8,7 +8,7 @@ type ProfileIconProps = {
   className?: string;
 };
 
-export default ({ profilePicturePath, username, className }: ProfileIconProps) => {
+export default function ProfileIcon({ profilePicturePath, username, className }: ProfileIconProps) {
   const imagePath = profilePicturePath ? getImage(profilePicturePath) : "/menu/default_profile_picture.webp";
 
   return (

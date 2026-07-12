@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import type { CardCollectionEntry } from "@/app/types/collection";
@@ -24,15 +24,19 @@ export default function InventoryDecksPanel({
 }: InventoryDecksPanelProps) {
   const [expandedDeckId, setExpandedDeckId] = useState<number | null>(null);
   const [localDecks, setLocalDecks] = useState<Deck[]>(decks);
+  const [prevDecks, setPrevDecks] = useState(decks);
   const [isCreating, setIsCreating] = useState(false);
   const [editingDeckId, setEditingDeckId] = useState<number | null>(null);
   const [isCreatingDeck, setIsCreatingDeck] = useState(false);
   const [isSavingDeck, setIsSavingDeck] = useState(false);
   const [deletingDeckId, setDeletingDeckId] = useState<number | null>(null);
 
-  useEffect(() => {
+  // Resyncs local editable copy whenever the server-provided decks prop changes,
+  // without an extra effect-driven render (see "Adjusting state in render" in the React docs).
+  if (decks !== prevDecks) {
+    setPrevDecks(decks);
     setLocalDecks(decks);
-  }, [decks]);
+  }
 
   const cardsById = useMemo(() => {
     const map = new Map<string, BasicCard>();

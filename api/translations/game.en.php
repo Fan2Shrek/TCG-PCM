@@ -32,7 +32,7 @@ return [
         ],
         'Gitman' => [
             'name' => 'Gitman',
-            'description' => 'Does {{value}} time per commits in this projects.',
+            'description' => 'Does {{value}} time per commits in this project, divided by {{divisor}}.',
         ],
         'Spicy-D6' => [
             'name' => 'Spicy D6',
@@ -232,7 +232,7 @@ return [
         ],
         'Crypto4Noob' => [
             'name' => 'Crypto4Noob',
-            'description' => 'Does as much damage as the current price of Bitcoin in euros.',
+            'description' => 'Does as much damage as the current price of Bitcoin in euros, divided by 3000.',
         ],
         'MimeticPrismRuby' => [
             'name' => 'Mimetic Prism Ruby',

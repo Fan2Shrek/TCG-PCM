@@ -83,7 +83,7 @@ export default function WinScreen({
         </div>
         <Button size="lg" variant="secondary" onClick={onBackHome}>
           <FaHouse />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Button>
       </div>
     </div>

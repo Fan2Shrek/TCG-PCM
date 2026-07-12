@@ -17,7 +17,7 @@ import { BasicCard, CardLayer } from "@/lib/cards/types/card";
 import { DEFAULT_TILT, DEFAULT_GLARE } from "@/lib/cards/cardUtils";
 import { getImage } from "@/lib/api/api";
 import LoadingSpinner from "@/components/atoms/LoadingSpinner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export type CardViewProps = {
   card: BasicCard;
@@ -41,10 +41,15 @@ const Card = ({
   showLoadingUntilReady = false,
 }: CardViewProps) => {
   const [isCardReady, setIsCardReady] = useState(!showLoadingUntilReady);
+  const readinessKey = `${card.instanceId}:${showLoadingUntilReady}`;
+  const [prevReadinessKey, setPrevReadinessKey] = useState(readinessKey);
 
-  useEffect(() => {
+  // Resets readiness so the loading state re-applies when a different card is
+  // shown, computed during render (see "Adjusting state in render" in the React docs).
+  if (readinessKey !== prevReadinessKey) {
+    setPrevReadinessKey(readinessKey);
     setIsCardReady(!showLoadingUntilReady);
-  }, [card.instanceId, showLoadingUntilReady]);
+  }
 
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;

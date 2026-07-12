@@ -32,7 +32,7 @@ return [
         ],
         'Gitman' => [
             'name' => 'Gitman',
-            'description' => 'Inflige {{value}} fois le nombre de commits dans ce projet.',
+            'description' => 'Inflige {{value}} fois le nombre de commits dans ce projet, divisé par {{divisor}}.',
         ],
         'Spicy-D6' => [
             'name' => 'D6 Épicé',
@@ -232,7 +232,7 @@ return [
         ],
         'Crypto4Noob' => [
             'name' => 'Crypto4Noob',
-            'description' => 'Inflige des dégâts égaux au prix actuel du Bitcoin en euros.',
+            'description' => 'Inflige des dégâts égaux au prix actuel du Bitcoin en euros, divisé par 3000.',
         ],
         'MimeticPrismRuby' => [
             'name' => 'Prisme Mimétique Rubis',

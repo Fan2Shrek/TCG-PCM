@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Booster\Types;
 
 use App\Enum\CardSetEnum;
+use App\Game\Card\Character\AbstractCharacterCard;
 
 final class IsaacBooster implements BoosterInterface
 {
@@ -17,6 +18,7 @@ final class IsaacBooster implements BoosterInterface
     {
         return [
             'serie' => CardSetEnum::TBOI,
+            'excludeType' => AbstractCharacterCard::class,
         ];
     }
 }

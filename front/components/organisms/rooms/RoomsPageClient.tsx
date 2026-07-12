@@ -151,7 +151,7 @@ export default function RoomsPageClient({
         <div className="p-6">
           <div className="flex items-center justify-between mb-8 flex-wrap">
             <h2 className="text-2xl font-semibold text-black">
-              Joueurs en attente d'adversaires
+              Joueurs en attente d&apos;adversaires
             </h2>
             <div className="flex gap-4">
               <Button

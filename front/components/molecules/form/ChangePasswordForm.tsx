@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default ({ forced }: { forced: boolean }) => {
+export default function ChangePasswordForm({ forced }: { forced: boolean }) {
   const [state, formAction] = useActionState(changePasswordAction, initialState);
   const [clientError, setClientError] = useState<string | null>(null);
 
