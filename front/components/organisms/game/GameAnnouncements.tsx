@@ -1,16 +1,19 @@
+"use client";
+
+import { useContext } from "react";
+import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 
 type GameAnnouncementsProps = {
   regularAnnouncements: GameAnnouncement[];
   giantAnnouncement: GameAnnouncement | null;
-  selectedAttackerId: string | null;
 };
 
 export default function GameAnnouncements({
   regularAnnouncements,
   giantAnnouncement,
-  selectedAttackerId,
 }: GameAnnouncementsProps) {
+  const { targeting } = useContext(GameContext);
   return (
     <>
       <div className="pointer-events-none absolute left-1/2 top-30 z-20 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4 lg:top-4">
@@ -28,7 +31,7 @@ export default function GameAnnouncements({
             {announcement.text}
           </div>
         ))}
-        {selectedAttackerId && (
+        {targeting.selectedAttackerId && (
           <div className="rounded-full border border-blue-300/60 bg-blue-500/20 text-blue-100 px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm">
             Choisis une cible pour attaquer
           </div>

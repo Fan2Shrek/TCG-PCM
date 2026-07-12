@@ -15,10 +15,6 @@ type Events = {
     card: BasicCard;
   };
   "card:dropped": { card: BasicCard; zoneId: string };
-  "target:hover": string;
-  "target:leave": void;
-  "target:click": string;
-  "game:targeting-changed": boolean;
   "game:card-drawn": { playerId: string; cardId: string };
   "game:coins-changed": { playerId: string; delta: number };
   "game:health-changed": {

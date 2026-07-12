@@ -1,19 +1,14 @@
 "use client";
 
-import { useContext, useState, useEffect } from "react";
+import { memo, useContext, useState, useEffect } from "react";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
-import useTargetingMode from "@/hooks/useTargetingMode";
 import GameCard from "./GameCard";
 
 type CardRowProps = {
   cardIds: string[];
   className?: string;
   isLoggedPlayerSide?: boolean;
-  selectedCardId?: string | null;
-  onSelectCard?: (cardId: string | null) => void;
-  onSelectTarget?: (cardId: string) => void;
-  hoveredTargetId?: string | null;
 };
 
 const CARD_PLAY_ANIMATION_TIME = 300;
@@ -70,20 +65,14 @@ function getCardStyle(
   } as React.CSSProperties;
 }
 
-export default function CardRow({
+function CardRow({
   cardIds,
   className,
   isLoggedPlayerSide = false,
-  selectedCardId,
-  onSelectCard,
-  onSelectTarget,
-  hoveredTargetId,
 }: CardRowProps) {
-  const isTargeting = useTargetingMode();
-  const { getCardById } = useContext(GameContext);
+  const { getCardById, targeting } = useContext(GameContext);
+  const { selectedAttackerId, isTargeting } = targeting;
   const playingCardIds = useCardPlayAnimation();
-  const isControlled =
-    selectedCardId !== undefined && onSelectCard !== undefined;
 
   return (
     <div
@@ -92,11 +81,8 @@ export default function CardRow({
     >
       {cardIds.map((cardId) => {
         const card = getCardById(cardId);
-        const isSelected = selectedCardId === card?.instanceId;
-        const isHovered =
-          hoveredTargetId === card?.instanceId && isTargeting && !isSelected;
-        const canSelect =
-          isLoggedPlayerSide && isControlled && card?.isActive && !isTargeting;
+        const isSelected = selectedAttackerId === card?.instanceId;
+        const canSelect = isLoggedPlayerSide && card?.isActive && !isTargeting;
         const isPlaying = playingCardIds.has(card?.instanceId || "");
 
         return (
@@ -105,13 +91,8 @@ export default function CardRow({
               key={card.instanceId}
               card={card}
               targetId={card.instanceId}
-              isTargeting={isTargeting}
-              hoveredTargetId={hoveredTargetId}
-              selectedSourceId={selectedCardId}
               canSelectSource={canSelect}
               disableSelfTarget
-              onSelectSource={onSelectCard}
-              onSelectTarget={onSelectTarget}
               style={getCardStyle(
                 isPlaying,
                 isSelected,
@@ -125,3 +106,5 @@ export default function CardRow({
     </div>
   );
 }
+
+export default memo(CardRow);
