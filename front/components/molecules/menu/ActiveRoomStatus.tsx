@@ -57,7 +57,6 @@ export default function ActiveRoomStatus({ className }: ActiveRoomStatusProps) {
     }
   };
 
-  console.log(userRoom);
   if (
     !userRoom ||
     (userRoom.status !== RoomStatus.WAITING &&

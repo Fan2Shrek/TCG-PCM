@@ -13,9 +13,9 @@ export default async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="hidden md:grid grid-cols-2 items-center fixed w-full pt-3 px-5 z-80">
-        <div>{user && <PendingBoosters className="justify-self-start" />}</div>
-        <DesktopMenu className="justify-self-end" username={user?.username} profilePicturePath={profilePicturePath} />
+      <div className="hidden md:flex items-center justify-between gap-4 fixed w-full pt-3 px-5 z-80">
+        <div className="min-w-0">{user && <PendingBoosters />}</div>
+        <DesktopMenu username={user?.username} profilePicturePath={profilePicturePath} />
       </div>
       {user && (
         <div className="md:hidden fixed top-2 left-0 right-0 z-80 flex items-start justify-between px-3">

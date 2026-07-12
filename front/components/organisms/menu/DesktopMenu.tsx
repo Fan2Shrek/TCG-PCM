@@ -3,12 +3,13 @@
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import DesktopMenuItems from "@/components/atoms/menu/DesktopMenuItems";
+import DesktopMenuDropdown from "@/components/atoms/menu/DesktopMenuDropdown";
 import {
   AiOutlineFolderOpen,
   AiOutlineLogin,
   AiOutlineLogout,
 } from "react-icons/ai";
-import { TbPlayCardStar, TbSword } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2 } from "react-icons/tb";
 import { MdAppRegistration } from "react-icons/md";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
@@ -29,6 +30,11 @@ type MenuItemData = {
 
 const unauthenticatedMenuItems: MenuItemData[] = [
   {
+    label: "Règles",
+    icon: <TbBook2 />,
+    linkTo: "/how-to-play",
+  },
+  {
     label: "Connexion",
     icon: <AiOutlineLogin />,
     linkTo: "/login",
@@ -40,7 +46,7 @@ const unauthenticatedMenuItems: MenuItemData[] = [
   },
 ];
 
-const getAuthenticatedMenuItems = (onLogout: () => void): MenuItemData[] => [
+const authenticatedMenuItems: MenuItemData[] = [
   {
     label: "Boosters",
     icon: <TbPlayCardStar />,
@@ -55,6 +61,14 @@ const getAuthenticatedMenuItems = (onLogout: () => void): MenuItemData[] => [
     label: "Jouer",
     icon: <TbSword />,
     linkTo: "/rooms",
+  },
+];
+
+const getAuthenticatedDropdownItems = (onLogout: () => void): MenuItemData[] => [
+  {
+    label: "Règles",
+    icon: <TbBook2 />,
+    linkTo: "/how-to-play",
   },
   {
     label: "Déconnexion",
@@ -83,9 +97,8 @@ export default function DesktopMenu({ className, username, profilePicturePath }:
     await logoutAction();
   };
 
-  const menuItems = isAuthenticated
-    ? getAuthenticatedMenuItems(handleLogout)
-    : unauthenticatedMenuItems;
+  const menuItems = isAuthenticated ? authenticatedMenuItems : unauthenticatedMenuItems;
+  const dropdownItems = isAuthenticated ? getAuthenticatedDropdownItems(handleLogout) : [];
 
   return (
     <div>
@@ -103,6 +116,12 @@ export default function DesktopMenu({ className, username, profilePicturePath }:
               active={isActiveMenuItem(pathname, menuItem.linkTo)}
             />
           ))}
+          {dropdownItems.length > 0 && (
+            <DesktopMenuDropdown
+              items={dropdownItems}
+              isItemActive={(linkTo) => isActiveMenuItem(pathname, linkTo)}
+            />
+          )}
         </ul>
         {isAuthenticated && <ProfileIcon username={username} profilePicturePath={profilePicturePath} />}
       </nav>

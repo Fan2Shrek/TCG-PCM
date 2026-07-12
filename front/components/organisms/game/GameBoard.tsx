@@ -328,8 +328,6 @@ export default function GameBoard() {
     return <div>Loading...</div>;
   }
 
-  console.log(game);
-
   return (
     <div
       className="relative flex flex-col h-screen bg-orange-800 text-white overflow-hidden"
