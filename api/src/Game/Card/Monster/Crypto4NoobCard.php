@@ -13,6 +13,7 @@ final class Crypto4NoobCard extends AbstractMonsterCard implements ComputedCardI
 
     private const HEALTH_POINTS = 15;
     private const URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur';
+    private const DAMAGE_DIVISOR = 3000;
 
     private int $value = 0;
 
@@ -23,7 +24,7 @@ final class Crypto4NoobCard extends AbstractMonsterCard implements ComputedCardI
 
     public function getBaseAttack(): int
     {
-        return $this->value;
+        return (int) round($this->value / self::DAMAGE_DIVISOR);
     }
 
     public function getHealPoints(): int

@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default ({ token }: { token: string }) => {
+export default function ResetPasswordForm({ token }: { token: string }) {
   const [state, formAction] = useActionState(resetPasswordAction, initialState);
   const [clientError, setClientError] = useState<string | null>(null);
 

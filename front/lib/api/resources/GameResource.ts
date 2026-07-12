@@ -9,7 +9,7 @@ export class GameResource {
 		return this.client.get(`/game/${id}`)
 	}
 
-	async play(id: string, action: PlayerActionType, payload: any = {}) {
+	async play(id: string, action: PlayerActionType, payload: unknown = {}) {
 		return this.client.post(`/game/${id}/play`, {
 		  actionId: action,
 		  payload,

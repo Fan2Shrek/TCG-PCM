@@ -26,7 +26,7 @@ export class RoomResource {
   }
 
   async getActive(): Promise<Room | null> {
-    const response = (await this.client.get(`/me/room`)) as any;
+    const response = (await this.client.get(`/me/room`)) as Room[] | Room | null;
     return Array.isArray(response) ? response[0] || null : response || null;
   }
 

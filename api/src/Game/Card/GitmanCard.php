@@ -16,6 +16,8 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
 
     private const int DAMAGE_MULTIPLIER = 1;
 
+    private const int DAMAGE_DIVISOR = 10;
+
     private int $commitCount = 0;
 
     public function getId(): string
@@ -32,12 +34,13 @@ class GitmanCard extends AbstractPlayableCard implements ComputedCardInterface
     {
         return GameUtils::formatDescription(parent::getDescription(), [
             'value' => self::DAMAGE_MULTIPLIER,
+            'divisor' => self::DAMAGE_DIVISOR,
         ]);
     }
 
     public function play(GameContext $context, array $data = []): void
     {
-        $value = fn() => $this->getValue(self::DAMAGE_MULTIPLIER, true) * $this->getCommitCount();
+        $value = fn() => (int) round(($this->getValue(self::DAMAGE_MULTIPLIER, true) * $this->getCommitCount()) / self::DAMAGE_DIVISOR);
 
         $value = $context->runtimeValueEffect($value);
 

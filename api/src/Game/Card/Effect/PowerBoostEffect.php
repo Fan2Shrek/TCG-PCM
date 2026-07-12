@@ -8,7 +8,7 @@ use App\Enum\CardEffectEnum;
 
 final class PowerBoostEffect extends AbstractCardEffect
 {
-    private readonly int $value;
+    private readonly float $value;
 
     public function __construct(array $data = [])
     {
@@ -16,11 +16,11 @@ final class PowerBoostEffect extends AbstractCardEffect
             throw new \InvalidArgumentException('Missing value key');
         }
 
-        if (!\is_int($value)) {
-            throw new \InvalidArgumentException('Value must be int');
+        if (!\is_int($value) && !\is_float($value)) {
+            throw new \InvalidArgumentException('Value must be int or float');
         }
 
-        $this->value = $value;
+        $this->value = (float) $value;
     }
 
     public static function getName(): CardEffectEnum
@@ -28,7 +28,7 @@ final class PowerBoostEffect extends AbstractCardEffect
         return CardEffectEnum::POWER_BOOST;
     }
 
-    public function getValue(): int
+    public function getValue(): float
     {
         return $this->value;
     }

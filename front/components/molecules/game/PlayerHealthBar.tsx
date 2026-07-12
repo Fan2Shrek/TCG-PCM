@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import HeartIcon from "@/components/atoms/icons/heartIcon";
 import HeartMask from "@/components/atoms/icons/heartMask";
 
@@ -17,7 +19,7 @@ export default function PlayerHealthBar({
   const containerColor = "#FFFFFF99";
   const containerSize = size + 24;
 
-  const maskId = `heart-mask-${Math.random().toString(36).slice(0, 9)}`;
+  const maskId = `heart-mask-${useId()}`;
 
   return (
     <div className="relative inline-block w-fit h-fit text-center">

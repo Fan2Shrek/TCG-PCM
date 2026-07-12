@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import ProfilePictureForm from "@/components/molecules/form/ProfilePictureForm";
-import { serverApiGet } from "@/lib/api/server";
+import { authApiGet } from "@/lib/api/authServer";
 import { getCurrentUser } from "@/lib/auth/session";
 
 type UserResponse = {
@@ -15,7 +15,7 @@ export default async function Profile() {
     redirect("/login");
   }
 
-  const user = await serverApiGet<UserResponse>("/user");
+  const user = await authApiGet<UserResponse>("/user");
 
   return (
     <main className="flex justify-center sm:mt-32">

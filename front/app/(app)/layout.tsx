@@ -6,7 +6,7 @@ import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import { serverApiGet } from "@/lib/api/server";
 import { getCurrentUser } from "@/lib/auth/session";
 
-export default async ({ children }: { children: React.ReactNode }) => {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   const profilePicturePath = user
     ? (await serverApiGet<{ profilePicturePath?: string }>("/user").catch(() => null))?.profilePicturePath

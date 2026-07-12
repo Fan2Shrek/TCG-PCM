@@ -60,11 +60,21 @@ export function RoomProvider({
     }
   };
 
-  useEffect(() => {
+  const [prevEnabled, setPrevEnabled] = useState(enabled);
+
+  // Resets room state when disabled, computed during render
+  // (see "Adjusting state in render" in the React docs).
+  if (enabled !== prevEnabled) {
+    setPrevEnabled(enabled);
     if (!enabled) {
       setUserRoom(null);
       setLastEvent(null);
       setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!enabled) {
       return;
     }
 

@@ -37,16 +37,19 @@ export default function CardsHand({
     timeout: 300,
   });
 
+  // Latches on the first debounced hover, computed during render
+  // (see "Adjusting state in render" in the React docs).
+  if (isHovered && !hasHoveredOnce) {
+    setHasHoveredOnce(true);
+  }
+
   useEffect(() => {
     if (isHovered) {
-      if (!hasHoveredOnce) {
-        setHasHoveredOnce(true);
-      }
       onMouseEnter?.();
     } else {
       onMouseLeave?.();
     }
-  }, [isHovered, hasHoveredOnce, onMouseEnter, onMouseLeave]);
+  }, [isHovered, onMouseEnter, onMouseLeave]);
 
   useEffect(() => {
     const handleCardDrawn = () => {

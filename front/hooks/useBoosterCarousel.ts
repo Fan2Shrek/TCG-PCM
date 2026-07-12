@@ -11,6 +11,7 @@ export function useBoosterCarousel(
   maxRadius: number = 320,
 ) {
   const [frontIndex, setFrontIndex] = useState(0);
+  const screenWidth = useWindowWidth();
 
   const rotateTo = useCallback(
     (index: number) => {
@@ -27,11 +28,10 @@ export function useBoosterCarousel(
     (index: number): Style => {
       const count = boosters.length;
 
-      let relative = index - frontIndex;
+      const relative = index - frontIndex;
 
       const angle = (relative / count) * Math.PI * 2;
 
-      const screenWidth = useWindowWidth();
       const radiusX = Math.min(maxRadius, screenWidth / 3);
       const radiusY = 30;
 
@@ -48,7 +48,7 @@ export function useBoosterCarousel(
         zIndex: Math.round((depth + 1) * 100),
       };
     },
-    [boosters.length, frontIndex],
+    [boosters.length, frontIndex, maxRadius, screenWidth],
   );
 
   const frontBooster = useMemo(

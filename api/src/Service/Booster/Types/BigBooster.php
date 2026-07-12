@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Booster\Types;
 
 use App\Enum\CardSetEnum;
+use App\Game\Card\Character\AbstractCharacterCard;
 
 final class BigBooster implements BoosterInterface
 {
@@ -17,6 +18,7 @@ final class BigBooster implements BoosterInterface
     {
         return [
             'serie' => CardSetEnum::ORIGINAL,
+            'excludeType' => AbstractCharacterCard::class,
         ];
     }
 }

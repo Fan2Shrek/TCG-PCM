@@ -80,27 +80,29 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!room || !currentUser || sortedDecks.length === 0) {
-      return;
-    }
-
-    const activeDeckId =
-      room.owner.username === currentUser.username
+  const isRoomDataReady = !!room && !!currentUser && sortedDecks.length > 0;
+  const activeDeckId =
+    room && currentUser && sortedDecks.length > 0
+      ? room.owner.username === currentUser.username
         ? room.ownerDeck?.id
         : room.opponent?.username === currentUser.username
           ? room.opponentDeck?.id
-          : undefined;
+          : undefined
+      : undefined;
+  const [prevActiveDeckId, setPrevActiveDeckId] = useState(activeDeckId);
 
+  // Syncs local selection with the room's server-side deck once it loads, computed
+  // during render (see "Adjusting state in render" in the React docs).
+  if (activeDeckId !== prevActiveDeckId) {
+    setPrevActiveDeckId(activeDeckId);
     if (activeDeckId) {
       setSelectedDeckId(String(activeDeckId));
-      return;
     }
+  }
 
-    if (!selectedDeckId) {
-      setSelectedDeckId(String(sortedDecks[0].id));
-    }
-  }, [currentUser, room, selectedDeckId, sortedDecks]);
+  if (isRoomDataReady && !activeDeckId && !selectedDeckId) {
+    setSelectedDeckId(String(sortedDecks[0].id));
+  }
 
   useEffect(() => {
     if (!isContextLoading && !room) {
@@ -249,7 +251,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 </p>
                 <Button onClick={handleCopy} variant="default" size="lg">
                   <MdContentCopy className="h-5 w-5" />
-                  Copier l'ID
+                  Copier l&apos;ID
                 </Button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { serverApiGet } from "@/lib/api/server";
+import { authApiGet } from "@/lib/api/authServer";
 import { getCurrentUser } from "@/lib/auth/session";
 import { GameState } from "@/lib/game/type/gameState";
 import GameBoard from "@/components/organisms/game/GameBoard";
@@ -13,7 +13,7 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   const [{ state, mercure_token }, user] = await Promise.all([
-    serverApiGet<GameResponse>(`/game/${id}`),
+    authApiGet<GameResponse>(`/game/${id}`),
     getCurrentUser(),
   ]);
 

@@ -5,10 +5,10 @@ type BoosterSlotProps = {
   animationDurationMs?: number;
 };
 
-export default ({
+export default function BoosterSlot({
   className,
   animationDurationMs = 6000,
-}: BoosterSlotProps) => {
+}: BoosterSlotProps) {
   const boosterPath: string = "/booster/pending_booster.webp";
 
   return (

@@ -5,7 +5,7 @@ type TimeDisplayProps = {
   className?: string;
 };
 
-export default ({ timeRemaining, className }: TimeDisplayProps) => {
+export default function TimeRemaining({ timeRemaining, className }: TimeDisplayProps) {
   const hoursEquivalent = timeRemaining / 60;
 
   let color;

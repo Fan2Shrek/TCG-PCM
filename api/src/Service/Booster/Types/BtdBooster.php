@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Booster\Types;
 
 use App\Enum\CardSetEnum;
+use App\Game\Card\Character\AbstractCharacterCard;
 use Symfony\Component\Translation\TranslatableMessage;
 
 final class BtdBooster implements BoosterInterface
@@ -18,6 +19,7 @@ final class BtdBooster implements BoosterInterface
     {
         return [
             'serie' => CardSetEnum::BTD6,
+            'excludeType' => AbstractCharacterCard::class,
         ];
     }
 }

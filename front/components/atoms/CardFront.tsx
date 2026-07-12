@@ -43,6 +43,7 @@ const CardFront = ({
 }: CardFrontProps) => {
   const [isTextReady, setIsTextReady] = useState(false);
   const [isImagesReady, setIsImagesReady] = useState(false);
+  const [prevReadinessKey, setPrevReadinessKey] = useState(readinessKey);
   const sortedLayers = useMemo(
     () => [...layers].sort((a, b) => a.depth - b.depth),
     [layers],
@@ -67,14 +68,23 @@ const CardFront = ({
     () => requiredLayerSrcs.map((src, index) => `${index}:${src}`).join("|"),
     [requiredLayerSrcs],
   );
+  const hasNoRequiredImages = requiredLayerSrcs.length === 0;
+  const [prevRequiredLayersKey, setPrevRequiredLayersKey] = useState(requiredLayersKey);
+
+  // Resets image readiness so the probe effect below can recompute it for the new
+  // layers, computed during render (see "Adjusting state in render" in the React docs).
+  if (requiredLayersKey !== prevRequiredLayersKey) {
+    setPrevRequiredLayersKey(requiredLayersKey);
+    if (!hasNoRequiredImages) {
+      setIsImagesReady(false);
+    }
+  }
 
   useEffect(() => {
-    if (requiredLayerSrcs.length === 0) {
-      setIsImagesReady(true);
+    if (hasNoRequiredImages) {
       return;
     }
 
-    setIsImagesReady(false);
     let settledCount = 0;
 
     requiredLayerSrcs.forEach((src) => {
@@ -95,19 +105,22 @@ const CardFront = ({
         settle();
       }
     });
-  }, [requiredLayersKey]);
+  }, [requiredLayersKey, hasNoRequiredImages]);
 
-  useEffect(() => {
+  // Resets readiness so the effects above can recompute it for the new content,
+  // computed during render (see "Adjusting state in render" in the React docs).
+  if (readinessKey !== prevReadinessKey) {
+    setPrevReadinessKey(readinessKey);
     setIsTextReady(false);
-  }, [readinessKey]);
+  }
 
   useEffect(() => {
     if (!onReadyStateChange) {
       return;
     }
 
-    onReadyStateChange(isTextReady && isImagesReady);
-  }, [isImagesReady, isTextReady, onReadyStateChange]);
+    onReadyStateChange(isTextReady && (isImagesReady || hasNoRequiredImages));
+  }, [isImagesReady, isTextReady, hasNoRequiredImages, onReadyStateChange]);
 
   return (
     <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm">
