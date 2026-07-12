@@ -1,12 +1,14 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdContentCopy, MdPlayArrow, MdLogout } from "react-icons/md";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRoom } from "@/contexts/RoomContext";
 import api from "@/lib/api/api";
+import type { Deck } from "@/app/types/deck";
 import { Button } from "@/components/ui/button";
+import DeckSelect from "@/components/molecules/rooms/DeckSelect";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -23,11 +25,82 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
   } = useRoom();
 
   const room = userRoom && userRoom.id === id ? userRoom : null;
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [selectedDeckId, setSelectedDeckId] = useState("");
+  const [isDecksLoading, setIsDecksLoading] = useState(false);
+  const [isChangingDeck, setIsChangingDeck] = useState(false);
 
   const isPrivate = room?.isPrivate ?? false;
 
   const playerCount = room?.opponent ? 2 : 1;
   const isOwner = room?.owner?.username === currentUser?.username;
+
+  const sortedDecks = useMemo(
+    () =>
+      [...decks].sort((a, b) => {
+        const favoriteDelta =
+          Number(Boolean(b.isFavorite)) - Number(Boolean(a.isFavorite));
+
+        if (favoriteDelta !== 0) {
+          return favoriteDelta;
+        }
+
+        return a.name.localeCompare(b.name, "fr", { sensitivity: "base" });
+      }),
+    [decks],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchDecks = async () => {
+      setIsDecksLoading(true);
+      try {
+        const userDecks = await api.deck.listMine();
+        if (!cancelled) {
+          setDecks(userDecks);
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Impossible de charger vos decks";
+        toast.error("Erreur", { description: message });
+      } finally {
+        if (!cancelled) {
+          setIsDecksLoading(false);
+        }
+      }
+    };
+
+    fetchDecks();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!room || !currentUser || sortedDecks.length === 0) {
+      return;
+    }
+
+    const activeDeckId =
+      room.owner.username === currentUser.username
+        ? room.ownerDeck?.id
+        : room.opponent?.username === currentUser.username
+          ? room.opponentDeck?.id
+          : undefined;
+
+    if (activeDeckId) {
+      setSelectedDeckId(String(activeDeckId));
+      return;
+    }
+
+    if (!selectedDeckId) {
+      setSelectedDeckId(String(sortedDecks[0].id));
+    }
+  }, [currentUser, room, selectedDeckId, sortedDecks]);
 
   useEffect(() => {
     if (!isContextLoading && !room) {
@@ -115,6 +188,28 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
     }
   };
 
+  const handleDeckChange = async (deckId: string) => {
+    if (!deckId || !room) {
+      return;
+    }
+
+    setSelectedDeckId(deckId);
+    setIsChangingDeck(true);
+    try {
+      await api.room.changeDeck(room.id, deckId);
+      await refetchRoom();
+      toast.success("Deck sélectionné");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors du changement de deck";
+      toast.error("Erreur", { description: message });
+    } finally {
+      setIsChangingDeck(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center flex-1">
       {isContextLoading ? (
@@ -179,11 +274,29 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
-                  {room?.owner.username}
+                  <span>{room?.owner.username}</span>
+                  {room?.owner.username === currentUser?.username ? (
+                    <DeckSelect
+                      decks={sortedDecks}
+                      value={selectedDeckId}
+                      onChange={handleDeckChange}
+                      isLoading={isDecksLoading}
+                      disabled={isChangingDeck}
+                    />
+                  ) : null}
                 </div>
                 {room?.opponent && (
                   <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
                     <span>{room.opponent.username}</span>
+                    {room.opponent.username === currentUser?.username ? (
+                      <DeckSelect
+                        decks={sortedDecks}
+                        value={selectedDeckId}
+                        onChange={handleDeckChange}
+                        isLoading={isDecksLoading}
+                        disabled={isChangingDeck}
+                      />
+                    ) : null}
                     {isOwner && (
                       <Button
                         onClick={handleRemoveOpponent}

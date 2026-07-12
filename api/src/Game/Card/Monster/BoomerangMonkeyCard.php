@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Game\Card\Monster;
 
+use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
 final class BoomerangMonkeyCard extends AbstractMonsterCard
 {
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
     private const HEALTH_POINTS = 10;

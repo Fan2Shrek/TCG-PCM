@@ -1,4 +1,5 @@
 import { BoosterResource } from "./resources/BoosterResource";
+import { DeckResource } from "./resources/DeckResource";
 import { GameResource } from "./resources/GameResource";
 import { RoomResource } from "./resources/RoomResource";
 import { UserResource } from "./resources/UserResource";
@@ -7,12 +8,14 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export class ApiClient {
   booster: BoosterResource;
+  deck: DeckResource;
   game: GameResource;
   user: UserResource;
   room: RoomResource;
 
   constructor(public baseUrl: string) {
     this.booster = new BoosterResource(this);
+    this.deck = new DeckResource(this);
     this.game = new GameResource(this);
     this.user = new UserResource(this);
     this.room = new RoomResource(this);
@@ -32,7 +35,10 @@ export class ApiClient {
         detail?: string;
       } | null;
 
-      throw new Error(errorBody?.detail || `API request failed with status ${response.status}`);
+      throw new Error(
+        errorBody?.detail ||
+          `API request failed with status ${response.status}`,
+      );
     }
 
     if (response.status === 204) {

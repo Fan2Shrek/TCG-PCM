@@ -15,4 +15,14 @@ export type Room = {
   } | null;
   winnerId?: string | null;
   isPrivate: boolean;
+  ownerDeck?: {
+    id: number;
+    name: string;
+    isFavorite?: boolean | null;
+  } | null;
+  opponentDeck?: {
+    id: number;
+    name: string;
+    isFavorite?: boolean | null;
+  } | null;
 };
