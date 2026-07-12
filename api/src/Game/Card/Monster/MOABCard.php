@@ -12,7 +12,7 @@ final class MOABCard extends AbstractMonsterCard
     public static CardRarityEnum $rarity = CardRarityEnum::RARE;
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const HEALTH_POINTS = 50;
+    private const HEALTH_POINTS = 100;
     private const ATTACK = 5;
 
     public function getId(): string

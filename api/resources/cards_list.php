@@ -39,7 +39,6 @@ return [
 	'SuperMonkey' => Card\Monster\SuperMonkeyCard::class,
 	'ViciousBee' => Card\Monster\ViciousBeeCard::class,
 	'PierreSaidNoMonsterZone' => Card\PierreSaidNoMonsterZone::class,
-	'Pillules' => Card\PillsCard::class,
 	'Pills' => Card\PillsCard::class,
 	'Horsepill' => Card\HorsepillCard::class,
 	'Placenta' => Card\PlacentaCard::class,

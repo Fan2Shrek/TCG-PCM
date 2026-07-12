@@ -44,6 +44,19 @@ final class TraceableMonsterCard extends AbstractMonsterCard
         $this->card->onMonsterDeath($context);
     }
 
+    public function onAttack(GameContext $context): void
+    {
+        $this->methodCalled[] = __METHOD__;
+        $this->card->onAttack($context);
+    }
+
+    public function reduceDamage(GameContext $context, int $damage): int
+    {
+        $this->methodCalled[] = __METHOD__;
+
+        return $this->card->reduceDamage($context, $damage);
+    }
+
     public function canAttack(): bool
     {
         $this->methodCalled[] = __METHOD__;
