@@ -56,7 +56,8 @@ abstract class FunctionalTestCase extends ApiTestCase
 
     protected function createUser(?string $username = null, ?string $password = null, bool $withSubEntities = false): User
     {
-        $user = new User($username ?? 'test');
+        $username ??= 'test';
+        $user = new User($username, $username.'@test.local');
         $user->setPassword(
             self::getContainer()
                 ->get('security.password_hasher')

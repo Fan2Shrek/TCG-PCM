@@ -5,6 +5,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use App\Service\BadgeManager;
 use App\Service\PublishEventMiddleware;
 use App\Service\Redis\RedisConnection;
+use App\Service\User\PasswordResetMailer;
 use App\Tests\Resources\DoctrineCollector;
 use App\Utils\KillSwitch;
 
@@ -40,6 +41,12 @@ return App::config([
         RedisConnection::class => [
             'arguments' => [
                 '$redisDsn' => '%env(REDIS_DSN)%',
+            ],
+        ],
+        PasswordResetMailer::class => [
+            'arguments' => [
+                '$resetPasswordFrontUrl' => '%env(RESET_PASSWORD_FRONT_URL)%',
+                '$mailerFrom' => '%env(MAILER_FROM)%',
             ],
         ],
         PublishEventMiddleware::class => [
