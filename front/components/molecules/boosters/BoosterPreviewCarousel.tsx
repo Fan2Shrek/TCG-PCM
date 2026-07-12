@@ -40,15 +40,34 @@ export default function BoosterPreviewCarousel({
     );
   }, [previewCards]);
 
-  useEffect(() => {
-    if (
-      !isVisible ||
-      isLoading ||
-      !shouldRenderCards ||
-      previewCards.length === 0
-    ) {
+  const isEligibleToAnimate =
+    isVisible && !isLoading && shouldRenderCards && previewCards.length > 0;
+  const [prevEligibleToAnimate, setPrevEligibleToAnimate] = useState(isEligibleToAnimate);
+  const isEligibleToProgressRender =
+    isEligibleToAnimate && isMarqueeReady && activeVisibleCards.length > 0;
+  const [prevEligibleToProgressRender, setPrevEligibleToProgressRender] = useState(
+    isEligibleToProgressRender,
+  );
+
+  // Resets the animation state when the carousel is no longer eligible to animate,
+  // computed during render (see "Adjusting state in render" in the React docs).
+  if (isEligibleToAnimate !== prevEligibleToAnimate) {
+    setPrevEligibleToAnimate(isEligibleToAnimate);
+    if (!isEligibleToAnimate) {
       setIsMarqueeReady(false);
       setRenderedCardCount(0);
+    }
+  }
+
+  if (isEligibleToProgressRender !== prevEligibleToProgressRender) {
+    setPrevEligibleToProgressRender(isEligibleToProgressRender);
+    if (!isEligibleToProgressRender) {
+      setRenderedCardCount(0);
+    }
+  }
+
+  useEffect(() => {
+    if (!isEligibleToAnimate) {
       return;
     }
 
@@ -65,17 +84,10 @@ export default function BoosterPreviewCarousel({
       window.cancelAnimationFrame(frameId1);
       window.cancelAnimationFrame(frameId2);
     };
-  }, [isLoading, isVisible, previewCards.length, shouldRenderCards]);
+  }, [isEligibleToAnimate]);
 
   useEffect(() => {
-    if (
-      !isVisible ||
-      isLoading ||
-      !shouldRenderCards ||
-      !isMarqueeReady ||
-      activeVisibleCards.length === 0
-    ) {
-      setRenderedCardCount(0);
+    if (!isEligibleToProgressRender) {
       return;
     }
 
@@ -100,13 +112,7 @@ export default function BoosterPreviewCarousel({
     return () => {
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [
-    activeVisibleCards.length,
-    isLoading,
-    isMarqueeReady,
-    isVisible,
-    shouldRenderCards,
-  ]);
+  }, [activeVisibleCards.length, isEligibleToProgressRender]);
 
   const cardsToRender = activeVisibleCards.slice(0, renderedCardCount);
   const shouldShowPanelSpinner =

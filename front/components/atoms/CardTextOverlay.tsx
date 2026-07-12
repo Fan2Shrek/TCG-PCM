@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useState } from "react";
 import useFitText from "use-fit-text";
 import { CardRaririty, CardType } from "@/constants/card";
 import { convertDescriptions } from "@/lib/game/cardUtils";
@@ -71,14 +71,9 @@ const CardTextOverlay = ({
   const [isTitleReady, setIsTitleReady] = useState(false);
   const [isStatsReady, setIsStatsReady] = useState(!shouldShowStats);
   const [isDescriptionReady, setIsDescriptionReady] = useState(false);
-  const hasNotifiedReadyRef = useRef(false);
+  const [hasNotifiedReady, setHasNotifiedReady] = useState(false);
 
-  useEffect(() => {
-    hasNotifiedReadyRef.current = false;
-    setIsTitleReady(cardTitle.trim().length === 0);
-    setIsStatsReady(!shouldShowStats);
-    setIsDescriptionReady(cardDescription.trim().length === 0);
-  }, [
+  const contentKey = [
     readinessKey,
     cardDescription,
     cardTitle,
@@ -87,18 +82,32 @@ const CardTextOverlay = ({
     cardStats.attack,
     cardStats.cost,
     cardStats.hp,
-  ]);
+  ].join("|");
+  const [prevContentKey, setPrevContentKey] = useState(contentKey);
+
+  // Resets readiness so the DOM measurement callbacks below can recompute it for the
+  // new content, computed during render (see "Adjusting state in render" in the React docs).
+  if (contentKey !== prevContentKey) {
+    setPrevContentKey(contentKey);
+    setHasNotifiedReady(false);
+    setIsTitleReady(cardTitle.trim().length === 0);
+    setIsStatsReady(!shouldShowStats);
+    setIsDescriptionReady(cardDescription.trim().length === 0);
+  }
+
+  const isLayoutReady = isTitleReady && isStatsReady && isDescriptionReady;
+
+  // Latches once all zones are ready, computed during render
+  // (see "Adjusting state in render" in the React docs).
+  if (isLayoutReady && !hasNotifiedReady) {
+    setHasNotifiedReady(true);
+  }
 
   useEffect(() => {
-    if (!onLayoutReady || hasNotifiedReadyRef.current) {
-      return;
+    if (hasNotifiedReady) {
+      onLayoutReady?.();
     }
-
-    if (isTitleReady && isStatsReady && isDescriptionReady) {
-      hasNotifiedReadyRef.current = true;
-      onLayoutReady();
-    }
-  }, [isDescriptionReady, isStatsReady, isTitleReady, onLayoutReady]);
+  }, [hasNotifiedReady, onLayoutReady]);
 
   const handleTitleFitFinished = useCallback(() => {
     setIsTitleReady(true);

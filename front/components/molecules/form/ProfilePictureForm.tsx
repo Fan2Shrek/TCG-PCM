@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default ({ username, profilePicturePath }: ProfilePictureFormProps) => {
+export default function ProfilePictureForm({ username, profilePicturePath }: ProfilePictureFormProps) {
   const [state, formAction] = useActionState(updateProfilePictureAction, initialState);
   const [preview, setPreview] = useState<string | null>(null);
 

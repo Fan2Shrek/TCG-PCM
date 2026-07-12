@@ -58,7 +58,7 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: "GET" });
   }
 
-  async post<T>(endpoint: string, body: any = {}): Promise<T> {
+  async post<T>(endpoint: string, body: unknown = {}): Promise<T> {
     return this.request<T>(endpoint, {
       method: "POST",
       body: JSON.stringify(body),
@@ -67,7 +67,7 @@ export class ApiClient {
 
   async patch<T>(
     endpoint: string,
-    body: any = {},
+    body: unknown = {},
     headers?: HeadersInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {

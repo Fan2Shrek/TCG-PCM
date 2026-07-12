@@ -6,7 +6,7 @@ type PendingBoostersListProps = {
   className?: string;
 };
 
-export default ({ pendingBoosters, className }: PendingBoostersListProps) => {
+export default function PendingBoostersList({ pendingBoosters, className }: PendingBoostersListProps) {
   const maxBoosters: number = 5;
   const emptySlots = maxBoosters - pendingBoosters;
 

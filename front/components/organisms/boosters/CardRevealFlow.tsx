@@ -47,6 +47,24 @@ export default function CardRevealFlow({
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
 
   const currentCard = cards[currentCardIndex];
+  const eligibleConfettiPieces = currentCard
+    ? (CONFETTI_PIECES_BY_RARITY[currentCard.rarity] ?? 0)
+    : 0;
+  const isConfettiEligible =
+    phase === BoosterOpeningPhase.REVEAL_SINGLE &&
+    !!currentCard &&
+    eligibleConfettiPieces > 0;
+  const [prevConfettiEligible, setPrevConfettiEligible] = useState(isConfettiEligible);
+
+  // Clears the confetti burst once the reveal phase moves on, computed during
+  // render (see "Adjusting state in render" in the React docs).
+  if (isConfettiEligible !== prevConfettiEligible) {
+    setPrevConfettiEligible(isConfettiEligible);
+    if (!isConfettiEligible) {
+      setShowConfetti(false);
+      setConfettiPieces(0);
+    }
+  }
 
   useEffect(() => {
     const updateViewportSize = () => {
@@ -59,21 +77,12 @@ export default function CardRevealFlow({
   }, []);
 
   useEffect(() => {
-    if (phase !== BoosterOpeningPhase.REVEAL_SINGLE || !currentCard) {
-      setShowConfetti(false);
-      setConfettiPieces(0);
+    if (!isConfettiEligible) {
       return;
     }
 
-    const pieces = CONFETTI_PIECES_BY_RARITY[currentCard.rarity] ?? 0;
-
-    if (pieces === 0) {
-      setShowConfetti(false);
-      setConfettiPieces(0);
-      return;
-    }
-
-    setConfettiPieces(pieces);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- starts a timed burst (with the setTimeout cleanup below), not a render-derivable reset
+    setConfettiPieces(eligibleConfettiPieces);
     setShowConfetti(true);
     const timer = window.setTimeout(() => {
       setShowConfetti(false);
@@ -81,7 +90,7 @@ export default function CardRevealFlow({
     }, CONFETTI_BURST_DURATION_MS);
 
     return () => window.clearTimeout(timer);
-  }, [currentCard, phase]);
+  }, [eligibleConfettiPieces, isConfettiEligible]);
 
   const isSingleRevealVisible = phase === BoosterOpeningPhase.REVEAL_SINGLE;
   const isAllCardsVisible =

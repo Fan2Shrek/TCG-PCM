@@ -114,15 +114,26 @@ export function BoosterTokensProvider({
     setTokens((prev) => Math.max(0, prev - 1));
   }, []);
 
-  useEffect(() => {
+  const [prevEnabled, setPrevEnabled] = useState(enabled);
+
+  // Resets token state when disabled, computed during render
+  // (see "Adjusting state in render" in the React docs).
+  if (enabled !== prevEnabled) {
+    setPrevEnabled(enabled);
     if (!enabled) {
       setTokens(0);
       setLastBoosterTokenClaimedAt(null);
       setIsLoading(false);
       setError(null);
+    }
+  }
+
+  useEffect(() => {
+    if (!enabled) {
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- refresh() awaits a network call before setIsLoading resolves, it isn't synchronous
     refresh().finally(() => {
       setIsLoading(false);
     });

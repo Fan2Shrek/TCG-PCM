@@ -7,14 +7,14 @@ type ProgressBarProps = {
   hasMaxTokens?: boolean;
 };
 
-export default ({
+export default function ProgressBar({
   progress,
   className,
   text,
   startColor = [100, 0, 35],
   endColor = [164, 3, 83],
   hasMaxTokens = false,
-}: ProgressBarProps) => {
+}: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(100, progress));
 
   const progressRatio = clamped / 100;

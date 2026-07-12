@@ -98,7 +98,8 @@ export default function SelectableBooster({
 
   useEffect(() => {
     if (!shouldUseBoosterPortal) {
-      setPortalRect(null);
+      // Stale portalRect is inert while shouldUseBoosterPortal is false: isPortalMounted
+      // and the portal render below both already gate on shouldUseBoosterPortal.
       return;
     }
 

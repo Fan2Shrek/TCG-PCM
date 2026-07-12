@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default () => {
+export default function ForgotPasswordForm() {
   const [state, formAction] = useActionState(forgotPasswordAction, initialState);
 
   return (

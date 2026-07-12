@@ -12,7 +12,7 @@ type PendingBoostersProps = {
   className?: string;
 };
 
-export default ({ className }: PendingBoostersProps) => {
+export default function PendingBoosters({ className }: PendingBoostersProps) {
   const { tokens, maxTokens, minutesTilNextToken, progressToNextToken } =
     useBoosterTokensContext();
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);

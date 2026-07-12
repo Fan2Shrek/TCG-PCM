@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 
-export default ( url: string, callbacks: Record<string, Function>) => {
+export default function useMercure(
+  url: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callbacks: Record<string, (event: any) => void>,
+) {
     useEffect(() => {
         const eventSource = new EventSource(url, {withCredentials: true});
         eventSource.onmessage = (message) => {
