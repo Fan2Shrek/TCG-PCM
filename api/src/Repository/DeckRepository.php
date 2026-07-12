@@ -22,18 +22,22 @@ class DeckRepository extends ServiceEntityRepository
      */
     public function findActiveByUser(User $user): array
     {
-        return $this->createQueryBuilder('d')
+        /** @var Deck[] $result */
+        $result = $this->createQueryBuilder('d')
             ->where('d.user = :user')
             ->andWhere('d.isDeleted = false')
             ->setParameter('user', $user)
             ->orderBy('d.id', 'ASC')
             ->getQuery()
             ->getResult();
+
+        return $result;
     }
 
     public function findFirstActiveByUser(User $user): ?Deck
     {
-        return $this->createQueryBuilder('d')
+        /** @var Deck|null $result */
+        $result = $this->createQueryBuilder('d')
             ->where('d.user = :user')
             ->andWhere('d.isDeleted = false')
             ->setParameter('user', $user)
@@ -41,6 +45,8 @@ class DeckRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+
+        return $result;
     }
 
     public function countActiveByUser(User $user): int

@@ -32,10 +32,15 @@ class BoosterGenerator
         $boosterType ??= 'default';
         $boosterClass = $this->boosterRegistry->getBoosterType($boosterType);
 
-        if (!is_subclass_of($boosterClass, BoosterInterface::class, true) || !class_exists($boosterClass)) {
+        if (
+            !class_exists($boosterClass)
+            || interface_exists($boosterClass)
+            || !is_subclass_of($boosterClass, BoosterInterface::class, true)
+        ) {
             throw new \InvalidArgumentException(\sprintf('Booster type "%s" must implement BoosterInterface.', $boosterType));
         }
 
+        /** @var BoosterInterface $booster */
         $booster = new $boosterClass();
         $boosterCards = [];
 
