@@ -10,7 +10,7 @@ final class ViciousBeeCard extends AbstractMonsterCard
     public static CardRarityEnum $rarity = CardRarityEnum::RARE;
 
     private const HEALTH_POINTS = 10;
-    private const ATTACK = 5;
+    private const ATTACK = 10;
 
     public function getId(): string
     {

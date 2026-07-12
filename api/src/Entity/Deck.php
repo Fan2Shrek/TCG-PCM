@@ -3,10 +3,22 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Api\DTO\CreateDeckInput;
+use App\Api\Processor\CreateDeckProcessor;
+use App\Api\Provider\UserDecksProvider;
 use App\Repository\DeckRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource]
+#[ApiResource(operations: [
+    new Post(uriTemplate: '/decks', input: CreateDeckInput::class, processor: CreateDeckProcessor::class, status: 201),
+    new GetCollection(uriTemplate: '/decks', provider: UserDecksProvider::class),
+    new Get(uriTemplate: '/decks/{id}', security: 'object.getUser() == user'),
+    new Patch(uriTemplate: '/decks/{id}', security: 'object.getUser() == user'),
+])]
 #[ORM\Entity(repositoryClass: DeckRepository::class)]
 class Deck
 {
@@ -97,15 +109,20 @@ class Deck
         return $this;
     }
 
-    public function isFavorite(): ?bool
+    public function getIsFavorite(): ?bool
     {
         return $this->isFavorite;
     }
 
-    public function setIsFavorite(bool $isFavorite): static
+    public function setFavorite(bool $isFavorite): static
     {
         $this->isFavorite = $isFavorite;
 
         return $this;
+    }
+
+    public function setIsFavorite(bool $isFavorite): static
+    {
+        return $this->setFavorite($isFavorite);
     }
 }

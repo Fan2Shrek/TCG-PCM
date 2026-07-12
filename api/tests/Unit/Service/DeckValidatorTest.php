@@ -277,7 +277,9 @@ final class DeckValidatorTest extends TestCase
 
         $this->cardRegistry->method('has')->willReturnCallback(static fn($card) => \in_array($card, $allCards, true));
 
-        $this->cardRegistry->method('getCardTemplateById')->willReturn(new DummyCard());
+        $this->cardRegistry
+            ->method('getCardTemplateById')
+            ->willReturnCallback(static fn(string $cardId) => $cardId === $characterCard ? new CharacterDummyCard() : new DummyCard());
     }
 
     private function setupCardRegistryWithRarities(array $cardRarityMap): void
@@ -287,6 +289,10 @@ final class DeckValidatorTest extends TestCase
         $this->cardRegistry
             ->method('getCardTemplateById')
             ->willReturnCallback(static function ($cardId) use ($cardRarityMap) {
+                if ('character-card' === $cardId) {
+                    return new CharacterDummyCard();
+                }
+
                 $rarity = $cardRarityMap[$cardId] ?? CardRarityEnum::COMMON;
 
                 return CardRarityEnum::LEGENDARY === $rarity ? new LegendaryCard() : new DummyCard();
@@ -311,4 +317,17 @@ final class DeckValidatorTest extends TestCase
 class LegendaryCard extends DummyCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
+}
+
+class CharacterDummyCard extends \App\Game\Card\Character\AbstractCharacterCard
+{
+    public function getId(): string
+    {
+        return 'character-card';
+    }
+
+    public function getHealthPoints(): int
+    {
+        return 20;
+    }
 }

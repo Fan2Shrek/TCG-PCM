@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Domain\Exception\InvalidDeckException;
 use App\Entity\Deck;
 use App\Enum\CardRarityEnum;
+use App\Enum\CardTypeEnum;
 use App\Service\Game\CardRegistryInterface;
 
 final class DeckValidator
@@ -20,6 +21,30 @@ final class DeckValidator
         CardRarityEnum::EPIC->value => 5,
         CardRarityEnum::LEGENDARY->value => 3,
     ];
+
+    public function getDeckSize(): int
+    {
+        return self::DECK_SIZE;
+    }
+
+    public function getMaxCardCopies(): int
+    {
+        return self::MAX_CARD_COPIES;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function getRarityLimitsForApi(): array
+    {
+        return [
+            CardRarityEnum::COMMON->name => self::DECK_SIZE,
+            CardRarityEnum::UNCOMMON->name => self::RARITY_LIMITS[CardRarityEnum::UNCOMMON->value],
+            CardRarityEnum::RARE->name => self::RARITY_LIMITS[CardRarityEnum::RARE->value],
+            CardRarityEnum::EPIC->name => self::RARITY_LIMITS[CardRarityEnum::EPIC->value],
+            CardRarityEnum::LEGENDARY->name => self::RARITY_LIMITS[CardRarityEnum::LEGENDARY->value],
+        ];
+    }
 
     public function __construct(
         private CardRegistryInterface $cardRegistry,
@@ -46,11 +71,20 @@ final class DeckValidator
             throw new InvalidDeckException(\sprintf('Character card "%s" does not exist', $deck->getCharacterCard()));
         }
 
+        $characterTemplate = $this->cardRegistry->getCardTemplateById($deck->getCharacterCard());
+        if (CardTypeEnum::CHARACTER !== $characterTemplate->getType()) {
+            throw new InvalidDeckException(\sprintf('Card "%s" is not a valid character card', $deck->getCharacterCard()));
+        }
+
         foreach ($allCards as $card) {
             if (!$this->cardRegistry->has($card)) {
                 throw new InvalidDeckException(\sprintf('Card "%s" does not exist', $card));
             }
             $template = $this->cardRegistry->getCardTemplateById($card);
+
+            if (CardTypeEnum::CHARACTER === $template->getType()) {
+                throw new InvalidDeckException(\sprintf('Card "%s" cannot be added to deck cards', $card));
+            }
 
             if (!($cardsMap[$card] ?? null)) {
                 $cardsMap[$card] = 0;

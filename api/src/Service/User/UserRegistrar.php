@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\User;
 
+use App\Entity\Inventory\CardInventory;
 use App\Entity\Inventory\Inventory;
 use App\Entity\User;
 use App\Entity\UserInfo;
@@ -42,9 +43,17 @@ final class UserRegistrar
         $this->em->persist($user);
         $this->em->flush();
 
+        $inventory = new Inventory($user);
+        $starterMonkeyCard = (new CardInventory($inventory, 'DartMonkey'))->setQuantity(25);
+        $starterBloonCard = (new CardInventory($inventory, 'Redbloons'))->setQuantity(25);
+        $inventory->addCard($starterMonkeyCard);
+        $inventory->addCard($starterBloonCard);
+
         $this->em->persist(new UserWallet($user));
         $this->em->persist(new UserInfo($user));
-        $this->em->persist(new Inventory($user));
+        $this->em->persist($inventory);
+        $this->em->persist($starterMonkeyCard);
+        $this->em->persist($starterBloonCard);
         $this->em->flush();
 
         return $user;
