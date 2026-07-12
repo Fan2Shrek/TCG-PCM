@@ -36,6 +36,7 @@ return [
 	'LeadBloon' => Card\Monster\LeadBloonCard::class,
 	'Zeppelin' => Card\Monster\ZeppelinCard::class,
 	'AlchemistMonkey' => Card\Monster\AlchemistMonkeyCard::class,
+	'MechaPainter' => Card\Monster\MechaPainterCard::class,
 	'DartMonkey' => Card\Monster\DartMonkeyCard::class,
 	'BoomerangMonkey' => Card\Monster\BoomerangMonkeyCard::class,
 	'SuperMonkey' => Card\Monster\SuperMonkeyCard::class,

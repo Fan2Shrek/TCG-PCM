@@ -62,6 +62,10 @@ return [
             'name' => 'Singe Alchimiste',
             'description' => 'A la fin de chaque tour, donne aleatoirement +{{value}} attaque a un autre monstre allié.',
         ],
+        'MechaPainter' => [
+            'name' => 'Mecha-Peintre',
+            'description' => 'Reduit les degats recus de {{value}}. A la fin de chaque tour, inflige aleatoirement {{value2}} degats a une carte alliee.',
+        ],
         'DartMonkey' => [
             'name' => 'Singe',
             'description' => 'Un potit singe.',

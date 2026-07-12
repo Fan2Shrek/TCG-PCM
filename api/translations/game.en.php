@@ -62,6 +62,10 @@ return [
             'name' => 'Alchemist Monkey',
             'description' => 'At the end of each turn, randomly gives +{{value}} attack to another allied monster.',
         ],
+        'MechaPainter' => [
+            'name' => 'Mecha Painter',
+            'description' => 'Reduces incoming damage by {{value}}. At the end of each turn, randomly deals {{value2}} damage to an allied card.',
+        ],
         'DartMonkey' => [
             'name' => 'Dart Monkey',
             'description' => 'A cute monkey.',

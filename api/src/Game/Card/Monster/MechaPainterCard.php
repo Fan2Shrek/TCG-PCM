@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Game\Card\Monster;
+
+use App\Enum\CardRarityEnum;
+use App\Enum\GameEventTypeEnum;
+use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Trait\TurnAwareTrait;
+use App\Game\GameContext;
+use App\Game\GameUtils;
+
+final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInterface
+{
+    use TurnAwareTrait;
+
+    public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
+
+    private const HEALTH_POINTS = 45;
+    private const ATTACK = 39;
+    private const DAMAGE_REDUCTION = 10;
+    private const SELF_TEAM_DAMAGE = 20;
+
+    public function getId(): string
+    {
+        return 'MechaPainter';
+    }
+
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value' => $this->getValue(self::DAMAGE_REDUCTION, true),
+            'value2' => $this->getValue(self::SELF_TEAM_DAMAGE, true),
+        ]);
+    }
+
+    public function getBaseAttack(): int
+    {
+        return self::ATTACK;
+    }
+
+    public function getHealPoints(): int
+    {
+        return self::HEALTH_POINTS;
+    }
+
+    public function reduceDamage(GameContext $context, int $damage): int
+    {
+        return max(0, $damage - self::DAMAGE_REDUCTION);
+    }
+
+    public function onTurnEnd(GameContext $gameContext): void
+    {
+        $ownerId = $this->getOwnerId();
+
+        if (null === $ownerId) {
+            return;
+        }
+
+        $ownerState = $gameContext->getPlayerStateById($ownerId);
+        $pool = [...$ownerState->playArea->getAll(), $ownerState->characterCardId];
+
+        if ([] === $pool) {
+            return;
+        }
+
+        $targetId = $gameContext->selectRandomCardIn($pool);
+
+        $gameContext->pushGameEvent(GameEventTypeEnum::DAMAGE, [
+            'targetId' => $targetId,
+            'damage' => $this->getValue(self::SELF_TEAM_DAMAGE, true),
+        ]);
+    }
+}
