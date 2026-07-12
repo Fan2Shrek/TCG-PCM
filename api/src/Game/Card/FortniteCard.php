@@ -74,9 +74,6 @@ final class FortniteCard extends AbstractPlayableCard
      */
     private function getAllActivePlayAreaCards(GameContext $context): array
     {
-        return array_merge(
-            $context->state->player1->playArea->getAll(),
-            $context->state->player2->playArea->getAll(),
-        );
+        return array_merge($context->state->player1->playArea->getAll(), $context->state->player2->playArea->getAll());
     }
 }

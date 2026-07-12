@@ -42,9 +42,7 @@ final class TheLostCard extends AbstractMonsterCard
 
         if ($state instanceof MonsterCardState) {
             $hasDodgedValue = $state->values['hasDodged'] ?? false;
-            $this->hasDodged = \is_bool($hasDodgedValue)
-                ? $hasDodgedValue
-                : \filter_var($hasDodgedValue, \FILTER_VALIDATE_BOOL);
+            $this->hasDodged = \is_bool($hasDodgedValue) ? $hasDodgedValue : \filter_var($hasDodgedValue, \FILTER_VALIDATE_BOOL);
         }
     }
 

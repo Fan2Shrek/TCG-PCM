@@ -36,10 +36,7 @@ final class ChaosCard extends AbstractPlayableCard
 
     public function play(GameContext $context, array $data = []): void
     {
-        $cardsInPlay = array_merge(
-            $context->state->player1->playArea->getAll(),
-            $context->state->player2->playArea->getAll(),
-        );
+        $cardsInPlay = array_merge($context->state->player1->playArea->getAll(), $context->state->player2->playArea->getAll());
 
         if ([] === $cardsInPlay) {
             return;
