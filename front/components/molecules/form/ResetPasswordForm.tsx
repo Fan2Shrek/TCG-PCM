@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { registerAction, type AuthActionState } from "@/lib/actions/auth";
+import { resetPasswordAction, type AuthActionState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,25 +20,25 @@ function SubmitButton() {
 
   return (
     <Button type="submit" className="rounded-full" disabled={pending}>
-      {pending ? "Inscription..." : "S'inscrire"}
+      {pending ? "Réinitialisation..." : "Réinitialiser le mot de passe"}
     </Button>
   );
 }
 
-export default () => {
-  const [state, formAction] = useActionState(registerAction, initialState);
+export default ({ token }: { token: string }) => {
+  const [state, formAction] = useActionState(resetPasswordAction, initialState);
   const [clientError, setClientError] = useState<string | null>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
-    const password = String(formData.get("password") || "");
+    const newPassword = String(formData.get("newPassword") || "");
     const confirmPassword = String(formData.get("confirmPassword") || "");
 
     if (
-      password.length < 12 ||
-      !/[a-zA-Z]/.test(password) ||
-      !/[0-9]/.test(password) ||
-      !/[^a-zA-Z0-9]/.test(password)
+      newPassword.length < 12 ||
+      !/[a-zA-Z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[^a-zA-Z0-9]/.test(newPassword)
     ) {
       event.preventDefault();
       setClientError(
@@ -47,7 +47,7 @@ export default () => {
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       event.preventDefault();
       setClientError("Les mots de passe ne correspondent pas.");
       return;
@@ -56,6 +56,19 @@ export default () => {
     setClientError(null);
   };
 
+  if (!token) {
+    return (
+      <p className="text-sm text-center">
+        Ce lien de réinitialisation est invalide. Redemande un lien depuis la
+        page{" "}
+        <a href="/forgot-password" className="text-primary hover:underline">
+          mot de passe oublié
+        </a>
+        .
+      </p>
+    );
+  }
+
   return (
     <form
       action={formAction}
@@ -63,21 +76,13 @@ export default () => {
       className="w-full max-w-sm"
     >
       <FieldGroup>
-        <Field>
-          <FieldLabel htmlFor="username">Username</FieldLabel>
-          <Input id="username" name="username" minLength={3} required />
-        </Field>
+        <input type="hidden" name="token" value={token} />
 
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" name="email" type="email" required />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
+          <FieldLabel htmlFor="newPassword">Nouveau mot de passe</FieldLabel>
           <Input
-            id="password"
-            name="password"
+            id="newPassword"
+            name="newPassword"
             type="password"
             minLength={12}
             required
@@ -104,13 +109,6 @@ export default () => {
         <Field>
           <SubmitButton />
         </Field>
-
-        <p className="text-sm text-center">
-          Déjà un compte ?{" "}
-          <a href="/login" className="text-primary hover:underline">
-            Connecte-toi
-          </a>
-        </p>
       </FieldGroup>
     </form>
   );

@@ -29,23 +29,30 @@ final class UserRegistrar
         private UserPasswordHasherInterface $passwordHasher,
         private UserRepository $userRepository,
         private CardRegistryInterface $cardRegistry,
+        private PasswordPolicy $passwordPolicy,
     ) {}
 
-    public function register(string $username, #[\SensitiveParameter] string $password): User
+    public function register(string $username, string $email, #[\SensitiveParameter] string $password): User
     {
         if (mb_strlen($username) < 3) {
             throw HttpException::fromStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY, 'Username must be at least 3 characters.');
         }
 
-        if (mb_strlen($password) < 6) {
-            throw HttpException::fromStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY, 'Password must be at least 6 characters.');
+        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            throw HttpException::fromStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY, 'Email must be valid.');
         }
+
+        $this->passwordPolicy->assertValid($password);
 
         if (null !== $this->userRepository->findOneBy(['username' => $username])) {
             throw HttpException::fromStatusCode(Response::HTTP_CONFLICT, 'Username already taken.');
         }
 
-        $user = new User($username);
+        if (null !== $this->userRepository->findOneBy(['email' => $email])) {
+            throw HttpException::fromStatusCode(Response::HTTP_CONFLICT, 'Email already taken.');
+        }
+
+        $user = new User($username, $email);
         $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 
         $this->em->persist($user);

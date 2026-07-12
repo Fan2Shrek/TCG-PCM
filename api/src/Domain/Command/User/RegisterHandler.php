@@ -16,6 +16,6 @@ final class RegisterHandler
 
     public function __invoke(RegisterCommand $command): void
     {
-        $this->userRegistrar->register($command->username, $command->password);
+        $this->userRegistrar->register($command->username, $command->email, $command->password);
     }
 }

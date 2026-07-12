@@ -7,8 +7,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Api\Processor\SetProfilePictureProcessor;
 use App\Api\Provider\UserProvider;
+use App\Domain\Command\User\ChangePasswordCommand;
 use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Domain\Command\User\RegisterCommand;
+use App\Domain\Command\User\RequestPasswordResetCommand;
+use App\Domain\Command\User\ResetPasswordCommand;
 use App\Domain\Command\User\SetProfilePictureCommand;
 use App\Entity\Inventory\Inventory;
 use App\Repository\UserRepository;
@@ -21,6 +24,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource(operations: [
     new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
     new Post(uriTemplate: '/user/generate_booster_tokens', messenger: 'input', input: GenerateBoosterTokensCommand::class, status: 200),
@@ -33,7 +37,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
         status: 200,
     ),
     new Post(uriTemplate: '/register', messenger: 'input', input: RegisterCommand::class, status: 201),
+    new Post(uriTemplate: '/forgot-password', messenger: 'input', input: RequestPasswordResetCommand::class, status: 200),
+    new Post(uriTemplate: '/reset-password', messenger: 'input', input: ResetPasswordCommand::class, status: 200),
+    new Post(uriTemplate: '/change-password', messenger: 'input', input: ChangePasswordCommand::class, status: 200),
 ])]
+// @mago-ignore lint:too-many-properties
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -43,6 +51,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     private string $username;
+
+    #[ORM\Column(length: 180)]
+    private string $email;
+
+    #[ORM\Column]
+    private \DateTimeImmutable $passwordChangedAt;
 
     /**
      * @var list<string> The user roles
@@ -80,9 +94,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Inventory $inventory;
 
-    public function __construct(string $username)
+    public function __construct(string $username, string $email = '')
     {
         $this->username = $username;
+        $this->email = $email;
+        $this->passwordChangedAt = new \DateTimeImmutable();
         $this->userBadges = new ArrayCollection();
         $this->decks = new ArrayCollection();
     }
@@ -137,8 +153,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(#[\SensitiveParameter] string $password): static
     {
         $this->password = $password;
+        $this->passwordChangedAt = new \DateTimeImmutable();
 
         return $this;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPasswordChangedAt(): \DateTimeImmutable
+    {
+        return $this->passwordChangedAt;
     }
 
     /**

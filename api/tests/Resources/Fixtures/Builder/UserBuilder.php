@@ -63,7 +63,7 @@ final class UserBuilder extends AbstractBuilder
         }
         self::$usedIds[] = $id;
 
-        $this->entity = new User($id);
+        $this->entity = new User($id, $id.'@test.local');
         $this->entity->setPassword('password');
     }
 }

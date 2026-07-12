@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { registerAction, type AuthActionState } from "@/lib/actions/auth";
+import { changePasswordAction, type AuthActionState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,25 +20,25 @@ function SubmitButton() {
 
   return (
     <Button type="submit" className="rounded-full" disabled={pending}>
-      {pending ? "Inscription..." : "S'inscrire"}
+      {pending ? "Mise à jour..." : "Mettre à jour le mot de passe"}
     </Button>
   );
 }
 
-export default () => {
-  const [state, formAction] = useActionState(registerAction, initialState);
+export default ({ forced }: { forced: boolean }) => {
+  const [state, formAction] = useActionState(changePasswordAction, initialState);
   const [clientError, setClientError] = useState<string | null>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
-    const password = String(formData.get("password") || "");
+    const newPassword = String(formData.get("newPassword") || "");
     const confirmPassword = String(formData.get("confirmPassword") || "");
 
     if (
-      password.length < 12 ||
-      !/[a-zA-Z]/.test(password) ||
-      !/[0-9]/.test(password) ||
-      !/[^a-zA-Z0-9]/.test(password)
+      newPassword.length < 12 ||
+      !/[a-zA-Z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[^a-zA-Z0-9]/.test(newPassword)
     ) {
       event.preventDefault();
       setClientError(
@@ -47,7 +47,7 @@ export default () => {
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       event.preventDefault();
       setClientError("Les mots de passe ne correspondent pas.");
       return;
@@ -63,21 +63,30 @@ export default () => {
       className="w-full max-w-sm"
     >
       <FieldGroup>
-        <Field>
-          <FieldLabel htmlFor="username">Username</FieldLabel>
-          <Input id="username" name="username" minLength={3} required />
-        </Field>
+        {forced && (
+          <p className="text-sm text-center text-muted-foreground">
+            Votre mot de passe a plus de 60 jours, vous devez le renouveler
+            pour continuer.
+          </p>
+        )}
 
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" name="email" type="email" required />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
+          <FieldLabel htmlFor="currentPassword">
+            Mot de passe actuel
+          </FieldLabel>
           <Input
-            id="password"
-            name="password"
+            id="currentPassword"
+            name="currentPassword"
+            type="password"
+            required
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="newPassword">Nouveau mot de passe</FieldLabel>
+          <Input
+            id="newPassword"
+            name="newPassword"
             type="password"
             minLength={12}
             required
@@ -104,13 +113,6 @@ export default () => {
         <Field>
           <SubmitButton />
         </Field>
-
-        <p className="text-sm text-center">
-          Déjà un compte ?{" "}
-          <a href="/login" className="text-primary hover:underline">
-            Connecte-toi
-          </a>
-        </p>
       </FieldGroup>
     </form>
   );

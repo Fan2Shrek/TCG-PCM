@@ -26,14 +26,19 @@ export async function serverApiFetch<T>(endpoint: string, options?: RequestInit)
   });
 
   if (!response.ok) {
-    if (response.status === 400 || response.status === 401) {
-      const errorBody = (await response.json().catch(() => null)) as {
-        detail?: string;
-      } | null;
+    const errorBody = (await response.json().catch(() => null)) as {
+      detail?: string;
+      message?: string;
+    } | null;
 
-      if (errorBody?.detail) {
-        throw new Error(errorBody.detail);
-      }
+    if (errorBody?.detail) {
+      throw new Error(errorBody.detail);
+    }
+
+    // Lexik's login failure handler (invalid credentials, throttling) returns
+    // { code, message } instead of API Platform's { detail }.
+    if (errorBody?.message) {
+      throw new Error(errorBody.message);
     }
 
     throw new Error(`API request failed with status ${response.status}`);
