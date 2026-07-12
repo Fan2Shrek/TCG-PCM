@@ -75,6 +75,10 @@ final class DeckValidatorTest extends TestCase
         $cards = array_merge(['nonexistent-card'], $this->generateUniqueCardIds(49, 'existing-card'));
         $deck = $this->createDeckWithCards('character-card', $cards);
 
+        $this->cardRegistry->method('getCardTemplateById')->willReturnCallback(static fn(string $cardId) => 'character-card' === $cardId
+            ? new CharacterDummyCard()
+            : new DummyCard());
+
         $this->cardRegistry
             ->method('has')
             ->willReturnCallback(static fn($card) => $card !== 'nonexistent-card' && $card !== 'character-card' || $card === 'character-card');
@@ -277,9 +281,9 @@ final class DeckValidatorTest extends TestCase
 
         $this->cardRegistry->method('has')->willReturnCallback(static fn($card) => \in_array($card, $allCards, true));
 
-        $this->cardRegistry
-            ->method('getCardTemplateById')
-            ->willReturnCallback(static fn(string $cardId) => $cardId === $characterCard ? new CharacterDummyCard() : new DummyCard());
+        $this->cardRegistry->method('getCardTemplateById')->willReturnCallback(static fn(string $cardId) => $cardId === $characterCard
+            ? new CharacterDummyCard()
+            : new DummyCard());
     }
 
     private function setupCardRegistryWithRarities(array $cardRarityMap): void

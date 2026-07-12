@@ -33,10 +33,7 @@ final class DeleteDeckProcessor implements ProcessorInterface
         }
 
         if ($this->deckRepository->countActiveByUser($data->getUser()) <= 1) {
-            throw HttpException::fromStatusCode(
-                Response::HTTP_CONFLICT,
-                'Impossible de supprimer votre dernier deck.',
-            );
+            throw HttpException::fromStatusCode(Response::HTTP_CONFLICT, 'Impossible de supprimer votre dernier deck.');
         }
 
         $data->setIsDeleted(true);

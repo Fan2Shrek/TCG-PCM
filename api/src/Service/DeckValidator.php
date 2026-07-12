@@ -93,14 +93,12 @@ final class DeckValidator
             ++$cardsMap[$card];
 
             if ($cardsMap[$card] > self::MAX_CARD_COPIES) {
-                throw new InvalidDeckException(
-                    \sprintf(
-                        'Deck cannot have more than %d copies of card "%s" (currently %d)',
-                        self::MAX_CARD_COPIES,
-                        $card,
-                        $cardsMap[$card],
-                    ),
-                );
+                throw new InvalidDeckException(\sprintf(
+                    'Deck cannot have more than %d copies of card "%s" (currently %d)',
+                    self::MAX_CARD_COPIES,
+                    $card,
+                    $cardsMap[$card],
+                ));
             }
 
             $rarity = $template::$rarity->value;

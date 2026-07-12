@@ -55,13 +55,13 @@ final class UserRegistrar
         $starterDistribution = $this->buildStarterCardDistribution();
 
         foreach ($starterDistribution as $cardId => $quantity) {
-            $starterCard = (new CardInventory($inventory, $cardId))->setQuantity($quantity);
+            $starterCard = new CardInventory($inventory, $cardId)->setQuantity($quantity);
             $inventory->addCard($starterCard);
             $this->em->persist($starterCard);
         }
 
         $starterCharacterCardId = $this->getStarterCharacterCardId();
-        $starterCharacterCard = (new CardInventory($inventory, $starterCharacterCardId))->setQuantity(1);
+        $starterCharacterCard = new CardInventory($inventory, $starterCharacterCardId)->setQuantity(1);
         $inventory->addCard($starterCharacterCard);
         $this->em->persist($starterCharacterCard);
 
@@ -72,12 +72,7 @@ final class UserRegistrar
             }
         }
 
-        $starterDeck = new Deck(
-            user: $user,
-            name: 'Starter Deck',
-            characterCard: $starterCharacterCardId,
-            cards: $starterDeckCards,
-        );
+        $starterDeck = new Deck(user: $user, name: 'Starter Deck', characterCard: $starterCharacterCardId, cards: $starterDeckCards);
         $starterDeck->setIsFavorite(true);
 
         $this->em->persist(new UserWallet($user));
@@ -105,11 +100,8 @@ final class UserRegistrar
 
         sort($eligibleCards);
 
-        if (count($eligibleCards) * self::STARTER_MAX_COPIES_PER_CARD < self::STARTER_DECK_SIZE) {
-            throw HttpException::fromStatusCode(
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                'Not enough common cards available to build starter inventory.',
-            );
+        if ((count($eligibleCards) * self::STARTER_MAX_COPIES_PER_CARD) < self::STARTER_DECK_SIZE) {
+            throw HttpException::fromStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR, 'Not enough common cards available to build starter inventory.');
         }
 
         $distribution = [];
@@ -126,10 +118,7 @@ final class UserRegistrar
         }
 
         if ($remaining > 0) {
-            throw HttpException::fromStatusCode(
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                'Unable to distribute enough starter common cards.',
-            );
+            throw HttpException::fromStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR, 'Unable to distribute enough starter common cards.');
         }
 
         return $distribution;
@@ -147,10 +136,7 @@ final class UserRegistrar
         sort($characterCards);
 
         if ([] === $characterCards) {
-            throw HttpException::fromStatusCode(
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                'No character card available for starter inventory.',
-            );
+            throw HttpException::fromStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR, 'No character card available for starter inventory.');
         }
 
         return $characterCards[0];

@@ -41,12 +41,7 @@ final class CreateDeckProcessor implements ProcessorInterface
 
         $cards = array_values(array_filter($data->cards, static fn(mixed $cardId): bool => is_string($cardId) && '' !== trim($cardId)));
 
-        $deck = new Deck(
-            user: $this->currentUserProvider->getCurrentUser(),
-            name: $name,
-            characterCard: $characterCard,
-            cards: $cards,
-        );
+        $deck = new Deck(user: $this->currentUserProvider->getCurrentUser(), name: $name, characterCard: $characterCard, cards: $cards);
 
         $deck->setIsFavorite((bool) ($data->isFavorite ?? false));
 
