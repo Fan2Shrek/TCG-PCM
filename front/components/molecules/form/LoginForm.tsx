@@ -43,6 +43,10 @@ export default () => {
 				</Field>
 
 				<p className="text-sm text-center">
+					<a href="/forgot-password" className="text-primary hover:underline">Mot de passe oublié ?</a>
+				</p>
+
+				<p className="text-sm text-center">
 					Pas de compte ? <a href="/register" className="text-primary hover:underline">Inscris-toi</a>
 				</p>
 			</FieldGroup>

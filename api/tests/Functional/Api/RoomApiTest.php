@@ -156,7 +156,8 @@ final class RoomApiTest extends FunctionalTestCase
 
     protected function createUser(?string $username = null, ?string $password = null, bool $withWallet = false): User
     {
-        $user = new User($username ?? 'test');
+        $username ??= 'test';
+        $user = new User($username, $username.'@test.local');
         $user->setPassword(
             self::getContainer()
                 ->get('security.password_hasher')
