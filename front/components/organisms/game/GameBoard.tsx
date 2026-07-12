@@ -347,7 +347,7 @@ export default function GameBoard() {
       <div className="top-5 right-5 absolute z-20">
         <Tooltip
           text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or. 
-        L'or sert à jouer vos cartes. Certaines cartes peuvent infliger des status: Hacké réduit ou perturbe les effets de la carte, Tordu signale une carte altérée par un effet spécial, et Boost de puissance augmente ses dégâts. 
+        L'or sert à jouer vos cartes. Certaines cartes peuvent infliger des status: Hacké change les valeurs d'une carte, une carte Tordu n'activera parfois pas sons effet, et Boost de puissance augmente ses dégâts. 
         Pour cibler une carte avec une des vôtres, cliquez d'abord sur votre carte puis sur la cible. Vous pouvez aussi double-cliquer sur une carte pour l'afficher en grand. Cliquez en dehors de la carte pour dézoomer."
         />
       </div>

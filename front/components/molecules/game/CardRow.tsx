@@ -107,6 +107,10 @@ export default function CardRow({
               onClick={(e) => {
                 e.stopPropagation();
                 if (isTargeting) {
+                  if (selectedCardId === card.instanceId) {
+                    return;
+                  }
+
                   onSelectTarget?.(card.instanceId);
                 } else if (canSelect) {
                   onSelectCard?.(isSelected ? null : card.instanceId);

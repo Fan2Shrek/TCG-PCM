@@ -233,6 +233,10 @@ export const GameProvider = ({
 
       case GameEventType.HEAL:
       case GameEventType.DAMAGE: {
+        if (typeof view.total !== "number") {
+          return null;
+        }
+
         const playerKey = getPlayerKey(state, view.playerId);
         const previousHealth = state[playerKey].healthPoints;
         const nextHealth = view.total;
@@ -397,6 +401,10 @@ export const GameProvider = ({
           };
         }
 
+        if (typeof view.total !== "number") {
+          return state;
+        }
+
         const nextHealth = view.total;
 
         const playerKey = getPlayerKey(state, view.playerId);
@@ -419,8 +427,13 @@ export const GameProvider = ({
         };
       }
 
+      case GameEventType.EFFECT_ADDED:
       case GameEventType.UPDATE_CARD_STATE: {
         const cardId = view.cardId;
+
+        if (!cardId || !view.card) {
+          return state;
+        }
 
         return {
           ...state,

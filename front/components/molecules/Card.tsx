@@ -113,7 +113,8 @@ const Card = ({
     return [
       {
         src,
-        depth: 2,
+        depth: -1,
+        isIllustration: true,
         foilEffect: null,
         foil: null,
         mask: null,
@@ -172,16 +173,6 @@ const Card = ({
   }
 
   cardLayers.push(...statusLayers);
-
-  if (!card.isActive) {
-    cardLayers.push({
-      src: "/cross.webp",
-      depth: 20,
-      foilEffect: null,
-      foil: null,
-      mask: null,
-    });
-  }
 
   return (
     <div
