@@ -116,6 +116,7 @@ class GameEventApplier implements GameEventApplierInterface
     {
         $target = $event->data['targetId'] ?? null;
         $damage = $event->data['damage'] ?? null;
+        $queuedEvents = [];
 
         if (!\is_string($target)) {
             throw new \LogicException('DAMAGE requires a targetId');
@@ -145,12 +146,17 @@ class GameEventApplier implements GameEventApplierInterface
                 $ctx = new GameContext($gameState, $state->ownerId);
 
                 $damage = max(0, $card->reduceDamage($ctx, $damage));
+                $queuedEvents = $ctx->flushEvents();
             }
 
             $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
             $newGameState = $gameState->withUpdatedCardState($newState);
         } else {
             throw new \LogicException('DAMAGE target must be a player or a monster card');
+        }
+
+        if ([] !== $queuedEvents) {
+            $newGameState = $this->applyMultiple($queuedEvents, $newGameState);
         }
 
         return $newGameState;

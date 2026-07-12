@@ -15,7 +15,7 @@ final class LeadBloonCard extends AbstractMonsterCard
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
     private const HEALTH_POINTS = 10;
-    private const ATTACK = 5;
+    private const ATTACK = 10;
     private const DAMAGE_REDUCTION = 5;
 
     public function getId(): string

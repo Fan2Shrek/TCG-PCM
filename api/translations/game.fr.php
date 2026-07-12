@@ -28,7 +28,7 @@ return [
         ],
         'D6' => [
             'name' => 'D6',
-            'description' => 'Lancez un dé à six faces et infligez autant de dégâts',
+            'description' => 'Lancez un dé à six faces et infligez autant de dégâts.',
         ],
         'Gitman' => [
             'name' => 'Gitman',
@@ -36,11 +36,11 @@ return [
         ],
         'Spicy-D6' => [
             'name' => 'D6 Épicé',
-            'description' => 'Lancez un dé à six faces et inflige {{value}} fois autant de dégâts',
+            'description' => 'Lancez un dé à six faces et inflige {{value}} fois autant de dégâts.',
         ],
         'Redbloons' => [
             'name' => 'Ballon Rouge',
-            'description' => 'Potit ballon tout mignon',
+            'description' => 'Petit ballon tout mignon.',
         ],
         'CamoBloon' => [
             'name' => 'Ballon Camo',
@@ -60,11 +60,11 @@ return [
         ],
         'AlchemistMonkey' => [
             'name' => 'Singe Alchimiste',
-            'description' => 'A la fin de chaque tour, donne aleatoirement +{{value}} attaque a un autre monstre allié.',
+            'description' => 'À la fin de chaque tour, donne aléatoirement +{{value}} attaque à un autre monstre allié.',
         ],
         'MechaPainter' => [
             'name' => 'Mecha-Peintre',
-            'description' => 'Reduit les degats recus de {{value}}. A la fin de chaque tour, inflige aleatoirement {{value2}} degats à une carte alliee.',
+            'description' => 'Réduit les dégâts reçus de {{value}}. À la fin de chaque tour, inflige aléatoirement {{value2}} dégâts à une carte alliée.',
         ],
         'DartMonkey' => [
             'name' => 'Singe',
@@ -112,11 +112,11 @@ return [
         ],
         'HackedZone' => [
             'name' => 'Zone Piratée',
-            'description' => 'Applique {{effect}} à toutes les cartes des deux côtés',
+            'description' => 'Applique {{effect}} à toutes les cartes des deux côtés.',
         ],
         'PierreSaidNoMonsterZone' => [
             'name' => 'Pierre a dit "Pas de Zone Monstre"',
-            'description' => 'Défaussez tous les monstres actifs',
+            'description' => 'Défaussez tous les monstres actifs.',
         ],
         'Bomb' => [
             'name' => 'Bombe',
