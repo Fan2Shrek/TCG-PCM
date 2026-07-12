@@ -7,7 +7,7 @@ import {
   AiOutlineLogout,
 } from "react-icons/ai";
 import { MdAppRegistration } from "react-icons/md";
-import { TbPlayCardStar, TbSword } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2 } from "react-icons/tb";
 import { logoutAction } from "@/lib/actions/auth";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
 import MobileMenuItem from "@/components/atoms/menu/MobileMenuItem";
@@ -38,6 +38,11 @@ const isActiveMenuItem = (pathname: string, linkTo?: string): boolean => {
 
 const getGuestItems = (): MobileMenuItem[] => [
   {
+    label: "Règles",
+    icon: <TbBook2 />,
+    linkTo: "/how-to-play",
+  },
+  {
     label: "Connexion",
     icon: <AiOutlineLogin />,
     linkTo: "/login",
@@ -50,6 +55,11 @@ const getGuestItems = (): MobileMenuItem[] => [
 ];
 
 const getAuthItems = (onLogout: () => void): MobileMenuItem[] => [
+  {
+    label: "Règles",
+    icon: <TbBook2 />,
+    linkTo: "/how-to-play",
+  },
   {
     label: "Boosters",
     icon: <TbPlayCardStar />,
