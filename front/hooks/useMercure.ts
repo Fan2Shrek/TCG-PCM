@@ -7,7 +7,7 @@ export default ( url: string, callbacks: Record<string, Function>) => {
             const event = JSON.parse(message.data);
 
 			if (!Object.keys(callbacks).includes(event.type)) {
-			  console.log(`Warning unhandled event ${event.type}`)
+			  console.warn(`Warning unhandled event ${event.type}`)
 
 			  return;
 			}
