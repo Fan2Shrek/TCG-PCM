@@ -1,4 +1,5 @@
 import PendingBoosters from "@/components/organisms/layout/PendingBoosters";
+import Footer from "@/components/organisms/layout/Footer";
 import DesktopMenu from "@/components/organisms/menu/DesktopMenu";
 import MobileMenu from "@/components/organisms/menu/MobileMenu";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
@@ -28,6 +29,7 @@ export default async ({ children }: { children: React.ReactNode }) => {
       </div>
       <div className="pt-24 pb-18 not-only-of-type:md:pt-32 md:pb-0 min-h-screen flex flex-col">
         {children}
+        <Footer />
       </div>
     </>
   );
