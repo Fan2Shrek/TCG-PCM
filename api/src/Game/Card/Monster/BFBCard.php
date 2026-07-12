@@ -9,11 +9,11 @@ use App\Enum\CardSetEnum;
 
 final class BFBCard extends AbstractMonsterCard
 {
-    public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
+    public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const HEALTH_POINTS = 150;
-    private const ATTACK = 18;
+    private const HEALTH_POINTS = 100;
+    private const ATTACK = 20;
 
     public function getId(): string
     {
