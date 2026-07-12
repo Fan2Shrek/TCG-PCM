@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import CookieConsentBanner from "@/components/organisms/layout/CookieConsentBanner";
 import { BoosterTokensProvider } from "@/contexts/BoosterTokensContext";
 import { RoomProvider } from "@/contexts/RoomContext";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -66,6 +67,7 @@ export default async function RootLayout({
             {children}
           </BoosterTokensProvider>
         </RoomProvider>
+        <CookieConsentBanner />
       </body>
     </html>
   );
