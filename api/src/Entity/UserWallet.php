@@ -62,4 +62,9 @@ class UserWallet
     {
         $this->boosterTokens = max(0, $this->boosterTokens - $amount);
     }
+
+    public function addBoosterToken(int $amount, int $max = 5): void
+    {
+        $this->boosterTokens = min($max, $this->boosterTokens + $amount);
+    }
 }
