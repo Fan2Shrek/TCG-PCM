@@ -1,34 +1,26 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const COOKIE_CONSENT_STORAGE_KEY = "cookie-consent";
-const listeners = new Set<() => void>();
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot() {
-  return localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
-}
-
-function getServerSnapshot() {
-  return null;
-}
-
-function acknowledgeConsent() {
-  localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, "acknowledged");
-  listeners.forEach((listener) => listener());
-}
 
 export default function CookieConsentBanner() {
-  const consent = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [isMounted, setIsMounted] = useState(false);
+  const [consent, setConsent] = useState<string | null>(null);
 
-  if (consent) {
+  useEffect(() => {
+    setIsMounted(true);
+    setConsent(localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY));
+  }, []);
+
+  function acknowledgeConsent() {
+    localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, "acknowledged");
+    setConsent("acknowledged");
+  }
+
+  if (!isMounted || consent) {
     return null;
   }
 
