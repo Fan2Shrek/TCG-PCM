@@ -1,11 +1,10 @@
 "use client";
 
 import { useContext, useState, useEffect } from "react";
-import { CardSize } from "@/constants/card";
-import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
 import useTargetingMode from "@/hooks/useTargetingMode";
+import GameCard from "./GameCard";
 
 type CardRowProps = {
   cardIds: string[];
@@ -102,34 +101,24 @@ export default function CardRow({
 
         return (
           card && (
-            <div
+            <GameCard
               key={card.instanceId}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isTargeting) {
-                  if (selectedCardId === card.instanceId) {
-                    return;
-                  }
-
-                  onSelectTarget?.(card.instanceId);
-                } else if (canSelect) {
-                  onSelectCard?.(isSelected ? null : card.instanceId);
-                }
-              }}
-              onMouseEnter={() =>
-                isTargeting && emitter.emit("target:hover", card.instanceId)
-              }
-              onMouseLeave={() => emitter.emit("target:leave")}
-              className={`card-selected ${canSelect || isTargeting ? "cursor-pointer" : ""} ${isHovered ? "blue-pulse" : ""}`}
+              card={card}
+              targetId={card.instanceId}
+              isTargeting={isTargeting}
+              hoveredTargetId={hoveredTargetId}
+              selectedSourceId={selectedCardId}
+              canSelectSource={canSelect}
+              disableSelfTarget
+              onSelectSource={onSelectCard}
+              onSelectTarget={onSelectTarget}
               style={getCardStyle(
                 isPlaying,
                 isSelected,
                 card?.isActive ?? true,
                 !isLoggedPlayerSide,
               )}
-            >
-              <CardWithZoom card={card} size={CardSize.MD} />
-            </div>
+            />
           )
         );
       })}
