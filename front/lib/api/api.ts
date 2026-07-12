@@ -1,3 +1,4 @@
+import { logoutAction } from "@/lib/actions/auth";
 import { BoosterResource } from "./resources/BoosterResource";
 import { DeckResource } from "./resources/DeckResource";
 import { GameResource } from "./resources/GameResource";
@@ -34,6 +35,11 @@ export class ApiClient {
       const errorBody = (await response.json().catch(() => null)) as {
         detail?: string;
       } | null;
+
+      if (response.status === 401) {
+        void logoutAction();
+        throw new Error("Session expirée, reconnexion nécessaire.");
+      }
 
       throw new Error(
         errorBody?.detail ||
