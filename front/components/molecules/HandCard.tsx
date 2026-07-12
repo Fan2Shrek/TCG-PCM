@@ -12,7 +12,7 @@ type HandCardProps = {
   totalCards: number;
   onHover: (card: CardWithPosition) => void;
   onLeave: () => void;
-  onDragCard?: (e: MouseEvent) => void;
+  onDragCard?: (e: PointerEvent) => void;
   onDragEnd?: (
     card: CardWithPosition,
     pointerPos: { x: number; y: number },
@@ -49,7 +49,7 @@ export default function HandCard({
   const cardRef = useRef<HTMLDivElement | null>(null);
   const prevDraggingRef = useRef(false);
 
-  const { isDragging, pointerPos, tilt, handleMouseDown } = useDrag({
+  const { isDragging, pointerPos, tilt, handlePointerDown } = useDrag({
     onDrag: onDragCard,
     onDragEnd: () => {
       setIsDropped(true);
@@ -114,7 +114,7 @@ export default function HandCard({
     <div
       ref={cardRef}
       className={`absolute top-[50%] left-[50%] cursor-grab transition-all ease-in-out duration-100 after:content-['']
-        after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-full after:h-24 after:pointer-events-auto
+        after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-full after:h-24 after:pointer-events-auto touch-none
         ${isDragging || isDropped ? "invisible pointer-events-none" : ""}`}
       style={{
         transform: `
@@ -128,7 +128,7 @@ export default function HandCard({
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseDown={(e) => !isDisabled && handleMouseDown(e)}
+      onPointerDown={(e) => !isDisabled && handlePointerDown(e)}
     >
       <Card
         card={positionedCard.card}
