@@ -21,7 +21,7 @@ import type { DeckLimits } from "@/app/types/deck";
 import { serverApiGet } from "@/lib/api/server";
 
 export default async function HowToPlayPage() {
-  const deckLimits = await serverApiGet<DeckLimits>("/decks/limits");
+  const deckLimits = await serverApiGet<DeckLimits>("/decks/limits").catch(() => null);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 pb-12">
@@ -100,7 +100,7 @@ export default async function HowToPlayPage() {
           La rareté d&apos;une carte détermine son coût de base et combien
           d&apos;exemplaires vous pouvez inclure dans un deck de 50 cartes.
         </p>
-        <RarityTable limits={deckLimits} />
+        {deckLimits && <RarityTable limits={deckLimits} />}
       </TutorialSection>
 
       <TutorialSection icon={<TbPlayCardStar />} title="Obtenir des cartes">

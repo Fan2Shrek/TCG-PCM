@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Booster\Types;
 
+use App\Game\Card\Character\AbstractCharacterCard;
+
 final class DefaultBooster implements BoosterInterface
 {
     public function getCapacity(): int
@@ -13,6 +15,8 @@ final class DefaultBooster implements BoosterInterface
 
     public function getCardsCriteria(): array
     {
-        return [];
+        return [
+            'excludeType' => AbstractCharacterCard::class,
+        ];
     }
 }

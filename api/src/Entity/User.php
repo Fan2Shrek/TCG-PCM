@@ -65,10 +65,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string|null The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
+    private ?string $googleId = null;
 
     /**
      * @var Collection<int, UserBadge>
@@ -294,6 +297,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUserInfo(UserInfo $userInfo): static
     {
         $this->userInfo = $userInfo;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }

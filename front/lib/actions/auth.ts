@@ -3,8 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { serverApiPost } from "@/lib/api/server";
-import { PASSWORD_EXPIRED_COOKIE, SESSION_COOKIE } from "@/lib/auth/constants";
+import { ApiError, serverApiPost } from "@/lib/api/server";
+import { PASSWORD_EXPIRED_COOKIE, REFRESH_TOKEN_COOKIE, SESSION_COOKIE } from "@/lib/auth/constants";
 
 export type AuthActionState = {
   error: string | null;
@@ -12,6 +12,7 @@ export type AuthActionState = {
 };
 
 const JWT_COOKIE_MAX_AGE = 60 * 60 * 24;
+const REFRESH_TOKEN_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
 async function setSessionCookie(token: string) {
   const store = await cookies();
@@ -21,6 +22,17 @@ async function setSessionCookie(token: string) {
     sameSite: "lax",
     path: "/",
     maxAge: JWT_COOKIE_MAX_AGE,
+  });
+}
+
+async function setRefreshTokenCookie(refreshToken: string) {
+  const store = await cookies();
+  store.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
   });
 }
 
@@ -43,13 +55,18 @@ async function setPasswordExpiredCookie(expired: boolean) {
 async function login(
   username: string,
   password: string,
-): Promise<{ token: string; passwordExpired: boolean }> {
+): Promise<{ token: string; refreshToken: string; passwordExpired: boolean }> {
   const response = await serverApiPost<{
     token: string;
+    refresh_token: string;
     password_expired: boolean;
   }>("/login_check", { username, password });
 
-  return { token: response.token, passwordExpired: response.password_expired };
+  return {
+    token: response.token,
+    refreshToken: response.refresh_token,
+    passwordExpired: response.password_expired,
+  };
 }
 
 export async function loginAction(
@@ -60,14 +77,16 @@ export async function loginAction(
   const password = String(formData.get("password") || "");
 
   let token: string;
+  let refreshToken: string;
   let passwordExpired: boolean;
   try {
-    ({ token, passwordExpired } = await login(username, password));
+    ({ token, refreshToken, passwordExpired } = await login(username, password));
   } catch (err) {
     return { error: err instanceof Error ? err.message : "mdr ca a explosé" };
   }
 
   await setSessionCookie(token);
+  await setRefreshTokenCookie(refreshToken);
   await setPasswordExpiredCookie(passwordExpired);
   redirect(passwordExpired ? "/change-password" : "/boosters");
 }
@@ -86,9 +105,10 @@ export async function registerAction(
   }
 
   let token: string;
+  let refreshToken: string;
   try {
     await serverApiPost("/register", { username, email, password });
-    ({ token } = await login(username, password));
+    ({ token, refreshToken } = await login(username, password));
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Une erreur est survenue.",
@@ -96,6 +116,7 @@ export async function registerAction(
   }
 
   await setSessionCookie(token);
+  await setRefreshTokenCookie(refreshToken);
   redirect("/boosters");
 }
 
@@ -165,9 +186,47 @@ export async function changePasswordAction(
   redirect("/boosters");
 }
 
+export async function completeGoogleLoginAction(
+  token: string,
+  refreshToken: string,
+): Promise<{ error: string | null }> {
+  if (token.split(".").length !== 3) {
+    return { error: "Jeton de connexion invalide." };
+  }
+
+  await setSessionCookie(token);
+  await setRefreshTokenCookie(refreshToken);
+  redirect("/boosters");
+}
+
+export async function refreshAccessToken(): Promise<boolean> {
+  const store = await cookies();
+  const refreshToken = store.get(REFRESH_TOKEN_COOKIE)?.value;
+  if (!refreshToken) {
+    return false;
+  }
+
+  try {
+    const response = await serverApiPost<{
+      token: string;
+      refresh_token: string;
+    }>("/token/refresh", { refresh_token: refreshToken });
+
+    await setSessionCookie(response.token);
+    await setRefreshTokenCookie(response.refresh_token);
+    return true;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      store.delete(REFRESH_TOKEN_COOKIE);
+    }
+    return false;
+  }
+}
+
 export async function logoutAction(): Promise<void> {
   const store = await cookies();
   store.delete(SESSION_COOKIE);
+  store.delete(REFRESH_TOKEN_COOKIE);
   store.delete(PASSWORD_EXPIRED_COOKIE);
   store.delete("mercureAuthorization");
   redirect("/login");

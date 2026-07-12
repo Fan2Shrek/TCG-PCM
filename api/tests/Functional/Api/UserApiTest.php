@@ -153,7 +153,7 @@ final class UserApiTest extends FunctionalTestCase
     {
         $date = new \DateTimeImmutable();
         $daysAgo = $date->modify('-2 days -3 hours');
-        $hoursAgo = $date->modify('-3 hours');
+        $hoursAgo = $date->modify('-1 hour');
 
         $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($daysAgo)->build();
 
@@ -173,11 +173,7 @@ final class UserApiTest extends FunctionalTestCase
         $this->userGenerateBoosterTokens->generate($user);
 
         self::assertSame(0, $user->getUserWallet()->getBoosterTokens());
-        self::assertEqualsWithDelta(
-            $twoHoursAgo->getTimestamp(),
-            $user->getUserInfo()->getLastBoosterTokensAt()->getTimestamp(),
-            1,
-        );
+        self::assertEqualsWithDelta($twoHoursAgo->getTimestamp(), $user->getUserInfo()->getLastBoosterTokensAt()->getTimestamp(), 1);
     }
 
     public function testGenerateBoosterTokensNotAboveCap()
