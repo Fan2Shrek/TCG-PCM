@@ -54,6 +54,14 @@ return [
             'name' => 'Ballon de Plomb',
             'description' => 'Réduit les dégâts reçus de {{value}}.',
         ],
+        'Zeppelin' => [
+            'name' => 'Zeppelin',
+            'description' => 'Quand il est joué, tous les autres bloons gagnent +{{value}} attaque et PV.',
+        ],
+        'AlchemistMonkey' => [
+            'name' => 'Singe Alchimiste',
+            'description' => 'A la fin de chaque tour, donne aleatoirement +{{value}} attaque a un autre monstre allié.',
+        ],
         'DartMonkey' => [
             'name' => 'Singe',
             'description' => 'Un potit singe.',

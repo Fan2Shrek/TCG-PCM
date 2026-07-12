@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Debug\Card;
 
+use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\GameContext;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class TraceableMonsterCard extends AbstractMonsterCard
+final class TraceableMonsterCard extends AbstractMonsterCard implements TurnAwareInterface
 {
     /** @use TraceableCardTrait<AbstractMonsterCard> */
     use TraceableCardTrait;

@@ -34,6 +34,8 @@ return [
 	'CamoBloon' => Card\Monster\CamoBloonCard::class,
 	'MOAB' => Card\Monster\MOABCard::class,
 	'LeadBloon' => Card\Monster\LeadBloonCard::class,
+	'Zeppelin' => Card\Monster\ZeppelinCard::class,
+	'AlchemistMonkey' => Card\Monster\AlchemistMonkeyCard::class,
 	'DartMonkey' => Card\Monster\DartMonkeyCard::class,
 	'BoomerangMonkey' => Card\Monster\BoomerangMonkeyCard::class,
 	'SuperMonkey' => Card\Monster\SuperMonkeyCard::class,

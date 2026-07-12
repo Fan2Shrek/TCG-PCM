@@ -54,6 +54,14 @@ return [
             'name' => 'Lead Bloon',
             'description' => 'Reduces incoming damage by {{value}}.',
         ],
+        'Zeppelin' => [
+            'name' => 'Zeppelin',
+            'description' => 'When played, all other bloons gain +{{value}} attack and HP.',
+        ],
+        'AlchemistMonkey' => [
+            'name' => 'Alchemist Monkey',
+            'description' => 'At the end of each turn, randomly gives +{{value}} attack to another allied monster.',
+        ],
         'DartMonkey' => [
             'name' => 'Dart Monkey',
             'description' => 'A cute monkey.',

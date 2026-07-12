@@ -14,8 +14,9 @@ final class RadicalRatCard extends AbstractMonsterCard
     public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
-    private const HEALTH_POINTS = 12;
-    private const ATTACK = 5;
+    private const HEALTH_POINTS = 11;
+    private const ATTACK = 10;
+    private const BOMB_DAMAGE = 10;
 
     public function getId(): string
     {
@@ -35,7 +36,7 @@ final class RadicalRatCard extends AbstractMonsterCard
     public function getDescription(): string
     {
         return GameUtils::formatDescription(parent::getDescription(), [
-            'value' => $this->getValue(self::ATTACK, true),
+            'value' => $this->getValue(self::BOMB_DAMAGE, true),
         ]);
     }
 
@@ -54,7 +55,7 @@ final class RadicalRatCard extends AbstractMonsterCard
         $opponentState = $context->getPlayerStateById($context->getOtherPlayerId($this->getOwnerId()));
 
         foreach ([...$opponentState->playArea->monsterCards, $opponentState->characterCardId] as $targetId) {
-            $context->damageCard($targetId, $this->getValue(self::ATTACK, true));
+            $context->damageCard($targetId, $this->getValue(self::BOMB_DAMAGE, true));
         }
     }
 }
