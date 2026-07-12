@@ -1,22 +1,9 @@
 import { serverApiGet } from "@/lib/api/server";
-import InteractiveCard from "@/components/molecules/InteractiveCard";
-import { BasicCard } from "@/lib/cards/types/card";
+import CollectionPageClient from "@/components/organisms/collection/CollectionPageClient";
+import { CardCollectionResponse } from "@/app/types/collection";
 
-type InventoryResponse = {
-	cards: { card: BasicCard; quantity: number }[];
-};
+export default async function InventoryPage() {
+  const { entries } = await serverApiGet<CardCollectionResponse>("/inventory/collection");
 
-export default async function Inventory() {
-	const inventory = await serverApiGet<InventoryResponse>("/inventory");
-
-	return (
-		<div className="pt-90 flex flex-row gap-5">
-			{inventory.cards.map(({ card, quantity }) => (
-				<div key={card.instanceId}>
-					<InteractiveCard card={card} />
-					<p>{quantity}x {card.name}</p>
-				</div>
-			))}
-		</div>
-	);
+  return <CollectionPageClient entries={entries} />;
 }
