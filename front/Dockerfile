@@ -13,7 +13,7 @@ RUN npm ci
 # DEV
 # =========================
 FROM base AS dev
-COPY package.json package-lock.json* bun.lock* ./
+COPY package.json package-lock.json* ./
 RUN npm install
 CMD ["sh", "-c", "npm install && npm run dev -- -H 0.0.0.0"]
 

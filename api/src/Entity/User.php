@@ -5,9 +5,11 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use App\Api\Processor\SetProfilePictureProcessor;
 use App\Api\Provider\UserProvider;
 use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Domain\Command\User\RegisterCommand;
+use App\Domain\Command\User\SetProfilePictureCommand;
 use App\Entity\Inventory\Inventory;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,6 +24,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ApiResource(operations: [
     new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
     new Post(uriTemplate: '/user/generate_booster_tokens', messenger: 'input', input: GenerateBoosterTokensCommand::class, status: 200),
+    new Post(
+        uriTemplate: '/user/profile_picture',
+        inputFormats: ['multipart' => ['multipart/form-data']],
+        input: SetProfilePictureCommand::class,
+        deserialize: false,
+        processor: SetProfilePictureProcessor::class,
+        status: 200,
+    ),
     new Post(uriTemplate: '/register', messenger: 'input', input: RegisterCommand::class, status: 201),
 ])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface

@@ -6,6 +6,9 @@ App\Entity\User:
                 - api:user:read
                 - api:room:create
                 - api:room:list
+        profilePicturePath:
+            groups:
+                - api:user:read
         inventory:
             groups:
                 - api:inventory:read
