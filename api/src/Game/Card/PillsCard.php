@@ -92,7 +92,12 @@ final class PillsCard extends AbstractPlayableCard
 
     private function updateMonsterAttackBonus(GameContext $context, string $targetId, int $delta): void
     {
-        $targetState = $context->getCard($targetId);
+        $targetState = $context->state->getCardState($targetId);
+
+        if (null === $targetState) {
+            return;
+        }
+
         $currentBonus = (int) ($targetState->values['bonusAttack'] ?? 0);
 
         $context->pushGameEvent(GameEventTypeEnum::UPDATE_CARD_STATE, [
