@@ -36,7 +36,7 @@ return [
         ],
         'Spicy-D6' => [
             'name' => 'D6 Épicé',
-            'description' => 'Lancez un dé à six faces et inflige {{value}} fois autant de dégâts.',
+            'description' => 'Lancez un dé à six faces et infligez {{value}} fois le résultat en dégâts. Puis subissez la moitié des dégâts infligés.',
         ],
         'Redbloons' => [
             'name' => 'Ballon Rouge',
@@ -126,6 +126,10 @@ return [
             'name' => 'Fléchette',
             'description' => 'Inflige {{value}} dégâts à une carte ciblée.',
         ],
+        'Fortnite' => [
+            'name' => 'Fortnite',
+            'description' => 'Choisit un monstre en jeu aléatoirement, défausse toutes les autres cartes en jeu, puis lui donne Victory royale (+{{health}} PV et +{{attack}} attaque).',
+        ],
         'Pills' => [
             'name' => 'Pillules !',
             'description' => 'Effet aléatoire !',
@@ -159,7 +163,7 @@ return [
                 'description' => 'Est défaussé au début du prochain tour de son propriétaire.',
             ],
             'HoneyBee' => [
-                'name' => 'Abeille de miel',
+                'name' => 'Abeille à miel',
                 'description' => 'Quand elle attaque, soigne votre personnage de {{value}} PV.',
             ],
             'RadicalRat' => [
@@ -214,9 +218,17 @@ return [
             'name' => 'La main',
             'description' => 'Défausse une carte aléatoire de la zone de jeu de votre adversaire.',
         ],
+        'TheLost' => [
+            'name' => 'Le Perdant',
+            'description' => 'Esquive la première attaque qu\'il subit après avoir été joué.',
+        ],
         'Coins' => [
             'name' => 'Pièces',
             'description' => 'Gagne {{value}} pièces.',
+        ],
+        'Chaos' => [
+            'name' => 'Chaos',
+            'description' => 'Remplace toutes les cartes en jeu par d\'autres cartes aléatoires.',
         ],
         'Crypto4Noob' => [
             'name' => 'Crypto4Noob',
