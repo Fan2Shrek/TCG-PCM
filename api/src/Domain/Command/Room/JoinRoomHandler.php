@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Room;
 
+use App\Repository\DeckRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,7 @@ final class JoinRoomHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private DeckRepository $deckRepository,
         private EntityManagerInterface $em,
         private HubInterface $hub,
     ) {}
@@ -25,7 +27,7 @@ final class JoinRoomHandler
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
-        if (!($deck = $user->getDecks()->first())) {
+        if (!($deck = $this->deckRepository->findFirstActiveByUser($user))) {
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'User has no deck to join a room.');
         }
 

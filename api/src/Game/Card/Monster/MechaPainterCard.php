@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Game\Card\Monster;
 
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSetEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
@@ -15,10 +16,11 @@ final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInt
 {
     use TurnAwareTrait;
 
+    public static CardSetEnum $serie = CardSetEnum::TBOI;
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
 
-    private const HEALTH_POINTS = 45;
-    private const ATTACK = 39;
+    private const HEALTH_POINTS = 39;
+    private const ATTACK = 45;
     private const DAMAGE_REDUCTION = 10;
     private const SELF_TEAM_DAMAGE = 20;
 

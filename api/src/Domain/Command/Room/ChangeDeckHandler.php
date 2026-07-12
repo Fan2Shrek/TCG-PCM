@@ -20,10 +20,19 @@ final class ChangeDeckHandler
     {
         $room = $command->getCurrentResource();
         $user = $this->currentUserProvider->getCurrentUser();
+        $deck = $command->deck;
+
+        if ($deck->getUser() !== $user) {
+            throw HttpException::fromStatusCode(Response::HTTP_FORBIDDEN, 'You can only select your own deck.');
+        }
+
+        if ($deck->isDeleted()) {
+            throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'Deleted decks cannot be selected.');
+        }
 
         match (true) {
-            $room->getOwner() === $user => $room->setOwnerDeck($command->deck),
-            $room->getOpponent() === $user => $room->setOpponentDeck($command->deck),
+            $room->getOwner() === $user => $room->setOwnerDeck($deck),
+            $room->getOpponent() === $user => $room->setOpponentDeck($deck),
             default => throw HttpException::fromStatusCode(Response::HTTP_FORBIDDEN, 'You are not a player in this room.'),
         };
     }

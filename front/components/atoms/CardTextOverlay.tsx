@@ -178,14 +178,14 @@ const CardTextOverlay = ({
       </div>
 
       <div
-        className="absolute bottom-[4%] right-[6%] text-[10px] leading-none tracking-tight text-black/80 font-bold"
+        className="absolute bottom-[4%] right-[6%] text-[8px] leading-none tracking-tight text-black/80 font-bold"
         style={RARITY_LABEL_TEXT_OUTLINE}
       >
         {CARD_TYPE_LABELS[cardType]}
       </div>
 
       <div
-        className={`absolute bottom-[4%] left-[6%] text-[10px] leading-none tracking-tight font-bold uppercase ${CARD_RARITY_COLORS[cardRarity]}`}
+        className={`absolute bottom-[4%] left-[6%] text-[8px] leading-none tracking-tight font-bold uppercase ${CARD_RARITY_COLORS[cardRarity]}`}
         style={RARITY_LABEL_TEXT_OUTLINE}
       >
         {cardRarity}

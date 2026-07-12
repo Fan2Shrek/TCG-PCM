@@ -14,7 +14,7 @@ final class GrilledClottyCard extends AbstractMonsterCard implements TurnAwareIn
 {
     use TurnAwareTrait;
 
-    public static CardRarityEnum $rarity = CardRarityEnum::RARE;
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     private const HEALTH_POINTS = 5;

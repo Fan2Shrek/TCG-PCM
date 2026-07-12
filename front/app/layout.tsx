@@ -32,10 +32,8 @@ export const metadata: Metadata = {
   description: "Bla bla bla",
 };
 
-async function getInitialRoom(): Promise<Room | null> {
-  const user = await getCurrentUser();
-
-  if (!user) {
+async function getInitialRoom(isAuthenticated: boolean): Promise<Room | null> {
+  if (!isAuthenticated) {
     return null;
   }
 
@@ -52,17 +50,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialRoom = await getInitialRoom();
+  const user = await getCurrentUser();
+  const isAuthenticated = Boolean(user);
+  const initialRoom = await getInitialRoom(isAuthenticated);
 
   return (
     <html
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}
     >
-      <body className={`antialiased bg-background`}>
+      <body className={`antialiased bg-background bg-fixed`}>
         <Toaster />
-        <RoomProvider initialRoom={initialRoom}>
-          <BoosterTokensProvider>{children}</BoosterTokensProvider>
+        <RoomProvider initialRoom={initialRoom} enabled={isAuthenticated}>
+          <BoosterTokensProvider enabled={isAuthenticated}>
+            {children}
+          </BoosterTokensProvider>
         </RoomProvider>
       </body>
     </html>

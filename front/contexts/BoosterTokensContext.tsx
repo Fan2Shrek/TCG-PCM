@@ -68,12 +68,18 @@ const BoosterTokensContext = createContext<
   BoosterTokensContextValue | undefined
 >(undefined);
 
-export function BoosterTokensProvider({ children }: { children: ReactNode }) {
+export function BoosterTokensProvider({
+  children,
+  enabled = true,
+}: {
+  children: ReactNode;
+  enabled?: boolean;
+}) {
   const [tokens, setTokens] = useState(0);
   const [lastBoosterTokenClaimedAt, setLastBoosterTokenClaimedAt] = useState<
     string | null
   >(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
   const hasTriggeredAutoRefreshAtZeroRef = useRef(false);
   const [ticker, setTicker] = useState(0);
@@ -109,18 +115,30 @@ export function BoosterTokensProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) {
+      setTokens(0);
+      setLastBoosterTokenClaimedAt(null);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     refresh().finally(() => {
       setIsLoading(false);
     });
-  }, [refresh]);
+  }, [enabled, refresh]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const interval = window.setInterval(() => {
       setTicker((prev) => prev + 1);
     }, 60 * 1000);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [enabled]);
 
   const minutesTilNextToken = useMemo(() => {
     void ticker;
@@ -128,6 +146,10 @@ export function BoosterTokensProvider({ children }: { children: ReactNode }) {
   }, [tokens, lastBoosterTokenClaimedAt, ticker]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     if (tokens >= MAX_BOOSTER_TOKENS || minutesTilNextToken > 0) {
       hasTriggeredAutoRefreshAtZeroRef.current = false;
       return;
@@ -139,7 +161,7 @@ export function BoosterTokensProvider({ children }: { children: ReactNode }) {
 
     hasTriggeredAutoRefreshAtZeroRef.current = true;
     refresh().catch(() => {});
-  }, [tokens, minutesTilNextToken, refresh]);
+  }, [enabled, tokens, minutesTilNextToken, refresh]);
 
   const progressToNextToken = useMemo(() => {
     if (tokens >= MAX_BOOSTER_TOKENS) {

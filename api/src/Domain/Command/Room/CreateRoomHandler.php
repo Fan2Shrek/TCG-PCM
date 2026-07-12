@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Entity\Room;
+use App\Repository\DeckRepository;
 use App\Repository\RoomRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,7 @@ final class CreateRoomHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private DeckRepository $deckRepository,
         private RoomRepository $roomRepository,
         private HubInterface $hub,
     ) {}
@@ -25,7 +27,7 @@ final class CreateRoomHandler
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
-        if (!($deck = $user->getDecks()->first())) {
+        if (!($deck = $this->deckRepository->findFirstActiveByUser($user))) {
             throw HttpException::fromStatusCode(Response::HTTP_BAD_REQUEST, 'User has no deck to create a room.');
         }
 

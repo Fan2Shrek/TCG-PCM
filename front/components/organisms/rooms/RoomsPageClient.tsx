@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 import { MdRefresh, MdAdd } from "react-icons/md";
 import { toast } from "sonner";
 import client from "@/lib/api/api";
@@ -153,6 +154,14 @@ export default function RoomsPageClient({
               Joueurs en attente d'adversaires
             </h2>
             <div className="flex gap-4">
+              <Button
+                asChild
+                variant="default"
+                size="lg"
+                className="px-8 bg-blue-800 text-white hover:bg-blue-600"
+              >
+                <Link href="/inventory?tab=decks">Gérer mes decks</Link>
+              </Button>
               <Button
                 onClick={createRoom}
                 variant="default"

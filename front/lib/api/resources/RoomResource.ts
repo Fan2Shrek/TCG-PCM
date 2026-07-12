@@ -53,4 +53,10 @@ export class RoomResource {
   async removeOpponent(id: string) {
     return this.client.post(`/rooms/${id}/remove-opponent`, {});
   }
+
+  async changeDeck(id: string, deckId: string | number) {
+    return this.client.post(`/rooms/${id}/change_deck`, {
+      deck: `/api/decks/${deckId}`,
+    });
+  }
 }

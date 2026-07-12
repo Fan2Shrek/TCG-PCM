@@ -48,7 +48,6 @@ export default function ActiveRoomStatus({ className }: ActiveRoomStatusProps) {
       await client.room.leave(userRoom.id);
       clearRoom();
       setShowLeavingConfirm(false);
-      router.push("/rooms");
     } catch (error) {
       console.error("Failed to leave room:", error);
       toast.error("Erreur lors de la sortie de la salle");

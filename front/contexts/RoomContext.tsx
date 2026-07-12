@@ -26,12 +26,17 @@ const RoomContext = createContext<RoomContextType | undefined>(undefined);
 type RoomProviderProps = {
   children: ReactNode;
   initialRoom?: Room | null;
+  enabled?: boolean;
 };
 
-export function RoomProvider({ children, initialRoom = null }: RoomProviderProps) {
+export function RoomProvider({
+  children,
+  initialRoom = null,
+  enabled = true,
+}: RoomProviderProps) {
   const { user: currentUser } = useCurrentUser();
   const [userRoom, setUserRoom] = useState<Room | null>(initialRoom);
-  const [isLoading, setIsLoading] = useState(initialRoom === null);
+  const [isLoading, setIsLoading] = useState(enabled && initialRoom === null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const hasHydrated = useRef(false);
 
@@ -41,6 +46,11 @@ export function RoomProvider({ children, initialRoom = null }: RoomProviderProps
   };
 
   const refetchRoom = async () => {
+    if (!enabled) {
+      setUserRoom(null);
+      return;
+    }
+
     try {
       const room = await client.room.getActive();
       setUserRoom(room);
@@ -51,6 +61,13 @@ export function RoomProvider({ children, initialRoom = null }: RoomProviderProps
   };
 
   useEffect(() => {
+    if (!enabled) {
+      setUserRoom(null);
+      setLastEvent(null);
+      setIsLoading(false);
+      return;
+    }
+
     if (!hasHydrated.current && initialRoom !== null) {
       hasHydrated.current = true;
       return;
@@ -58,7 +75,7 @@ export function RoomProvider({ children, initialRoom = null }: RoomProviderProps
 
     hasHydrated.current = true;
     refetchRoom().then(() => setIsLoading(false));
-  }, []);
+  }, [enabled, initialRoom]);
 
   useEffect(() => {
     if (!userRoom) return;
