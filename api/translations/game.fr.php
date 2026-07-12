@@ -234,18 +234,6 @@ return [
             'name' => 'Crypto4Noob',
             'description' => 'Inflige des dégâts égaux au prix actuel du Bitcoin en euros, divisé par 3000.',
         ],
-        'MimeticPrismRuby' => [
-            'name' => 'Prisme Mimétique Rubis',
-            'description' => 'Copie une carte monstre aléatoire en jeu. Inflige 2x dégâts et a 0.5x PV.',
-        ],
-        'MimeticPrismAmethyst' => [
-            'name' => 'Prisme Mimétique Améthyste',
-            'description' => 'Copie une carte monstre aléatoire en jeu. Inflige 4x dégâts et a 1 PV.',
-        ],
-        'MimeticPrismSaphir' => [
-            'name' => 'Prisme Mimétique Saphir',
-            'description' => 'Copie une carte monstre aléatoire en jeu. Inflige 0.5x dégâts et a 2x PV.',
-        ],
     ],
     // Effects
     'effects' => [
