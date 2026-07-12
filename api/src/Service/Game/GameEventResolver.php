@@ -185,12 +185,12 @@ class GameEventResolver
             throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
         }
 
-        if (!\is_string($event->data['playerId'] ?? null)) {
+        if (!\is_string($playerId = $event->data['playerId'] ?? null)) {
             throw new \LogicException('playerId is required to play a card');
         }
 
         $card = $this->cardRuntimeMap->getByState($cardState);
-        $ctx = $this->gameContextFactory->createGameContext($state, $event->data['playerId']);
+        $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
         $data = $event->data['data'] ?? [];
         $events = [];
 

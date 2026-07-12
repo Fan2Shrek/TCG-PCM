@@ -34,10 +34,9 @@ final class EndGameMiddlewareTest extends TestCase
     public function testHandleEndsGameWhenPlayer1IsDead(): void
     {
         $context = $this->createContext(0, 5);
-        $gameState = $context->getGameState();
 
         $endGameHandler = $this->createMock(EndGameHandlerInterface::class);
-        $endGameHandler->expects(self::once())->method('endGame')->with('game-id', $gameState, '2');
+        $endGameHandler->expects(self::once())->method('endGame')->with('game-id', '2');
 
         $sut = new EndGameMiddleware($endGameHandler);
 
@@ -49,10 +48,9 @@ final class EndGameMiddlewareTest extends TestCase
     public function testHandleEndsGameWhenPlayer2IsDead(): void
     {
         $context = $this->createContext(3, 0);
-        $gameState = $context->getGameState();
 
         $endGameHandler = $this->createMock(EndGameHandlerInterface::class);
-        $endGameHandler->expects(self::once())->method('endGame')->with('game-id', $gameState, '1');
+        $endGameHandler->expects(self::once())->method('endGame')->with('game-id', '1');
 
         $sut = new EndGameMiddleware($endGameHandler);
 

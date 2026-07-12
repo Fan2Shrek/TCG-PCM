@@ -2,8 +2,8 @@
 
 namespace App\Game\Card;
 
-use App\Game\GameUtils;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class CoinsCard extends AbstractPlayableCard
 {

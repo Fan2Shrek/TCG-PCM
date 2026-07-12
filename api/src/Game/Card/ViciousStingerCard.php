@@ -16,6 +16,7 @@ final class ViciousStingerCard extends AbstractPlayableCard
     {
         return 'vicious_stinger.webp';
     }
+
     public function requiresTarget(): bool
     {
         return true;

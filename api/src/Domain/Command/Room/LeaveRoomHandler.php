@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Command\Room;
 
-use App\Service\Auth\CurrentUserProviderInterface;
 use App\Enum\RoomStatusEnum;
+use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\EndGameHandlerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final class LeaveRoomHandler

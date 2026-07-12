@@ -54,7 +54,7 @@ final class UserApiTest extends FunctionalTestCase
 
         self::assertResponseStatusCodeSame(401);
         self::assertJsonContains([
-            'message' => 'Invalid credentials.',
+            'message' => 'Identifiants invalides.',
         ]);
     }
 
@@ -86,11 +86,7 @@ final class UserApiTest extends FunctionalTestCase
 
     public function testGetInventorySetStats()
     {
-        $inventory = ThereIs::anInventory()
-            ->withCard('D6', 2)
-            ->withCard('SpicyD6', 3)
-            ->withCard('Pierrot', 1)
-            ->build();
+        $inventory = ThereIs::anInventory()->withCard('D6', 2)->withCard('Spicy-D6', 3)->withCard('Pierrot', 1)->build();
         $user = ThereIs::anUser()->withInventory($inventory)->build();
         $this->client->loginUser($user);
 
@@ -104,7 +100,7 @@ final class UserApiTest extends FunctionalTestCase
         $content = $response->toArray();
 
         $statsBySet = [];
-        foreach ($content['sets'] as $setStats) {
+        foreach ($content as $setStats) {
             $statsBySet[$setStats['set']] = $setStats;
         }
 

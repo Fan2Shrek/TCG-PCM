@@ -10,10 +10,12 @@ use App\Api\DTO\CollectionCardDTO;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Service\Booster\BoosterRegistry;
-use App\Service\Booster\Types\BoosterInterface;
 use App\Service\Game\CardRegistryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * @implements ProviderInterface<CollectionCardDTO>
+ */
 final class BoosterObtainableCardsProvider implements ProviderInterface
 {
     public function __construct(
@@ -26,7 +28,7 @@ final class BoosterObtainableCardsProvider implements ProviderInterface
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        $type = (string) ($request?->query->get('type', 'default') ?? 'default');
+        $type = $request?->query->get('type', 'default') ?? 'default';
         $offset = max(0, (int) ($request?->query->get('offset', 0) ?? 0));
         $stepRaw = $request?->query->get('step');
         $step = null;
@@ -35,11 +37,6 @@ final class BoosterObtainableCardsProvider implements ProviderInterface
         }
 
         $boosterClass = $this->boosterRegistry->getBoosterType($type);
-        if (!class_exists($boosterClass) || !is_subclass_of($boosterClass, BoosterInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf('Booster type "%s" must implement %s.', $type, BoosterInterface::class));
-        }
-
-        /** @var BoosterInterface $booster */
         $booster = new $boosterClass();
         $criteria = $booster->getCardsCriteria();
 
@@ -47,9 +44,7 @@ final class BoosterObtainableCardsProvider implements ProviderInterface
         sort($cardIds);
 
         $total = count($cardIds);
-        $paginatedIds = null === $step
-            ? array_slice($cardIds, $offset)
-            : array_slice($cardIds, $offset, $step);
+        $paginatedIds = null === $step ? array_slice($cardIds, $offset) : array_slice($cardIds, $offset, $step);
 
         $cards = array_map(function (string $cardId): CollectionCardDTO {
             $card = $this->cardRegistry->getCardTemplateById($cardId);

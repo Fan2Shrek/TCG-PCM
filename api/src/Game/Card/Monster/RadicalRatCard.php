@@ -52,7 +52,11 @@ final class RadicalRatCard extends AbstractMonsterCard
 
     private function damageAllOpponents(GameContext $context): void
     {
-        $opponentState = $context->getPlayerStateById($context->getOtherPlayerId($this->getOwnerId()));
+        if (null === ($ownerId = $this->getOwnerId())) {
+            return;
+        }
+
+        $opponentState = $context->getPlayerStateById($context->getOtherPlayerId($ownerId));
 
         foreach ([...$opponentState->playArea->monsterCards, $opponentState->characterCardId] as $targetId) {
             $context->damageCard($targetId, $this->getValue(self::BOMB_DAMAGE, true));

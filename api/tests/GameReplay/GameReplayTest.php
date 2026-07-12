@@ -56,13 +56,9 @@ final class GameReplayTest extends TestCase
     {
         $cardsListPath = dirname(__DIR__, 2).'/resources/cards_list.php';
 
-        return new GameStateRebuilder(
-            new GameEventResolver(
-                new CardRuntimeMap(new TestCardFactory(new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard())))),
-                new ReplayableGameContextFactory(),
-                new GameEventApplier(),
-            ),
-        );
+        $cardRuntimeMap = new CardRuntimeMap(new TestCardFactory(new MockCardRegistry(array_merge(require $cardsListPath, $this->getDummiesCard()))));
+
+        return new GameStateRebuilder(new GameEventResolver($cardRuntimeMap, new ReplayableGameContextFactory(), new GameEventApplier($cardRuntimeMap)));
     }
 
     private function getDummiesCard(): array

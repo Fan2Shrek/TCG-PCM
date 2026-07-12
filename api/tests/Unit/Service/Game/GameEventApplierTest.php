@@ -7,13 +7,15 @@ namespace App\Tests\Unit\Service\Game;
 use App\Enum\CardEffectEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
+use App\Game\Card\Monster\RedBloonsMonsterCard;
 use App\Game\Card\MonsterCardState;
 use App\Game\Player;
 use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
-use App\Service\Game\Factory\GameContextFactory;
+use App\Service\Game\CardFactory;
+use App\Service\Game\CardRuntimeMap;
 use App\Service\Game\GameEventApplier;
 use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\TestCase;
@@ -62,7 +64,7 @@ final class GameEventApplierTest extends TestCase
 
     public function testApplyDamageToMonsterCard(): void
     {
-        $eventApplier = $this->getSut();
+        $eventApplier = $this->getSut(['Redbloons' => RedBloonsMonsterCard::class]);
         $state = $this->getInitialGameState();
         $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
             'targetId' => 'monster',
@@ -296,7 +298,7 @@ final class GameEventApplierTest extends TestCase
 
     private function getSut(array $cards = []): GameEventApplier
     {
-        return new GameEventApplier(new MockCardRegistry($cards), new GameContextFactory());
+        return new GameEventApplier(new CardRuntimeMap(new CardFactory(new MockCardRegistry($cards))));
     }
 
     private function getInitialGameState(int $lastEventId = 1, array $player2Hand = [], ?array $cards = null): GameState
@@ -335,7 +337,7 @@ final class GameEventApplierTest extends TestCase
             null !== $cards
                 ? $cards
                 : [
-                    'monster' => MonsterCardState::fromParent(new CardState('monster', 'monster', 'player1'), 10),
+                    'monster' => MonsterCardState::fromParent(new CardState('monster', 'Redbloons', 'player1'), 10),
                 ],
         );
     }
