@@ -14,8 +14,7 @@ final class TogglePrivateRoomCommand implements CurrentResourceAwareInterface
 
     public function __construct(
         public readonly bool $isPrivate,
-    ) {
-    }
+    ) {}
 
     public function getCurrentResource(): Room
     {

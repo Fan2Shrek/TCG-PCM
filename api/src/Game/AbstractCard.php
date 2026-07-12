@@ -78,6 +78,7 @@ abstract class AbstractCard
     {
         return \sprintf('%s.png', $this->getId());
     }
+
     public function requiresTarget(): bool
     {
         return false;

@@ -328,6 +328,14 @@ final class GameEventResolverTest extends TestCase
 
     private function getSut(bool $fakeGEA = false): GameEventResolver
     {
+        $cardRuntimeMap = new CardRuntimeMap(new CardFactory(new MockCardRegistry([
+            DummyCard::class => DummyCard::class,
+            'other_card' => DummyCard::class,
+            SpyCard::class => SpyCard::class,
+            'Redbloons' => RedBloonsMonsterCard::class,
+            SpyAwareCard::class => SpyAwareCard::class,
+        ])));
+
         $gea = $fakeGEA
             ? new class implements GameEventApplierInterface {
                 public function apply(GameEvent $event, GameState $gameState): GameState
@@ -339,19 +347,9 @@ final class GameEventResolverTest extends TestCase
                 {
                     return $gameState;
                 }
-            } : new GameEventApplier();
+            } : new GameEventApplier($cardRuntimeMap);
 
-        return new GameEventResolver(
-            new CardRuntimeMap(new CardFactory(new MockCardRegistry([
-                DummyCard::class => DummyCard::class,
-                'other_card' => DummyCard::class,
-                SpyCard::class => SpyCard::class,
-                'Redbloons' => RedBloonsMonsterCard::class,
-                SpyAwareCard::class => SpyAwareCard::class,
-            ]))),
-            new GameContextFactory(),
-            $gea,
-        );
+        return new GameEventResolver($cardRuntimeMap, new GameContextFactory(), $gea);
     }
 }
 

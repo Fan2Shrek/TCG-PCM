@@ -17,6 +17,7 @@ import { logoutAction } from "@/lib/actions/auth";
 type DesktopMenuProps = {
   className?: string;
   username?: string;
+  profilePicturePath?: string;
 };
 
 type MenuItemData = {
@@ -74,7 +75,7 @@ const isActiveMenuItem = (pathname: string, linkTo?: string): boolean => {
   return pathname === linkTo || pathname.startsWith(`${linkTo}/`);
 };
 
-export default function DesktopMenu({ className, username }: DesktopMenuProps) {
+export default function DesktopMenu({ className, username, profilePicturePath }: DesktopMenuProps) {
   const isAuthenticated = !!username;
   const pathname = usePathname();
 
@@ -103,7 +104,7 @@ export default function DesktopMenu({ className, username }: DesktopMenuProps) {
             />
           ))}
         </ul>
-        {isAuthenticated && <ProfileIcon username={username} />}
+        {isAuthenticated && <ProfileIcon username={username} profilePicturePath={profilePicturePath} />}
       </nav>
 
       {isAuthenticated && <ActiveRoomStatus />}

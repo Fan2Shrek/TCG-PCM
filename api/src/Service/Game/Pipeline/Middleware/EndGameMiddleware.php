@@ -24,10 +24,7 @@ final class EndGameMiddleware implements GameMiddlewareInterface
                 throw new \LogicException('Game ID is required to end the game');
             }
 
-            $this->endGameHandler->endGame(
-                $gameId,
-                $player1->healthPoints <= 0 ? $player2->player->id : $player1->player->id,
-            );
+            $this->endGameHandler->endGame($gameId, $player1->healthPoints <= 0 ? $player2->player->id : $player1->player->id);
         }
 
         return $stack->next()->handle($gamePipelineContext, $stack);

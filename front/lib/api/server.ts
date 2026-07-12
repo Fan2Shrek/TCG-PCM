@@ -13,8 +13,9 @@ export async function getServerToken(): Promise<string | null> {
 
 export async function serverApiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const token = await getServerToken();
+  const isFormData = options?.body instanceof FormData;
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
+    ...(!isFormData && { "Content-Type": "application/json" }),
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options?.headers,
   };
@@ -53,5 +54,12 @@ export function serverApiPost<T>(endpoint: string, body: unknown = {}): Promise<
   return serverApiFetch<T>(endpoint, {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+export function serverApiPostFormData<T>(endpoint: string, body: FormData): Promise<T> {
+  return serverApiFetch<T>(endpoint, {
+    method: "POST",
+    body,
   });
 }

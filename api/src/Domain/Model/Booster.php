@@ -7,8 +7,8 @@ namespace App\Domain\Model;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
-use App\Api\Provider\BoosterObtainableCardsProvider;
 use App\Api\DTO\CollectionCardDTO;
+use App\Api\Provider\BoosterObtainableCardsProvider;
 use App\Domain\Command\Booster\OpenBoosterCommand;
 use App\Game\AbstractCard;
 

@@ -30,6 +30,9 @@ COPY ./nginx.conf /etc/nginx/http.d/default.conf
 
 RUN addgroup -g 1000 app && adduser -G app -g app -s /bin/sh -D app
 
+RUN echo "upload_max_filesize=5M" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "post_max_size=6M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 
 # =========================
 # DEV
@@ -40,6 +43,8 @@ RUN install-php-extensions \
     pcov
 
 COPY . /app
+
+RUN mkdir -p public/uploads/avatars && chown -R www-data:www-data public/uploads
 
 RUN composer install
 
@@ -67,6 +72,8 @@ RUN composer install \
     --prefer-dist
 
 COPY . /app
+
+RUN mkdir -p public/uploads/avatars && chown -R www-data:www-data public/uploads
 
 RUN php bin/console cache:clear \
  && php bin/console cache:warmup

@@ -33,7 +33,11 @@ final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterfac
             return;
         }
 
-        $opponentState = $gameContext->getPlayerStateById($gameContext->getOtherPlayerId($this->getOwnerId()));
+        if (null === ($ownerId = $this->getOwnerId())) {
+            return;
+        }
+
+        $opponentState = $gameContext->getPlayerStateById($gameContext->getOtherPlayerId($ownerId));
         $targetPool = [...$opponentState->playArea->monsterCards, $opponentState->characterCardId];
         $targetId = $gameContext->selectRandomCardIn($targetPool);
 

@@ -42,7 +42,7 @@ final class BoosterApiTest extends FunctionalTestCase
             self::assertArrayHasKey('type', $card);
             self::assertTrue(
                 array_key_exists('cost', $card) || array_key_exists('hp', $card) || array_key_exists('attack', $card),
-                'Listed card should expose at least one visible stat field (cost, hp, or attack).'
+                'Listed card should expose at least one visible stat field (cost, hp, or attack).',
             );
         }
     }
@@ -89,7 +89,7 @@ final class BoosterApiTest extends FunctionalTestCase
 
             self::assertTrue(
                 array_key_exists('cost', $card) || array_key_exists('hp', $card) || array_key_exists('attack', $card),
-                'Opened card should expose at least one visible stat field (cost, hp, or attack).'
+                'Opened card should expose at least one visible stat field (cost, hp, or attack).',
             );
         }
     }

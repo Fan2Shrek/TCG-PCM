@@ -25,21 +25,16 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
-    new Get(
-        uriTemplate: '/rooms/{id}',
-        normalizationContext: ['groups' => ['api:room:list'], 'skip_null_values' => false],
-    ),
+    new Get(uriTemplate: '/rooms/{id}', normalizationContext: ['groups' => ['api:room:list'], 'skip_null_values' => false]),
     new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
-    new GetCollection(
-        uriTemplate: '/me/room',
-        provider: UserActiveRoomProvider::class,
-        normalizationContext: ['groups' => ['api:room:list'], 'skip_null_values' => false],
-    ),
-    new GetCollection(
-        uriTemplate: '/waiting-rooms',
-        provider: WaitingRoomProvider::class,
-        normalizationContext: ['groups' => ['api:room:list'], 'skip_null_values' => false],
-    ),
+    new GetCollection(uriTemplate: '/me/room', provider: UserActiveRoomProvider::class, normalizationContext: [
+        'groups' => ['api:room:list'],
+        'skip_null_values' => false,
+    ]),
+    new GetCollection(uriTemplate: '/waiting-rooms', provider: WaitingRoomProvider::class, normalizationContext: [
+        'groups' => ['api:room:list'],
+        'skip_null_values' => false,
+    ]),
 
     new Post(
         uriTemplate: '/rooms/create',
