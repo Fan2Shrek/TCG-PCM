@@ -152,8 +152,8 @@ final class UserApiTest extends FunctionalTestCase
     public function testGenerateBoosterTokensSpareTimeKept()
     {
         $date = new \DateTimeImmutable();
-        $daysAgo = $date->modify('-2 days -5 hours');
-        $hoursAgo = $date->modify('-5 hours');
+        $daysAgo = $date->modify('-2 days -3 hours');
+        $hoursAgo = $date->modify('-1 hour');
 
         $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($daysAgo)->build();
 
@@ -161,6 +161,19 @@ final class UserApiTest extends FunctionalTestCase
 
         $delta = 1;
         self::assertEqualsWithDelta($hoursAgo->getTimestamp(), $user->getUserInfo()->getLastBoosterTokensAt()->getTimestamp(), $delta);
+    }
+
+    public function testGenerateBoosterTokensDoesNotResetClockWhenNothingIsEarned()
+    {
+        $date = new \DateTimeImmutable();
+        $twoHoursAgo = $date->modify('-2 hours');
+
+        $user = ThereIs::anUser()->withBoosterTokens(0)->withLastBoosterTokensAt($twoHoursAgo)->build();
+
+        $this->userGenerateBoosterTokens->generate($user);
+
+        self::assertSame(0, $user->getUserWallet()->getBoosterTokens());
+        self::assertEqualsWithDelta($twoHoursAgo->getTimestamp(), $user->getUserInfo()->getLastBoosterTokensAt()->getTimestamp(), 1);
     }
 
     public function testGenerateBoosterTokensNotAboveCap()
