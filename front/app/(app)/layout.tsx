@@ -3,6 +3,7 @@ import DesktopMenu from "@/components/organisms/menu/DesktopMenu";
 import MobileMenu from "@/components/organisms/menu/MobileMenu";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import { serverApiGet } from "@/lib/api/server";
+import { serverApiGet } from "@/lib/api/server";
 import { getCurrentUser } from "@/lib/auth/session";
 
 export default async ({ children }: { children: React.ReactNode }) => {
