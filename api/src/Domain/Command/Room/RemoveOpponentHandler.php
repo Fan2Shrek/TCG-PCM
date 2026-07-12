@@ -43,8 +43,6 @@ final class RemoveOpponentHandler
         $this->entityManager->flush();
 
         $topic = "game/{$room->getId()}";
-        $this->hub->publish(
-            new Update($topic, json_encode(['type' => 'opponent_removed'], JSON_THROW_ON_ERROR), true)
-        );
+        $this->hub->publish(new Update($topic, json_encode(['type' => 'opponent_removed'], JSON_THROW_ON_ERROR), true));
     }
 }

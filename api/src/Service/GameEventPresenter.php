@@ -118,21 +118,24 @@ final class GameEventPresenter
     {
         $path = $card->image;
 
-        return array_filter([
-            'name' => $card->name,
-            'description' => $card->description,
-            'type' => $card->type?->name,
-            'rarity' => $card->rarity->name,
-            'serie' => $card->set->name,
-            'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
-            'requiresTarget' => $card->requiresTarget,
-            'cost' => $card->cost,
-            'hp' => $card->hp,
-            'attack' => $card->attack,
-            'instanceId' => $card->instanceId,
-            'effects' => $card->effects,
-            'isActive' => $card->isActive,
-        ], static fn(mixed $value): bool => null !== $value);
+        return array_filter(
+            [
+                'name' => $card->name,
+                'description' => $card->description,
+                'type' => $card->type?->name,
+                'rarity' => $card->rarity->name,
+                'serie' => $card->set->name,
+                'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
+                'requiresTarget' => $card->requiresTarget,
+                'cost' => $card->cost,
+                'hp' => $card->hp,
+                'attack' => $card->attack,
+                'instanceId' => $card->instanceId,
+                'effects' => $card->effects,
+                'isActive' => $card->isActive,
+            ],
+            static fn(mixed $value): bool => null !== $value,
+        );
     }
 
     private function healthView(GameEvent $event, GameState $state): array

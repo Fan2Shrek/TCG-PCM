@@ -28,6 +28,11 @@ final class BloodSuckerCard extends AbstractPassiveCard implements TurnAwareInte
         ]);
     }
 
+    public function onCardPlace(GameContext $gameContext): void
+    {
+        $this->suck($gameContext);
+    }
+
     public function onTurnStart(GameContext $gameContext): void
     {
         $this->suck($gameContext);

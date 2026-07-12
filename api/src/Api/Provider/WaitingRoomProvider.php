@@ -6,9 +6,13 @@ namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Entity\Room;
 use App\Enum\RoomStatusEnum;
 use App\Repository\RoomRepository;
 
+/**
+ * @implements ProviderInterface<Room>
+ */
 final class WaitingRoomProvider implements ProviderInterface
 {
     public function __construct(
@@ -17,13 +21,10 @@ final class WaitingRoomProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        return $this->roomRepository->findBy(
-            [
-                'status' => RoomStatusEnum::WAITING,
-                'opponent' => null,
-                'isPrivate' => false,
-            ],
-            ['createdAt' => 'DESC']
-        );
+        return $this->roomRepository->findBy([
+            'status' => RoomStatusEnum::WAITING,
+            'opponent' => null,
+            'isPrivate' => false,
+        ], ['createdAt' => 'DESC']);
     }
 }

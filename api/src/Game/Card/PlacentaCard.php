@@ -16,6 +16,7 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
     use TurnAwareTrait;
 
     public const CardRarityEnum RARITY = CardRarityEnum::UNCOMMON;
+
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     private const HEALTH_GAIN = 5;

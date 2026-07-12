@@ -15,7 +15,7 @@ final class BenjaminCardTest extends CardTestCase
         $card = $this->getCard();
         $ctx = $this->createGameContext();
 
-        $card->play($ctx, ['cards' => ['test_card']]);
+        $card->play($ctx, ['target' => 'test_card']);
 
         $events = $ctx->flushEvents();
 
@@ -23,6 +23,7 @@ final class BenjaminCardTest extends CardTestCase
         self::assertEquals(new GameEvent(0, GameEventTypeEnum::EFFECT_ADDED, GameEvent::GAME_EVENT, [
             'effect' => 'Hacked',
             'cardId' => 'test_card',
+            'effectValues' => ['value' => 0],
         ]), $events[0]);
     }
 

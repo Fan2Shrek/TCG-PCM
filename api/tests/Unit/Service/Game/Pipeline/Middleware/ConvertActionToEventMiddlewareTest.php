@@ -39,6 +39,7 @@ final class ConvertActionToEventMiddlewareTest extends TestCase
         $expectedEvent = GameEvent::player(GameEventTypeEnum::CARD_PLAYED, [
             'playerId' => 'userId',
             'cardId' => 'cardId',
+            'data' => [],
         ]);
 
         self::assertEquals($expectedEvent, $gamePipelineContext->getMainEvent());

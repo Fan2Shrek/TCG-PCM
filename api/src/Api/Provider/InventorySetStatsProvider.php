@@ -10,6 +10,9 @@ use App\Enum\CardSetEnum;
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\CardRegistryInterface;
 
+/**
+ * @implements ProviderInterface<object>
+ */
 final class InventorySetStatsProvider implements ProviderInterface
 {
     public function __construct(

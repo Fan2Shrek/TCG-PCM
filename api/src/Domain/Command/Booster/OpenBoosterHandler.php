@@ -15,10 +15,9 @@ use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Booster\BoosterGenerator;
 use App\Service\InventoryUpdater;
+use App\Service\User\UserGenerateBoosterTokens;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use App\Service\User\UserGenerateBoosterTokens;
-
 
 #[AsMessageHandler]
 final class OpenBoosterHandler
@@ -50,12 +49,12 @@ final class OpenBoosterHandler
 
         $booster = $this->boosterGenerator->generateBooster($command->type);
 
-        $this->inventoryUpdater->addCards($booster->getCards());
+        /** @var AbstractCard[] $cards */
+        $cards = $booster->getCards();
 
-        return new Booster(array_map(
-            fn (AbstractCard $card): CollectionCardDTO => $this->createOpenedCardDTO($card, $ownedCardIds),
-            $booster->getCards(),
-        ));
+        $this->inventoryUpdater->addCards($cards);
+
+        return new Booster(array_map(fn(AbstractCard $card): CollectionCardDTO => $this->createOpenedCardDTO($card, $ownedCardIds), $cards));
     }
 
     /**

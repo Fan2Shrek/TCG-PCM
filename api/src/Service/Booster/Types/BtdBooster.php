@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Service\Booster\Types;
-use Symfony\Component\Translation\TranslatableMessage;
+
 use App\Enum\CardSetEnum;
+use Symfony\Component\Translation\TranslatableMessage;
 
 final class BtdBooster implements BoosterInterface
 {

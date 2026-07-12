@@ -28,4 +28,3 @@ final class ClottyCard extends AbstractMonsterCard
         return self::HEALTH_POINTS;
     }
 }
-
