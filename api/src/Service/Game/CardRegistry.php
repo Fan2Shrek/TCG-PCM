@@ -34,6 +34,7 @@ class CardRegistry implements CardRegistryInterface
         $rarity = $criteria['rarity'] ?? null;
         $serie = $criteria['serie'] ?? null;
         $type = $criteria['type'] ?? null;
+        $excludeType = $criteria['excludeType'] ?? null;
 
         if (null !== $rarity && !$rarity instanceof CardRarityEnum) {
             throw new \InvalidArgumentException(sprintf('Rarity must be an instance of %s', CardRarityEnum::class));
@@ -45,6 +46,10 @@ class CardRegistry implements CardRegistryInterface
 
         if (\is_string($type) && (!class_exists($type) || !is_a($type, AbstractCard::class, true))) {
             throw new \InvalidArgumentException(\sprintf('Type must be a class string of %s', AbstractCard::class));
+        }
+
+        if (\is_string($excludeType) && (!class_exists($excludeType) || !is_a($excludeType, AbstractCard::class, true))) {
+            throw new \InvalidArgumentException(\sprintf('Exclude type must be a class string of %s', AbstractCard::class));
         }
 
         $this->loadCards();
@@ -60,6 +65,10 @@ class CardRegistry implements CardRegistryInterface
             }
 
             if (\is_string($type) && !is_a($cardClass, $type, true)) {
+                continue;
+            }
+
+            if (\is_string($excludeType) && is_a($cardClass, $excludeType, true)) {
                 continue;
             }
 
