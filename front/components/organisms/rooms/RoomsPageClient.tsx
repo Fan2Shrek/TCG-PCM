@@ -154,7 +154,12 @@ export default function RoomsPageClient({
               Joueurs en attente d'adversaires
             </h2>
             <div className="flex gap-4">
-              <Button asChild variant="secondary" size="lg" className="px-8">
+              <Button
+                asChild
+                variant="default"
+                size="lg"
+                className="px-8 bg-slate-800 text-white hover:bg-slate-700"
+              >
                 <Link href="/inventory?tab=decks">Gérer mes decks</Link>
               </Button>
               <Button

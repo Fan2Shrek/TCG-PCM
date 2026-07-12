@@ -3,6 +3,7 @@ import CollectionPageClient from "@/components/organisms/collection/CollectionPa
 import { CardCollectionResponse } from "@/app/types/collection";
 import {
   DeckCollectionResponse,
+  DeckLimits,
   normalizeDeckCollection,
 } from "@/app/types/deck";
 
@@ -19,6 +20,7 @@ export default async function InventoryPage({
     "/inventory/collection",
   );
   const decksResponse = await serverApiGet<DeckCollectionResponse>("/decks");
+  const deckLimits = await serverApiGet<DeckLimits>("/decks/limits");
   const decks = normalizeDeckCollection(decksResponse);
   const { tab } = await searchParams;
 
@@ -26,6 +28,7 @@ export default async function InventoryPage({
     <CollectionPageClient
       entries={entries}
       decks={decks}
+      deckLimits={deckLimits}
       initialTab={tab === "decks" ? "decks" : "cards"}
     />
   );

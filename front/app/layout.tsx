@@ -59,7 +59,7 @@ export default async function RootLayout({
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}
     >
-      <body className={`antialiased bg-background`}>
+      <body className={`antialiased bg-background bg-fixed`}>
         <Toaster />
         <RoomProvider initialRoom={initialRoom}>
           <BoosterTokensProvider>{children}</BoosterTokensProvider>
