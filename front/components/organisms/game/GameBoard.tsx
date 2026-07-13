@@ -42,7 +42,6 @@ export default function GameBoard() {
 
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const rewardedWinnerIdRef = useRef<string | null>(null);
   const { refresh: refreshBoosterTokens } = useBoosterTokensContext();
@@ -60,23 +59,6 @@ export default function GameBoard() {
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      "(max-width: 1024px), (pointer: coarse)",
-    );
-
-    const updateDeviceType = () => {
-      setIsMobileDevice(mediaQuery.matches);
-    };
-
-    updateDeviceType();
-    mediaQuery.addEventListener("change", updateDeviceType);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateDeviceType);
-    };
-  }, []);
 
   useEffect(() => {
     if (userRoom && currentUsername && userRoom.id !== id) {

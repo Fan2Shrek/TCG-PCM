@@ -3,6 +3,7 @@
 import { memo, useContext, useEffect, useRef, useState } from "react";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
+import { CardType } from "@/constants/card";
 import GameCard from "./GameCard";
 
 type CardRowProps = {
@@ -21,7 +22,9 @@ function CardRow({
   const { getCardById, targeting } = useContext(GameContext);
   const { isTargeting } = targeting;
   const [playingCardIds, setPlayingCardIds] = useState<Set<string>>(new Set());
-  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  );
 
   useEffect(() => {
     const handleCardPlayed = (event: { card: { instanceId: string } }) => {
@@ -61,7 +64,11 @@ function CardRow({
     <div className={`flex flex-wrap justify-center gap-2 ${className}`}>
       {cardIds.map((cardId) => {
         const card = getCardById(cardId);
-        const canSelect = isLoggedPlayerSide && card?.isActive && !isTargeting;
+        const canSelect =
+          isLoggedPlayerSide &&
+          card?.isActive &&
+          !isTargeting &&
+          card?.type === CardType.MONSTER;
         const isPlaying = playingCardIds.has(card?.instanceId ?? "");
 
         return (

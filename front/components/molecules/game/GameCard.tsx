@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  CSSProperties,
-  memo,
-  useContext,
-} from "react";
+import { CSSProperties, memo, useContext } from "react";
 import { CardSize } from "@/constants/card";
 import type { BasicCard } from "@/lib/cards/types/card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
