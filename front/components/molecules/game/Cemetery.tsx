@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { CardSize } from "@/constants/card";
 import Card from "../Card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
@@ -20,6 +20,7 @@ type CemeteryProps = {
 };
 
 const CARD_PLAY_ANIMATION_TIME = 300;
+const TOOLTIP_TAP_DURATION_MS = 1800;
 
 export default function Cemetery({
   cardIds,
@@ -28,13 +29,10 @@ export default function Cemetery({
   isCardDragged = false,
 }: CemeteryProps) {
   const { getCardById } = useContext(GameContext);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTooltipPinned, setIsTooltipPinned] = useState(false);
   const [playingCardIds, setPlayingCardIds] = useState<Set<string>>(new Set());
-
-  const shadowOffsetX = mirrored
-    ? -cardIds.length * 2 + 2
-    : cardIds.length * 2 - 2;
-  const shadow = `1px 0 rgba(0,0,0,0.66)`;
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleCardAnimated = (event: { card: { instanceId: string } }) => {
@@ -58,25 +56,42 @@ export default function Cemetery({
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (tooltipTimerRef.current) {
+        clearTimeout(tooltipTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleTapTooltip = () => {
+    setIsTooltipPinned(true);
+
+    if (tooltipTimerRef.current) {
+      clearTimeout(tooltipTimerRef.current);
+    }
+
+    tooltipTimerRef.current = setTimeout(() => {
+      setIsTooltipPinned(false);
+    }, TOOLTIP_TAP_DURATION_MS);
+  };
+
+  const showTooltip = isHovered || isTooltipPinned;
+
   return (
     <div
       className={`relative w-card-md aspect-card ${className}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      style={{
-        transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
-        zIndex: cardIds.length,
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleTapTooltip}
     >
       {cardIds.map((cardId, i) => {
         const card = getCardById(cardId);
         if (!card) return null;
-        const offsetX = mirrored ? -i : i;
-        const offsetY = isCardDragged ? 0 : -i * 1.3;
-        const isBottomCard = i === 0;
-        const isTopCard = i === cardIds.length - 1;
+
         const isPlaying = playingCardIds.has(card.instanceId);
         const playOffset = mirrored ? "-200px" : "200px";
+        const isTopCard = i === cardIds.length - 1;
 
         return (
           <div
@@ -84,13 +99,10 @@ export default function Cemetery({
             className="absolute"
             style={{
               transform: isPlaying
-                ? `scale(1.1) translateZ(80px) translateY(${playOffset}) translateX(${offsetX}px) translateY(${offsetY}px)`
-                : `scale(${1 + i * 0.01}) translateX(${offsetX}px) translateY(${offsetY}px)`,
+                ? `translateZ(80px)  translateY(${playOffset})`
+                : `translateZ(0px) translateX(0px)`,
               zIndex: i,
               transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
-              ...(isBottomCard && {
-                boxShadow: `${shadowOffsetX}px 0 ${shadow}`,
-              }),
             }}
           >
             {isTopCard ? (

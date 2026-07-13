@@ -30,26 +30,45 @@ export default function CardsHand({
   const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(
     null,
   );
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [hasHoveredOnce, setHasHoveredOnce] = useState(false);
   const isHovered = useDebouncedValue(isPendingHovered, 50);
   const shouldPrewarmHover = useIdlePrewarm({
     disabled: hasHoveredOnce,
     timeout: 300,
   });
+  const isHandExpanded = !isMobileDevice && isHovered;
 
   // Latches on the first debounced hover, computed during render
   // (see "Adjusting state in render" in the React docs).
-  if (isHovered && !hasHoveredOnce) {
+  if (isHandExpanded && !hasHoveredOnce) {
     setHasHoveredOnce(true);
   }
 
   useEffect(() => {
-    if (isHovered) {
+    const mediaQuery = window.matchMedia(
+      "(max-width: 1024px), (pointer: coarse)",
+    );
+
+    const updateDeviceType = () => {
+      setIsMobileDevice(mediaQuery.matches);
+    };
+
+    updateDeviceType();
+    mediaQuery.addEventListener("change", updateDeviceType);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateDeviceType);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isHandExpanded) {
       onMouseEnter?.();
     } else {
       onMouseLeave?.();
     }
-  }, [isHovered, onMouseEnter, onMouseLeave]);
+  }, [isHandExpanded, onMouseEnter, onMouseLeave]);
 
   useEffect(() => {
     const handleCardDrawn = () => {
@@ -72,18 +91,30 @@ export default function CardsHand({
     };
   }, [cards.length]);
 
-  const cardSize = isHovered ? CardSize.LG : CardSize.MD;
+  const cardSize = isMobileDevice
+    ? CardSize.SM
+    : isHovered
+      ? CardSize.LG
+      : CardSize.MD;
   const cardWidthPx = getCardWidthPx(cardSize);
 
-  const positionedCards = useHandPositions(cards, cardWidthPx, isHovered);
+  const positionedCards = useHandPositions(cards, cardWidthPx, isHandExpanded);
 
   const handleCardHover = useCallback(() => {
+    if (isMobileDevice) {
+      return;
+    }
+
     setIsPendingHovered(true);
-  }, []);
+  }, [isMobileDevice]);
 
   const handleCardLeave = useCallback(() => {
+    if (isMobileDevice) {
+      return;
+    }
+
     setIsPendingHovered(false);
-  }, []);
+  }, [isMobileDevice]);
 
   const handleCardDragEnd = useCallback((positionedCard: CardWithPosition) => {
     emitter.emit("card:played", {
@@ -92,7 +123,7 @@ export default function CardsHand({
   }, []);
 
   return (
-    <div className={`relative w-82 h-62 ${className}`}>
+    <div className={`relative sm:w-82 h-62 ${className}`}>
       {shouldPrewarmHover && !hasHoveredOnce && (
         <div
           className="absolute -z-10 opacity-0 pointer-events-none"

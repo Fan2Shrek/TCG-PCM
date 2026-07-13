@@ -7,6 +7,7 @@ import { BasicCard } from "@/lib/cards/types/card";
 import { CardSize } from "@/constants/card";
 import { resolveDropZone } from "@/lib/dropZones/dropzoneResolver";
 import { emitter } from "@/lib/eventBus";
+import { useEffect, useState } from "react";
 
 type DraggedCardProps = {
   card: BasicCard;
@@ -27,8 +28,43 @@ export default function DraggedCard({
   tilt,
   isDropped,
 }: DraggedCardProps) {
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(max-width: 1024px), (pointer: coarse)",
+    );
+
+    const updateDeviceType = () => {
+      setIsMobileDevice(mediaQuery.matches);
+    };
+
+    updateDeviceType();
+    mediaQuery.addEventListener("change", updateDeviceType);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateDeviceType);
+    };
+  }, []);
+
   if (typeof document === "undefined") return null;
   if (!pointerPos && !isDropped) return null;
+
+  const getMobileDragSize = (size: CardSize): CardSize => {
+    switch (size) {
+      case CardSize.XLL:
+        return CardSize.XL;
+      case CardSize.XL:
+        return CardSize.LG;
+      case CardSize.LG:
+        return CardSize.MD;
+      case CardSize.MD:
+        return CardSize.SM;
+      case CardSize.SM:
+      default:
+        return CardSize.SM;
+    }
+  };
 
   let x = 0;
   let y = 0;
@@ -76,7 +112,7 @@ export default function DraggedCard({
     <div style={style}>
       <Card
         card={card}
-        size={currentSize}
+        size={isMobileDevice ? getMobileDragSize(currentSize) : currentSize}
         tilt={currentTilt}
         showLoadingUntilReady
       />

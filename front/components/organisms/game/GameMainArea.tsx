@@ -35,11 +35,11 @@ export default function GameMainArea({
   );
   return (
     <div
-      className={`game-main-area relative flex-1 flex flex-col items-center justify-center transform-gpu w-1250 h-1250  ${className || ""}`}
+      className={`relative flex-1 flex md:flex-col md:items-center md:justify-center transform-gpu w-1250 h-1250 overflow-auto md:overflow-hidden" ${className || ""}`}
     >
       {/* parent div to apply transform 3d to the game area */}
       <div
-        className="game-board absolute inset-[-50%] flex items-center justify-center"
+        className="game-board relative flex items-center justify-center"
         style={{
           transform: isCardDragged
             ? "perspective(1500px) rotateX(0deg) rotateZ(0deg) scale(var(--game-board-scale, 0.3))"

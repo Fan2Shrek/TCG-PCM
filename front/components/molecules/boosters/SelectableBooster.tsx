@@ -13,6 +13,7 @@ import {
 } from "@/lib/boosterOpening/phases";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { RxCross1 } from "react-icons/rx";
 
 type SelectableBoosterProps = {
   booster: Booster;
@@ -187,6 +188,17 @@ export default function SelectableBooster({
               }),
         }}
       >
+        {isSmallScreen &&
+          isFrontPreviewOpen &&
+          !isFrontOpeningAnimating &&
+          !isAnimatingPreview && (
+            <button
+              onClick={() => onPreviewChange(false)}
+              className="text-white font-bold text-xl rounded-full p-2 cursor-pointer absolute -top-10 right-0 z-70 bg-black/50 hover:bg-black/70 transition-colors duration-200"
+            >
+              <RxCross1 />
+            </button>
+          )}
         <div
           className={isPortalMounted ? "invisible pointer-events-none" : ""}
           aria-hidden={isPortalMounted}

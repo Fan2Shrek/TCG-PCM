@@ -22,6 +22,7 @@ type DrawPileProps = {
 
 const SELF_CARD_DRAW_ANIMATION_TIME = 200;
 const OPPONENT_CARD_DRAW_ANIMATION_TIME = 600;
+const TOOLTIP_TAP_DURATION_MS = 1800;
 
 export default function DrawPile({
   numCards,
@@ -30,10 +31,12 @@ export default function DrawPile({
   playerId,
   isOpponent = false,
 }: DrawPileProps) {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTooltipPinned, setIsTooltipPinned] = useState(false);
   const [displayNumCards, setDisplayNumCards] = useState(numCards);
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
   const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const direction = isOpponent ? -1 : 1;
   const shadowOffsetX = direction * (displayNumCards * 2 - 6);
   const shadow = `1px 0 rgba(0,0,0,0.66)`;
@@ -70,11 +73,34 @@ export default function DrawPile({
     };
   }, [playerId, displayNumCards, isOpponent, animationTime]);
 
+  useEffect(() => {
+    return () => {
+      if (tooltipTimerRef.current) {
+        clearTimeout(tooltipTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleTapTooltip = () => {
+    setIsTooltipPinned(true);
+
+    if (tooltipTimerRef.current) {
+      clearTimeout(tooltipTimerRef.current);
+    }
+
+    tooltipTimerRef.current = setTimeout(() => {
+      setIsTooltipPinned(false);
+    }, TOOLTIP_TAP_DURATION_MS);
+  };
+
+  const showTooltip = isHovered || isTooltipPinned;
+
   return (
     <div
       className={`relative w-card-md aspect-card ${className}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleTapTooltip}
       style={{
         transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
         zIndex: displayNumCards,

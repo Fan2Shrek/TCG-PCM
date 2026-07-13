@@ -8,10 +8,16 @@ import {
 
 type ArcParameters = ReturnType<typeof cardsHandComputeArcParameters>;
 
+type HandPositionsOptions = {
+  expandedSpacingFactor?: number;
+  maxExpandedWidthPx?: number;
+};
+
 export function useHandPositions(
   cards: BasicCard[],
   cardWidthPx: number,
   hovered: boolean,
+  options?: HandPositionsOptions,
 ): CardWithPosition[] {
   const positionedCards = useMemo(() => {
     const totalCards = cards.length;
@@ -54,7 +60,8 @@ export function useHandPositions(
     if (!hovered) {
       return mapToCardWithPosition(positions);
     } else {
-      const baseSpacing = cardWidthPx;
+      const spacingFactor = options?.expandedSpacingFactor ?? 1;
+      const baseSpacing = cardWidthPx * spacingFactor;
       const maxCards = 7;
 
       let spacing: number;
@@ -63,6 +70,13 @@ export function useHandPositions(
       } else {
         const maxWidth = (maxCards - 1) * baseSpacing;
         spacing = maxWidth / (totalCards - 1);
+      }
+
+      const maxExpandedWidthPx = options?.maxExpandedWidthPx;
+      if (maxExpandedWidthPx && totalCards > 1) {
+        const maxSpacing = maxExpandedWidthPx / (totalCards - 1);
+        const minSpacing = cardWidthPx * 0.42;
+        spacing = Math.max(minSpacing, Math.min(spacing, maxSpacing));
       }
 
       const totalWidth = (totalCards - 1) * spacing;
@@ -78,7 +92,13 @@ export function useHandPositions(
 
       return mapToCardWithPosition(straightLinePositions);
     }
-  }, [cards, cardWidthPx, hovered]);
+  }, [
+    cards,
+    cardWidthPx,
+    hovered,
+    options?.expandedSpacingFactor,
+    options?.maxExpandedWidthPx,
+  ]);
 
   return positionedCards;
 }

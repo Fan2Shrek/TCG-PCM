@@ -146,14 +146,14 @@ export default function RoomsPageClient({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1">
+    <div className="flex flex-col items-center justify-center flex-1 px-2">
       <div className="w-full max-w-4xl rounded-lg bg-slate-100 border border-black/40 overflow-hidden mx-2">
         <div className="p-6">
           <div className="flex items-center justify-between mb-8 flex-wrap">
             <h2 className="text-2xl font-semibold text-black">
               Joueurs en attente d&apos;adversaires
             </h2>
-            <div className="flex gap-4">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 asChild
                 variant="default"
@@ -225,7 +225,7 @@ export default function RoomsPageClient({
             />
             <Button
               onClick={handleJoinById}
-              disabled={isJoiningById}
+              disabled={isJoiningById || !joinById.trim()}
               variant="default"
               size="lg"
             >

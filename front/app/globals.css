@@ -56,14 +56,8 @@
 
 @layer components {
   .game-board {
-    --game-board-scale: 0.3;
+    --game-board-scale: 0.6;
     transform-origin: center center;
-  }
-
-  @media (min-width: 640px) {
-    .game-board {
-      --game-board-scale: 0.45;
-    }
   }
 
   @media (min-width: 1024px) {
@@ -77,9 +71,6 @@
       --game-board-scale: 0.7;
     }
   }
-
- 
-  
 
   .rotate-y-180 {
     transform: rotateY(90deg);
