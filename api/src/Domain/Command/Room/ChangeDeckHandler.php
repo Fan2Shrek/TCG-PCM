@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Command\Room;
 
 use App\Service\Auth\CurrentUserProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -14,6 +15,7 @@ final class ChangeDeckHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private EntityManagerInterface $em,
     ) {}
 
     public function __invoke(ChangeDeckCommand $command): void
@@ -35,5 +37,7 @@ final class ChangeDeckHandler
             $room->getOpponent() === $user => $room->setOpponentDeck($deck),
             default => throw HttpException::fromStatusCode(Response::HTTP_FORBIDDEN, 'You are not a player in this room.'),
         };
+
+        $this->em->flush();
     }
 }
