@@ -36,7 +36,7 @@ final class NecromancianCard extends AbstractCharacterCard implements TurnAwareI
         $pile = $owner->discardPile;
 
         if (count($pile) > 0) {
-            $index = $gameContext->randomIntBetween(0, count($pile));
+            $index = $gameContext->randomIntBetween(1, count($pile));
             $cardId = array_keys($pile)[$index - 1];
 
             $gameContext->pushGameEvent(GameEventTypeEnum::CARD_REDRAWN, [
