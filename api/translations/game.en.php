@@ -24,7 +24,7 @@ return [
         ],
         'D6' => [
             'name' => 'D6',
-            'description' => 'Roll a six-sided dice and does that many damage',
+            'description' => 'Roll a six-sided dice and draw that many cards',
         ],
         'Stonks' => [
             'name' => 'Stonks',
