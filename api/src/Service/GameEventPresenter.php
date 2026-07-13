@@ -61,6 +61,9 @@ final class GameEventPresenter
             GameEventTypeEnum::MONSTER_DIED => [
                 'cardId' => $event->data['cardId'] ?? null,
             ],
+            GameEventTypeEnum::CARD_REDRAWN => [
+                'cardId' => $event->data['cardId'] ?? null,
+            ],
             default => [],
         };
     }
