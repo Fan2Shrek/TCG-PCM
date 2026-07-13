@@ -19,7 +19,7 @@ final class OriginalBooster implements BoosterInterface
     {
         return [
             'serie' => CardSetEnum::ORIGINAL,
-            'excludeType' => AbstractCharacterCard::class,
+            /* 'excludeType' => AbstractCharacterCard::class, */
         ];
     }
 }
