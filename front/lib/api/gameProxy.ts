@@ -3,7 +3,7 @@
 import { PlayerActionType } from "@/lib/game/type/playerAction";
 
 export async function playGameAction(gameId: string, actionId: PlayerActionType, payload: unknown = {}) {
-  const response = await fetch(`/api/game/${gameId}/play`, {
+  const response = await fetch(`/bff/game/${gameId}/play`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ actionId, payload }),
