@@ -182,7 +182,10 @@ export function applyGameView(
 
       const cardToEmit = view.card || card;
       if (cardToEmit) {
-        emitter.emit("card:played", { card: cardToEmit });
+        emitter.emit("card:played", {
+          card: cardToEmit,
+          playerId: view.playerId,
+        });
       }
 
       return {
