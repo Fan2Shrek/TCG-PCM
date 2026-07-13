@@ -13,6 +13,7 @@ use App\Game\GameContext;
 final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterface
 {
     use TurnAwareTrait;
+
     public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 

@@ -92,6 +92,5 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
         /** @var array<string, class-string<\App\Game\AbstractCard>> $cardsList */
         $cardsList = require __DIR__.'/../../../../resources/cards_list.php';
         return $cardsList;
-
     }
 }
