@@ -28,7 +28,7 @@ return [
         ],
         'D6' => [
             'name' => 'D6',
-            'description' => 'Lancez un dé à six faces et infligez autant de dégâts.',
+            'description' => 'Lancez un dé à six faces et piochez autant de cartes.',
         ],
         'Gitman' => [
             'name' => 'Gitman',
