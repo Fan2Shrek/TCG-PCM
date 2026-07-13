@@ -76,7 +76,7 @@ return [
         ],
         'SuperMonkey' => [
             'name' => 'Super Monkey',
-            'description' => 'Gains +{{value}} attack and HP for each monkey on your side when played.',
+            'description' => 'Gains +{{value}} attack and HP for each  monkey monster on your side when played.',
         ],
         'NinjaMonkey' => [
             'name' => 'Ninja Monkey',
@@ -199,12 +199,12 @@ return [
             'description' => 'Roll a 10-sided dice. If you roll a 9 or a 10, deal {{value}} damage to the opponent. Otherwise, deal {{value2}} damage to yourself.',
         ],
         'Necromancian' => [
-            'name' => 'Necromancian',
+            'name' => 'Prince of Darkness',
             'description' => 'Redrawn a card, at the end of turn.',
         ],
         'Isaac' => [
             'name' => 'Isaac',
-            'description' => 'Deal 5 damage to a random opponent card each turn.',
+            'description' => 'Deal 5 damage to a random opponent card at the start of each turn.',
         ],
         'Communism' => [
             'name' => 'Communism',
@@ -233,6 +233,14 @@ return [
         'Crypto4Noob' => [
             'name' => 'Crypto4Noob',
             'description' => 'Does as much damage as the current price of Bitcoin in euros, divided by 3000.',
+        ],
+        'Charlie' => [
+            'name' => 'Charlie',
+            'description' => 'Uses his masonry skills to craft a random passive at the start of the player\'s turn.',
+        ],
+        'Maxime' => [
+            'name' => 'Maxime',
+            'description' => 'Eats {{value1}} random opponent card every {{value2}} turns (characters take {{value3}} damage instead).',
         ],
     ],
     // Effects

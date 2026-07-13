@@ -26,7 +26,7 @@ final class PierrotCard extends AbstractCharacterCard implements TurnAwareInterf
         return 175;
     }
 
-    public function onTurnAction(GameContext $gameContext): void
+    private function onTurnAction(GameContext $gameContext): void
     {
         $cardId = $gameContext->getOneRandomCard($gameContext->getOtherPlayerId($this->ownerId));
 

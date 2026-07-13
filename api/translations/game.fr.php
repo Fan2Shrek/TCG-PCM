@@ -28,7 +28,7 @@ return [
         ],
         'Charlie' => [
             'name' => 'Charlie',
-            'description' => 'Pioche une carte de plus chaque tour',
+            'description' => 'Utilise ses talents de maçon afin de bricoler un passif aléatoire au début du tour.',
         ],
         'Stonks' => [
             'name' => 'Stonks',
@@ -72,7 +72,7 @@ return [
         ],
         'MechaPainter' => [
             'name' => 'Mecha-Peintre',
-            'description' => 'Réduit les dégâts reçus de {{value}}. À la fin de chaque tour, inflige {{value2}} dégâts à un monstre allié aléatoire.',
+            'description' => 'Réduit les dégâts reçus de {{value}}. À chaque fin de tour (tours adversaires compris), inflige {{value2}} dégâts à un monstre allié aléatoire.',
         ],
         'DartMonkey' => [
             'name' => 'Singe',
@@ -84,7 +84,7 @@ return [
         ],
         'SuperMonkey' => [
             'name' => 'Super singe',
-            'description' => 'Gagne +{{value}} attaque et PV pour chaque singe de votre côté lors de son arrivée en jeu.',
+            'description' => 'Gagne +{{value}} attaque et PV pour chaque monstre singe de votre côté lors de son arrivée en jeu.',
         ],
         'NinjaMonkey' => [
             'name' => 'Singe Ninja',
@@ -207,12 +207,12 @@ return [
             'description' => 'Lancez un dé à dix faces. Si le résultat est de 9 ou 10, infligez {{value}} dégâts à votre adversaire. Sinon, infligez {{value2}} dégâts à vous-même.',
         ],
         'Necromancian' => [
-            'name' => 'Nécromancien',
+            'name' => 'Singe Nécromancien',
             'description' => 'Ressuscite une carte aléatoire à la fin du tour.',
         ],
         'Isaac' => [
             'name' => 'Isaac',
-            'description' => 'Inflige 5 dégâts à une carte adverse aléatoire à chaque tour.',
+            'description' => 'Inflige 5 dégâts à une carte adverse aléatoire au début du tour.',
         ],
         'Communism' => [
             'name' => 'Communisme',
