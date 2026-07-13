@@ -126,7 +126,7 @@ const CardFront = ({
   }, [isImagesReady, isTextReady, hasNoRequiredImages, onReadyStateChange]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm">
+    <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm z-0">
       {sortedLayers.map((layer, i) => {
         const depthFactor = (layer.depth / 100) * 5;
         const isIllustrationLayer = !!layer.isIllustration;

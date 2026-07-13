@@ -16,7 +16,7 @@ const HoloFoil = ({ tilt, foil, mask }: HoloFoilProps) => {
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
       <div
         className={`
-        absolute inset-0 opacity-30 bg-cover bg-blend-soft-light-difference
+        absolute inset-0 bg-cover bg-blend-soft-light-difference
         mask-cover mask-center
         mix-blend-color-dodge
         transition-[filter] duration-300 ease-[cubic-bezier(.2,.9,.2,1)]
@@ -38,7 +38,7 @@ const HoloFoil = ({ tilt, foil, mask }: HoloFoilProps) => {
           , url(${foil})
           `,
           maskImage: `url(${mask})`,
-          filter: `brightness(0.6) contrast(1.75)`,
+          filter: `brightness(0.7) contrast(1.75)`,
           opacity: intensity,
         }}
       />
