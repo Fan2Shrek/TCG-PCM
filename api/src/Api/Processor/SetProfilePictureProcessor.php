@@ -40,8 +40,6 @@ final class SetProfilePictureProcessor implements ProcessorInterface
         $handledStamp = $envelope->last(HandledStamp::class);
 
         /** @var array $result */
-        $result = $handledStamp->getResult();
-
-        return $result;
+        return $handledStamp->getResult();
     }
 }
