@@ -56,9 +56,9 @@ final class MaximeCard extends AbstractCharacterCard implements TurnAwareInterfa
     {
         $targetId = $gameContext->getOneRandomCard($gameContext->getOtherPlayerId($this->ownerId));
 
-        $targettedCard = $gameContext->getCard($targetId);
+        $opponentCharacterId =$gameContext->getOpponentState()->characterCardId;
 
-        if (false) {
+        if ($targetId === $opponentCharacterId) {
             $opponentId = $gameContext->getOtherPlayerId($this->ownerId);
             $gameContext->attack(self::PLAYER_DAMAGE, $opponentId);
 

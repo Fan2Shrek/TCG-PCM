@@ -22,7 +22,7 @@ final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInt
     private const HEALTH_POINTS = 39;
     private const ATTACK = 45;
     private const DAMAGE_REDUCTION = 10;
-    private const SELF_TEAM_DAMAGE = 20;
+    private const SELF_TEAM_DAMAGE = 10;
 
     public function getId(): string
     {
