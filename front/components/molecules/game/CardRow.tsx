@@ -3,7 +3,7 @@
 import { memo, useContext, useEffect, useRef, useState } from "react";
 import { GameContext } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
-import { CardType } from "@/constants/card";
+import { CardSize, CardType } from "@/constants/card";
 import GameCard from "./GameCard";
 
 type CardRowProps = {
@@ -60,6 +60,15 @@ function CardRow({
     };
   }, []);
 
+  const cardIdsLength = cardIds.length;
+
+  const cardSize =
+    cardIdsLength > 8
+      ? CardSize.XS
+      : cardIdsLength > 6
+        ? CardSize.SM
+        : CardSize.MD;
+
   return (
     <div className={`flex flex-wrap justify-center gap-2 ${className}`}>
       {cardIds.map((cardId) => {
@@ -81,7 +90,8 @@ function CardRow({
               disableSelfTarget
               isPlaying={isPlaying}
               isOpponentSideForPlayAnimation={!isLoggedPlayerSide}
-              rowCardCount={cardIds.length}
+              rowCardCount={cardIdsLength}
+              size={cardSize}
             />
           )
         );
