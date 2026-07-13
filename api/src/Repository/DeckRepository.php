@@ -42,6 +42,7 @@ class DeckRepository extends ServiceEntityRepository
             ->createQueryBuilder('d')
             ->where('d.user = :user')
             ->andWhere('d.isDeleted = false')
+            ->andWhere('d.isFavorite = true')
             ->setParameter('user', $user)
             ->orderBy('d.id', 'ASC')
             ->setMaxResults(1)
