@@ -15,7 +15,6 @@ use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayerState;
 
-
 class GameEventApplier implements GameEventApplierInterface
 {
     public function __construct(
