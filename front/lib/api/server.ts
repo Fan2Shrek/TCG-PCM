@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 import { SESSION_COOKIE } from "@/lib/auth/constants";
 
-const API_INTERNAL_URL = process.env.API_INTERNAL_URL || "http://localhost:8000/api";
+const API_INTERNAL_URL = process.env.API_INTERNAL_URL || "http://php/api";
 
 export class ApiError extends Error {
   constructor(
