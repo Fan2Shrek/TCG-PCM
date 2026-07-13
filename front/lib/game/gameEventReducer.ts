@@ -163,6 +163,11 @@ export function applyGameView(
             nextPlayer.playArea.passiveCards.filter((id) => id !== cardId);
         }
 
+        const cardToEmit = view.card || card;
+        if (cardToEmit) {
+          emitter.emit("card:discarded", { card: cardToEmit });
+        }
+
         return {
           ...state,
           [playerKey]: {
@@ -177,7 +182,10 @@ export function applyGameView(
 
       const cardToEmit = view.card || card;
       if (cardToEmit) {
-        emitter.emit("card:played", { card: cardToEmit });
+        emitter.emit("card:played", {
+          card: cardToEmit,
+          playerId: view.playerId,
+        });
       }
 
       return {

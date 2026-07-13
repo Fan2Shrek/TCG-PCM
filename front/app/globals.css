@@ -11,6 +11,7 @@
   --font-mono: var(--font-geist-mono);
   --font-pixel: var(--font-geist-pixel);
   --aspect-card: var(--base-aspect-card);
+  --spacing-card-xs: var(--base-spacing-card-xs);
   --spacing-card-sm: var(--base-spacing-card-sm);
   --spacing-card-md: var(--base-spacing-card-md);
   --spacing-card-lg: var(--base-spacing-card-lg);
@@ -23,6 +24,7 @@
 @layer base {
   :root {
     --base-aspect-card: 5/7;
+    --base-spacing-card-xs: 5rem;
     --base-spacing-card-sm: 7rem;
     --base-spacing-card-md: 9rem;
     --base-spacing-card-lg: 11rem;
@@ -56,14 +58,8 @@
 
 @layer components {
   .game-board {
-    --game-board-scale: 0.3;
+    --game-board-scale: 0.6;
     transform-origin: center center;
-  }
-
-  @media (min-width: 640px) {
-    .game-board {
-      --game-board-scale: 0.45;
-    }
   }
 
   @media (min-width: 1024px) {
@@ -78,11 +74,8 @@
     }
   }
 
- 
-  
-
   .rotate-y-180 {
-    transform: rotateY(90deg);
+    transform: rotateY(180deg);
   }
 
   .inner-shadow {

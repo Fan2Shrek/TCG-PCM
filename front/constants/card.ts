@@ -1,4 +1,5 @@
 export enum CardSize {
+  XS = "xs",
   SM = "sm",
   MD = "md",
   LG = "lg",
@@ -34,6 +35,7 @@ export enum CardType {
 }
 
 export const CardSizeMap: Record<CardSize, string> = {
+  [CardSize.XS]: "w-card-xs",
   [CardSize.SM]: "w-card-sm",
   [CardSize.MD]: "w-card-md",
   [CardSize.LG]: "w-card-lg",

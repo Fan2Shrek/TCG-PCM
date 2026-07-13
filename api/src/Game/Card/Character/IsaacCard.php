@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Game\Card\Character;
 
+use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
@@ -13,6 +14,7 @@ final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterfac
 {
     use TurnAwareTrait;
 
+    public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
     private const DAMAGE = 5;
@@ -24,7 +26,7 @@ final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterfac
 
     public function getHealthPoints(): int
     {
-        return 150;
+        return 180;
     }
 
     public function onTurnStart(GameContext $gameContext): void

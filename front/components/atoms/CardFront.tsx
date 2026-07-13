@@ -3,6 +3,7 @@ import HoloFoil from "./HoloFoil";
 import RainbowFoil from "./RainbowFoil";
 import GoldenFoil from "./GoldenFoil";
 import CardTextOverlay from "./CardTextOverlay";
+import CardGlare from "./CardGlare";
 import { Fragment } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { CardLayer } from "@/lib/cards/types/card";
@@ -32,6 +33,7 @@ export type CardFrontProps = {
 const CardFront = ({
   layers,
   tilt,
+  glare,
   isHovering,
   readinessKey,
   cardTitle,
@@ -69,7 +71,8 @@ const CardFront = ({
     [requiredLayerSrcs],
   );
   const hasNoRequiredImages = requiredLayerSrcs.length === 0;
-  const [prevRequiredLayersKey, setPrevRequiredLayersKey] = useState(requiredLayersKey);
+  const [prevRequiredLayersKey, setPrevRequiredLayersKey] =
+    useState(requiredLayersKey);
 
   // Resets image readiness so the probe effect below can recompute it for the new
   // layers, computed during render (see "Adjusting state in render" in the React docs).
@@ -123,7 +126,7 @@ const CardFront = ({
   }, [isImagesReady, isTextReady, hasNoRequiredImages, onReadyStateChange]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm">
+    <div className="absolute inset-0 overflow-hidden backface-hidden select-none rounded-sm z-0">
       {sortedLayers.map((layer, i) => {
         const depthFactor = (layer.depth / 100) * 5;
         const isIllustrationLayer = !!layer.isIllustration;
@@ -171,6 +174,7 @@ const CardFront = ({
           </Fragment>
         );
       })}
+      <CardGlare glare={glare} isHovering={isHovering} />
       <CardTextOverlay
         key={readinessKey}
         readinessKey={readinessKey}

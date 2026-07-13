@@ -3,7 +3,6 @@
 import React from "react";
 import CardFront from "../atoms/CardFront";
 import CardBack from "../atoms/CardBack";
-import CardGlare from "../atoms/CardGlare";
 import {
   CardRaririty,
   CardSet,
@@ -214,7 +213,6 @@ const Card = ({
         }
       />
       <CardBack />
-      <CardGlare glare={appliedGlare} isHovering={!!isHovering} />
       {showLoadingUntilReady && !isCardReady ? (
         <div className="absolute inset-0 z-50 flex items-center justify-center rounded-sm bg-black/35">
           <LoadingSpinner className="h-6 w-6" />

@@ -8,7 +8,7 @@ type Events = {
     card: BasicCard;
   };
   "card:drag:move": { pos: { x: number; y: number }; card: BasicCard };
-  "card:played": { card: BasicCard };
+  "card:played": { card: BasicCard; playerId?: string };
   "card:discarded": { card: BasicCard };
   "card:return-hand": {
     pos: { x: number | undefined; y: number | undefined };

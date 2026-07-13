@@ -3,7 +3,14 @@
 import { GameContext } from "@/contexts/GameContext";
 import type { GameAnnouncement } from "@/contexts/GameContext";
 import { emitter } from "@/lib/eventBus";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import GameMainArea from "./GameMainArea";
@@ -14,7 +21,6 @@ import { useRoom } from "@/contexts/RoomContext";
 import { RoomStatus } from "@/types/roomStatus";
 import api from "@/lib/api/api";
 import WinScreen from "./WinScreen";
-import MobileGameDisclaimer from "@/components/molecules/game/MobileGameDisclaimer";
 import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
@@ -36,7 +42,6 @@ export default function GameBoard() {
 
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const rewardedWinnerIdRef = useRef<string | null>(null);
   const { refresh: refreshBoosterTokens } = useBoosterTokensContext();
@@ -54,23 +59,6 @@ export default function GameBoard() {
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      "(max-width: 1024px), (pointer: coarse)",
-    );
-
-    const updateDeviceType = () => {
-      setIsMobileDevice(mediaQuery.matches);
-    };
-
-    updateDeviceType();
-    mediaQuery.addEventListener("change", updateDeviceType);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateDeviceType);
-    };
-  }, []);
 
   useEffect(() => {
     if (userRoom && currentUsername && userRoom.id !== id) {
@@ -148,7 +136,9 @@ export default function GameBoard() {
     return () => emitter.off("card:dropped", handleCardDropped);
   }, [getCardById, actions, currentCoins, targetingActions]);
 
-  const cardHandPositionClass = isHandHovered ? "bottom-0" : "-bottom-30";
+  const desktopCardHandPositionClass = isHandHovered
+    ? "sm:bottom-0"
+    : "sm:-bottom-30";
 
   const handleBackgroundClick = () => {
     if (targeting.selectedAttackerId || targeting.pendingPlayCardId) {
@@ -267,7 +257,6 @@ export default function GameBoard() {
         />
       )}
 
-      <MobileGameDisclaimer isVisible={isMobileDevice} />
       <div className="top-5 right-5 absolute z-20">
         <Tooltip
           text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or.
@@ -288,7 +277,7 @@ export default function GameBoard() {
         />
       </div>
       <div
-        className={`absolute ${cardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}
+        className={`absolute -bottom-15 ${desktopCardHandPositionClass} left-1/2 -translate-x-1/2 p-4 z-10 transition-all ease-in-out duration-100`}
       >
         <CardsHand
           cards={handCards}

@@ -11,6 +11,7 @@ import {
   animateGameEvent,
   applyGameView,
 } from "@/lib/game/gameEventReducer";
+import { CardType } from "@/constants/card";
 
 import {
   createContext,
@@ -276,11 +277,61 @@ export const GameProvider = ({
 
       if (!selectedAttackerId) return;
 
+      const attackerCard = getCardById(selectedAttackerId);
+      const targetCard = getCardById(targetId);
+
+      if (attackerCard?.type === CardType.PASSIVE) {
+        pushAnnouncement({
+          text: "Cible invalide",
+          tone: "negative",
+        });
+        return;
+      }
+
+      if (
+        attackerCard?.type === CardType.MONSTER &&
+        targetCard?.type === CardType.PASSIVE
+      ) {
+        pushAnnouncement({
+          text: "Cible invalide",
+          tone: "negative",
+        });
+        return;
+      }
+
+      if (attackerCard?.type === CardType.MONSTER && game && username) {
+        const loggedPlayerState =
+          game.player1.player.name === username ? game.player1 : game.player2;
+
+        const isOwnCharacterTarget =
+          targetId === loggedPlayerState.characterCardId ||
+          targetId === loggedPlayerState.player.id;
+        const isOwnMonsterTarget =
+          loggedPlayerState.playArea.monsterCards.includes(targetId);
+
+        if (isOwnCharacterTarget || isOwnMonsterTarget) {
+          pushAnnouncement({
+            text: "Cible invalide",
+            tone: "negative",
+          });
+          return;
+        }
+      }
+
       attack(selectedAttackerId, targetId);
       setHoveredTargetId(null);
       setSelectedAttackerId(null);
     },
-    [pendingPlayCardId, selectedAttackerId, playCard, attack],
+    [
+      pendingPlayCardId,
+      selectedAttackerId,
+      playCard,
+      attack,
+      getCardById,
+      game,
+      pushAnnouncement,
+      username,
+    ],
   );
 
   const cancelPendingCardTarget = useCallback(() => {

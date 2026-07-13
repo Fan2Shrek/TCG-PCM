@@ -3,6 +3,7 @@
 namespace App\Game\Card\Character;
 
 use App\Enum\CardRarityEnum;
+use App\Enum\CardSetEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
@@ -10,6 +11,7 @@ use App\Game\GameContext;
 
 final class NecromancianCard extends AbstractCharacterCard implements TurnAwareInterface
 {
+    public static CardSetEnum $serie = CardSetEnum::BTD6;
     public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
 
     use TurnAwareTrait;
