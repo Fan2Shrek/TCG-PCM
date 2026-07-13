@@ -7,6 +7,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Service\Game\Helper\CardHelper;
 
 class MimeticPrismRubyCard extends AbstractMonsterCard
 {
@@ -60,7 +61,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
         }
 
         $this->copyTemplateId = $state->templateId;
-        $this->getMimedCard($state, $copyId);
+        $this->getMimedCard();
 
         $context->pushGameEvent(GameEventTypeEnum::UPDATE_CARD_STATE, [
             'cardId' => $this->getInstanceId(),
@@ -72,8 +73,15 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     protected function getMimedCard(): void
     {
-        /** @var AbstractMonsterCard $card */
-        $card = GameUtils::getService('cards')->getCardTemplate($this->copyTemplateId);
+        $cards = GameUtils::getService('cards');
+        if (!$cards instanceof CardHelper) {
+            throw new \LogicException('Service "cards" must be an instance of CardHelper.');
+        }
+
+        $card = $cards->getCardTemplate($this->copyTemplateId);
+        if (!$card instanceof AbstractMonsterCard) {
+            throw new \LogicException('Mimetic Prism Ruby can only mimic monster cards.');
+        }
 
         $this->damage = (int) round($card->getBaseAttack() * static::ATTACK_MULTIPLIER);
         $this->heal = (int) round($card->getHealPoints() * static::HEALTH_POINTS_MULTIPLIER);

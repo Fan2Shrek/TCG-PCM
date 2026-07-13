@@ -28,7 +28,8 @@ final class PasswordExpirySubscriber implements EventSubscriberInterface
             return;
         }
 
-        $ageInDays = $user->getPasswordChangedAt()->diff(new \DateTimeImmutable())->days;
+        $days = $user->getPasswordChangedAt()->diff(new \DateTimeImmutable())->days;
+        $ageInDays = false === $days ? 0 : $days;
 
         $event->setData([
             ...$event->getData(),

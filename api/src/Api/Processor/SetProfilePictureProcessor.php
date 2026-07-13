@@ -36,10 +36,16 @@ final class SetProfilePictureProcessor implements ProcessorInterface
             throw $previous ?? $e;
         }
 
-        /** @var HandledStamp $handledStamp */
         $handledStamp = $envelope->last(HandledStamp::class);
+        if (!$handledStamp instanceof HandledStamp) {
+            throw new \LogicException('Missing handled stamp for profile picture command.');
+        }
 
-        /** @var array $result */
-        return $handledStamp->getResult();
+        $result = $handledStamp->getResult();
+        if (!\is_array($result)) {
+            throw new \LogicException('Expected profile picture command result to be an array.');
+        }
+
+        return $result;
     }
 }

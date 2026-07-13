@@ -7,7 +7,6 @@ namespace App\Service\Booster\Types;
 use App\Enum\CardSetEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
 
-
 final class BtdBooster implements BoosterInterface
 {
     public function getCapacity(): int

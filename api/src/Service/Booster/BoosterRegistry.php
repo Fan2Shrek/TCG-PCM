@@ -28,6 +28,18 @@ final class BoosterRegistry
         return self::BOOSTER_TYPES[$type];
     }
 
+    public function createBooster(string $type): BoosterInterface
+    {
+        return match ($type) {
+            'default' => new Types\DefaultBooster(),
+            'big' => new Types\BigBooster(),
+            'original' => new Types\OriginalBooster(),
+            'isaac' => new Types\IsaacBooster(),
+            'btd' => new Types\BtdBooster(),
+            default => throw new \InvalidArgumentException(sprintf('Booster type "%s" is not registered.', $type)),
+        };
+    }
+
     public function getAvailableBoosterTypes(): array
     {
         return array_keys(self::BOOSTER_TYPES);

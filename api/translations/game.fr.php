@@ -72,7 +72,7 @@ return [
         ],
         'MechaPainter' => [
             'name' => 'Mecha-Peintre',
-            'description' => 'Réduit les dégâts reçus de {{value}}. À la fin de chaque tour, inflige aléatoirement {{value2}} dégâts à une carte alliée.',
+            'description' => 'Réduit les dégâts reçus de {{value}}. À la fin de chaque tour, inflige {{value2}} dégâts à un monstre allié aléatoire.',
         ],
         'DartMonkey' => [
             'name' => 'Singe',
@@ -136,7 +136,7 @@ return [
         ],
         'Fortnite' => [
             'name' => 'Fortnite',
-            'description' => 'Choisit un monstre en jeu aléatoirement, défausse toutes les autres cartes en jeu, puis lui donne Victory royale (+{{health}} PV et +{{attack}} attaque).',
+            'description' => 'Choisit un monstre en jeu aléatoirement, défausse toutes les autres cartes en jeu. Ce monstre fait top 1 et gagne +{{health}} PV et +{{attack}} attaque.',
         ],
         'Pills' => [
             'name' => 'Pillules !',

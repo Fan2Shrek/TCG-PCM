@@ -134,7 +134,7 @@ final class ChaosCard extends AbstractPlayableCard
         $pool = [];
         foreach ($this->getCardsList() as $templateId => $cardClass) {
             $card = new $cardClass();
-            if ($card instanceof AbstractPassiveCard && !$card instanceof AbstractCharacterCard) {
+            if ($card instanceof AbstractPassiveCard) {
                 $pool[] = $templateId;
             }
         }

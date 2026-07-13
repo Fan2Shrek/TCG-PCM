@@ -61,7 +61,7 @@ final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInt
         }
 
         $ownerState = $gameContext->getPlayerStateById($ownerId);
-        $pool = [...$ownerState->playArea->getAll(), $ownerState->characterCardId];
+        $pool = $ownerState->playArea->getAll();
 
         if ([] === $pool) {
             return;

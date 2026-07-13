@@ -6,7 +6,6 @@ namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
 use App\Enum\GameEventTypeEnum;
-
 use App\Game\GameContext;
 use App\Game\GameUtils;
 

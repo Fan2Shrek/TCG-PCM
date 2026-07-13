@@ -6,7 +6,6 @@ namespace App\Service\Booster;
 
 use App\Domain\Model\Booster;
 use App\Enum\CardRarityEnum;
-use App\Service\Booster\Types\BoosterInterface;
 use App\Service\Game\CardRegistryInterface;
 
 class BoosterGenerator
@@ -30,14 +29,7 @@ class BoosterGenerator
     public function generateBooster(?string $boosterType = null): Booster
     {
         $boosterType ??= 'default';
-        $boosterClass = $this->boosterRegistry->getBoosterType($boosterType);
-
-        if (!class_exists($boosterClass) || interface_exists($boosterClass) || !is_subclass_of($boosterClass, BoosterInterface::class, true)) {
-            throw new \InvalidArgumentException(\sprintf('Booster type "%s" must implement BoosterInterface.', $boosterType));
-        }
-
-        /** @var BoosterInterface $booster */
-        $booster = new $boosterClass();
+        $booster = $this->boosterRegistry->createBooster($boosterType);
         $boosterCards = [];
 
         for ($i = 0; $i < $booster->getCapacity(); $i++) {

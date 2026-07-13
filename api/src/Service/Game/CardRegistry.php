@@ -44,11 +44,11 @@ class CardRegistry implements CardRegistryInterface
             throw new \InvalidArgumentException(sprintf('Set must be an instance of %s', CardSetEnum::class));
         }
 
-        if (\is_string($type) && (!class_exists($type) || !is_a($type, AbstractCard::class, true))) {
+        if (\is_string($type) && !is_subclass_of($type, AbstractCard::class, true)) {
             throw new \InvalidArgumentException(\sprintf('Type must be a class string of %s', AbstractCard::class));
         }
 
-        if (\is_string($excludeType) && (!class_exists($excludeType) || !is_a($excludeType, AbstractCard::class, true))) {
+        if (\is_string($excludeType) && !is_subclass_of($excludeType, AbstractCard::class, true)) {
             throw new \InvalidArgumentException(\sprintf('Exclude type must be a class string of %s', AbstractCard::class));
         }
 

@@ -10,7 +10,6 @@ use App\Api\DTO\CollectionCardDTO;
 use App\Game\Card\Character\AbstractCharacterCard;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Service\Booster\BoosterRegistry;
-use App\Service\Booster\Types\BoosterInterface;
 use App\Service\Game\CardRegistryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -29,21 +28,15 @@ final class BoosterObtainableCardsProvider implements ProviderInterface
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        $type = $request?->query->get('type', 'default') ?? 'default';
-        $offset = max(0, (int) ($request?->query->get('offset', 0) ?? 0));
+        $type = $request?->query->get('type', 'default');
+        $offset = max(0, (int) $request?->query->get('offset', 0));
         $stepRaw = $request?->query->get('step');
         $step = null;
         if (null !== $stepRaw && '' !== $stepRaw) {
             $step = max(1, (int) $stepRaw);
         }
 
-        $boosterClass = $this->boosterRegistry->getBoosterType($type);
-        if (!class_exists($boosterClass) || interface_exists($boosterClass) || !is_subclass_of($boosterClass, BoosterInterface::class, true)) {
-            throw new \InvalidArgumentException(\sprintf('Booster type "%s" must implement BoosterInterface.', $type));
-        }
-
-        /** @var BoosterInterface $booster */
-        $booster = new $boosterClass();
+        $booster = $this->boosterRegistry->createBooster($type);
         $criteria = $booster->getCardsCriteria();
 
         $cardIds = $this->cardRegistry->getAllBy($criteria);

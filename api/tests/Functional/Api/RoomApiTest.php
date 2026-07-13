@@ -165,6 +165,7 @@ final class RoomApiTest extends FunctionalTestCase
         );
         $deck = new Deck($user, 'test deck', '');
         $deck->setCharacterCard(new PierrotCard()->getId());
+        $deck->setFavorite(true);
         $user->addDeck($deck);
         $this->getEm()->persist($user);
         $this->getEm()->persist($deck);

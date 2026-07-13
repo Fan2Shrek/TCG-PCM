@@ -6,8 +6,6 @@ namespace App\Service\Booster\Types;
 
 use App\Enum\CardSetEnum;
 
-
-
 final class OriginalBooster implements BoosterInterface
 {
     public function getCapacity(): int

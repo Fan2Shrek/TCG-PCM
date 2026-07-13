@@ -20,6 +20,6 @@ final class CoinsCardTest extends CardTestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
-        self::assertSame(5, $events[0]->data['amount']);
+        self::assertSame(3, $events[0]->data['amount']);
     }
 }

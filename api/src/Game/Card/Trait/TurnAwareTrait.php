@@ -22,11 +22,16 @@ trait TurnAwareTrait
     protected function isOwnerTurn(GameContext $gameContext): bool
     {
         assert($this instanceof AbstractCard, 'Must be AbstractCard');
+        $ownerId = $this->getOwnerId();
 
-        if (!$this->getOwnerId()) {
+        if (null === $ownerId || '' === $ownerId) {
             throw new \LogicException('Card ownerId is not set.');
         }
 
-        return $gameContext->isCurrentPlayer($this->getOwnerId());
+        if (!\is_string($ownerId)) {
+            throw new \LogicException('Card ownerId must be a string.');
+        }
+
+        return $gameContext->isCurrentPlayer($ownerId);
     }
 }
