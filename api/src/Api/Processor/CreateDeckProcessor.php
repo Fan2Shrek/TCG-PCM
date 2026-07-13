@@ -25,10 +25,6 @@ final class CreateDeckProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Deck
     {
-        if (!$data instanceof CreateDeckInput) {
-            throw new \InvalidArgumentException('Invalid payload for deck creation.');
-        }
-
         $name = trim($data->name);
         if ('' === $name) {
             throw new \InvalidArgumentException('Deck name is required.');
@@ -39,11 +35,11 @@ final class CreateDeckProcessor implements ProcessorInterface
             throw new \InvalidArgumentException('Character card is required.');
         }
 
-        $cards = array_values(array_filter($data->cards, static fn(mixed $cardId): bool => is_string($cardId) && '' !== trim($cardId)));
+        $cards = array_values(array_filter($data->cards, static fn(string $cardId): bool => '' !== trim($cardId)));
 
         $deck = new Deck(user: $this->currentUserProvider->getCurrentUser(), name: $name, characterCard: $characterCard, cards: $cards);
 
-        $deck->setIsFavorite((bool) ($data->isFavorite ?? false));
+        $deck->setIsFavorite($data->isFavorite ?? false);
 
         $this->deckValidator->validateDeck($deck);
 

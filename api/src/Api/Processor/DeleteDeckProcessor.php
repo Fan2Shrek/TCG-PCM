@@ -24,10 +24,6 @@ final class DeleteDeckProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
-        if (!$data instanceof Deck) {
-            return null;
-        }
-
         if ($data->isDeleted()) {
             return null;
         }

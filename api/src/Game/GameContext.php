@@ -135,8 +135,12 @@ class GameContext
         return $this->state->cards[$instanceId];
     }
 
-    public function isCurrentPlayer(string $playerId): bool
+    public function isCurrentPlayer(?string $playerId): bool
     {
+        if ($playerId === null) {
+            return false;
+        }
+
         return $this->state->currentPlayer === $playerId;
     }
 

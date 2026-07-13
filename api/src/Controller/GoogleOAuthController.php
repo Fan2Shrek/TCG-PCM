@@ -89,6 +89,8 @@ final class GoogleOAuthController
 
         $data = $googleUser->toArray();
         $email = (string) ($data['email'] ?? '');
+        $rawEmailVerified = $data['email_verified'] ?? false;
+        $emailVerified = \is_bool($rawEmailVerified) ? $rawEmailVerified : filter_var($rawEmailVerified, FILTER_VALIDATE_BOOL);
 
         if ('' === $email) {
             return $this->redirectToFrontWithError('oauth_failed');
@@ -97,7 +99,7 @@ final class GoogleOAuthController
         $user = $this->googleAccountLinker->findOrCreate(
             googleId: (string) $googleUser->getId(),
             email: $email,
-            emailVerified: (bool) ($data['email_verified'] ?? false),
+            emailVerified: $emailVerified,
             name: (string) ($data['name'] ?? $email),
         );
 
