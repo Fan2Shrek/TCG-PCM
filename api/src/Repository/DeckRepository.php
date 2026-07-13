@@ -18,11 +18,10 @@ class DeckRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Deck[]
+     * @return list<Deck>
      */
     public function findActiveByUser(User $user): array
     {
-        /** @var Deck[] $result */
         return $this
             ->createQueryBuilder('d')
             ->where('d.user = :user')
@@ -35,7 +34,6 @@ class DeckRepository extends ServiceEntityRepository
 
     public function findFirstActiveByUser(User $user): ?Deck
     {
-        /** @var Deck|null $result */
         return $this
             ->createQueryBuilder('d')
             ->where('d.user = :user')
