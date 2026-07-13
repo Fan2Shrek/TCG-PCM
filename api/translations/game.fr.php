@@ -22,6 +22,14 @@ return [
             'name' => 'Pierrot',
             'description' => 'Applique {{effect}} à {{value1}} carte tous les {{value2}} tours.',
         ],
+        'Maxime' => [
+            'name' => 'Maxime',
+            'description' => 'Mange {{value1}} carte tous les {{value2}} tours.',
+        ],
+        'Charlie' => [
+            'name' => 'Charlie',
+            'description' => 'Pioche une carte de plus chaque tour',
+        ],
         'Stonks' => [
             'name' => 'Stonks',
             'description' => 'Gagne {{value}} pièces au début de chaque tour. De plus, à la fin de chaque tour, gagne {{value2}}% de vos pièces actuelles en intérêts (jusqu\'à {{const}} pièces).',

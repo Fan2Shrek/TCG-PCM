@@ -6,7 +6,7 @@ namespace App\Service\Booster\Types;
 
 use App\Enum\CardSetEnum;
 use App\Game\Card\Character\AbstractCharacterCard;
-use Symfony\Component\Translation\TranslatableMessage;
+
 
 final class BtdBooster implements BoosterInterface
 {

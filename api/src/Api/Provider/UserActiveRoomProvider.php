@@ -27,7 +27,7 @@ final class UserActiveRoomProvider implements ProviderInterface
         $qb = $this->roomRepository->createQueryBuilder('r');
 
         /** @var Room[] $rooms */
-        $rooms = $qb
+        return $qb
             ->where('(r.owner = :user OR r.opponent = :user)')
             ->andWhere('r.status IN (:statuses)')
             ->setParameter('user', $user)
@@ -35,7 +35,5 @@ final class UserActiveRoomProvider implements ProviderInterface
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
-
-        return $rooms;
     }
 }
