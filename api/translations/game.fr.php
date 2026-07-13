@@ -24,7 +24,7 @@ return [
         ],
         'Maxime' => [
             'name' => 'Maxime',
-            'description' => 'Mange {{value1}} carte tous les {{value2}} tours.',
+            'description' => 'Mange {{value1}} carte adverse aléatoire tous les {{value2}} tours (les personnages prennent {{value3}} dégâts à la place).',
         ],
         'Charlie' => [
             'name' => 'Charlie',

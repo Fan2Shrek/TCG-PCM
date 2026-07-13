@@ -24,7 +24,7 @@ final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterfac
 
     public function getHealthPoints(): int
     {
-        return 150;
+        return 180;
     }
 
     public function onTurnStart(GameContext $gameContext): void
