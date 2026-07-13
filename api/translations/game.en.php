@@ -64,7 +64,7 @@ return [
         ],
         'MechaPainter' => [
             'name' => 'Mecha Painter',
-            'description' => 'Reduces incoming damage by {{value}}. At the end of each turn, randomly deals {{value2}} damage to an allied card.',
+            'description' => 'Reduces incoming damage by {{value}}. At the end of each turn, randomly deals {{value2}} damage to an allied monster.',
         ],
         'DartMonkey' => [
             'name' => 'Dart Monkey',

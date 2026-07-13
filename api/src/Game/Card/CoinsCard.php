@@ -7,7 +7,7 @@ use App\Game\GameUtils;
 
 final class CoinsCard extends AbstractPlayableCard
 {
-    private const int COINS_GAINED = 5;
+    private const int COINS_GAINED = 3;
 
     public function getId(): string
     {
