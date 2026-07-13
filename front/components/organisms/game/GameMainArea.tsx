@@ -42,8 +42,8 @@ export default function GameMainArea({
         className="game-board absolute inset-[-50%] flex items-center justify-center"
         style={{
           transform: isCardDragged
-            ? "perspective(1500px) rotateX(0deg) rotateZ(0deg)"
-            : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg)`,
+            ? "perspective(1500px) rotateX(0deg) rotateZ(0deg) scale(var(--game-board-scale, 0.3))"
+            : `perspective(1000px) rotateX(${GAMEBOARD_TILT}deg) rotateZ(0deg) scale(var(--game-board-scale, 0.3))`,
           transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
         }}
       >
