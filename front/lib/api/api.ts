@@ -23,7 +23,7 @@ export class ApiClient {
   }
 
   async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`/api/proxy${endpoint}`, {
+    const response = await fetch(`/bff/proxy${endpoint}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",

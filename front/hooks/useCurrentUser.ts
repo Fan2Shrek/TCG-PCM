@@ -11,7 +11,7 @@ export function useCurrentUser() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/session")
+    fetch("/bff/session")
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled) setUser(data.user ?? null);

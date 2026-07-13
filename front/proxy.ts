@@ -61,5 +61,5 @@ export const config = {
   // Les fichiers statiques de public/ (images, polices...) et les routes API doivent rester
   // accessibles sans redirection : une route API doit répondre en JSON, jamais par une
   // redirection HTML vers /login.
-  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|ttf|woff|woff2|pdf)$).*)"],
+  matcher: ["/((?!bff/|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|ttf|woff|woff2|pdf)$).*)"],
 };
