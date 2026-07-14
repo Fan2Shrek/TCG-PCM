@@ -14,7 +14,7 @@ final class DartCard extends AbstractPlayableCard
     public static CardRarityEnum $rarity = CardRarityEnum::COMMON;
     public static CardSetEnum $serie = CardSetEnum::BTD6;
 
-    private const DAMAGE = 5;
+    private const DAMAGE = 7;
 
     public function getId(): string
     {

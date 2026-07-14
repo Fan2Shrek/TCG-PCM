@@ -11,7 +11,7 @@ import {
   animateGameEvent,
   applyGameView,
 } from "@/lib/game/gameEventReducer";
-import { CardType } from "@/constants/card";
+import { CardType, CardSet } from "@/constants/card";
 
 import {
   createContext,
@@ -23,6 +23,8 @@ import {
   useState,
 } from "react";
 import { PlayerActionType } from "@/lib/game/type/playerAction";
+import { emitter } from "@/lib/eventBus";
+import { GameEventType } from "@/lib/game/type/eventType";
 
 export type { AnnouncementTone };
 
@@ -146,6 +148,9 @@ export const GameProvider = ({
   const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<number[]>([]);
 
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [queuedEvents, setQueuedEvents] = useState<GameEvent[]>([]);
+
   const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
 
@@ -212,13 +217,64 @@ export const GameProvider = ({
   const attack = useCallback(
     (cardId: string, targetId: string) => {
       playGameAction(gameId, PlayerActionType.ATTACK, { cardId, targetId });
+      const attackerCard = getCardById(cardId);
+      const cardSet: CardSet = attackerCard?.serie || CardSet.ORIGINAL;
+      emitter.emit("attack-animation:start", {
+        attackerId: cardId,
+        targetId,
+        cardSet,
+      });
+      setIsAnimating(true);
     },
-    [gameId],
+    [gameId, getCardById],
   );
 
   const endTurn = useCallback(() => {
     playGameAction(gameId, PlayerActionType.END_TURN);
   }, [gameId]);
+
+  const processEvents = useCallback(
+    (events: GameEvent[]) => {
+      if (!gameRef.current) {
+        return;
+      }
+      let next = { ...gameRef.current };
+
+      for (const event of events) {
+        const previous = next;
+        const announcement = animateGameEvent(previous, event);
+
+        if (announcement) {
+          pushAnnouncement(announcement);
+        }
+
+        next = applyGameView(next, event, username);
+      }
+
+      const normalizedNext = normalizeGameState(next);
+
+      gameRef.current = normalizedNext;
+      setGame(normalizedNext);
+    },
+    [normalizeGameState, pushAnnouncement, username],
+  );
+
+  useEffect(() => {
+    const onAnimationComplete = () => {
+      setIsAnimating(false);
+    };
+    emitter.on("attack-animation:completed", onAnimationComplete);
+    return () => {
+      emitter.off("attack-animation:completed", onAnimationComplete);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAnimating && queuedEvents.length > 0) {
+      processEvents(queuedEvents);
+      setQueuedEvents([]);
+    }
+  }, [isAnimating, queuedEvents, processEvents]);
 
   const isLoggedPlayerTurn = useMemo(() => {
     if (!game || !username) return false;
@@ -326,11 +382,11 @@ export const GameProvider = ({
       pendingPlayCardId,
       selectedAttackerId,
       playCard,
-      attack,
       getCardById,
       game,
       pushAnnouncement,
       username,
+      attack,
     ],
   );
 
@@ -357,29 +413,38 @@ export const GameProvider = ({
 
   useMercure(mercureUrl, {
     game_events: (e: { events: GameEvent[] }) => {
-      const previousGame = gameRef.current;
-
-      if (!previousGame) {
+      if (isAnimating) {
+        setQueuedEvents((current) => [...current, ...e.events]);
         return;
       }
 
-      let next = { ...previousGame };
+      const attackEvent = e.events.find(
+        (ev) => ev.type === GameEventType.ATTACK,
+      );
+      if (attackEvent) {
+        const attackerId = attackEvent.data.attackerId;
+        const targetId = attackEvent.data.targetId;
+        const attackerCard = getCardById(attackerId);
+        const cardSet: CardSet = attackerCard?.serie || CardSet.ORIGINAL;
 
-      for (const event of e.events) {
-        const previous = next;
-        const announcement = animateGameEvent(previous, event);
-
-        if (announcement) {
-          pushAnnouncement(announcement);
+        const opponentPlayerKey =
+          gameRef.current?.player1.player.name === username
+            ? "player2"
+            : "player1";
+        const opponent = gameRef.current?.[opponentPlayerKey];
+        if (
+          opponent &&
+          (opponent.playArea.monsterCards.includes(attackerId) ||
+            opponent.characterCardId === attackerId)
+        ) {
+          setIsAnimating(true);
+          setQueuedEvents(e.events);
+          emitter.emit("attack-animation:start", { attackerId, targetId, cardSet });
+          return;
         }
-
-        next = applyGameView(next, event, username);
       }
 
-      const normalizedNext = normalizeGameState(next);
-
-      gameRef.current = normalizedNext;
-      setGame(normalizedNext);
+      processEvents(e.events);
     },
   });
 

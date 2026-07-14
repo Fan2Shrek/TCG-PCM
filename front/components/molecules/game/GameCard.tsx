@@ -80,6 +80,7 @@ function GameCard({
 
   return (
     <div
+      data-card-id={card.instanceId}
       onClick={(e) => {
         e.stopPropagation();
 
@@ -104,7 +105,7 @@ function GameCard({
         }
       }}
       onMouseLeave={() => targetingActions.hoverTarget(null)}
-      className={`card-selected ${canSelectSource || isTargeting ? "cursor-pointer" : ""} ${isHovered ? "blue-pulse" : ""} ${className ?? ""}`}
+      className={`card-selected ${canSelectSource || isTargeting ? "cursor-pointer" : ""}  ${className ?? ""}`}
       style={{ ...(animatedStyle ?? {}), ...(style ?? {}) }}
     >
       <CardWithZoom card={card} size={size} />

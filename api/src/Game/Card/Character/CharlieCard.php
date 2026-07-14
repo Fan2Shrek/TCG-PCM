@@ -24,7 +24,7 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
 
     public function getHealthPoints(): int
     {
-        return 125;
+        return 150;
     }
 
     public function onTurnStart(GameContext $context): void

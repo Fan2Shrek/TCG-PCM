@@ -1,4 +1,5 @@
 export const GameEventType = {
+  ATTACK: "ATTACK",
   CARD_PLAYED: "CARD_PLAYED",
   CARD_DRAWN: "CARD_DRAWN",
   DAMAGE: "DAMAGE",

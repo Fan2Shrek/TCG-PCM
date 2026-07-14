@@ -1,5 +1,6 @@
 import mitt from "mitt";
 import { BasicCard } from "./cards/types/card";
+import { CardSet } from "@/constants/card";
 
 type Events = {
   "card:drag:start": { pos: { x: number; y: number }; card: BasicCard };
@@ -23,6 +24,8 @@ type Events = {
     type: "damage" | "heal";
   };
   "animation:card-draw-complete": void;
+  "attack-animation:start": { attackerId: string; targetId: string; cardSet: CardSet };
+  "attack-animation:completed": { attackerId: string; targetId: string };
 };
 
 export const emitter = mitt<Events>();

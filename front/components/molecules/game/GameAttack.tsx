@@ -1,0 +1,111 @@
+import { useEffect, useState, useRef } from "react";
+import GameProjectile from "./GameProjectile";
+import { emitter } from "@/lib/eventBus";
+import { CardSet } from "@/constants/card";
+
+export default function GameAttack() {
+  const [attack, setAttack] = useState<{
+    attackerId: string;
+    targetId: string;
+    cardSet: CardSet;
+  } | null>(null);
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [endPos, setEndPos] = useState<{ x: number; y: number } | null>(null);
+  const gameAreaRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    gameAreaRef.current = document.querySelector<HTMLDivElement>(".game-board");
+  }, []);
+
+  useEffect(() => {
+    const handleAttack = (event: { attackerId: string; targetId: string; cardSet: CardSet }) => {
+      setAttack({ attackerId: event.attackerId, targetId: event.targetId, cardSet: event.cardSet });
+    };
+
+    emitter.on("attack-animation:start", handleAttack);
+
+    return () => {
+      emitter.off("attack-animation:start", handleAttack);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!attack || !gameAreaRef.current) {
+      setStartPos(null);
+      setEndPos(null);
+      return;
+    }
+
+    const scale =
+      parseFloat(
+        getComputedStyle(gameAreaRef.current).getPropertyValue(
+          "--game-board-scale",
+        ),
+      ) || 1;
+
+    const gameAreaRect = gameAreaRef.current.getBoundingClientRect();
+
+    const getCardElement = (id: string): Element | null => {
+      let cardId = id;
+      return document.querySelector(`[data-card-id="${cardId}"]`);
+    };
+
+    const attackerElement = getCardElement(attack.attackerId);
+    const targetElement = getCardElement(attack.targetId);
+
+    if (attackerElement && targetElement) {
+      const attackerRect = attackerElement.getBoundingClientRect();
+      const targetRect = targetElement.getBoundingClientRect();
+
+      // Projectile is 64x64 pixels (w-16 h-16 in GameProjectile.tsx)
+      const projectileHalfSize = 32;
+      const projectileOffsetScaled = projectileHalfSize / scale;
+
+      const start = {
+        x:
+          (attackerRect.left - gameAreaRect.left + attackerRect.width / 2) /
+            scale -
+          projectileOffsetScaled,
+        y:
+          (attackerRect.top - gameAreaRect.top + attackerRect.height / 2) /
+            scale -
+          projectileOffsetScaled,
+      };
+
+      const end = {
+        x:
+          (targetRect.left - gameAreaRect.left + targetRect.width / 2) / scale -
+          projectileOffsetScaled,
+        y:
+          (targetRect.top - gameAreaRect.top + targetRect.height / 2) / scale -
+          projectileOffsetScaled,
+      };
+
+      setStartPos(start);
+      setEndPos(end);
+    } else {
+      // If elements not found, cancel the animation and proceed with the attack
+      emitter.emit("attack-animation:completed", attack);
+      setAttack(null);
+    }
+  }, [attack]);
+
+  if (!attack || !startPos || !endPos) {
+    return null;
+  }
+
+  return (
+    <GameProjectile
+      startPosition={startPos}
+      endPosition={endPos}
+      duration={300}
+      cardSet={attack.cardSet}
+      onAnimationComplete={() => {
+        emitter.emit("attack-animation:completed", attack);
+        setAttack(null);
+      }}
+    />
+  );
+}
