@@ -20,8 +20,16 @@ export default function GameAttack() {
   }, []);
 
   useEffect(() => {
-    const handleAttack = (event: { attackerId: string; targetId: string; cardSet: CardSet }) => {
-      setAttack({ attackerId: event.attackerId, targetId: event.targetId, cardSet: event.cardSet });
+    const handleAttack = (event: {
+      attackerId: string;
+      targetId: string;
+      cardSet: CardSet;
+    }) => {
+      setAttack({
+        attackerId: event.attackerId,
+        targetId: event.targetId,
+        cardSet: event.cardSet,
+      });
     };
 
     emitter.on("attack-animation:start", handleAttack);
@@ -59,28 +67,23 @@ export default function GameAttack() {
       const attackerRect = attackerElement.getBoundingClientRect();
       const targetRect = targetElement.getBoundingClientRect();
 
-      // Projectile is 64x64 pixels (w-16 h-16 in GameProjectile.tsx)
-      const projectileHalfSize = 32;
-      const projectileOffsetScaled = projectileHalfSize / scale;
+      const projectileOffset = 128;
 
       const start = {
         x:
           (attackerRect.left - gameAreaRect.left + attackerRect.width / 2) /
             scale -
-          projectileOffsetScaled,
+          projectileOffset,
         y:
           (attackerRect.top - gameAreaRect.top + attackerRect.height / 2) /
-            scale -
-          projectileOffsetScaled,
+          scale,
       };
 
       const end = {
         x:
           (targetRect.left - gameAreaRect.left + targetRect.width / 2) / scale -
-          projectileOffsetScaled,
-        y:
-          (targetRect.top - gameAreaRect.top + targetRect.height / 2) / scale -
-          projectileOffsetScaled,
+          projectileOffset,
+        y: (targetRect.top - gameAreaRect.top + targetRect.height / 2) / scale,
       };
 
       setStartPos(start);
