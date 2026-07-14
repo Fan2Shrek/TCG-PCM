@@ -14,6 +14,7 @@ final class ChangeDeckHandler
 {
     public function __construct(
         private CurrentUserProviderInterface $currentUserProvider,
+        private \Doctrine\ORM\EntityManagerInterface $entityManager,
     ) {}
 
     public function __invoke(ChangeDeckCommand $command): void
@@ -35,5 +36,7 @@ final class ChangeDeckHandler
             $room->getOpponent() === $user => $room->setOpponentDeck($deck),
             default => throw HttpException::fromStatusCode(Response::HTTP_FORBIDDEN, 'You are not a player in this room.'),
         };
+
+        $this->entityManager->flush();
     }
 }
