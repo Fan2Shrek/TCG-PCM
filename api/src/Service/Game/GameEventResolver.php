@@ -42,6 +42,7 @@ class GameEventResolver
 
         // @ŧodo modify this if we want to do depth events resolution instead of breadth
         foreach ($firstLevelEvents as $event) {
+            $allEvents = array_merge($allEvents, $this->resolveSubEvents($event, $state));
             // First we apply the first level event
             $state = $this->gameEventApplier->apply($event, $state);
 
@@ -56,6 +57,22 @@ class GameEventResolver
         }
 
         return new ResolutionResult($allEvents, $state);
+    }
+
+    /**
+     * @return GameEvent[]
+     */
+    private function resolveSubEvents(GameEvent $event, GameState $state): array
+    {
+        if (!\in_array($event->type, [GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA], true)) {
+            return [];
+        }
+
+        $ctx = $this->gameContextFactory->createGameContext($state, $event['playerId']);
+
+        $card = $this->cardRuntimeMap->getByState($cardState);
+
+        return GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA === $event->type ? $card->onCardPlayed() : $card->onMonsterPlayed();
     }
 
     /**
@@ -213,15 +230,11 @@ class GameEventResolver
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractPassiveCard) {
-            $card->onCardPlace($ctx);
-
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractMonsterCard) {
-            $card->onMonsterPlayed($ctx);
-
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
