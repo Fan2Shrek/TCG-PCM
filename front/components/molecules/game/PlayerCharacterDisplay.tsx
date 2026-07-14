@@ -19,7 +19,8 @@ export default function PlayerCharacterDisplay({
 
   const playerCard = getCardById(player.characterCardId);
   const isHovered =
-    targeting.hoveredTargetId === player.player.id && targeting.isTargeting;
+    targeting.hoveredTargetId === player.characterCardId &&
+    targeting.isTargeting;
 
   if (!playerCard) {
     return null;
@@ -30,7 +31,7 @@ export default function PlayerCharacterDisplay({
       <GameCard
         card={playerCard}
         size={CardSize.LG}
-        targetId={player.player.id}
+        targetId={player.characterCardId}
         className={isHovered ? "rounded-xl" : undefined}
       />
     </div>

@@ -71,6 +71,8 @@ const CardTextOverlay = ({
   const [isTitleReady, setIsTitleReady] = useState(false);
   const [isStatsReady, setIsStatsReady] = useState(!shouldShowStats);
   const [isDescriptionReady, setIsDescriptionReady] = useState(false);
+  const [isTypeReady, setIsTypeReady] = useState(false);
+  const [isRarityReady, setIsRarityReady] = useState(false);
   const [hasNotifiedReady, setHasNotifiedReady] = useState(false);
 
   const contentKey = [
@@ -79,6 +81,7 @@ const CardTextOverlay = ({
     cardTitle,
     shouldShowStats,
     cardType,
+    cardRarity,
     cardStats.attack,
     cardStats.cost,
     cardStats.hp,
@@ -93,9 +96,16 @@ const CardTextOverlay = ({
     setIsTitleReady(cardTitle.trim().length === 0);
     setIsStatsReady(!shouldShowStats);
     setIsDescriptionReady(cardDescription.trim().length === 0);
+    setIsTypeReady(false);
+    setIsRarityReady(false);
   }
 
-  const isLayoutReady = isTitleReady && isStatsReady && isDescriptionReady;
+  const isLayoutReady =
+    isTitleReady &&
+    isStatsReady &&
+    isDescriptionReady &&
+    isTypeReady &&
+    isRarityReady;
 
   // Latches once all zones are ready, computed during render
   // (see "Adjusting state in render" in the React docs).
@@ -121,6 +131,14 @@ const CardTextOverlay = ({
     setIsDescriptionReady(true);
   }, []);
 
+  const handleTypeFitFinished = useCallback(() => {
+    setIsTypeReady(true);
+  }, []);
+
+  const handleRarityFitFinished = useCallback(() => {
+    setIsRarityReady(true);
+  }, []);
+
   const { fontSize: titleFontSize, ref: titleFitRef } = useFitText({
     onFinish: handleTitleFitFinished,
     maxFontSize: 200,
@@ -136,6 +154,16 @@ const CardTextOverlay = ({
     maxFontSize: 200,
   });
 
+  const { fontSize: typeFontSize, ref: typeFitRef } = useFitText({
+    onFinish: handleTypeFitFinished,
+    maxFontSize: 200,
+  });
+
+  const { fontSize: rarityFontSize, ref: rarityFitRef } = useFitText({
+    onFinish: handleRarityFitFinished,
+    maxFontSize: 200,
+  });
+
   const getZoneStyle = (config?: ZoneConfig): CSSProperties => {
     const baseStyle: CSSProperties = {
       width: config?.width !== undefined ? `${config.width}%` : undefined,
@@ -146,9 +174,12 @@ const CardTextOverlay = ({
     return baseStyle;
   };
 
+  const statsKey = [cardStats.hp, cardStats.attack, cardStats.cost].join("-");
+
   return (
     <div className="absolute inset-0 overflow-hidden font-pixel text-black">
       <div
+        key={cardTitle}
         ref={titleFitRef}
         className="header-zone absolute overflow-hidden leading-tight text-center left-1/2 -translate-x-1/2"
         style={{ ...getZoneStyle(headerConfig), fontSize: titleFontSize }}
@@ -158,6 +189,7 @@ const CardTextOverlay = ({
 
       {shouldShowStats && (
         <div
+          key={statsKey}
           ref={statsFitRef}
           className="stats-zone absolute left-1/2 -translate-x-1/2"
           style={{ ...getZoneStyle(statsConfig), fontSize: statsFontSize }}
@@ -176,6 +208,7 @@ const CardTextOverlay = ({
       )}
 
       <div
+        key={cardDescription}
         ref={descriptionFitRef}
         className="description-zone absolute leading-tight text-center left-1/2 -translate-x-1/2 gap-x-1"
         style={{
@@ -187,15 +220,29 @@ const CardTextOverlay = ({
       </div>
 
       <div
-        className="absolute bottom-[4%] right-[6%] text-[8px] leading-none tracking-tight text-black/80 font-bold"
-        style={RARITY_LABEL_TEXT_OUTLINE}
+        key={cardType}
+        ref={typeFitRef}
+        className="absolute bottom-[4%] right-[6%] leading-none tracking-tight text-black/80 font-bold text-end"
+        style={{
+          ...RARITY_LABEL_TEXT_OUTLINE,
+          fontSize: typeFontSize,
+          width: "35%",
+          height: "5%",
+        }}
       >
         {CARD_TYPE_LABELS[cardType]}
       </div>
 
       <div
-        className={`absolute bottom-[4%] left-[6%] text-[8px] leading-none tracking-tight font-bold uppercase ${CARD_RARITY_COLORS[cardRarity]}`}
-        style={RARITY_LABEL_TEXT_OUTLINE}
+        key={cardRarity}
+        ref={rarityFitRef}
+        className={`absolute bottom-[4%] left-[6%] leading-none tracking-tight font-bold uppercase text-start ${CARD_RARITY_COLORS[cardRarity]}`}
+        style={{
+          ...RARITY_LABEL_TEXT_OUTLINE,
+          fontSize: rarityFontSize,
+          width: "35%",
+          height: "5%",
+        }}
       >
         {cardRarity}
       </div>

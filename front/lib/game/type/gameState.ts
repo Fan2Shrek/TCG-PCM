@@ -29,6 +29,7 @@ type PlayArea = {
 
 export type CardState = {
   instanceId: string;
+  name: string;
   effects: EffectState[];
   values: unknown;
 };

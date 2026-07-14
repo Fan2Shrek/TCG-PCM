@@ -11,6 +11,7 @@ import {
 } from "@/constants/gameArea";
 import PlayerStatsDisplay from "@/components/molecules/game/PlayerStatsDisplay";
 import OpponentHand from "@/components/molecules/game/OpponentHand";
+import GameAttack from "@/components/molecules/game/GameAttack";
 
 type GameMainAreaProps = {
   opponentState: PlayerState;
@@ -47,6 +48,7 @@ export default function GameMainArea({
           transition: `transform ${GAMEBOARD_ANIMATION_DURATION}ms ${GAMEBOARD_ANIMATION_TIMING}`,
         }}
       >
+        <GameAttack />
         {/* this one above is to apply the rotation on the whole board while taking +10% than the max screen size. This is to make sure it takes up the entire screen, even if the component is tilted.*/}
         <div className="h-[70vh] min-h-300 w-[85vw] min-w-420  flex flex-col relative -mt-60">
           {/* OpponentHand positioned absolutely, logged user's hand is in gameboard instead as an overlay */}

@@ -1,7 +1,8 @@
 import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
-import { GameState } from "@/lib/game/type/gameState";
+import { CardState, GameState, PlayerState } from "@/lib/game/type/gameState";
 import { emitter } from "@/lib/eventBus";
+import { BasicCard } from "@/lib/cards/types/card";
 
 export type AnnouncementTone = "neutral" | "positive" | "negative";
 
@@ -16,6 +17,15 @@ export function getPlayerKey(
   playerId: string,
 ): "player1" | "player2" {
   return state.player1.player.id === playerId ? "player1" : "player2";
+}
+
+function getPlayer(state: GameState, playerId: string): PlayerState {
+  const playerKey = getPlayerKey(state, playerId);
+  return state[playerKey];
+}
+
+function getCard(state: GameState, cardId: string): CardState | undefined {
+  return state.cards[cardId];
 }
 
 export function animateGameEvent(
@@ -39,13 +49,24 @@ export function animateGameEvent(
 
   switch (event.type) {
     case GameEventType.TURN_STARTED: {
-      const player = getPlayerKey(state, String(view.currentPlayer));
+      const player = getPlayer(state, String(view.currentPlayer));
       return {
-        text: `Tour de ${state[player].player.name}`,
+        text: `Tour de ${player.player.name}`,
         tone: "neutral",
       };
     }
-
+    case GameEventType.CARD_PLACE_IN_MONSTER_AREA:
+    case GameEventType.CARD_PLACE_IN_PLAY_AREA: {
+      const card = event.view.card || getCard(state, view.cardId);
+      const player = getPlayer(state, view.playerId);
+      if (card && player) {
+        return {
+          text: `${player.player.name} a joué ${card.name}`,
+          tone: "neutral",
+        };
+      }
+      return null;
+    }
     case GameEventType.COINS_GAINED:
     case GameEventType.COINS_LOST: {
       const playerKey = getPlayerKey(state, view.playerId);
@@ -55,7 +76,9 @@ export function animateGameEvent(
       if (nextCoins !== previousCoins) {
         const delta = nextCoins - previousCoins;
         return {
-          text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} pièces`,
+          text: `${state[playerKey].player.name} ${
+            delta > 0 ? "+" : ""
+          }${delta} pièces`,
           tone: delta > 0 ? "positive" : "negative",
         };
       }
@@ -65,6 +88,20 @@ export function animateGameEvent(
 
     case GameEventType.HEAL:
     case GameEventType.DAMAGE: {
+      if (event.type === GameEventType.DAMAGE && event.data.sourceId) {
+        const attackerCard = getCard(state, event.data.sourceId);
+        const targetId = view.cardId ?? view.playerId;
+        const targetPlayer = getPlayer(state, view.playerId);
+        const targetCard = getCard(state, targetId);
+        const targetName = targetCard?.name ?? targetPlayer.player.name;
+        const damageDealt = event.data.damage;
+
+        if (attackerCard && targetName && damageDealt > 0) {
+          let text = `${attackerCard.name} attaque ${targetName} pour ${damageDealt} dégâts.`;
+          return { text, tone: "neutral" };
+        }
+      }
+
       if (typeof view.total !== "number") {
         return null;
       }
@@ -76,12 +113,23 @@ export function animateGameEvent(
       if (nextHealth !== previousHealth) {
         const delta = nextHealth - previousHealth;
         return {
-          text: `${state[playerKey].player.name} ${delta > 0 ? "+" : ""}${delta} PV`,
+          text: `${state[playerKey].player.name} ${
+            delta > 0 ? "+" : ""
+          }${delta} PV`,
           tone: delta > 0 ? "positive" : "negative",
         };
       }
 
       return null;
+    }
+    case GameEventType.MONSTER_DIED: {
+      const card = getCard(state, view.cardId);
+      if (card) {
+        return {
+          text: `${card.name} a rejoint le cimetière.`,
+          tone: "negative",
+        };
+      }
     }
 
     default:
@@ -236,12 +284,12 @@ export function applyGameView(
     case GameEventType.HEAL:
     case GameEventType.DAMAGE: {
       if (view.cardId && view.card) {
+        const newCards = { ...state.cards };
+        newCards[view.cardId] = { ...newCards[view.cardId], ...view.card };
+
         return {
           ...state,
-          cards: {
-            ...state.cards,
-            [view.cardId]: view.card,
-          },
+          cards: newCards,
         };
       }
 

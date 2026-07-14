@@ -244,7 +244,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
           <div className="space-y-6">
             <div className="rounded-lg border border-black/20 bg-black/5 p-6">
-              <div className="flex flex-row items-center justify-between gap-4">
+              <div className="flex flex-row flex-wrap items-center justify-between gap-4">
                 <p className="text-sm text-black/60">
                   ID de la salle:{" "}
                   <span className="text-black text-xl">{id}</span>
@@ -257,7 +257,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
 
             <div className="rounded-lg border border-black/20 bg-black/5 p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-wrap items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-black">
                   Joueurs ({playerCount}/2)
                 </h3>
