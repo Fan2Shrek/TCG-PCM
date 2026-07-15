@@ -8,10 +8,12 @@ export type Room = {
   owner: {
     id: string;
     username: string;
+    profilePicturePath?: string | null;
   };
   opponent?: {
     id: string;
     username: string;
+    profilePicturePath?: string | null;
   } | null;
   winnerId?: string | null;
   isPrivate: boolean;

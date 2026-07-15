@@ -17,12 +17,15 @@ type HandCardProps = {
     card: CardWithPosition,
     pointerPos: { x: number; y: number },
   ) => void;
+  onCardClick?: (card: CardWithPosition) => void;
   isDisabled?: boolean;
   isHandHovered?: boolean;
   isAnimatingDraw?: boolean;
+  isSelected?: boolean;
 };
 
 const HOVERED_CARD_OFFSET = 30;
+const SELECTED_CARD_OFFSET = 45;
 const DRAWING_CARD_OFFSET = -200;
 
 export default function HandCard({
@@ -33,9 +36,11 @@ export default function HandCard({
   onLeave,
   onDragCard,
   onDragEnd,
+  onCardClick,
   isDisabled = false,
   isHandHovered = false,
   isAnimatingDraw = false,
+  isSelected = false,
 }: HandCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   //for drag
@@ -56,6 +61,11 @@ export default function HandCard({
       const t = window.setTimeout(() => setIsDropped(false), 300);
       return () => window.clearTimeout(t);
     },
+    onClick: () => {
+      if (!isDisabled) {
+        onCardClick?.(positionedCard);
+      }
+    },
     card: positionedCard.card,
   });
 
@@ -64,11 +74,16 @@ export default function HandCard({
 
   const displayY = isAnimatingDraw
     ? positionedCard.y - DRAWING_CARD_OFFSET
-    : isHandHovered && isHovered
-      ? positionedCard.y - HOVERED_CARD_OFFSET
-      : positionedCard.y;
+    : isSelected
+      ? positionedCard.y - SELECTED_CARD_OFFSET
+      : isHandHovered && isHovered
+        ? positionedCard.y - HOVERED_CARD_OFFSET
+        : positionedCard.y;
   const displayX = positionedCard.x;
-  const zIndex = isHovered || isDragging ? totalCards + 1 : positionedCard.rank;
+  const zIndex =
+    isSelected || isHovered || isDragging
+      ? totalCards + 1
+      : positionedCard.rank;
 
   useEffect(() => {
     if (isDragging) {
@@ -134,6 +149,13 @@ export default function HandCard({
         card={positionedCard.card}
         size={cardSize}
         showLoadingUntilReady
+        className={
+          isSelected
+            ? "blue-pulse"
+            : !isDisabled && !isDragging && !isDropped
+              ? "playable-pulse"
+              : ""
+        }
         tilt={{
           x: 0,
           y: 0,

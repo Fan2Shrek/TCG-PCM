@@ -6,6 +6,7 @@ namespace App\Game\Card;
 
 use App\Enum\CardEffectEnum;
 use App\Enum\CardSetEnum;
+use App\Enum\CardTargetTypeEnum;
 use App\Game\Card\Effect\HackedCardEffect;
 use App\Game\GameContext;
 use App\Game\GameUtils;
@@ -37,6 +38,11 @@ final class BenjaminCard extends AbstractPlayableCard
     public function requiresTarget(): bool
     {
         return true;
+    }
+
+    public function getTargetType(): ?CardTargetTypeEnum
+    {
+        return CardTargetTypeEnum::MONSTER_AND_PASSIVE;
     }
 
     public function play(GameContext $context, array $data = []): void

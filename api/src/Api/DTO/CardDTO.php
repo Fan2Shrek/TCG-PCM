@@ -6,6 +6,7 @@ namespace App\Api\DTO;
 
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
+use App\Enum\CardTargetTypeEnum;
 use App\Enum\CardTypeEnum;
 use App\Game\Card\Effect\EffectState;
 
@@ -20,6 +21,7 @@ final readonly class CardDTO
         public string $description,
         public string $image,
         public bool $requiresTarget,
+        public ?CardTargetTypeEnum $targetType,
         public CardRarityEnum $rarity,
         public CardSetEnum $set,
         public string $instanceId,

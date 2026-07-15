@@ -34,6 +34,11 @@ export enum CardType {
   CONSUMABLE = "CONSUMABLE",
 }
 
+export enum CardTargetType {
+  MONSTER = "MONSTER",
+  MONSTER_AND_PASSIVE = "MONSTER_AND_PASSIVE",
+}
+
 export const CardSizeMap: Record<CardSize, string> = {
   [CardSize.XS]: "w-card-xs",
   [CardSize.SM]: "w-card-sm",

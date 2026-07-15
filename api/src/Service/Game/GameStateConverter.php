@@ -54,6 +54,7 @@ final class GameStateConverter
             description: $template->getDescription(),
             image: $template->getImage(),
             requiresTarget: $template->requiresTarget(),
+            targetType: $template->getTargetType(),
             rarity: $template::$rarity,
             set: $template::$serie,
             instanceId: $state->instanceId,

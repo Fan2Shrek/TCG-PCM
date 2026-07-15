@@ -9,6 +9,7 @@ App\Entity\User:
         profilePicturePath:
             groups:
                 - api:user:read
+                - api:room:list
         inventory:
             groups:
                 - api:inventory:read

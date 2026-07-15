@@ -17,6 +17,8 @@ export type CardsHandProps = {
   onMouseLeave?: () => void;
   className?: string;
   isDisabled?: boolean;
+  selectedCardId?: string | null;
+  onCardClick?: (card: BasicCard) => void;
 };
 
 export default function CardsHand({
@@ -25,6 +27,8 @@ export default function CardsHand({
   onMouseEnter,
   onMouseLeave,
   isDisabled = false,
+  selectedCardId = null,
+  onCardClick,
 }: CardsHandProps) {
   const [isPendingHovered, setIsPendingHovered] = useState(false);
   const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(
@@ -148,9 +152,11 @@ export default function CardsHand({
           onHover={handleCardHover}
           onLeave={handleCardLeave}
           onDragEnd={handleCardDragEnd}
+          onCardClick={(card) => onCardClick?.(card.card)}
           isDisabled={isDisabled}
           isHandHovered={isHovered}
           isAnimatingDraw={i === animatingCardIndex}
+          isSelected={positionedCard?.card?.instanceId === selectedCardId}
         />
       ))}
     </div>

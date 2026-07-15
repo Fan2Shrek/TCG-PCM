@@ -1,7 +1,7 @@
 "use client";
 
 import { CSSProperties, memo, useContext } from "react";
-import { CardSize } from "@/constants/card";
+import { CardSize, CardTargetType, CardType } from "@/constants/card";
 import type { BasicCard } from "@/lib/cards/types/card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
 import { GameContext } from "@/contexts/GameContext";
@@ -64,12 +64,48 @@ function GameCard({
   isOpponentSideForPlayAnimation = false,
   rowCardCount = 0,
 }: GameCardProps) {
-  const { targeting, targetingActions } = useContext(GameContext);
-  const { isTargeting, hoveredTargetId, selectedAttackerId } = targeting;
+  const { targeting, targetingActions, game, currentUsername, getCardById } =
+    useContext(GameContext);
+  const { isTargeting, hoveredTargetId, selectedAttackerId, pendingPlayCardId } =
+    targeting;
 
   const isSelectedSource = selectedAttackerId === card.instanceId;
   const isHovered =
     hoveredTargetId === targetId && isTargeting && !isSelectedSource;
+
+  const loggedPlayerState =
+    game && currentUsername
+      ? game.player1.player.name === currentUsername
+        ? game.player1
+        : game.player2
+      : null;
+  const isOwnSide = !!(
+    loggedPlayerState &&
+    (targetId === loggedPlayerState.characterCardId ||
+      targetId === loggedPlayerState.player.id ||
+      loggedPlayerState.playArea.monsterCards.includes(targetId) ||
+      loggedPlayerState.playArea.passiveCards.includes(targetId))
+  );
+
+  const isValidAttackTarget =
+    !!selectedAttackerId &&
+    !isSelectedSource &&
+    card.type !== CardType.PASSIVE &&
+    !isOwnSide;
+
+  const pendingCard = pendingPlayCardId
+    ? getCardById(pendingPlayCardId)
+    : undefined;
+  const isValidCardTarget = !!(
+    pendingCard &&
+    targetId !== pendingPlayCardId &&
+    (pendingCard.targetType === CardTargetType.MONSTER_AND_PASSIVE
+      ? card.type === CardType.MONSTER || card.type === CardType.PASSIVE
+      : card.type === CardType.MONSTER)
+  );
+
+  const isPulseTarget = isValidAttackTarget || isValidCardTarget;
+
   const animatedStyle = getAnimatedCardStyle(
     isPlaying,
     isSelectedSource,
@@ -105,7 +141,7 @@ function GameCard({
         }
       }}
       onMouseLeave={() => targetingActions.hoverTarget(null)}
-      className={`card-selected ${canSelectSource || isTargeting ? "cursor-pointer" : ""}  ${className ?? ""}`}
+      className={`card-selected ${canSelectSource || isTargeting ? "cursor-pointer" : ""} ${isPulseTarget ? "target-pulse" : ""} ${className ?? ""}`}
       style={{ ...(animatedStyle ?? {}), ...(style ?? {}) }}
     >
       <CardWithZoom card={card} size={size} />
