@@ -7,10 +7,12 @@ import {
   AiOutlineLogout,
 } from "react-icons/ai";
 import { MdAppRegistration } from "react-icons/md";
-import { TbPlayCardStar, TbSword, TbBook2, TbTrophy } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2, TbTrophy, TbUsers } from "react-icons/tb";
 import { logoutAction } from "@/lib/actions/auth";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
+import ActiveTradeStatus from "@/components/molecules/menu/ActiveTradeStatus";
 import MobileMenuItem from "@/components/atoms/menu/MobileMenuItem";
+import { useFriendship } from "@/contexts/FriendshipContext";
 
 type MobileMenuProps = {
   username?: string;
@@ -54,7 +56,7 @@ const getGuestItems = (): MobileMenuItem[] => [
   },
 ];
 
-const getAuthItems = (onLogout: () => void): MobileMenuItem[] => [
+const getAuthItems = (onLogout: () => void, pendingFriendRequests: number): MobileMenuItem[] => [
   {
     label: "Règles",
     icon: <TbBook2 />,
@@ -81,6 +83,11 @@ const getAuthItems = (onLogout: () => void): MobileMenuItem[] => [
     linkTo: "/rooms",
   },
   {
+    label: pendingFriendRequests > 0 ? `Amis (${pendingFriendRequests})` : "Amis",
+    icon: <TbUsers />,
+    linkTo: "/friends",
+  },
+  {
     label: "Déconnexion",
     icon: <AiOutlineLogout />,
     onClick: onLogout,
@@ -90,17 +97,19 @@ const getAuthItems = (onLogout: () => void): MobileMenuItem[] => [
 export default function MobileMenu({ username, className }: MobileMenuProps) {
   const pathname = usePathname();
   const isAuthenticated = !!username;
+  const { pendingRequests } = useFriendship();
 
   const handleLogout = async () => {
     await logoutAction();
   };
 
-  const items = isAuthenticated ? getAuthItems(handleLogout) : getGuestItems();
+  const items = isAuthenticated ? getAuthItems(handleLogout, pendingRequests.length) : getGuestItems();
 
   return (
     <div className={className ?? ""}>
       <div className="w-full">
         {isAuthenticated && <ActiveRoomStatus />}
+        {isAuthenticated && <ActiveTradeStatus />}
 
         <nav className="w-full rounded-full bg-primary border-2 border-white drop-shadow-lg min-h-15 flex flex-row items-center mt-3">
           <ul className="flex w-full items-center justify-center gap-3 px-4">

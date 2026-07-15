@@ -1,15 +1,23 @@
 App\Entity\User:
     attributes:
+        id:
+            groups:
+                - api:friendship:read
+                - api:trade:read
         username:
             groups:
                 - default
                 - api:user:read
                 - api:room:create
                 - api:room:list
+                - api:friendship:read
+                - api:trade:read
         profilePicturePath:
             groups:
                 - api:user:read
                 - api:room:list
+                - api:friendship:read
+                - api:trade:read
         inventory:
             groups:
                 - api:inventory:read

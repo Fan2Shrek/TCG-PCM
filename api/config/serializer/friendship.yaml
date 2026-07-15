@@ -1,0 +1,20 @@
+App\Entity\Friendship:
+    attributes:
+        id:
+            groups:
+                - api:friendship:read
+        requester:
+            groups:
+                - api:friendship:read
+        addressee:
+            groups:
+                - api:friendship:read
+        status:
+            groups:
+                - api:friendship:read
+        createdAt:
+            groups:
+                - api:friendship:read
+        respondedAt:
+            groups:
+                - api:friendship:read

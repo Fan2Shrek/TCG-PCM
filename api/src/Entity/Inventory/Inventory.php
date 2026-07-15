@@ -80,4 +80,9 @@ class Inventory
     {
         return $this->cards->findFirst(static fn(int $_, CardInventory $card) => $card->getCard() === $cardId);
     }
+
+    public function getTotalCardQuantity(): int
+    {
+        return array_sum(array_map(static fn(CardInventory $card): int => $card->getQuantity(), $this->cards->toArray()));
+    }
 }

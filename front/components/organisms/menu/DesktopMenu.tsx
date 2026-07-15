@@ -9,11 +9,13 @@ import {
   AiOutlineLogin,
   AiOutlineLogout,
 } from "react-icons/ai";
-import { TbPlayCardStar, TbSword, TbBook2, TbTrophy } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2, TbTrophy, TbUsers } from "react-icons/tb";
 import { MdAppRegistration } from "react-icons/md";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
+import ActiveTradeStatus from "@/components/molecules/menu/ActiveTradeStatus";
 import { logoutAction } from "@/lib/actions/auth";
+import { useFriendship } from "@/contexts/FriendshipContext";
 
 type DesktopMenuProps = {
   className?: string;
@@ -46,7 +48,7 @@ const unauthenticatedMenuItems: MenuItemData[] = [
   },
 ];
 
-const authenticatedMenuItems: MenuItemData[] = [
+const getAuthenticatedMenuItems = (pendingFriendRequests: number): MenuItemData[] => [
   {
     label: "Boosters",
     icon: <TbPlayCardStar />,
@@ -66,6 +68,11 @@ const authenticatedMenuItems: MenuItemData[] = [
     label: "Jouer",
     icon: <TbSword />,
     linkTo: "/rooms",
+  },
+  {
+    label: pendingFriendRequests > 0 ? `Amis (${pendingFriendRequests})` : "Amis",
+    icon: <TbUsers />,
+    linkTo: "/friends",
   },
 ];
 
@@ -97,12 +104,13 @@ const isActiveMenuItem = (pathname: string, linkTo?: string): boolean => {
 export default function DesktopMenu({ className, username, profilePicturePath }: DesktopMenuProps) {
   const isAuthenticated = !!username;
   const pathname = usePathname();
+  const { pendingRequests } = useFriendship();
 
   const handleLogout = async () => {
     await logoutAction();
   };
 
-  const menuItems = isAuthenticated ? authenticatedMenuItems : unauthenticatedMenuItems;
+  const menuItems = isAuthenticated ? getAuthenticatedMenuItems(pendingRequests.length) : unauthenticatedMenuItems;
   const dropdownItems = isAuthenticated ? getAuthenticatedDropdownItems(handleLogout) : [];
 
   return (
@@ -132,6 +140,7 @@ export default function DesktopMenu({ className, username, profilePicturePath }:
       </nav>
 
       {isAuthenticated && <ActiveRoomStatus />}
+      {isAuthenticated && <ActiveTradeStatus />}
     </div>
   );
 }

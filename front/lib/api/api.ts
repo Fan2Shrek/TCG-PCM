@@ -2,8 +2,10 @@ import { logoutAction } from "@/lib/actions/auth";
 import { BadgeResource } from "./resources/BadgeResource";
 import { BoosterResource } from "./resources/BoosterResource";
 import { DeckResource } from "./resources/DeckResource";
+import { FriendResource } from "./resources/FriendResource";
 import { GameResource } from "./resources/GameResource";
 import { RoomResource } from "./resources/RoomResource";
+import { TradeResource } from "./resources/TradeResource";
 import { UserResource } from "./resources/UserResource";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
@@ -12,17 +14,21 @@ export class ApiClient {
   badge: BadgeResource;
   booster: BoosterResource;
   deck: DeckResource;
+  friend: FriendResource;
   game: GameResource;
   user: UserResource;
   room: RoomResource;
+  trade: TradeResource;
 
   constructor(public baseUrl: string) {
     this.badge = new BadgeResource(this);
     this.booster = new BoosterResource(this);
     this.deck = new DeckResource(this);
+    this.friend = new FriendResource(this);
     this.game = new GameResource(this);
     this.user = new UserResource(this);
     this.room = new RoomResource(this);
+    this.trade = new TradeResource(this);
   }
 
   async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
