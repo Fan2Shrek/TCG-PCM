@@ -5,13 +5,17 @@ namespace App\Game\Card\Character;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\TurnAwareInterface;
+use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use Override;
 
 final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterface
 {
-    use TurnAwareTrait;
+    use BaseOnTurnTrait;
+
+    private const TURN_DELAY = 2;
 
     /**
      * @var string[]|null
@@ -25,10 +29,15 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
 
     public function getHealthPoints(): int
     {
-        return 150;
+        return 125;
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function getTurnDelay(): int
+    {
+        return $this->getValue(self::TURN_DELAY, true);
+    }
+
+    public function onTurnAction(GameContext $context): void
     {
         if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
             $randomPassiveCardId = $this->pickRandomPassiveCardId($gameContext);
