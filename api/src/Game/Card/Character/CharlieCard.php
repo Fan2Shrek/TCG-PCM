@@ -7,6 +7,7 @@ use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterface
 {
@@ -27,24 +28,24 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
         return 150;
     }
 
-    public function onTurnStart(GameContext $context): void
+    public function onTurnStart(GameContext $gameContext): void
     {
-        if ($context->isCurrentPlayer($this->getOwnerId())) {
-            $randomPassiveCardId = $this->pickRandomPassiveCardId($context);
-            $newInstanceId = (string) $context->state->randomizer->roll(0xFFFF_FFFF);
+        if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
+            $randomPassiveCardId = $this->pickRandomPassiveCardId($gameContext);
+            $newInstanceId = (string) $gameContext->state->randomizer->roll(0xFFFF_FFFF);
 
-            $context->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
+            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
                 'playerId' => $this->getOwnerId(),
                 'cardTemplateId' => $randomPassiveCardId,
                 'cardInstanceId' => $newInstanceId,
             ]);
 
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
+            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
                 'playerId' => $this->getOwnerId(),
                 'cardId' => $newInstanceId,
             ]);
 
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
+            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
                 'playerId' => $this->getOwnerId(),
                 'cardId' => $newInstanceId,
             ]);
@@ -67,30 +68,8 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
      */
     private function getPassiveTemplatePool(): array
     {
-        if (null !== self::$passiveTemplatePool) {
-            return self::$passiveTemplatePool;
-        }
-
-        $pool = [];
-        foreach ($this->getCardsList() as $templateId => $cardClass) {
-            $card = new $cardClass();
-            if ($card instanceof AbstractPassiveCard) {
-                $pool[] = $templateId;
-            }
-        }
-
-        self::$passiveTemplatePool = $pool;
-
-        return $pool;
-    }
-
-    /**
-     * @return array<string, class-string<\App\Game\AbstractCard>>
-     */
-    private function getCardsList(): array
-    {
-        /** @var array<string, class-string<\App\Game\AbstractCard>> $cardsList */
-        $cardsList = require __DIR__.'/../../../../resources/cards_list.php';
-        return $cardsList;
+        return $this->passiveTemplatePool ??= GameUtils::getService('cards')->getAllBy([
+            'type' => AbstractPassiveCard::class,
+        ]);
     }
 }

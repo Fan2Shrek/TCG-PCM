@@ -81,7 +81,7 @@ final class GoogleOAuthController
 
         try {
             $accessToken = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
-            \assert($accessToken instanceof AccessToken);
+            \assert($accessToken instanceof AccessToken, 'zebi');
             $googleUser = $this->provider->getResourceOwner($accessToken);
         } catch (IdentityProviderException) {
             return $this->redirectToFrontWithError('oauth_failed');

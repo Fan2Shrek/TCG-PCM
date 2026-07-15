@@ -24,4 +24,14 @@ final class CardHelper
     {
         return $this->cardIdGenerator->generateCardId($templateId);
     }
+
+    /**
+     * @param array<string, mixed> $criterias
+     *
+     * @return string[]
+     */
+    public function getCardsBy(array $criterias): array
+    {
+        return $this->cardRegistry->getAllBy($criterias);
+    }
 }
