@@ -21,6 +21,10 @@ use App\Service\Game\Factory\GameContextFactoryInterface;
 
 class GameEventResolver
 {
+    private const MAX_RESOLUTION_DEPTH = 500;
+
+    private int $currentDepth = 0;
+
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
@@ -38,25 +42,47 @@ class GameEventResolver
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
     {
-        $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
+        $allEvents = [];
+        $eventsStack = [];
+        $this->pushEventsToStack($eventsStack, array_merge([$mainEvent], $this->generateReactions($mainEvent, $state)));
 
-        // @ŧodo modify this if we want to do depth events resolution instead of breadth
-        foreach ($firstLevelEvents as $event) {
-            $allEvents = array_merge($allEvents, $this->resolveSubEvents($event, $state));
-            // First we apply the first level event
-            $state = $this->gameEventApplier->apply($event, $state);
+        try {
+            while ([] !== $eventsStack) {
+                $event = array_pop($eventsStack);
+                if (!$event instanceof GameEvent) {
+                    throw new \LogicException('Event stack is corrupted');
+                }
 
-            // Then we calculate systems events just in case
-            $systemEvents = $this->generateSystemsEvent($state);
-            $state = $this->gameEventApplier->applyMultiple($systemEvents, $state);
-            $allEvents = array_merge($allEvents, $systemEvents);
+                if ($this->currentDepth >= self::MAX_RESOLUTION_DEPTH) {
+                    break;
+                }
 
-            // Then we process aware cards
-            $allEvents = array_merge($allEvents, $events = $this->collectEventsFromAwareCards($event, $state));
-            $state = $this->gameEventApplier->applyMultiple($events, $state);
+                $allEvents[] = $event;
+                ++$this->currentDepth;
+                $this->pushEventsToStack($eventsStack, $this->resolveSubEvents($event, $state));
+
+                $state = $this->gameEventApplier->apply($event, $state);
+
+                $systemEvents = $this->generateSystemsEvent($state);
+                $awareEvents = $this->collectEventsFromAwareCards($event, $state);
+                $this->pushEventsToStack($eventsStack, $awareEvents);
+            }
+        } finally {
+            $this->currentDepth = 0;
         }
 
         return new ResolutionResult($allEvents, $state);
+    }
+
+    /**
+     * @param GameEvent[] $eventsStack
+     * @param GameEvent[] $events
+     */
+    private function pushEventsToStack(array &$eventsStack, array $events): void
+    {
+        for ($index = \count($events) - 1; $index >= 0; --$index) {
+            $eventsStack[] = $events[$index];
+        }
     }
 
     /**
@@ -68,11 +94,38 @@ class GameEventResolver
             return [];
         }
 
-        $ctx = $this->gameContextFactory->createGameContext($state, $event['playerId']);
+        if (!\is_string($playerId = $event->data['playerId'] ?? null)) {
+            throw new \LogicException('playerId is required to resolve sub events');
+        }
 
+        if (!\is_string($cardId = $event->data['cardId'] ?? null)) {
+            throw new \LogicException('cardId is required to resolve sub events');
+        }
+
+        if (!($cardState = $state->getCardState($cardId))) {
+            throw new \LogicException(\sprintf('Card with id %s not found in game state', $cardId));
+        }
+
+        $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
         $card = $this->cardRuntimeMap->getByState($cardState);
 
-        return GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA === $event->type ? $card->onCardPlayed() : $card->onMonsterPlayed();
+        if (GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA === $event->type) {
+            if (!$card instanceof AbstractPassiveCard) {
+                throw new \LogicException(\sprintf('Card with id %s must be a passive card', $cardId));
+            }
+
+            $card->onCardPlace($ctx);
+
+            return $ctx->flushEvents();
+        }
+
+        if (!$card instanceof AbstractMonsterCard) {
+            throw new \LogicException(\sprintf('Card with id %s must be a monster card', $cardId));
+        }
+
+        $card->onMonsterPlayed($ctx);
+
+        return $ctx->flushEvents();
     }
 
     /**
