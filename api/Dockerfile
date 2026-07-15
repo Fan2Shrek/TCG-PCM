@@ -75,6 +75,8 @@ COPY . /app
 
 RUN mkdir -p public/uploads/avatars && chown -R www-data:www-data public/uploads
 
+user www-data
+
 RUN php bin/console cache:clear \
  && php bin/console cache:warmup
 
