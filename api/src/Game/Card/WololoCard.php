@@ -4,17 +4,18 @@ namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
-
 use App\Game\GameContext;
 
 final class WololoCard extends AbstractPlayableCard
 {
     public static CardRarityEnum $rarity = CardRarityEnum::LEGENDARY;
     public static CardSetEnum $serie = CardSetEnum::ORIGINAL;
+
     public function getId(): string
     {
         return 'Wololo';
     }
+
     public function requiresTarget(): bool
     {
         return true;

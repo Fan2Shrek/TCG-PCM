@@ -14,9 +14,10 @@ use App\Game\GameUtils;
 final class SirenCard extends AbstractMonsterCard implements TurnAwareInterface
 {
     use BaseOnTurnTrait;
+
     public static CardRarityEnum $rarity = CardRarityEnum::EPIC;
     public static CardSetEnum $serie = CardSetEnum::TBOI;
-    
+
     private const HEALTH_POINTS = 33;
     private const ATTACK = 7;
     private const TURN_DELAY = 2;
@@ -47,12 +48,13 @@ final class SirenCard extends AbstractMonsterCard implements TurnAwareInterface
     {
         $randomMonsterCardId = $this->pickRandomMonsterCardIdFromOpponent($context);
 
-        if ("" === $randomMonsterCardId) {
+        if ('' === $randomMonsterCardId) {
             return;
         }
 
         $context->stealCard($randomMonsterCardId, $context->getOtherPlayerId($this->ownerId), $this->ownerId);
     }
+
     public function getTurnDelay(): int
     {
         return $this->getValue(self::TURN_DELAY, true);
@@ -63,7 +65,7 @@ final class SirenCard extends AbstractMonsterCard implements TurnAwareInterface
         $pool = $context->getOpponentState()->playArea->monsterCards;
 
         if (empty($pool)) {
-            return "";
+            return '';
         }
 
         return $pool[$context->state->randomizer->randomBetweenInt(0, count($pool) - 1)];

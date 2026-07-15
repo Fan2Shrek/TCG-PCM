@@ -450,14 +450,17 @@ class GameEventApplier implements GameEventApplierInterface
 
         $isPassiveCard = \in_array($cardId, $fromPlayer->playArea->passiveCards, true);
         $isMonsterCard = \in_array($cardId, $fromPlayer->playArea->monsterCards, true);
-    
+
         if (!$isPassiveCard && !$isMonsterCard) {
             throw new \LogicException(\sprintf('Card %s is not in the play area of player %s', $cardId, $fromPlayerId));
         }
 
         $newTargetPlayArea = $isPassiveCard ? $fromPlayer->playArea->removePassiveCard($cardId) : $fromPlayer->playArea->removeMonsterCard($cardId);
         $newThiefPlayArea = $isPassiveCard ? $toPlayer->playArea->addPassiveCard($cardId) : $toPlayer->playArea->addMonsterCard($cardId);
-        
-        return $state->withUpdatedPlayer($fromPlayer->withPlayArea($newTargetPlayArea))->withUpdatedPlayer($toPlayer->withPlayArea($newThiefPlayArea))->withUpdatedCardState($cardState);
+
+        return $state
+            ->withUpdatedPlayer($fromPlayer->withPlayArea($newTargetPlayArea))
+            ->withUpdatedPlayer($toPlayer->withPlayArea($newThiefPlayArea))
+            ->withUpdatedCardState($cardState);
     }
 }

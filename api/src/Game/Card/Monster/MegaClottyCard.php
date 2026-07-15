@@ -23,7 +23,7 @@ final class MegaClottyCard extends AbstractMonsterCard
     private const CLOTTY_IDS = [
         'Clotty',
         'MegaClotty',
-        'GrilledClotty'
+        'GrilledClotty',
     ];
 
     private int $playBonus = 0;
@@ -95,7 +95,7 @@ final class MegaClottyCard extends AbstractMonsterCard
     {
         for ($i = 0; $i < self::NUMBER_OF_CLOTTIES_SPAWNED; $i++) {
             $newInstanceId = (string) $gameContext->state->randomizer->roll(0xFFFF_FFFF);
-            $cardTemplateId = "Clotty";
+            $cardTemplateId = 'Clotty';
 
             $gameContext->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
                 'playerId' => $this->getOwnerId(),
