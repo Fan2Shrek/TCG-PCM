@@ -53,7 +53,10 @@ final class RoomStarter
         $player1CharacterCard->setState($player1CharacterCardState);
         $player2CharacterCard->setState($player2CharacterCardState);
 
-        return new GameState($player1State, $player2State, null, $this->generateSeed(), $player1State->player->id, [
+        $firstPlayer = rand(0, 1) === 0 ? $player1State : $player2State;
+        $otherPlayer = $firstPlayer === $player1State ? $player2State : $player1State;
+
+        return new GameState($firstPlayer, $otherPlayer, null, $this->generateSeed(), $firstPlayer->player->id, [
             $player1CharacterCardState->instanceId => $player1CharacterCardState,
             $player2CharacterCardState->instanceId => $player2CharacterCardState,
         ]);
