@@ -57,7 +57,7 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
         $pool = $this->getPassiveTemplatePool();
 
         if ([] === $pool) {
-            throw new \LogicException('Chaos template pool cannot be empty');
+            throw new \LogicException('Charlie template pool cannot be empty');
         }
 
         return $pool[$context->state->randomizer->randomBetweenInt(0, count($pool) - 1)];

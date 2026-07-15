@@ -10,8 +10,8 @@ final class ClottyCard extends AbstractMonsterCard
 {
     public static CardSetEnum $serie = CardSetEnum::TBOI;
 
-    private const HEALTH_POINTS = 8;
-    private const ATTACK = 8;
+    private const HEALTH_POINTS = 7;
+    private const ATTACK = 7;
 
     public function getId(): string
     {

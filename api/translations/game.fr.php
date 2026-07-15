@@ -258,6 +258,14 @@ return [
             'name' => 'Wololo',
             'description' => 'Convertie un monstre ou passif adverse, le faisant changer de camp.',
         ],
+        'Siren' => [
+            'name' => 'Sirène',
+            'description' => 'Tous les {{value}} tours, fait changer de camp un monstre adverse aléatoire.',
+        ],
+        'MegaClotty' => [
+            'name' => 'Méga Coagulé',
+            'description' => 'Quand il est joué, absorbe tous les coagulés en jeu, gagnant +{{value}} PVs et +{{value2}} attaque pour chaque coagulé absorbé. Quand il meurt, fait apparaître {{value3}} <card>Clotty</card>.',
+        ],
     ],
     // Effects
     'effects' => [

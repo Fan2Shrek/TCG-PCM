@@ -258,6 +258,14 @@ return [
             'name' => 'Wololo',
             'description' => 'Convert an enemy monster or passive, making it change sides.',
         ],
+        'Siren' => [
+            'name' => 'Siren',
+            'description' => 'Every {{value}} turns, makes a random enemy monster change sides.',
+        ],
+        'MegaClotty' => [
+            'name' => 'Mega Clotty',
+            'description' => 'When played, absorbs all clotties in play, gaining +{{value}} HP and +{{value2}} attack for each clottie absorbed. When it dies, spawns two clotties.',
+        ],
     ],
     // Effects
     'effects' => [
