@@ -21,6 +21,7 @@ final class BadgeSubscriber implements EventSubscriberInterface
     {
         return [
             BoosterOpenedEvent::class => 'onEvent',
+            GamePlayedEvent::class => 'onEvent',
         ];
     }
 
