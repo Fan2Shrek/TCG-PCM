@@ -6,10 +6,10 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
-use App\Game\Card\Trait\TurnAwareTrait;
+
 use App\Game\GameContext;
 use App\Game\GameUtils;
-use Override;
+
 
 final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterface
 {

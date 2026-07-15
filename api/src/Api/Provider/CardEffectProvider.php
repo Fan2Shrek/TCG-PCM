@@ -11,14 +11,13 @@ use App\Enum\CardEffectEnum;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
-* @implements ProviderInterface<CardEffect>
-*/
+ * @implements ProviderInterface<CardEffect>
+ */
 final class CardEffectProvider implements ProviderInterface
 {
     public function __construct(
         private TranslatorInterface $translator,
-    ) {
-    }
+    ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
