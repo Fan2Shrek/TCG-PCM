@@ -55,7 +55,7 @@ final class BenjaminCard extends AbstractPlayableCard
 
         for ($i = 0; $i < $this->getValue(self::CARD_COUNT, true); $i++) {
             $context->addEffect(CardEffectEnum::HACKED, $target, [
-                'value' => $context->randomBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
+                'value' => $context->randomIntBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
             ]);
         }
     }
