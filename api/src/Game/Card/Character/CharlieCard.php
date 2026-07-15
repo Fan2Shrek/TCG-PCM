@@ -68,7 +68,7 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
      */
     private function getPassiveTemplatePool(): array
     {
-        return $this->passiveTemplatePool ??= GameUtils::getService('cards')->getAllBy([
+        return self::$passiveTemplatePool ??= GameUtils::getService('cards')->getCardsBy([
             'type' => AbstractPassiveCard::class,
         ]);
     }

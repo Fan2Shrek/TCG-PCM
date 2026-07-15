@@ -9,10 +9,10 @@ use App\Game\AbstractCard;
 
 final class HackedCardEffect extends AbstractCardEffect
 {
-    public const float MIN_MODIFIER = 0.3;
-    public const float MAX_MODIFIER = 3;
+    public const int MIN_MODIFIER = 33;
+    public const int MAX_MODIFIER = 300;
 
-    private readonly float $value;
+    private readonly int $value;
 
     public function __construct(array $data = [])
     {
@@ -20,8 +20,12 @@ final class HackedCardEffect extends AbstractCardEffect
             throw new \InvalidArgumentException('Missing value key');
         }
 
-        if (!\is_float($value)) {
-            throw new \InvalidArgumentException('Value must be float');
+        if (!\is_int($value)) {
+            throw new \InvalidArgumentException('Value must be an integer');
+        }
+
+        if ($value < self::MIN_MODIFIER || $value > self::MAX_MODIFIER) {
+            throw new \InvalidArgumentException(sprintf('Value must be between %s and %s', self::MIN_MODIFIER, self::MAX_MODIFIER));
         }
 
         $this->value = $value;
@@ -34,6 +38,6 @@ final class HackedCardEffect extends AbstractCardEffect
 
     public function modifyValue(float|int $value, AbstractCard $card): float|int
     {
-        return $value * $this->value;
+        return $value * ($this->value / 100);
     }
 }

@@ -38,7 +38,7 @@ final class AbstractCardTest extends TestCase
     {
         $state = new CardState('id', DummyCard::class, 'ownerId', [
             new EffectState(CardEffectEnum::HACKED, [
-                'value' => 2.0,
+                'value' => 200,
             ]),
         ]);
 

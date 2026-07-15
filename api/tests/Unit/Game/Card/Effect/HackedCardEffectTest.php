@@ -18,7 +18,7 @@ final class HackedCardEffectTest extends CardEffectTestCase
     protected function getEffect(): HackedCardEffect
     {
         return new HackedCardEffect([
-            'value' => 2.0,
+            'value' => 200,
         ]);
     }
 }
