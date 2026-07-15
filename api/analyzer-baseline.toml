@@ -127,6 +127,30 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
+file = "src/Game/Card/ChaosCard.php"
+code = "mixed-method-access"
+message = "Attempting to access a method on a non-object type (`mixed`)."
+count = 3
+
+[[issues]]
+file = "src/Game/Card/ChaosCard.php"
+code = "mixed-property-type-coercion"
+message = "Mixed property type coercion"
+count = 2
+
+[[issues]]
+file = "src/Game/Card/ChaosCard.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\game\card\chaoscard::getmonstertemplatepool`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/ChaosCard.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\game\card\chaoscard::getpassivetemplatepool`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Game/Card/Character/CharlieCard.php"
 code = "mixed-method-access"
 message = "Attempting to access a method on a non-object type (`mixed`)."
@@ -135,7 +159,7 @@ count = 1
 [[issues]]
 file = "src/Game/Card/Character/CharlieCard.php"
 code = "mixed-property-type-coercion"
-message = "A value with a less specific type `mixed` is being assigned to property `$$passiveTemplatePool` (array<array-key, string>|null)."
+message = "Mixed property type coercion"
 count = 1
 
 [[issues]]

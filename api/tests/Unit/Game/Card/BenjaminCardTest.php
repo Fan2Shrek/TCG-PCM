@@ -19,12 +19,12 @@ final class BenjaminCardTest extends CardTestCase
 
         $events = $ctx->flushEvents();
 
-        self::assertCount(1, $events);
+        self::assertCount(2, $events);
         self::assertEquals(new GameEvent(0, GameEventTypeEnum::EFFECT_ADDED, GameEvent::GAME_EVENT, [
             'effect' => 'Hacked',
             'cardId' => 'test_card',
-            'effectValues' => ['value' => 0],
-        ]), $events[0]);
+            'effectValues' => ['value' => 233],
+        ]), $events[1]);
     }
 
     protected function getCardFQCN(): string
