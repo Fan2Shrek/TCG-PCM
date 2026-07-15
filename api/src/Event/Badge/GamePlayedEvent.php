@@ -11,7 +11,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class GamePlayedEvent extends Event implements BadgeEventInterface
 {
-    public function __construct(private readonly User $user) {}
+    public function __construct(
+        private readonly User $user,
+    ) {}
 
     public static function getBadgeKey(): BadgeEnum
     {

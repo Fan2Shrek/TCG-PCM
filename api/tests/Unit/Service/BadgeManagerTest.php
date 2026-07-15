@@ -33,7 +33,9 @@ final class BadgeManagerTest extends TestCase
         $badgeManager = $this->getBadgeManager([$handler]);
 
         $badgeManager->handleFromEvent(new class(new User('', '')) implements BadgeEventInterface {
-            public function __construct(private readonly User $user) {}
+            public function __construct(
+                private readonly User $user,
+            ) {}
 
             public static function getBadgeKey(): BadgeEnum
             {
@@ -77,7 +79,9 @@ class SpyBadgeHandler implements BadgeHandlerInterface
 
 class DummyEvent implements BadgeEventInterface
 {
-    public function __construct(private readonly User $user) {}
+    public function __construct(
+        private readonly User $user,
+    ) {}
 
     public static function getBadgeKey(): BadgeEnum
     {

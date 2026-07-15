@@ -19,13 +19,17 @@ final class CardEffectProvider implements ProviderInterface
         private TranslatorInterface $translator,
     ) {}
 
+    /**
+     * @return array<CardEffect>
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        foreach (CardEffectEnum::cases() as $cardEffect) {
-            yield new CardEffect(
+        return array_map(
+            fn(CardEffectEnum $cardEffect): CardEffect => new CardEffect(
                 $this->translator->trans(\sprintf('effects.%s.description', $cardEffect->value), [], 'game'),
                 $this->translator->trans(\sprintf('effects.%s.description', $cardEffect->value), [], 'game'),
-            );
-        }
+            ),
+            CardEffectEnum::cases(),
+        );
     }
 }

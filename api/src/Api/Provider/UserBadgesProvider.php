@@ -32,13 +32,10 @@ final class UserBadgesProvider implements ProviderInterface
     {
         $user = $this->currentUserProvider->getCurrentUser();
 
-        $badges = array_map(
-            fn(BadgeEnum $badgeKey): UserBadgeDTO => $this->buildDTO(
-                $badgeKey,
-                $this->userBadgeRepository->findByUserAndBadge($user, $badgeKey),
-            ),
-            BadgeEnum::cases(),
-        );
+        $badges = array_map(fn(BadgeEnum $badgeKey): UserBadgeDTO => $this->buildDTO($badgeKey, $this->userBadgeRepository->findByUserAndBadge(
+            $user,
+            $badgeKey,
+        )), BadgeEnum::cases());
 
         return new UserBadgesDTO($badges);
     }
