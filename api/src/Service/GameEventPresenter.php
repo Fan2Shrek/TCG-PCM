@@ -141,6 +141,7 @@ final class GameEventPresenter
             'serie' => $card->set->name,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
             'requiresTarget' => $card->requiresTarget,
+            'targetType' => $card->targetType?->value,
             'cost' => $card->cost,
             'hp' => $card->hp,
             'attack' => $card->attack,

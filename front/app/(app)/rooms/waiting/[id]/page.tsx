@@ -5,12 +5,25 @@ import { useRouter } from "next/navigation";
 import { MdContentCopy, MdPlayArrow, MdLogout } from "react-icons/md";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRoom } from "@/contexts/RoomContext";
-import api from "@/lib/api/api";
+import api, { getImage } from "@/lib/api/api";
 import type { Deck } from "@/app/types/deck";
 import { Button } from "@/components/ui/button";
 import DeckSelect from "@/components/molecules/rooms/DeckSelect";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+
+const PlayerAvatar = ({
+  profilePicturePath,
+}: {
+  profilePicturePath?: string | null;
+}) => (
+  <div
+    className="h-9 w-9 shrink-0 rounded-full bg-cover bg-center border border-black/20"
+    style={{
+      backgroundImage: `url(${profilePicturePath ? getImage(profilePicturePath) : "/menu/default_profile_picture.webp"})`,
+    }}
+  />
+);
 
 const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -276,7 +289,12 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
-                  <span>{room?.owner.username}</span>
+                  <div className="flex items-center gap-3">
+                    <PlayerAvatar
+                      profilePicturePath={room?.owner.profilePicturePath}
+                    />
+                    <span>{room?.owner.username}</span>
+                  </div>
                   {room?.owner.username === currentUser?.username ? (
                     <DeckSelect
                       decks={sortedDecks}
@@ -289,7 +307,12 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
                 {room?.opponent && (
                   <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
-                    <span>{room.opponent.username}</span>
+                    <div className="flex items-center gap-3">
+                      <PlayerAvatar
+                        profilePicturePath={room.opponent.profilePicturePath}
+                      />
+                      <span>{room.opponent.username}</span>
+                    </div>
                     {room.opponent.username === currentUser?.username ? (
                       <DeckSelect
                         decks={sortedDecks}

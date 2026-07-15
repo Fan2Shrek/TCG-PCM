@@ -2,7 +2,6 @@
 
 namespace App\Game\Card\Character;
 
-use App\Enum\CardTypeEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\GameContext;

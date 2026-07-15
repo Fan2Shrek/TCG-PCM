@@ -10,6 +10,10 @@ type PlayZoneProps = {
   className?: string;
   /** true when this zone represents the opponent's board rather than the logged-in player's own board */
   isOpponent?: boolean;
+  /** called when the zone (not a specific card) is clicked, to play a hand card selected by click instead of drag-and-drop */
+  onClick?: () => void;
+  /** true while a hand card is selected and this zone is a valid drop target for it */
+  isSelectableTarget?: boolean;
 };
 
 export default function PlayZone({
@@ -17,6 +21,8 @@ export default function PlayZone({
   monsterCardIds = [],
   className = "",
   isOpponent = false,
+  onClick,
+  isSelectableTarget = false,
 }: PlayZoneProps) {
   const zoneRef = useRef<HTMLDivElement>(null);
 
@@ -47,8 +53,14 @@ export default function PlayZone({
   return (
     <div
       ref={zoneRef}
+      onClick={(e) => {
+        if (!isOpponent && onClick) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
       className={`w-full min-h-110 transition-all duration-200 rounded-xl flex flex-col items-center justify-between p-2 ${className}
-        ${!isOpponent && isDragging ? "ring-4 ring-yellow-300 ring-pulse shadow-lg shadow-yellow-300/30" : ""}
+        ${!isOpponent && (isDragging || isSelectableTarget) ? "ring-4 ring-yellow-300 ring-pulse shadow-lg shadow-yellow-300/30 cursor-pointer" : ""}
       `}
     >
       {isOpponent ? passiveRow : monsterRow}

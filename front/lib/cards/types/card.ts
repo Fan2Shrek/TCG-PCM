@@ -2,6 +2,7 @@ import {
   CardEffect,
   CardRaririty,
   CardSet,
+  CardTargetType,
   CardType,
   FoilEffects,
 } from "@/constants/card";
@@ -16,6 +17,7 @@ export type BasicCard = {
   description: string;
   image: string;
   requiresTarget?: boolean;
+  targetType?: CardTargetType | null;
   rarity: CardRaririty;
   serie: CardSet;
   type?: CardType;
