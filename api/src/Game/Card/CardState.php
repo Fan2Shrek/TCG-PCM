@@ -32,4 +32,11 @@ readonly class CardState
             'values' => array_merge($this->values, $newValues),
         ]);
     }
+
+    public function updateOwner(string $newOwnerId): self
+    {
+        return clone($this, [
+            'ownerId' => $newOwnerId,
+        ]);
+    }
 }

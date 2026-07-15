@@ -2,7 +2,6 @@ import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { CardState, GameState, PlayerState } from "@/lib/game/type/gameState";
 import { emitter } from "@/lib/eventBus";
-import { BasicCard } from "@/lib/cards/types/card";
 
 export type AnnouncementTone = "neutral" | "positive" | "negative";
 
@@ -128,6 +127,19 @@ export function animateGameEvent(
         return {
           text: `${card.name} a rejoint le cimetière.`,
           tone: "negative",
+        };
+      }
+    }
+
+    case GameEventType.CARD_STOLEN: {
+      const card = getCard(state, event.data.cardId);
+      const fromPlayer = getPlayer(state, event.data.fromPlayerId);
+      const toPlayer = getPlayer(state, event.data.toPlayerId);
+
+      if (card && fromPlayer && toPlayer) {
+        return {
+          text: `${toPlayer.player.name} a volé ${card.name} à ${fromPlayer.player.name}!`,
+          tone: "neutral",
         };
       }
     }
@@ -358,7 +370,67 @@ export function applyGameView(
         },
       };
     }
+    case GameEventType.CARD_STOLEN: {
+      const cardId = event.data.cardId;
+      const card = getCard(state, cardId);
 
+      if (!card) {
+        return state;
+      }
+      const thiefPlayerKey = getPlayerKey(state, event.data.toPlayerId);
+      const targetPlayerKey = getPlayerKey(state, event.data.fromPlayerId);
+      const thiefPlayer = state[thiefPlayerKey];
+      const targetPlayer = state[targetPlayerKey];
+      
+      const isMonsterCard = targetPlayer.playArea.monsterCards.includes(cardId);
+
+      const cardToEmit = view.card || card;
+      
+      emitter.emit("card:stolen", {
+        card: cardToEmit,
+        fromPlayerId: view.fromPlayerId,
+        toPlayerId: view.toPlayerId,
+      });
+      
+      return {
+        ...state,
+        [targetPlayerKey]: {
+          ...targetPlayer,
+          playArea: {
+            ...targetPlayer.playArea,
+            ...(isMonsterCard
+              ? {
+                  monsterCards: targetPlayer.playArea.monsterCards.filter(
+                    (id) => id !== cardId,
+                  ),
+                }
+              : {}),
+            ...(!isMonsterCard
+              ? {
+                  passiveCards: targetPlayer.playArea.passiveCards.filter(
+                    (id) => id !== cardId,
+                  ),
+                } : {}),
+          }
+        },
+        [thiefPlayerKey]: {
+          ...thiefPlayer,
+          playArea: {
+            ...thiefPlayer.playArea,
+            ...(isMonsterCard
+              ? {
+                  monsterCards: [...thiefPlayer.playArea.monsterCards, cardId],
+                }
+              : {}),
+            ...(!isMonsterCard
+              ? {
+                  passiveCards: [...thiefPlayer.playArea.passiveCards, cardId],
+                } : {}), 
+          }
+        }
+      }
+    };
+      
     default:
       return state;
   }

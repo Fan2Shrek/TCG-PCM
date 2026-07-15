@@ -81,6 +81,7 @@ abstract class AbstractMonsterCard extends AbstractCard
 
     public function getCurrentHealthPoints(): int
     {
+        dump($this);
         return $this->currentHealthPoints;
     }
 }

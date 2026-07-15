@@ -38,6 +38,7 @@ class GameEventApplier implements GameEventApplierInterface
             GameEventTypeEnum::COINS_GAINED, GameEventTypeEnum::COINS_LOST => $this->applyCoinsChange($event, $gameState),
             GameEventTypeEnum::CARD_GENERATED => $this->applyCardGenerated($event, $gameState),
             GameEventTypeEnum::CARD_REDRAWN => $this->applyCardRedrawn($event, $gameState),
+            GameEventTypeEnum::CARD_STOLEN => $this->ApplyCardStolen($event, $gameState),
             GameEventTypeEnum::PLAYER_DIED,
             GameEventTypeEnum::ATTACK,
             GameEventTypeEnum::CARD_RUNTIME_VALUE,
@@ -422,5 +423,44 @@ class GameEventApplier implements GameEventApplierInterface
         $player = $player->withNewHandAndDeck([...$player->hand, $cardId], $player->drawPile);
 
         return $state->addCard(new CardState($cardId, $templateId, $playerId))->withUpdatedPlayer($player);
+    }
+
+    private function applyCardStolen(GameEvent $event, GameState $state): GameState
+    {
+        if (null === ($cardId = $event->data['cardId'] ?? null) || !\is_string($cardId)) {
+            throw new \LogicException('CardStolen requires a cardId');
+        }
+
+        if (null === ($fromPlayerId = $event->data['fromPlayerId'] ?? null) || !\is_string($fromPlayerId)) {
+            throw new \LogicException('CardStolen requires a fromPlayerId');
+        }
+
+        if (null === ($toPlayerId = $event->data['toPlayerId'] ?? null) || !\is_string($toPlayerId)) {
+            throw new \LogicException('CardStolen requires a toPlayerId');
+        }
+
+        $cardState = $state->getCardState($cardId)->updateOwner($toPlayerId);
+
+        if (!$cardState) {
+            throw new \LogicException('CardStolen requires a valid cardId');
+        }
+
+        $fromPlayer = $state->getPlayer($fromPlayerId);
+        $toPlayer = $state->getPlayer($toPlayerId);
+
+        $isPassiveCard = \in_array($cardId, $fromPlayer->playArea->passiveCards, true);
+        $isMonsterCard = \in_array($cardId, $fromPlayer->playArea->monsterCards, true);
+
+        if (!$isPassiveCard && !$isMonsterCard) {
+            throw new \LogicException(\sprintf('Card %s is not in the play area of player %s', $cardId, $fromPlayerId));
+        }
+
+        $newTargetPlayArea = $isPassiveCard ? $fromPlayer->playArea->removePassiveCard($cardId) : $fromPlayer->playArea->removeMonsterCard($cardId);
+        $newThiefPlayArea = $isPassiveCard ? $toPlayer->playArea->addPassiveCard($cardId) : $toPlayer->playArea->addMonsterCard($cardId);
+
+        return $state
+            ->withUpdatedPlayer($fromPlayer->withPlayArea($newTargetPlayArea))
+            ->withUpdatedPlayer($toPlayer->withPlayArea($newThiefPlayArea))
+            ->withUpdatedCardState($cardState);
     }
 }

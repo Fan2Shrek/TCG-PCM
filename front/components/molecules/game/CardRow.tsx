@@ -50,6 +50,7 @@ function CardRow({
     };
 
     emitter.on("card:played", handleCardPlayed);
+    emitter.on("card:stolen", handleCardPlayed);
 
     return () => {
       emitter.off("card:played", handleCardPlayed);
