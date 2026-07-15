@@ -8,6 +8,7 @@ use App\Enum\CardRarityEnum;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\GameContext;
+use App\Game\GameUtils;
 
 final class ChaosCard extends AbstractPlayableCard
 {
@@ -126,35 +127,9 @@ final class ChaosCard extends AbstractPlayableCard
      */
     private function getPassiveTemplatePool(): array
     {
-        if (null !== self::$passiveTemplatePool) {
-            return self::$passiveTemplatePool;
-        }
-
-        $pool = [];
-        foreach ($this->getCardsList() as $templateId => $cardClass) {
-            $card = new $cardClass();
-            if ($card instanceof AbstractPassiveCard) {
-                $pool[] = $templateId;
-            }
-        }
-
-        self::$passiveTemplatePool = $pool;
-
-        return $pool;
-    }
-
-    /**
-     * @return array<string, class-string<\App\Game\AbstractCard>>
-     */
-    private function getCardsList(): array
-    {
-        if (null === self::$cardsList) {
-            /** @var array<string, class-string<\App\Game\AbstractCard>> $cardsList */
-            $cardsList = require __DIR__.'/../../../resources/cards_list.php';
-            self::$cardsList = $cardsList;
-        }
-
-        return self::$cardsList;
+        return self::$cardsList ??= GameUtils::getService('cards')->getCardsBy([
+            'type' => AbstractPassiveCard::class,
+        ]);
     }
 
     private function instantiateCard(string $templateId): \App\Game\AbstractCard
