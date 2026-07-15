@@ -2,11 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use App\Api\Provider\UserBadgesProvider;
 use App\Enum\BadgeEnum;
 use App\Repository\UserBadgeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserBadgeRepository::class)]
+#[ApiResource(operations: [
+    new Get(uriTemplate: '/badges', provider: UserBadgesProvider::class),
+])]
 class UserBadge
 {
     #[ORM\Id]

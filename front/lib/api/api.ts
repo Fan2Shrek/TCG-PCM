@@ -1,4 +1,5 @@
 import { logoutAction } from "@/lib/actions/auth";
+import { BadgeResource } from "./resources/BadgeResource";
 import { BoosterResource } from "./resources/BoosterResource";
 import { DeckResource } from "./resources/DeckResource";
 import { GameResource } from "./resources/GameResource";
@@ -8,6 +9,7 @@ import { UserResource } from "./resources/UserResource";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export class ApiClient {
+  badge: BadgeResource;
   booster: BoosterResource;
   deck: DeckResource;
   game: GameResource;
@@ -15,6 +17,7 @@ export class ApiClient {
   room: RoomResource;
 
   constructor(public baseUrl: string) {
+    this.badge = new BadgeResource(this);
     this.booster = new BoosterResource(this);
     this.deck = new DeckResource(this);
     this.game = new GameResource(this);

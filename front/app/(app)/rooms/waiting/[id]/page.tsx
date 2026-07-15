@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { MdContentCopy, MdPlayArrow, MdLogout } from "react-icons/md";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRoom } from "@/contexts/RoomContext";
+import { useBadgesContext } from "@/contexts/BadgesContext";
+import BadgeIcon from "@/components/atoms/badges/BadgeIcon";
 import api, { getImage } from "@/lib/api/api";
 import type { Deck } from "@/app/types/deck";
 import { Button } from "@/components/ui/button";
@@ -92,6 +94,17 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
       cancelled = true;
     };
   }, []);
+
+  const { badges } = useBadgesContext();
+  const highestBadge = useMemo(
+    () =>
+      badges.reduce<(typeof badges)[number] | null>(
+        (highest, badge) =>
+          !highest || badge.level > highest.level ? badge : highest,
+        null,
+      ),
+    [badges],
+  );
 
   const isRoomDataReady = !!room && !!currentUser && sortedDecks.length > 0;
   const activeDeckId =
@@ -294,6 +307,15 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       profilePicturePath={room?.owner.profilePicturePath}
                     />
                     <span>{room?.owner.username}</span>
+                    {room?.owner.username === currentUser?.username &&
+                    highestBadge &&
+                    highestBadge.level > 0 ? (
+                      <BadgeIcon
+                        badgeName={highestBadge.badgeName}
+                        level={highestBadge.level}
+                        size={24}
+                      />
+                    ) : null}
                   </div>
                   {room?.owner.username === currentUser?.username ? (
                     <DeckSelect
@@ -312,6 +334,15 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                         profilePicturePath={room.opponent.profilePicturePath}
                       />
                       <span>{room.opponent.username}</span>
+                      {room.opponent.username === currentUser?.username &&
+                      highestBadge &&
+                      highestBadge.level > 0 ? (
+                        <BadgeIcon
+                          badgeName={highestBadge.badgeName}
+                          level={highestBadge.level}
+                          size={24}
+                        />
+                      ) : null}
                     </div>
                     {room.opponent.username === currentUser?.username ? (
                       <DeckSelect

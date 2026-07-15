@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Api\Provider\UserBadgesProvider;
 use App\Controller\GoogleOAuthController;
 use App\Service\BadgeManager;
 use App\Service\PublishEventMiddleware;
@@ -35,6 +36,11 @@ return App::config([
             ],
         ],
         BadgeManager::class => [
+            'arguments' => [
+                '$badgeHandlers' => tagged_iterator('app.badge_handler'),
+            ],
+        ],
+        UserBadgesProvider::class => [
             'arguments' => [
                 '$badgeHandlers' => tagged_iterator('app.badge_handler'),
             ],

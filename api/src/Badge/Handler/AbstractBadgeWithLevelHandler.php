@@ -23,6 +23,11 @@ abstract class AbstractBadgeWithLevelHandler implements BadgeHandlerInterface
         $userBadge->setScore($newScore);
     }
 
+    public function getThresholds(): array
+    {
+        return $this->getLevels();
+    }
+
     protected function getLevelForScore(int $score): int
     {
         $level = 0;

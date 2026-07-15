@@ -25,6 +25,7 @@ import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 import GameChat from "./GameChat";
 import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
+import { useBadgesContext } from "@/contexts/BadgesContext";
 
 export default function GameBoard() {
   const router = useRouter();
@@ -45,7 +46,9 @@ export default function GameBoard() {
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const rewardedWinnerIdRef = useRef<string | null>(null);
+  const badgesRefreshedForWinnerIdRef = useRef<string | null>(null);
   const { refresh: refreshBoosterTokens } = useBoosterTokensContext();
+  const { refresh: refreshBadges } = useBadgesContext();
 
   const connectedPlayer =
     game?.player1.player.name === currentUsername
@@ -215,6 +218,19 @@ export default function GameBoard() {
     rewardedWinnerIdRef.current = winnerId;
     refreshBoosterTokens().catch(() => {});
   }, [winnerId, connectedPlayer, refreshBoosterTokens]);
+
+  useEffect(() => {
+    if (
+      !winnerId ||
+      badgesRefreshedForWinnerIdRef.current === winnerId ||
+      !connectedPlayer
+    ) {
+      return;
+    }
+
+    badgesRefreshedForWinnerIdRef.current = winnerId;
+    refreshBadges().catch(() => {});
+  }, [winnerId, connectedPlayer, refreshBadges]);
 
   const fetchWinnerFromRoom = useCallback(() => {
     if (!id || !currentState || !opponentState) {
