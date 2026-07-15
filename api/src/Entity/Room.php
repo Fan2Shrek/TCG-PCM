@@ -6,10 +6,12 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Api\Provider\ChatHistoryProvider;
 use App\Api\Provider\GameProvider;
 use App\Api\Provider\UserActiveRoomProvider;
 use App\Api\Provider\WaitingRoomProvider;
 use App\Domain\Command\Game\PlayGameCommand;
+use App\Domain\Command\Game\SendChatMessageCommand;
 use App\Domain\Command\Room\ChangeDeckCommand;
 use App\Domain\Command\Room\CreateRoomCommand;
 use App\Domain\Command\Room\JoinRoomCommand;
@@ -51,6 +53,8 @@ use Symfony\Component\Uid\Uuid;
     new Post(uriTemplate: '/rooms/{id}/change_deck', messenger: 'input', input: ChangeDeckCommand::class, status: 204),
     new Post(uriTemplate: '/rooms/{id}/toggle-private', messenger: 'input', input: TogglePrivateRoomCommand::class, status: 204),
     new Post(uriTemplate: '/game/{id}/play', messenger: 'input', input: PlayGameCommand::class, status: 200),
+    new GetCollection(uriTemplate: '/game/{id}/chat', provider: ChatHistoryProvider::class, normalizationContext: ['groups' => ['api:chat:read']]),
+    new Post(uriTemplate: '/game/{id}/chat', messenger: 'input', input: SendChatMessageCommand::class, status: 204),
 ])]
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
 class Room

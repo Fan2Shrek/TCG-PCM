@@ -23,6 +23,7 @@ import api from "@/lib/api/api";
 import WinScreen from "./WinScreen";
 import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
+import GameChat from "./GameChat";
 import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
 
 export default function GameBoard() {
@@ -344,6 +345,7 @@ export default function GameBoard() {
           />
         </div>
       )}
+      <GameChat />
     </div>
   );
 }

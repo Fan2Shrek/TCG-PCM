@@ -4,7 +4,9 @@ import { BasicCard } from "@/lib/cards/types/card";
 import useMercure from "@/hooks/useMercure";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { GameState } from "@/lib/game/type/gameState";
+import { ChatMessage } from "@/lib/game/type/chatMessage";
 import { playGameAction } from "@/lib/api/gameProxy";
+import api from "@/lib/api/api";
 import {
   AnnouncementPayload,
   AnnouncementTone,
@@ -41,6 +43,7 @@ type ActionObject = {
   attack: (cardId: string, targetId: string) => void;
   endTurn: () => void;
   pushAnnouncement: (announcement: AnnouncementPayload) => void;
+  sendChatMessage: (message: string) => void;
 };
 
 export type TargetingState = {
@@ -66,6 +69,7 @@ type GameContextType = {
   game: GameState | null;
   getCardById: (cardId: string) => BasicCard | undefined;
   announcements: GameAnnouncement[];
+  chatMessages: ChatMessage[];
   actions: ActionObject;
   currentUsername?: string;
   isLoggedPlayerTurn: boolean;
@@ -79,17 +83,20 @@ type Props = {
   game?: GameState | null;
   username?: string;
   mercureToken?: string;
+  chatHistory?: ChatMessage[];
 };
 
 export const GameContext = createContext<GameContextType>({
   game: null,
   getCardById: () => undefined,
   announcements: [],
+  chatMessages: [],
   actions: {
     playCard: () => undefined,
     attack: () => undefined,
     endTurn: () => undefined,
     pushAnnouncement: () => undefined,
+    sendChatMessage: () => undefined,
   },
   isLoggedPlayerTurn: false,
   targeting: {
@@ -117,6 +124,7 @@ export const GameProvider = ({
   game: initialGame,
   username,
   mercureToken,
+  chatHistory,
 }: Props) => {
   useEffect(() => {
     if (!mercureToken) return;
@@ -152,6 +160,9 @@ export const GameProvider = ({
     normalizeGameState(initialGame),
   );
   const [announcements, setAnnouncements] = useState<GameAnnouncement[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(
+    chatHistory ?? [],
+  );
   const gameRef = useRef<GameState | null>(normalizeGameState(initialGame));
   const announcementIdRef = useRef(0);
   const timeoutRefs = useRef<number[]>([]);
@@ -230,6 +241,23 @@ export const GameProvider = ({
 
         pushAnnouncement({
           text: message,
+          tone: "negative",
+        });
+      }
+    },
+    [gameId, pushAnnouncement],
+  );
+
+  const sendChatMessage = useCallback(
+    async (message: string) => {
+      try {
+        await api.game.sendChatMessage(gameId, message);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Une erreur est survenue";
+
+        pushAnnouncement({
+          text: errorMessage,
           tone: "negative",
         });
       }
@@ -490,6 +518,9 @@ export const GameProvider = ({
 
       processEvents(e.events);
     },
+    chat_message: (e: { message: ChatMessage }) => {
+      setChatMessages((current) => [...current, e.message]);
+    },
   });
 
   useEffect(() => {
@@ -502,7 +533,14 @@ export const GameProvider = ({
         game,
         getCardById,
         announcements,
-        actions: { playCard, attack, endTurn, pushAnnouncement },
+        chatMessages,
+        actions: {
+          playCard,
+          attack,
+          endTurn,
+          pushAnnouncement,
+          sendChatMessage,
+        },
         currentUsername: username,
         isLoggedPlayerTurn,
         targeting: {
