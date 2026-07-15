@@ -26,6 +26,7 @@ type Events = {
   "animation:card-draw-complete": void;
   "attack-animation:start": { attackerId: string; targetId: string; cardSet: CardSet };
   "attack-animation:completed": { attackerId: string; targetId: string };
+  "card:stolen": { card: BasicCard; fromPlayerId: string; toPlayerId: string };
 };
 
 export const emitter = mitt<Events>();

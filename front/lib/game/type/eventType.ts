@@ -18,6 +18,7 @@ export const GameEventType = {
   CARD_ACTION_PREVENTED: "CARD_ACTION_PREVENTED",
   COINS_GAINED: "COINS_GAINED",
   COINS_LOST: "COINS_LOST",
+  CARD_STOLEN: "CARD_STOLEN",
 } as const;
 
 export type GameEventTypeEnum =
