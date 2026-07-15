@@ -104,7 +104,7 @@ final class UserRegistrar
         $starterDeck = new Deck(user: $user, name: 'Starter Deck', characterCard: $starterCharacterCardId, cards: $starterDeckCards);
         $starterDeck->setIsFavorite(true);
 
-        $userWaller = new UserWallet(($user));
+        $userWaller = new UserWallet($user);
         $userWaller->setBoosterTokens(3);
 
         $this->em->persist($userWaller);
