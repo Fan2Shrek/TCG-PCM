@@ -439,7 +439,7 @@ class GameEventApplier implements GameEventApplierInterface
             throw new \LogicException('CardStolen requires a toPlayerId');
         }
 
-        $cardState = $state->getCardState($cardId);
+        $cardState = $state->getCardState($cardId)->updateOwner($toPlayerId);
 
         if (!$cardState) {
             throw new \LogicException('CardStolen requires a valid cardId');
@@ -458,8 +458,6 @@ class GameEventApplier implements GameEventApplierInterface
         $newTargetPlayArea = $isPassiveCard ? $fromPlayer->playArea->removePassiveCard($cardId) : $fromPlayer->playArea->removeMonsterCard($cardId);
         $newThiefPlayArea = $isPassiveCard ? $toPlayer->playArea->addPassiveCard($cardId) : $toPlayer->playArea->addMonsterCard($cardId);
         
-        return $state->withUpdatedPlayer($fromPlayer->withPlayArea($newTargetPlayArea))->withUpdatedPlayer($toPlayer->withPlayArea($newThiefPlayArea))->withUpdatedCardState(
-            new CardState($cardState->instanceId, $cardState->templateId, $toPlayerId)
-        );
+        return $state->withUpdatedPlayer($fromPlayer->withPlayArea($newTargetPlayArea))->withUpdatedPlayer($toPlayer->withPlayArea($newThiefPlayArea))->withUpdatedCardState($cardState);
     }
 }
