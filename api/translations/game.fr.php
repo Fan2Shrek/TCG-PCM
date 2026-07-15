@@ -254,6 +254,10 @@ return [
             'name' => 'Prisme Mimétique Saphir',
             'description' => 'Copie une carte monstre aléatoire en jeu. Inflige 0.5x dégâts et a 2x PV.',
         ],
+        'Wololo' => [
+            'name' => 'Wololo',
+            'description' => 'Convertie un monstre ou passif adverse, le faisant changer de camp.',
+        ],
     ],
     // Effects
     'effects' => [

@@ -2,8 +2,6 @@ import { GameEventType } from "@/lib/game/type/eventType";
 import { GameEvent } from "@/lib/game/type/gameEvent";
 import { CardState, GameState, PlayerState } from "@/lib/game/type/gameState";
 import { emitter } from "@/lib/eventBus";
-import { BasicCard } from "@/lib/cards/types/card";
-import { CardType } from "@/constants/card";
 
 export type AnnouncementTone = "neutral" | "positive" | "negative";
 
@@ -129,6 +127,19 @@ export function animateGameEvent(
         return {
           text: `${card.name} a rejoint le cimetière.`,
           tone: "negative",
+        };
+      }
+    }
+
+    case GameEventType.CARD_STOLEN: {
+      const card = getCard(state, event.data.cardId);
+      const fromPlayer = getPlayer(state, event.data.fromPlayerId);
+      const toPlayer = getPlayer(state, event.data.toPlayerId);
+
+      if (card && fromPlayer && toPlayer) {
+        return {
+          text: `${toPlayer.player.name} a volé ${card.name} à ${fromPlayer.player.name}!`,
+          tone: "neutral",
         };
       }
     }
@@ -360,14 +371,14 @@ export function applyGameView(
       };
     }
     case GameEventType.CARD_STOLEN: {
-      const cardId = view.cardId;
+      const cardId = event.data.cardId;
       const card = getCard(state, cardId);
 
       if (!card) {
         return state;
       }
-      const thiefPlayerKey = getPlayerKey(state, view.fromPlayerId);
-      const targetPlayerKey = getPlayerKey(state, view.toPlayerId);
+      const thiefPlayerKey = getPlayerKey(state, event.data.toPlayerId);
+      const targetPlayerKey = getPlayerKey(state, event.data.fromPlayerId);
       const thiefPlayer = state[thiefPlayerKey];
       const targetPlayer = state[targetPlayerKey];
       

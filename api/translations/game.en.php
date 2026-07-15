@@ -254,6 +254,10 @@ return [
             'name' => 'Mimetic Prism Saphir',
             'description' => 'Copy a random monster card in play. Deals 0.5x damage and has 2x HP.',
         ],
+        'Wololo' => [
+            'name' => 'Wololo',
+            'description' => 'Convert an enemy monster or passive, making it change sides.',
+        ],
     ],
     // Effects
     'effects' => [

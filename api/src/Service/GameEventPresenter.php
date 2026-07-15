@@ -64,6 +64,11 @@ final class GameEventPresenter
             GameEventTypeEnum::CARD_REDRAWN => [
                 'cardId' => $event->data['cardId'] ?? null,
             ],
+            GameEventTypeEnum::CARD_STOLEN => [
+                'cardId' => $event->data['cardId'] ?? null,
+                'fromPlayerId' => $event->data['fromPlayerId'] ?? null,
+                'toPlayerId' => $event->data['toPlayerId'] ?? null,
+            ],
             default => [],
         };
     }
