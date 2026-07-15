@@ -23,7 +23,7 @@ final class ImStillStandingCard extends AbstractPassiveCard implements DeathAwar
 
     public function getImage(): string
     {
-        return 'https://www.discogs.com/fr/release/590760-Elton-John-Im-Still-Standing/image/SW1hZ2U6NDMwMTU3Mjk=';
+        return 'https://i.discogs.com/K9fyMiGghoM2oaXJg4qTouYJ0rgiN3YZtfDcUDY6x0U/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTU5MDc2/MC0xNTczNzk4MDIx/LTgyNTQuanBlZw.jpeg';
     }
 
     public function getDescription(): string
