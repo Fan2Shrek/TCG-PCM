@@ -8,4 +8,5 @@ enum BadgeEnum: string
 {
     case OpenedBooster = 'opened_booster';
     case GamePlayed = 'game_played';
+    case GameWin = 'game_win';
 }

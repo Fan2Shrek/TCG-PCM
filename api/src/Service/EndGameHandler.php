@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Enum\RoomStatusEnum;
+use App\Event\Badge\GamePlayedEvent;
 use App\Repository\RoomRepository;
 use App\Service\Game\EndGameHandlerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -19,6 +21,7 @@ final class EndGameHandler implements EndGameHandlerInterface
         private RoomRepository $roomRepository,
         private EntityManagerInterface $em,
         private HubInterface $hub,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function endGame(string $gameId, string $winnerId): void
@@ -49,5 +52,7 @@ final class EndGameHandler implements EndGameHandlerInterface
         ], JSON_THROW_ON_ERROR);
 
         $this->hub->publish(new Update($topic, $payload, true));
+
+        $this->eventDispatcher->dispatch(new GamePlayedEvent());
     }
 }

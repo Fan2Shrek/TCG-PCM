@@ -70,8 +70,10 @@ return
         clone $p['App\\Game\\Card\\CardState'],
         clone $p['App\\Game\\GameRandomizer'],
         clone $p['App\\Game\\State\\PlayerState'],
+        clone $p['App\\Game\\Player'],
         clone $p['App\\Game\\State\\PlayArea'],
         clone $p['App\\Game\\State\\PlayerState'],
+        clone $p['App\\Game\\Player'],
         clone $p['App\\Game\\State\\PlayArea'],
     ],
     null,
@@ -130,7 +132,7 @@ return
             ],
             'player2' => [
                 $o[18],
-                33 => $o[68],
+                33 => $o[69],
             ],
             'lastEventId' => [
                 null,
@@ -310,7 +312,7 @@ return
                 [],
                 [],
                 34 => [
-                    'turnRemainingBeforeAction' => 6,
+                    'turnRemainingBeforeAction' => 3,
                 ],
                 36 => [],
                 38 => [],
@@ -333,26 +335,26 @@ return
             'player' => [
                 15 => $o[16],
                 18 => $o[19],
-                66 => $o[16],
-                68 => $o[19],
+                66 => $o[67],
+                69 => $o[70],
             ],
             'healthPoints' => [
                 15 => 3300,
                 18 => 3000,
-                66 => 3109,
-                68 => 3000,
+                66 => 3112,
+                69 => 3000,
             ],
             'maxHealthPoints' => [
                 15 => 3300,
                 18 => 3000,
                 66 => 3300,
-                68 => 3000,
+                69 => 3000,
             ],
             'characterCardId' => [
                 15 => '01f44a00-c8ee-4139-84b0-333c1f2bc727',
                 18 => 'ad8e098a-f1a9-4301-852a-c31a45ac97db',
                 66 => '01f44a00-c8ee-4139-84b0-333c1f2bc727',
-                68 => 'ad8e098a-f1a9-4301-852a-c31a45ac97db',
+                69 => 'ad8e098a-f1a9-4301-852a-c31a45ac97db',
             ],
             'hand' => [
                 15 => [
@@ -379,7 +381,7 @@ return
                     '339ad5e8-e1bf-4399-a1a5-473d4cc3f271',
                     'aec02fbf-8de3-4e5d-9a70-ff433c2d0b7f',
                 ],
-                68 => [
+                69 => [
                     'cb62d206-a441-43a4-905b-b699571e43cf',
                     'd5befa82-fa21-45cf-b2cb-1e5a1f3fe817',
                     'f8b4392e-55da-42ae-92ca-67696991ddf3',
@@ -420,7 +422,7 @@ return
                     '469da9d6-7e95-4f9d-9b9b-a3cb252ca109' => 'Redbloons',
                     'd8e3484a-bfc0-43a2-801f-1860353c66a1' => 'PierreSaidNoMonsterZone',
                 ],
-                68 => [
+                69 => [
                     '5997a81f-127f-423b-a5f4-4b9be8ae4f40' => 'Redbloons',
                     '83ca978b-6d13-4ca2-b300-9faea3e54eeb' => 'D6',
                     '366d914b-3c8a-465f-abef-03335be9765e' => 'PierreSaidNoMonsterZone',
@@ -434,19 +436,19 @@ return
                 15 => 9,
                 18 => 5,
                 66 => 14,
-                68 => 13,
+                69 => 14,
             ],
             'playArea' => [
                 15 => $o[17],
                 18 => $o[20],
-                66 => $o[67],
-                68 => $o[69],
+                66 => $o[68],
+                69 => $o[71],
             ],
             'discardPile' => [
                 15 => [],
                 18 => [],
                 66 => [],
-                68 => [
+                69 => [
                     '4b869ce3-03c3-43e6-ae2f-25656aad42f3' => 'Gitman',
                     '4b118ca0-9e3b-4802-b670-fab35686ae3e' => 'Gitman',
                 ],
@@ -456,28 +458,32 @@ return
             'id' => [
                 16 => '1',
                 19 => '2',
+                67 => '1',
+                70 => '2',
             ],
             'name' => [
                 16 => 'admin',
                 19 => 'user',
+                67 => 'admin',
+                70 => 'user',
             ],
         ],
         'App\\Game\\State\\PlayArea' => [
             'passiveCards' => [
                 17 => [],
                 20 => [],
-                67 => [
+                68 => [
                     'e91e4e57-f8e3-4648-811d-22099a0faa48',
                 ],
-                69 => [
+                71 => [
                     '20313981-83f3-4387-a1f7-3237f5f36e1a',
                 ],
             ],
             'monsterCards' => [
                 17 => [],
                 20 => [],
-                67 => [],
-                69 => [],
+                68 => [],
+                71 => [],
             ],
         ],
         'App\\Game\\State\\GameEvent' => [
@@ -586,47 +592,47 @@ return
             ],
             'data' => [
                 35 => [
-                    'value' => 2.88,
+                    'value' => 137,
                 ],
                 37 => [
-                    'value' => 1.68,
+                    'value' => 196,
                 ],
                 39 => [
-                    'value' => 2.33,
+                    'value' => 237,
                 ],
                 41 => [
-                    'value' => 1.99,
+                    'value' => 185,
                 ],
                 43 => [
-                    'value' => 2.13,
+                    'value' => 297,
                 ],
                 45 => [
-                    'value' => 1.01,
+                    'value' => 118,
                 ],
                 47 => [
-                    'value' => 1.22,
+                    'value' => 208,
                 ],
                 49 => [
-                    'value' => 2.33,
+                    'value' => 105,
                 ],
                 51 => [
-                    'value' => 1.75,
+                    'value' => 147,
                 ],
                 53 => [
-                    'value' => 2.21,
+                    'value' => 49,
                 ],
                 55 => [
-                    'value' => 2.28,
+                    'value' => 288,
                 ],
                 57 => [
-                    'value' => 0.54,
+                    'value' => 70,
                 ],
                 [],
                 60 => [
-                    'value' => 1.64,
+                    'value' => 84,
                 ],
                 62 => [
-                    'value' => 2.5,
+                    'value' => 259,
                 ],
             ],
         ],

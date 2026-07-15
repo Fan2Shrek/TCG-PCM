@@ -15,11 +15,6 @@ final class ChaosCard extends AbstractPlayableCard
     public static CardRarityEnum $rarity = CardRarityEnum::RARE;
 
     /**
-     * @var array<string, class-string<\App\Game\AbstractCard>>|null
-     */
-    private static ?array $cardsList = null;
-
-    /**
      * @var string[]|null
      */
     private static ?array $monsterTemplatePool = null;
@@ -67,7 +62,7 @@ final class ChaosCard extends AbstractPlayableCard
             ]);
 
             if ($isMonster) {
-                $replacementMonster = $this->instantiateCard($replacementTemplateId);
+                $replacementMonster = GameUtils::getService('cards')->createCardInstance($replacementTemplateId);
 
                 if (!$replacementMonster instanceof AbstractMonsterCard) {
                     throw new \LogicException('Chaos picked a non-monster template for a monster slot');
@@ -105,21 +100,9 @@ final class ChaosCard extends AbstractPlayableCard
      */
     private function getMonsterTemplatePool(): array
     {
-        if (null !== self::$monsterTemplatePool) {
-            return self::$monsterTemplatePool;
-        }
-
-        $pool = [];
-        foreach ($this->getCardsList() as $templateId => $cardClass) {
-            $card = new $cardClass();
-            if ($card instanceof AbstractMonsterCard) {
-                $pool[] = $templateId;
-            }
-        }
-
-        self::$monsterTemplatePool = $pool;
-
-        return $pool;
+        return self::$monsterTemplatePool ??= GameUtils::getService('cards')->getCardsBy([
+            'type' => AbstractPassiveCard::class,
+        ]);
     }
 
     /**
@@ -127,20 +110,8 @@ final class ChaosCard extends AbstractPlayableCard
      */
     private function getPassiveTemplatePool(): array
     {
-        return self::$cardsList ??= GameUtils::getService('cards')->getCardsBy([
+        return self::$passiveTemplatePool ??= GameUtils::getService('cards')->getCardsBy([
             'type' => AbstractPassiveCard::class,
         ]);
-    }
-
-    private function instantiateCard(string $templateId): \App\Game\AbstractCard
-    {
-        $cardsList = $this->getCardsList();
-        $cardClass = $cardsList[$templateId] ?? null;
-
-        if (null === $cardClass) {
-            throw new \LogicException(sprintf('Unknown card template "%s"', $templateId));
-        }
-
-        return new $cardClass();
     }
 }

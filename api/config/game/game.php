@@ -180,6 +180,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service('game.card_registry'),
                 service('game.card_id_generator'),
+                service('game.card_factory'),
             ])
             ->tag('game.helper', ['name' => 'cards'])
     ;
