@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Api\Processor\SetProfilePictureProcessor;
 use App\Api\Provider\UserProvider;
+use App\Api\Provider\UserSearchProvider;
 use App\Domain\Command\User\ChangePasswordCommand;
 use App\Domain\Command\User\GenerateBoosterTokensCommand;
 use App\Domain\Command\User\RegisterCommand;
@@ -27,6 +29,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource(operations: [
     new Get(uriTemplate: '/user', provider: UserProvider::class, normalizationContext: ['groups' => 'api:user:read']),
+    new GetCollection(uriTemplate: '/users/search', provider: UserSearchProvider::class, normalizationContext: ['groups' => 'api:friendship:read']),
     new Post(uriTemplate: '/user/generate_booster_tokens', messenger: 'input', input: GenerateBoosterTokensCommand::class, status: 200),
     new Post(
         uriTemplate: '/user/profile_picture',

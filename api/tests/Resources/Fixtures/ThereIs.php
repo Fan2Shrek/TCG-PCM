@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Resources\Fixtures;
 
 use App\Tests\Resources\Fixtures\Builder\DeckBuilder;
+use App\Tests\Resources\Fixtures\Builder\FriendshipBuilder;
 use App\Tests\Resources\Fixtures\Builder\GameBuilder;
 use App\Tests\Resources\Fixtures\Builder\Inventory\CardInventoryBuilder;
 use App\Tests\Resources\Fixtures\Builder\Inventory\InventoryBuilder;
 use App\Tests\Resources\Fixtures\Builder\RoomBuilder;
+use App\Tests\Resources\Fixtures\Builder\TradeBuilder;
 use App\Tests\Resources\Fixtures\Builder\UserBuilder;
 use App\Tests\Resources\Fixtures\Builder\UserInfoBuilder;
 use App\Tests\Resources\Fixtures\Builder\UserWalletBuilder;
@@ -28,6 +30,11 @@ abstract /* static */ class ThereIs
         return new DeckBuilder(self::$container);
     }
 
+    public static function aFriendship(): FriendshipBuilder
+    {
+        return new FriendshipBuilder(self::$container);
+    }
+
     public static function aGame(): GameBuilder
     {
         return new GameBuilder(self::$container);
@@ -41,6 +48,11 @@ abstract /* static */ class ThereIs
     public static function aRoom(): RoomBuilder
     {
         return new RoomBuilder(self::$container);
+    }
+
+    public static function aTrade(): TradeBuilder
+    {
+        return new TradeBuilder(self::$container);
     }
 
     public static function anUser(): UserBuilder

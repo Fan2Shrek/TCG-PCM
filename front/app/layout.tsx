@@ -6,7 +6,9 @@ import { Toaster } from "sonner";
 import CookieConsentBanner from "@/components/organisms/layout/CookieConsentBanner";
 import { BadgesProvider } from "@/contexts/BadgesContext";
 import { BoosterTokensProvider } from "@/contexts/BoosterTokensContext";
+import { FriendshipProvider } from "@/contexts/FriendshipContext";
 import { RoomProvider } from "@/contexts/RoomContext";
+import { TradeInviteProvider } from "@/contexts/TradeInviteContext";
 import { getCurrentUser } from "@/lib/auth/session";
 import { serverApiGet } from "@/lib/api/server";
 import { Room } from "@/types/room";
@@ -66,7 +68,11 @@ export default async function RootLayout({
         <RoomProvider initialRoom={initialRoom} enabled={isAuthenticated}>
           <BoosterTokensProvider enabled={isAuthenticated}>
             <BadgesProvider enabled={isAuthenticated}>
-              {children}
+              <FriendshipProvider enabled={isAuthenticated}>
+                <TradeInviteProvider enabled={isAuthenticated}>
+                  {children}
+                </TradeInviteProvider>
+              </FriendshipProvider>
             </BadgesProvider>
           </BoosterTokensProvider>
         </RoomProvider>

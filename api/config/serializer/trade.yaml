@@ -1,0 +1,32 @@
+App\Entity\Trade:
+    attributes:
+        id:
+            groups:
+                - api:trade:read
+        initiator:
+            groups:
+                - api:trade:read
+        recipient:
+            groups:
+                - api:trade:read
+        status:
+            groups:
+                - api:trade:read
+        initiatorCard:
+            groups:
+                - api:trade:read
+        recipientCard:
+            groups:
+                - api:trade:read
+        initiatorConfirmed:
+            groups:
+                - api:trade:read
+        recipientConfirmed:
+            groups:
+                - api:trade:read
+        createdAt:
+            groups:
+                - api:trade:read
+        completedAt:
+            groups:
+                - api:trade:read
