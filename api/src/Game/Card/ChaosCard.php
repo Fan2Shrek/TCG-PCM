@@ -63,6 +63,7 @@ final class ChaosCard extends AbstractPlayableCard
 
             if ($isMonster) {
                 $replacementMonster = GameUtils::getService('cards')->createCardInstance($replacementTemplateId);
+                dump($replacementMonster);
 
                 if (!$replacementMonster instanceof AbstractMonsterCard) {
                     throw new \LogicException('Chaos picked a non-monster template for a monster slot');
@@ -101,7 +102,7 @@ final class ChaosCard extends AbstractPlayableCard
     private function getMonsterTemplatePool(): array
     {
         return self::$monsterTemplatePool ??= GameUtils::getService('cards')->getCardsBy([
-            'type' => AbstractPassiveCard::class,
+            'type' => AbstractMonsterCard::class,
         ]);
     }
 
