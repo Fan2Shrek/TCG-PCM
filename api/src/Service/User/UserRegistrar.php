@@ -23,6 +23,7 @@ final class UserRegistrar
 {
     private const STARTER_DECK_SIZE = 50;
     private const STARTER_MAX_COPIES_PER_CARD = 5;
+    private const STARTING_BOOSTER_TOKENS = 3;
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -104,7 +105,10 @@ final class UserRegistrar
         $starterDeck = new Deck(user: $user, name: 'Starter Deck', characterCard: $starterCharacterCardId, cards: $starterDeckCards);
         $starterDeck->setIsFavorite(true);
 
-        $this->em->persist(new UserWallet($user));
+        $userWaller = new UserWallet($user);
+        $userWaller->setBoosterTokens(self::STARTING_BOOSTER_TOKENS);
+
+        $this->em->persist($userWaller);
         $this->em->persist(new UserInfo($user));
         $this->em->persist($inventory);
         $this->em->persist($starterDeck);
