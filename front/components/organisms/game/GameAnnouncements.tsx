@@ -20,7 +20,9 @@ export default function GameAnnouncements({
         {regularAnnouncements.map((announcement: GameAnnouncement) => (
           <div
             key={announcement.id}
-            className={`rounded-full border px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm ${
+            className={`rounded-full border px-4 py-2 text-center text-sm font-semibold shadow-lg backdrop-blur-sm transition-opacity duration-[450ms] ease-out ${
+              announcement.leaving ? "opacity-0" : "opacity-100"
+            } ${
               announcement.tone === "positive"
                 ? "border-emerald-300/60 bg-emerald-500/20 text-emerald-100"
                 : announcement.tone === "negative"
@@ -39,7 +41,11 @@ export default function GameAnnouncements({
       </div>
 
       {giantAnnouncement && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6">
+        <div
+          className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6 transition-opacity duration-[450ms] ease-out ${
+            giantAnnouncement.leaving ? "opacity-0" : "opacity-100"
+          }`}
+        >
           <div className="flex min-h-64 min-w-64 flex-col items-center justify-center rounded-[2.5rem] border border-white/20 bg-black/50 px-10 py-8 text-center shadow-[0_0_60px_rgba(255,255,255,0.18)] backdrop-blur-md">
             <div className="text-5xl sm:text-6xl">🎲</div>
             <div className="mt-4 text-7xl font-black leading-none tracking-tight text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.55)] sm:text-[8rem]">

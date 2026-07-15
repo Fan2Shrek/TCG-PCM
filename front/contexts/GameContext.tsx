@@ -30,7 +30,11 @@ export type { AnnouncementTone };
 
 export type GameAnnouncement = {
   id: number;
+  leaving?: boolean;
 } & AnnouncementPayload;
+
+const ANNOUNCEMENT_LIFETIME_MS = 2200;
+const ANNOUNCEMENT_FADE_MS = 450;
 
 type ActionObject = {
   playCard: (cardId: string, data?: Record<string, unknown>) => void;
@@ -43,6 +47,7 @@ export type TargetingState = {
   selectedAttackerId: string | null;
   hoveredTargetId: string | null;
   pendingPlayCardId: string | null;
+  selectedHandCardId: string | null;
   isTargeting: boolean;
 };
 
@@ -54,6 +59,7 @@ export type TargetingActions = {
   handleTargetClick: (targetId: string) => void;
   cancelPendingCardTarget: () => void;
   clearAllTargeting: () => void;
+  selectHandCard: (cardId: string | null) => void;
 };
 
 type GameContextType = {
@@ -90,6 +96,7 @@ export const GameContext = createContext<GameContextType>({
     selectedAttackerId: null,
     hoveredTargetId: null,
     pendingPlayCardId: null,
+    selectedHandCardId: null,
     isTargeting: false,
   },
   targetingActions: {
@@ -100,6 +107,7 @@ export const GameContext = createContext<GameContextType>({
     handleTargetClick: () => undefined,
     cancelPendingCardTarget: () => undefined,
     clearAllTargeting: () => undefined,
+    selectHandCard: () => undefined,
   },
 });
 
@@ -159,19 +167,34 @@ export const GameProvider = ({
       { id, ...announcement },
     ]);
 
-    const timeoutId = window.setTimeout(() => {
+    const fadeTimeoutId = window.setTimeout(() => {
       setAnnouncements((current: GameAnnouncement[]) =>
-        current.filter(
-          (announcement: GameAnnouncement) => announcement.id !== id,
+        current.map((announcement: GameAnnouncement) =>
+          announcement.id === id
+            ? { ...announcement, leaving: true }
+            : announcement,
         ),
       );
 
-      timeoutRefs.current = timeoutRefs.current.filter(
-        (currentTimeoutId: number) => currentTimeoutId !== timeoutId,
-      );
-    }, 2200);
+      const removeTimeoutId = window.setTimeout(() => {
+        setAnnouncements((current: GameAnnouncement[]) =>
+          current.filter(
+            (announcement: GameAnnouncement) => announcement.id !== id,
+          ),
+        );
 
-    timeoutRefs.current.push(timeoutId);
+        timeoutRefs.current = timeoutRefs.current.filter(
+          (currentTimeoutId: number) => currentTimeoutId !== removeTimeoutId,
+        );
+      }, ANNOUNCEMENT_FADE_MS);
+
+      timeoutRefs.current.push(removeTimeoutId);
+      timeoutRefs.current = timeoutRefs.current.filter(
+        (currentTimeoutId: number) => currentTimeoutId !== fadeTimeoutId,
+      );
+    }, ANNOUNCEMENT_LIFETIME_MS);
+
+    timeoutRefs.current.push(fadeTimeoutId);
   }, []);
 
   useEffect(() => {
@@ -294,6 +317,9 @@ export const GameProvider = ({
   const [pendingPlayCardId, setPendingPlayCardId] = useState<string | null>(
     null,
   );
+  const [selectedHandCardId, setSelectedHandCardId] = useState<string | null>(
+    null,
+  );
 
   const isTargeting = selectedAttackerId !== null || pendingPlayCardId !== null;
 
@@ -303,6 +329,7 @@ export const GameProvider = ({
 
       setSelectedAttackerId((current) => (current === cardId ? null : cardId));
       setHoveredTargetId(null);
+      setSelectedHandCardId(null);
     },
     [isLoggedPlayerTurn],
   );
@@ -319,7 +346,19 @@ export const GameProvider = ({
     setPendingPlayCardId(cardId);
     setSelectedAttackerId(null);
     setHoveredTargetId(null);
+    setSelectedHandCardId(null);
   }, []);
+
+  const selectHandCard = useCallback(
+    (cardId: string | null) => {
+      if (!isLoggedPlayerTurn) return;
+
+      setSelectedHandCardId((current) => (current === cardId ? null : cardId));
+      setSelectedAttackerId(null);
+      setHoveredTargetId(null);
+    },
+    [isLoggedPlayerTurn],
+  );
 
   const handleTargetClick = useCallback(
     (targetId: string) => {
@@ -399,6 +438,7 @@ export const GameProvider = ({
     setHoveredTargetId(null);
     setSelectedAttackerId(null);
     setPendingPlayCardId(null);
+    setSelectedHandCardId(null);
   }, []);
 
   const playerNumber = useMemo(() => {
@@ -439,7 +479,11 @@ export const GameProvider = ({
         ) {
           setIsAnimating(true);
           setQueuedEvents(e.events);
-          emitter.emit("attack-animation:start", { attackerId, targetId, cardSet });
+          emitter.emit("attack-animation:start", {
+            attackerId,
+            targetId,
+            cardSet,
+          });
           return;
         }
       }
@@ -465,6 +509,7 @@ export const GameProvider = ({
           selectedAttackerId,
           hoveredTargetId,
           pendingPlayCardId,
+          selectedHandCardId,
           isTargeting,
         },
         targetingActions: {
@@ -475,6 +520,7 @@ export const GameProvider = ({
           handleTargetClick,
           cancelPendingCardTarget,
           clearAllTargeting,
+          selectHandCard,
         },
       }}
     >

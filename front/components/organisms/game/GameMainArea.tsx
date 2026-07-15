@@ -18,6 +18,8 @@ type GameMainAreaProps = {
   currentState: PlayerState;
   className?: string;
   isCardDragged: boolean;
+  onPlayZoneClick?: () => void;
+  isPlayZoneSelectable?: boolean;
 };
 
 export default function GameMainArea({
@@ -25,6 +27,8 @@ export default function GameMainArea({
   opponentState,
   currentState,
   isCardDragged,
+  onPlayZoneClick,
+  isPlayZoneSelectable = false,
 }: GameMainAreaProps) {
   const opponentDiscardCardIds = useMemo(
     () => Object.keys(opponentState.discardPile),
@@ -97,6 +101,8 @@ export default function GameMainArea({
               <PlayZone
                 passiveCardIds={currentState.playArea.passiveCards}
                 monsterCardIds={currentState.playArea.monsterCards}
+                onClick={onPlayZoneClick}
+                isSelectableTarget={isPlayZoneSelectable}
               />
             </div>
             <div className="flex flex-col gap-4 justify-start col-span-1 items-center h-full p-2">

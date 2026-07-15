@@ -7,9 +7,12 @@ type UseDragOptions = {
   card: BasicCard;
   onDrag?: (e: PointerEvent) => void;
   onDragEnd?: () => void;
+  onClick?: () => void;
 };
 
-export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
+const DRAG_THRESHOLD_PX = 6;
+
+export function useDrag({ onDrag, onDragEnd, onClick, card }: UseDragOptions) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
     null,
@@ -21,17 +24,15 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
 
   const prevPos = useRef<{ x: number; y: number } | null>(null);
   const resetTiltTimer = useRef<number | null>(null);
+  // Whether the current pointer interaction has crossed the drag threshold
+  // (i.e. it's a real drag, not just a click).
+  const hasStartedDragRef = useRef(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
-    setIsDragging(true);
+    hasStartedDragRef.current = false;
     setDragStart({ x: e.clientX, y: e.clientY });
     setPointerPos({ x: e.clientX, y: e.clientY });
-
-    emitter.emit("card:drag:start", {
-      pos: { x: e.clientX, y: e.clientY },
-      card,
-    });
   };
 
   const handlePointerMove = useCallback(
@@ -42,6 +43,22 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
       const y = e.clientY - dragStart.y;
 
       setPointerPos({ x: e.clientX, y: e.clientY });
+
+      if (!hasStartedDragRef.current) {
+        if (
+          Math.abs(x) < DRAG_THRESHOLD_PX &&
+          Math.abs(y) < DRAG_THRESHOLD_PX
+        ) {
+          return;
+        }
+
+        hasStartedDragRef.current = true;
+        setIsDragging(true);
+        emitter.emit("card:drag:start", {
+          pos: { x: e.clientX, y: e.clientY },
+          card,
+        });
+      }
 
       if (prevPos.current) {
         const dx = x - prevPos.current.x;
@@ -73,18 +90,41 @@ export function useDrag({ onDrag, onDragEnd, card }: UseDragOptions) {
 
   const handlePointerUp = useCallback(() => {
     if (dragStart) {
+      const wasDragging = hasStartedDragRef.current;
+
       setIsDragging(false);
       setDragStart(null);
       setTilt({ x: 0, y: 0 });
       prevPos.current = null;
-      emitter.emit("card:drag:end", {
-        pos: { x: pointerPos?.x, y: pointerPos?.y },
-        card,
-      });
+      hasStartedDragRef.current = false;
 
-      onDragEnd?.();
+      if (wasDragging) {
+        emitter.emit("card:drag:end", {
+          pos: { x: pointerPos?.x, y: pointerPos?.y },
+          card,
+        });
+
+        onDragEnd?.();
+      } else {
+        // The browser still dispatches a native "click" right after this
+        // pointerup, for the same physical gesture we just handled. If our
+        // onClick callback repositions the element (e.g. a "selected" lift
+        // effect), that click's hit-test can land on whatever is now under
+        // the cursor instead of this card — swallow it so it can't trigger
+        // an unrelated element underneath.
+        const swallowNextClick = (ev: MouseEvent) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+        };
+        window.addEventListener("click", swallowNextClick, {
+          capture: true,
+          once: true,
+        });
+
+        onClick?.();
+      }
     }
-  }, [dragStart, onDragEnd, card, pointerPos]);
+  }, [dragStart, onDragEnd, onClick, card, pointerPos]);
 
   useEffect(() => {
     if (!dragStart) return;

@@ -96,16 +96,11 @@ export default function GameBoard() {
     };
   }, [isLoggedPlayerTurn, targetingActions]);
 
-  // Gère quand carte laché dans zone de jeu
-  useEffect(() => {
-    const handleCardDropped = (data: {
-      card: { instanceId: string };
-      zoneId?: string;
-    }) => {
-      const cardId = data.card.instanceId;
+  const resolvePlayCard = useCallback(
+    (cardId: string) => {
       const card = getCardById(cardId);
 
-      if (!card || !data.zoneId) {
+      if (!card) {
         return;
       }
 
@@ -129,19 +124,48 @@ export default function GameBoard() {
       }
 
       actions.playCard(cardId);
+    },
+    [getCardById, currentCoins, actions, targetingActions],
+  );
+
+  // Gère quand carte laché dans zone de jeu
+  useEffect(() => {
+    const handleCardDropped = (data: {
+      card: { instanceId: string };
+      zoneId?: string;
+    }) => {
+      if (!data.zoneId) {
+        return;
+      }
+
+      resolvePlayCard(data.card.instanceId);
     };
 
     emitter.on("card:dropped", handleCardDropped);
 
     return () => emitter.off("card:dropped", handleCardDropped);
-  }, [getCardById, actions, currentCoins, targetingActions]);
+  }, [resolvePlayCard]);
+
+  const handlePlayZoneClick = useCallback(() => {
+    if (!targeting.selectedHandCardId) {
+      return;
+    }
+
+    const cardId = targeting.selectedHandCardId;
+    targetingActions.selectHandCard(null);
+    resolvePlayCard(cardId);
+  }, [targeting.selectedHandCardId, targetingActions, resolvePlayCard]);
 
   const desktopCardHandPositionClass = isHandHovered
     ? "sm:bottom-0"
     : "sm:-bottom-30";
 
   const handleBackgroundClick = () => {
-    if (targeting.selectedAttackerId || targeting.pendingPlayCardId) {
+    if (
+      targeting.selectedAttackerId ||
+      targeting.pendingPlayCardId ||
+      targeting.selectedHandCardId
+    ) {
       targetingActions.clearAllTargeting();
     }
   };
@@ -257,6 +281,20 @@ export default function GameBoard() {
         />
       )}
 
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <div
+          className={`rounded-full border px-5 py-1.5 text-sm font-semibold shadow-lg backdrop-blur-sm ${
+            isLoggedPlayerTurn
+              ? "border-emerald-300/60 bg-emerald-500/20 text-emerald-100"
+              : "border-white/20 bg-black/30 text-white"
+          }`}
+        >
+          {isLoggedPlayerTurn
+            ? "À ton tour"
+            : `Tour de ${opponentState.player.name}`}
+        </div>
+      </div>
+
       <div className="top-5 right-5 absolute z-20">
         <Tooltip
           text="Pour gagner, vous devez réduire les points de vie de la carte personnage adverse à 0. À chaque tour, vous piochez une carte et gagnez de l'or.
@@ -274,6 +312,8 @@ export default function GameBoard() {
           opponentState={opponentState}
           currentState={currentState}
           isCardDragged={!!draggedCard}
+          onPlayZoneClick={handlePlayZoneClick}
+          isPlayZoneSelectable={targeting.selectedHandCardId !== null}
         />
       </div>
       <div
@@ -284,14 +324,21 @@ export default function GameBoard() {
           onMouseEnter={() => setIsHandHovered(true)}
           onMouseLeave={() => setIsHandHovered(false)}
           isDisabled={!isLoggedPlayerTurn}
+          selectedCardId={targeting.selectedHandCardId}
+          onCardClick={(card) =>
+            targetingActions.selectHandCard(card.instanceId)
+          }
         />
       </div>
       {!winner && (
         <div className="absolute z-20 top-4 left-4 lg:top-auto lg:left-auto lg:bottom-10 lg:right-10">
           <GameActionButtons
             isLoggedPlayerTurn={isLoggedPlayerTurn}
-            showCancel={targeting.pendingPlayCardId !== null}
-            onCancel={targetingActions.cancelPendingCardTarget}
+            showCancel={
+              targeting.pendingPlayCardId !== null ||
+              targeting.selectedHandCardId !== null
+            }
+            onCancel={targetingActions.clearAllTargeting}
             onEndTurn={actions.endTurn}
             onForfeit={handleForfeit}
           />

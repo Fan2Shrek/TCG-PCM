@@ -6,6 +6,7 @@ namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
+use App\Enum\CardTargetTypeEnum;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
@@ -31,6 +32,11 @@ final class DartCard extends AbstractPlayableCard
     public function requiresTarget(): bool
     {
         return true;
+    }
+
+    public function getTargetType(): ?CardTargetTypeEnum
+    {
+        return CardTargetTypeEnum::MONSTER;
     }
 
     public function play(GameContext $context, array $data = []): void

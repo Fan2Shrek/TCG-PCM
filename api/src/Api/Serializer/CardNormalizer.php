@@ -33,6 +33,11 @@ final class CardNormalizer implements NormalizerInterface
         $type = $card instanceof AbstractCard ? $card->getType() : $card->type;
         $rarity = $card instanceof AbstractCard ? $card::$rarity : $card->rarity;
         $serie = $card instanceof AbstractCard ? $card::$serie : $card->set;
+        $targetType = match (true) {
+            $card instanceof AbstractCard => $card->getTargetType(),
+            $card instanceof CardDTO => $card->targetType,
+            default => null,
+        };
 
         return [
             'name' => $card instanceof AbstractCard ? $card->getName() : $card->name,
@@ -45,6 +50,7 @@ final class CardNormalizer implements NormalizerInterface
             'serielabel' => $serie,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
             'requiresTarget' => $card instanceof AbstractCard ? $card->requiresTarget() : ($card instanceof CardDTO ? $card->requiresTarget : null),
+            'targetType' => $targetType?->value,
             'cost' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->cost : null,
             'hp' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->hp : null,
             'attack' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->attack : null,
