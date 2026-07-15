@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Enum\RoomStatusEnum;
 use App\Event\Badge\GamePlayedEvent;
+use App\Event\Badge\GameWinEvent;
 use App\Repository\RoomRepository;
 use App\Service\Game\EndGameHandlerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,6 +54,13 @@ final class EndGameHandler implements EndGameHandlerInterface
 
         $this->hub->publish(new Update($topic, $payload, true));
 
-        $this->eventDispatcher->dispatch(new GamePlayedEvent());
+        $this->eventDispatcher->dispatch(new GamePlayedEvent($room->getOwner()));
+        $opponent = $room->getOpponent();
+        if ($opponent !== null) {
+            $this->eventDispatcher->dispatch(new GamePlayedEvent($opponent));
+        }
+        if ($winner !== null) {
+            $this->eventDispatcher->dispatch(new GameWinEvent($winner));
+        }
     }
 }

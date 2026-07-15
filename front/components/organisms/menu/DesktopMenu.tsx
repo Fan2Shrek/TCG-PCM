@@ -9,7 +9,7 @@ import {
   AiOutlineLogin,
   AiOutlineLogout,
 } from "react-icons/ai";
-import { TbPlayCardStar, TbSword, TbBook2 } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2, TbTrophy } from "react-icons/tb";
 import { MdAppRegistration } from "react-icons/md";
 import ProfileIcon from "@/components/molecules/menu/ProfileIcon";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
@@ -56,6 +56,11 @@ const authenticatedMenuItems: MenuItemData[] = [
     label: "Mes cartes",
     icon: <AiOutlineFolderOpen />,
     linkTo: "/inventory",
+  },
+  {
+    label: "Succès",
+    icon: <TbTrophy />,
+    linkTo: "/badges",
   },
   {
     label: "Jouer",

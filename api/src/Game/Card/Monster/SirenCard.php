@@ -64,7 +64,7 @@ final class SirenCard extends AbstractMonsterCard implements TurnAwareInterface
     {
         $pool = $context->getOpponentState()->playArea->monsterCards;
 
-        if (empty($pool)) {
+        if ([] === $pool) {
             return '';
         }
 

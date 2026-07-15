@@ -6,6 +6,8 @@ namespace App\EventSubscriber;
 
 use App\Badge\BadgeEventInterface;
 use App\Event\Badge\BoosterOpenedEvent;
+use App\Event\Badge\GamePlayedEvent;
+use App\Event\Badge\GameWinEvent;
 use App\Service\BadgeManager;
 use Symfony\Component\DependencyInjection\Attribute\WhenNot;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,6 +24,7 @@ final class BadgeSubscriber implements EventSubscriberInterface
         return [
             BoosterOpenedEvent::class => 'onEvent',
             GamePlayedEvent::class => 'onEvent',
+            GameWinEvent::class => 'onEvent',
         ];
     }
 

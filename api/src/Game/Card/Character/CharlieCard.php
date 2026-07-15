@@ -6,10 +6,8 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
-
 use App\Game\GameContext;
 use App\Game\GameUtils;
-
 
 final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterface
 {
@@ -39,22 +37,22 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
 
     public function onTurnAction(GameContext $context): void
     {
-        if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
-            $randomPassiveCardId = $this->pickRandomPassiveCardId($gameContext);
-            $newInstanceId = (string) $gameContext->state->randomizer->roll(0xFFFF_FFFF);
+        if ($context->isCurrentPlayer($this->getOwnerId())) {
+            $randomPassiveCardId = $this->pickRandomPassiveCardId($context);
+            $newInstanceId = (string) $context->state->randomizer->roll(0xFFFF_FFFF);
 
-            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
+            $context->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
                 'playerId' => $this->getOwnerId(),
                 'cardTemplateId' => $randomPassiveCardId,
                 'cardInstanceId' => $newInstanceId,
             ]);
 
-            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
+            $context->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
                 'playerId' => $this->getOwnerId(),
                 'cardId' => $newInstanceId,
             ]);
 
-            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
+            $context->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
                 'playerId' => $this->getOwnerId(),
                 'cardId' => $newInstanceId,
             ]);

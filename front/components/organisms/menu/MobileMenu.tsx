@@ -7,7 +7,7 @@ import {
   AiOutlineLogout,
 } from "react-icons/ai";
 import { MdAppRegistration } from "react-icons/md";
-import { TbPlayCardStar, TbSword, TbBook2 } from "react-icons/tb";
+import { TbPlayCardStar, TbSword, TbBook2, TbTrophy } from "react-icons/tb";
 import { logoutAction } from "@/lib/actions/auth";
 import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
 import MobileMenuItem from "@/components/atoms/menu/MobileMenuItem";
@@ -69,6 +69,11 @@ const getAuthItems = (onLogout: () => void): MobileMenuItem[] => [
     label: "Mes cartes",
     icon: <AiOutlineFolderOpen />,
     linkTo: "/inventory",
+  },
+  {
+    label: "Succès",
+    icon: <TbTrophy />,
+    linkTo: "/badges",
   },
   {
     label: "Jouer",

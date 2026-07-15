@@ -19,10 +19,19 @@ final class BadgeHandlerWithLevelTest extends TestCase
         $handler = new DummyLevelHandler();
         $userBadge = new UserBadge(new User('', ''), BadgeEnum::OpenedBooster);
         $userBadge->setScore(5);
-        $event = new class implements BadgeEventInterface {
+        $event = new class(new User('', '')) implements BadgeEventInterface {
+            public function __construct(
+                private readonly User $user,
+            ) {}
+
             public static function getBadgeKey(): BadgeEnum
             {
                 return BadgeEnum::OpenedBooster;
+            }
+
+            public function getUser(): User
+            {
+                return $this->user;
             }
         };
 

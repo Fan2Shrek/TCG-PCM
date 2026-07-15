@@ -13,4 +13,9 @@ interface BadgeHandlerInterface
     public static function getBadgeKey(): BadgeEnum;
 
     public function handle(BadgeEventInterface $event, UserBadge $userBadge): void;
+
+    /**
+     * @return array<int, int>
+     */
+    public function getThresholds(): array;
 }

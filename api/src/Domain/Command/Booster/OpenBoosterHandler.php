@@ -45,7 +45,7 @@ final class OpenBoosterHandler
         }
         $wallet->removeBoosterToken(1);
 
-        $this->eventDispatcher->dispatch(new BoosterOpenedEvent());
+        $this->eventDispatcher->dispatch(new BoosterOpenedEvent($user));
 
         $booster = $this->boosterGenerator->generateBooster($command->type);
 

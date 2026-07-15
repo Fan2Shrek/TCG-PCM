@@ -9,7 +9,6 @@ use App\Badge\Handler\BadgeHandlerInterface;
 use App\Entity\UserBadge;
 use App\Enum\BadgeEnum;
 use App\Repository\UserBadgeRepository;
-use App\Service\Auth\CurrentUserProviderInterface;
 
 final class BadgeManager
 {
@@ -19,12 +18,11 @@ final class BadgeManager
     public function __construct(
         private iterable $badgeHandlers,
         private UserBadgeRepository $userBadgeRepository,
-        private CurrentUserProviderInterface $currentUserProvider,
     ) {}
 
     public function handleFromEvent(BadgeEventInterface $event): void
     {
-        $user = $this->currentUserProvider->getCurrentUser();
+        $user = $event->getUser();
 
         $badgeKey = $event::getBadgeKey();
         $handler = $this->getHandlerForKey($badgeKey);
