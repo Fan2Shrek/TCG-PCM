@@ -242,6 +242,18 @@ return [
             'name' => 'Maxime',
             'description' => 'Eats {{value1}} random opponent card every {{value2}} turns (characters take {{value3}} damage instead).',
         ],
+        'MimeticPrismRuby' => [
+            'name' => 'Mimetic Prism Ruby',
+            'description' => 'Copy a random monster card in play. Deals 2x damage and has 1.5x HP.',
+        ],
+        'MimeticPrismAmethyst' => [
+            'name' => 'Mimetic Prism Amethyst',
+            'description' => 'Copy a random monster card in play. Deals 4x damage and has 1 HP.',
+        ],
+        'MimeticPrismSaphir' => [
+            'name' => 'Mimetic Prism Saphir',
+            'description' => 'Copy a random monster card in play. Deals 0.5x damage and has 2x HP.',
+        ],
     ],
     // Effects
     'effects' => [
