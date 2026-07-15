@@ -64,4 +64,5 @@ return [
 	'StackyStackito' => Card\StackyStackitoCard::class,
 	'TheHand' => Card\TheHandCard::class,
 	'ViciousStinger' => Card\ViciousStingerCard::class,
+	'Wololo' => Card\WololoCard::class,
 ];

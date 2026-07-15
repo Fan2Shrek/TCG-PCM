@@ -241,4 +241,13 @@ class GameContext
     {
         return $this->state->getPlayer($playerId);
     }
+
+    public function stealCard(string $cardId, string $fromPlayerId, string $toPlayerId): void
+    {
+        $this->pushGameEvent(GameEventTypeEnum::CARD_STOLEN, [
+            'cardId' => $cardId,
+            'fromPlayerId' => $fromPlayerId,
+            'toPlayerId' => $toPlayerId,
+        ]);
+    }
 }
