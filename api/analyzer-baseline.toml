@@ -283,6 +283,12 @@ message = 'Could not infer a precise return type for function `app\repository\ga
 count = 1
 
 [[issues]]
+file = "src/Repository/Game/ChatMessageRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\game\chatmessagerepository::findbyroom`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Repository/UserBadgeRepository.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\repository\userbadgerepository::findbyuserandbadge`. Saw type `mixed`.'

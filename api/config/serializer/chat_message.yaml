@@ -1,0 +1,19 @@
+App\Entity\Game\ChatMessage:
+    attributes:
+        id:
+            groups:
+                - api:chat:read
+        authorId:
+            groups:
+                - api:chat:read
+        authorUsername:
+            groups:
+                - api:chat:read
+        message:
+            groups:
+                - api:chat:read
+        createdAt:
+            groups:
+                - api:chat:read
+        roomId:
+            ignore: true
