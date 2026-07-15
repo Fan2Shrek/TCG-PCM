@@ -271,12 +271,15 @@ return [
     'effects' => [
         CardEffectEnum::HACKED->value => [
             'name' => 'Hacké',
+            'description' => "Change les valeurs d'une carte",
         ],
         CardEffectEnum::TORNED->value => [
             'name' => 'Tordu',
+            'description' => "La carte ne s'active pas à chaque fois",
         ],
         CardEffectEnum::POWER_BOOST->value => [
             'name' => 'Boost de puissance',
+            'description' => "Augmente les dégâts d'une carte",
         ],
     ],
     'rarity' => [
