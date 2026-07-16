@@ -14,11 +14,11 @@ class BoosterGenerator
      * @var array<string, float>
      */
     protected const RARITY_PROBABILITIES = [
-        CardRarityEnum::COMMON->value => 0.7,
-        CardRarityEnum::UNCOMMON->value => 0.2,
-        CardRarityEnum::RARE->value => 0.08,
-        CardRarityEnum::EPIC->value => 0.015,
-        CardRarityEnum::LEGENDARY->value => 0.005,
+        CardRarityEnum::COMMON->value => 0.69,
+        CardRarityEnum::UNCOMMON->value => 0.20,
+        CardRarityEnum::RARE->value => 0.085,
+        CardRarityEnum::EPIC->value => 0.016,
+        CardRarityEnum::LEGENDARY->value => 0.009,
     ];
 
     public function __construct(
