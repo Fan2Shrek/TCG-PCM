@@ -48,7 +48,7 @@ final readonly class PlayArea
     public function removePassiveCard(string $cardId): self
     {
         return clone($this, [
-            'passiveCards' => array_filter($this->passiveCards, static fn(string $id) => $id !== $cardId),
+            'passiveCards' => array_values(array_filter($this->passiveCards, static fn(string $id) => $id !== $cardId)),
         ]);
     }
 
@@ -56,7 +56,7 @@ final readonly class PlayArea
     public function removeMonsterCard(string $cardId): self
     {
         return clone($this, [
-            'monsterCards' => array_filter($this->monsterCards, static fn(string $id) => $id !== $cardId),
+            'monsterCards' => array_values(array_filter($this->monsterCards, static fn(string $id) => $id !== $cardId)),
         ]);
     }
 }
