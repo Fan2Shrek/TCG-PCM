@@ -35,6 +35,14 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
         return $this->getValue(self::TURN_DELAY, true);
     }
 
+    public function getDescription(): string
+    {
+        return GameUtils::formatDescription(parent::getDescription(), [
+            'value1' => 1,
+            'value2' => $this->getTurnDelay(),
+        ]);
+    }
+
     public function onTurnAction(GameContext $context): void
     {
         if ($context->isCurrentPlayer($this->getOwnerId())) {

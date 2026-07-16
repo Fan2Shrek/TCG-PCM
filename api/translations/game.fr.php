@@ -28,7 +28,7 @@ return [
         ],
         'Charlie' => [
             'name' => 'Charlie',
-            'description' => 'Utilise ses talents de maçon afin de bricoler un passif aléatoire au début du tour.',
+            'description' => 'Utilise ses talents de maçon afin de bricoler {{value1}} passif aléatoire tous les {{value2}} tours.',
         ],
         'Stonks' => [
             'name' => 'Stonks',
