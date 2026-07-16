@@ -44,6 +44,7 @@ final class ImportGameReplayCommand
         $user = $this->userRepository->find($gameState->player1->player->id);
         $opponent = $this->userRepository->find($gameState->player2->player->id);
 
+        $roomEntity = null;
         if ($room) {
             $roomEntity = new Room($user);
             $roomEntity->setStatus(RoomStatusEnum::PLAYING);
@@ -54,7 +55,7 @@ final class ImportGameReplayCommand
             $this->roomRepository->save($roomEntity);
         }
 
-        $id = $room ? (string) $roomEntity->getId() : $this->formatFileName($filePath);
+        $id = null !== $roomEntity ? (string) $roomEntity->getId() : $this->formatFileName($filePath);
         $this->gameStateRepository->save($gameState, $id);
 
         foreach ($data['events'] as $gameEvent) {
