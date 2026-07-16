@@ -193,6 +193,6 @@ final class UserRegistrar
             throw HttpException::fromStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR, 'No character card available for starter inventory.');
         }
 
-        return array_rand($characterCards);
+        return $characterCards[array_rand($characterCards)];
     }
 }
