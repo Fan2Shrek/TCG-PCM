@@ -57,6 +57,8 @@ FROM base AS prod
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
+ENTRYPOINT ["bin/entrypoint.sh"]
+
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
  && echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini \
  && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \

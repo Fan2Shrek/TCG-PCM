@@ -7,7 +7,6 @@ on:
     paths:
       - 'front/**'
       - 'api/**'
-      - 'infra/backup/**'
   workflow_dispatch:
 
 env:
@@ -63,4 +62,3 @@ jobs:
           build-args: |
             API_URL=${{ secrets.API_URL }}
             MERCURE_URL=${{ secrets.MERCURE_URL }}
-
