@@ -15,6 +15,7 @@ use App\Service\Game\State\GameEventRepositoryInterface;
 use App\Service\Game\State\GameStateRepositoryInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'app:import:game-replay', description: 'Import a game replay from a file.')]
@@ -28,7 +29,7 @@ final class ImportGameReplayCommand
         private DeckRepository $deckRepository,
     ) {}
 
-    public function __invoke(#[Argument('filePath')] string $filePath, OutputInterface $output)
+    public function __invoke(#[Argument('filePath')] string $filePath, OutputInterface $output, #[Option('room')] bool $room = true)
     {
         if (!file_exists($filePath)) {
             $output->writeln(sprintf('<error>File "%s" not found.</error>', $filePath));
@@ -43,18 +44,21 @@ final class ImportGameReplayCommand
         $user = $this->userRepository->find($gameState->player1->player->id);
         $opponent = $this->userRepository->find($gameState->player2->player->id);
 
-        $room = new Room($user);
-        $room->setStatus(RoomStatusEnum::PLAYING);
-        $room->setOpponent($opponent);
-        $room->setOwnerDeck($this->deckRepository->findOneBy(['user' => $user]));
-        $room->setOpponentDeck($this->deckRepository->findOneBy(['user' => $opponent]));
+        if ($room) {
+            $roomEntity = new Room($user);
+            $roomEntity->setStatus(RoomStatusEnum::PLAYING);
+            $roomEntity->setOpponent($opponent);
+            $roomEntity->setOwnerDeck($this->deckRepository->findOneBy(['user' => $user]));
+            $roomEntity->setOpponentDeck($this->deckRepository->findOneBy(['user' => $opponent]));
 
-        $this->roomRepository->save($room);
+            $this->roomRepository->save($roomEntity);
+        }
 
-        $this->gameStateRepository->save($gameState, (string) $room->getId());
+        $id = $room ? (string) $roomEntity->getId() : str_replace('/', '_', $filePath);
+        $this->gameStateRepository->save($gameState, $id);
 
         foreach ($data['events'] as $gameEvent) {
-            $this->gameEventRepository->save($gameEvent, (string) $room->getId());
+            $this->gameEventRepository->save($gameEvent, $id);
         }
 
         $output->writeln(sprintf('<info>File "%s" imported successfully.</info>', $filePath));
