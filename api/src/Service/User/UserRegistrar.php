@@ -12,6 +12,7 @@ use App\Entity\UserInfo;
 use App\Entity\UserWallet;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardTypeEnum;
+use App\Game\Card\Character\AbstractCharacterCard;
 use App\Repository\UserRepository;
 use App\Service\Game\CardRegistryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -181,12 +182,10 @@ final class UserRegistrar
 
     private function getStarterCharacterCardId(): string
     {
-        $allCards = $this->cardRegistry->getAllBy([]);
-
-        $characterCards = array_values(array_filter(
-            $allCards,
-            fn(string $cardId): bool => CardTypeEnum::CHARACTER === $this->cardRegistry->getCardTemplateById($cardId)->getType(),
-        ));
+        $characterCards = $this->cardRegistry->getAllBy([
+            'type' => AbstractCharacterCard::class,
+            'rarity' => CardRarityEnum::RARE,
+        ]);
 
         sort($characterCards);
 
@@ -194,6 +193,6 @@ final class UserRegistrar
             throw HttpException::fromStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR, 'No character card available for starter inventory.');
         }
 
-        return $characterCards[0];
+        return array_rand($characterCards);
     }
 }

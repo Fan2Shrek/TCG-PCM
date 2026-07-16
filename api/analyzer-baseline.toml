@@ -391,6 +391,12 @@ message = "Redundant cast to `(string)`: the expression already has this type."
 count = 2
 
 [[issues]]
+file = "src/Service/User/UserRegistrar.php"
+code = "invalid-return-statement"
+message = 'Invalid return type for function `app\service\user\userregistrar::getstartercharactercardid`: expected `string`, but found `non-negative-int`.'
+count = 1
+
+[[issues]]
 file = "src/Utils/KillSwitch.php"
 code = "mixed-property-type-coercion"
 message = "A value with a less specific type `mixed` is being assigned to property `$$features` (array<string, bool>)."
