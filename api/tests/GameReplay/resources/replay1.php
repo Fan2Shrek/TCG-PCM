@@ -136,6 +136,24 @@ return [
                 '2',
                 [],
             ),
+            'player1_card1' => new CardState(
+                'player1_card1',
+                'Spicy-D6',
+                '1',
+                [],
+            ),
+            'player2_card1' => new CardState(
+                'player2_card1',
+                'Spicy-D6',
+                '2',
+                [],
+            ),
+            'player1_card2' => new CardState(
+                'player1_card2',
+                'Spicy-D6',
+                '1',
+                [],
+            ),
         ]
     ),
 ];
