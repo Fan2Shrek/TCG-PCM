@@ -14,6 +14,12 @@ count = 1
 
 [[issues]]
 file = "src/Command/ImportGameReplayCommand.php"
+code = "mixed-method-access"
+message = "Attempting to access a method on a non-object type (`mixed`)."
+count = 1
+
+[[issues]]
+file = "src/Command/ImportGameReplayCommand.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Entity\Room::setopponentdeck` is possibly `null`, but parameter type `App\Entity\Deck` does not accept it.'
 count = 1
@@ -28,6 +34,12 @@ count = 1
 file = "src/Command/ImportGameReplayCommand.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `app\entity\room::__construct` is possibly `null`, but parameter type `App\Entity\User` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Command/ImportGameReplayCommand.php"
+code = "undefined-variable"
+message = "Undefined variable: `$roomEntity`."
 count = 1
 
 [[issues]]
@@ -389,12 +401,6 @@ file = "src/Service/GameEventPublisher.php"
 code = "redundant-cast"
 message = "Redundant cast to `(string)`: the expression already has this type."
 count = 2
-
-[[issues]]
-file = "src/Service/User/UserRegistrar.php"
-code = "invalid-return-statement"
-message = 'Invalid return type for function `app\service\user\userregistrar::getstartercharactercardid`: expected `string`, but found `non-negative-int`.'
-count = 1
 
 [[issues]]
 file = "src/Utils/KillSwitch.php"

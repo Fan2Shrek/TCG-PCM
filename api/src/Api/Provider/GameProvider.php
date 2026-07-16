@@ -20,7 +20,6 @@ use Symfony\Component\Mercure\HubInterface;
 final class GameProvider implements ProviderInterface
 {
     public function __construct(
-        private RoomRepository $roomRepository,
         private CurrentUserProviderInterface $currentUserProvider,
         private GameStateConverter $gameStateConverter,
         private GameStateProvider $gameStateProvider,
