@@ -51,7 +51,7 @@ final class ExportGameReplayCommand
             return 1;
         }
 
-        $initialGameState = $this->gameStateRepository->findOneBy(['room' => $room]);
+        $initialGameState = $this->gameStateRepository->find($room->getId());
 
         if (!$initialGameState) {
             $output->writeln(sprintf('<error>No game state found for room "%s".</error>', $roomId));
