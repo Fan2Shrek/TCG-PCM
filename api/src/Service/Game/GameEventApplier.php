@@ -260,7 +260,7 @@ class GameEventApplier implements GameEventApplierInterface
 
         $player = $player->withDiscardedCard($cardId, $cardState->templateId);
 
-        return $gameState->withUpdatedPlayer($player)->removeCard($cardId);
+        return $gameState->withUpdatedPlayer($player)->resetCardState($cardId);
     }
 
     private function applyCardPlaceInPlayArea(GameEvent $event, GameState $gameState): GameState
@@ -369,7 +369,7 @@ class GameEventApplier implements GameEventApplierInterface
         $newPlayArea = $player->playArea->removeMonsterCard($cardId);
         $player = $player->withPlayArea($newPlayArea);
         $player = $player->withDiscardedCard($cardId, $cardState->templateId);
-        $state = $state->removeCard($cardId);
+        $state = $state->resetCardState($cardId);
 
         return $state->withUpdatedPlayer($player);
     }

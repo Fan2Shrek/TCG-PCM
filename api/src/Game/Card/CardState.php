@@ -39,4 +39,12 @@ readonly class CardState
             'ownerId' => $newOwnerId,
         ]);
     }
+
+    public function reset(): self
+    {
+        return clone($this, [
+            'effects' => [],
+            'values' => [],
+        ]);
+    }
 }

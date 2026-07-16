@@ -166,10 +166,11 @@ final readonly class GameState
     }
 
     #[\NoDiscard]
-    public function removeCard(string $cardId): self
+    public function resetCardState(string $cardId): self
     {
         $cards = $this->cards;
-        unset($cards[$cardId]);
+
+        $cards[$cardId] = $this->cards[$cardId]?->reset();
 
         return clone($this, [
             'cards' => $cards,

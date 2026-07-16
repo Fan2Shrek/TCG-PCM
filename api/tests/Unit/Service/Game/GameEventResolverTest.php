@@ -206,7 +206,7 @@ final class GameEventResolverTest extends TestCase
 
         $events = $ger->resolve($event, $gameState)->events;
 
-        self::assertCount(4, $events);
+        self::assertCount(5, $events);
         $lastEvent = array_pop($events);
         self::assertSame(GameEventTypeEnum::MONSTER_DIED, $lastEvent->type);
     }
@@ -247,7 +247,7 @@ final class GameEventResolverTest extends TestCase
 
         $events = $ger->resolve($event, $gameState)->events;
 
-        self::assertCount(1, SpyAwareCard::$calls);
+        self::assertCount(2, SpyAwareCard::$calls);
     }
 
     public function testPropagateWithPlayerDeath()
