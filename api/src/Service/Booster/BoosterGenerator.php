@@ -42,6 +42,12 @@ class BoosterGenerator
             }
 
             $randomCard = $availableCards[array_rand($availableCards)];
+
+            if (\in_array($randomCard, $boosterCards, true)) {
+                $i--;
+                continue;
+            }
+
             $boosterCards[] = $randomCard;
         }
 

@@ -64,7 +64,18 @@ class TestableBoosterGenerator extends BoosterGenerator
     {
         return [
             CommonCardStub::class => CommonCardStub::class,
+            CommonCardStub::class.'1' => CommonCardStub::class,
+            CommonCardStub::class.'2' => CommonCardStub::class,
+            CommonCardStub::class.'3' => CommonCardStub::class,
+            CommonCardStub::class.'4' => CommonCardStub::class,
+            CommonCardStub::class.'5' => CommonCardStub::class,
             LegendaryCardStub::class => LegendaryCardStub::class,
+            LegendaryCardStub::class.'1' => LegendaryCardStub::class,
+            LegendaryCardStub::class.'2' => LegendaryCardStub::class,
+            LegendaryCardStub::class.'3' => LegendaryCardStub::class,
+            LegendaryCardStub::class.'4' => LegendaryCardStub::class,
+            LegendaryCardStub::class.'5' => LegendaryCardStub::class,
+            LegendaryCardStub::class.'6' => LegendaryCardStub::class,
             PierrotCard::class => PierrotCard::class,
         ];
     }
