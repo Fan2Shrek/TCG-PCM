@@ -266,6 +266,10 @@ return [
             'name' => 'Méga Coagulé',
             'description' => 'Quand il est joué, absorbe tous les coagulés en jeu, gagnant +{{value}} PVs et +{{value2}} attaque pour chaque coagulé absorbé. Quand il meurt, fait apparaître {{value3}} <card>Clotty</card>.',
         ],
+        'Racism' => [
+            'name' => 'Racisme',
+            'description' => 'Inflige {{value}} dégâts à tous les monstres qui ne sont pas de <set>original</set>.',
+        ],
     ],
     // Effects
     'effects' => [
