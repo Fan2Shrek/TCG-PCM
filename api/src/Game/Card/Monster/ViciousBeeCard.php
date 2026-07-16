@@ -7,7 +7,7 @@ use App\Game\GameContext;
 
 final class ViciousBeeCard extends AbstractMonsterCard
 {
-    public static CardRarityEnum $rarity = CardRarityEnum::RARE;
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
 
     private const HEALTH_POINTS = 10;
     private const ATTACK = 10;

@@ -10,7 +10,7 @@ use App\Game\GameUtils;
 
 final class HoneyBeeCard extends AbstractMonsterCard
 {
-    public static CardRarityEnum $rarity = CardRarityEnum::RARE;
+    public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
 
     private const HEALTH_POINTS = 15;
     private const ATTACK = 5;
