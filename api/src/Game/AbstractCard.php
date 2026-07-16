@@ -161,4 +161,9 @@ abstract class AbstractCard
             CardRarityEnum::LEGENDARY => 5,
         };
     }
+
+    public function __clone()
+    {
+        $this->effects = clone $this->effects;
+    }
 }

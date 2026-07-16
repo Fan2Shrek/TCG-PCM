@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Api\Provider\ChatHistoryProvider;
 use App\Api\Provider\GameProvider;
@@ -19,6 +20,7 @@ use App\Domain\Command\Room\LeaveRoomCommand;
 use App\Domain\Command\Room\RemoveOpponentCommand;
 use App\Domain\Command\Room\StartRoomCommand;
 use App\Domain\Command\Room\TogglePrivateRoomCommand;
+use App\Entity\Game\InitialGameState;
 use App\Enum\RoomStatusEnum;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,7 +30,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(operations: [
     new Get(uriTemplate: '/rooms/{id}', normalizationContext: ['groups' => ['api:room:list'], 'skip_null_values' => false]),
-    new Get(uriTemplate: '/game/{id}', provider: GameProvider::class),
+    new Get(uriTemplate: '/game/{id}', provider: GameProvider::class, uriVariables: ['id' => new Link(fromProperty: 'id', fromClass: InitialGameState::class)]),
     new GetCollection(uriTemplate: '/me/room', provider: UserActiveRoomProvider::class, normalizationContext: [
         'groups' => ['api:room:list'],
         'skip_null_values' => false,

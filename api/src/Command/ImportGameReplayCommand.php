@@ -54,7 +54,7 @@ final class ImportGameReplayCommand
             $this->roomRepository->save($roomEntity);
         }
 
-        $id = $room ? (string) $roomEntity->getId() : str_replace('/', '_', $filePath);
+        $id = $room ? (string) $roomEntity->getId() : $this->formatFileName($filePath);
         $this->gameStateRepository->save($gameState, $id);
 
         foreach ($data['events'] as $gameEvent) {
@@ -64,5 +64,10 @@ final class ImportGameReplayCommand
         $output->writeln(sprintf('<info>File "%s" imported successfully.</info>', $filePath));
 
         return 0;
+    }
+
+    private function formatFileName(string $filePath): string
+    {
+        return pathinfo($filePath, PATHINFO_FILENAME);
     }
 }

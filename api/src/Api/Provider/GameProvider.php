@@ -29,16 +29,13 @@ final class GameProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        if (!($room = $this->roomRepository->find($uriVariables['id'] ?? null))) {
-            throw new NotFoundHttpException();
-        }
-
-        if (!($gameState = $this->gameStateProvider->get((string) $room->getId()))) {
+        $id = (string) $uriVariables['id'];
+        if (!($gameState = $this->gameStateProvider->get($id))) {
             throw new NotFoundHttpException();
         }
 
         $user = $this->currentUserProvider->getCurrentUser();
-        $topic = \sprintf('game/%s', $room->getId());
+        $topic = \sprintf('game/%s', $id);
         $privateTopic = $topic.'-'.($user->getId() == $gameState->player1->player->id ? '1' : '2'); // @mago-ignore lint:identity-comparison
         $token = $this->hub->getFactory()?->create([$topic, $privateTopic], []);
         $url = \sprintf('%s?topic=%s&topic=%s', $this->hub->getPublicUrl(), $topic, $privateTopic);

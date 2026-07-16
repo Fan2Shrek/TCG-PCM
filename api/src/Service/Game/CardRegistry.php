@@ -26,7 +26,7 @@ class CardRegistry implements CardRegistryInterface
 
     public function getCardTemplateById(string $cardId): AbstractCard
     {
-        return $this->get($cardId);
+        return clone $this->get($cardId);
     }
 
     public function getAllBy(array $criteria): array
