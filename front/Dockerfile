@@ -27,6 +27,9 @@ ENV NEXT_PUBLIC_API_URL=${API_URL}
 ARG MERCURE_URL
 ENV NEXT_PUBLIC_MERCURE_URL=${MERCURE_URL}
 
+ARG SSR_API_URL=http://php/api
+ENV API_INTERNAL_URL=${SSR_API_URL}
+
 RUN npm run build
 
 # =========================
