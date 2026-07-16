@@ -16,7 +16,6 @@ type CemeteryProps = {
   cardIds: string[];
   className?: string;
   mirrored?: boolean;
-  isCardDragged?: boolean;
 };
 
 const CARD_PLAY_ANIMATION_TIME = 300;
@@ -26,7 +25,6 @@ export default function Cemetery({
   cardIds,
   className = "",
   mirrored = false,
-  isCardDragged = false,
 }: CemeteryProps) {
   const { getCardById } = useContext(GameContext);
   const [isHovered, setIsHovered] = useState(false);
