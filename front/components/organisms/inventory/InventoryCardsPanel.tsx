@@ -92,7 +92,7 @@ export default function InventoryCardsPanel({
           onChange={(event) =>
             setSetFilter(event.target.value as CardSet | typeof ALL)
           }
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
+          className="h-9 rounded-xl border-2 border-ink-outline bg-background px-2.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-primary/35"
         >
           <option value={ALL}>Tous les sets</option>
           {Object.values(CardSet).map((set) => (
@@ -107,7 +107,7 @@ export default function InventoryCardsPanel({
           onChange={(event) =>
             setRarityFilter(event.target.value as CardRaririty | typeof ALL)
           }
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
+          className="h-9 rounded-xl border-2 border-ink-outline bg-background px-2.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-primary/35"
         >
           <option value={ALL}>Toutes les raretés</option>
           {Object.values(CardRaririty).map((rarity) => (
@@ -122,7 +122,7 @@ export default function InventoryCardsPanel({
           onChange={(event) =>
             setTypeFilter(event.target.value as CardType | typeof ALL)
           }
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
+          className="h-9 rounded-xl border-2 border-ink-outline bg-background px-2.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-primary/35"
         >
           <option value={ALL}>Tous les types</option>
           {Object.values(CardType).map((type) => (

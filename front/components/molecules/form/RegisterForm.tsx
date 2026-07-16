@@ -19,7 +19,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" className="rounded-full" disabled={pending}>
+    <Button type="submit" disabled={pending}>
       {pending ? "Inscription..." : "S'inscrire"}
     </Button>
   );
@@ -107,7 +107,7 @@ export default function RegisterForm() {
 
         <p className="text-sm text-center">
           Déjà un compte ?{" "}
-          <a href="/login" className="text-primary hover:underline">
+          <a href="/login" className="font-semibold text-primary hover:underline">
             Connecte-toi
           </a>
         </p>

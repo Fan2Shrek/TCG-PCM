@@ -16,7 +16,7 @@ type Tab = "friends" | "requests" | "add";
 
 const PlayerAvatar = ({ profilePicturePath }: { profilePicturePath?: string | null }) => (
   <div
-    className="h-9 w-9 shrink-0 rounded-full bg-cover bg-center border border-black/20"
+    className="h-9 w-9 shrink-0 rounded-full bg-cover bg-center border-2 border-ink-outline"
     style={{
       backgroundImage: `url(${profilePicturePath ? getImage(profilePicturePath) : "/menu/default_profile_picture.webp"})`,
     }}
@@ -133,7 +133,7 @@ export default function FriendsPageClient() {
 
       {"friends" === tab && (
         <div className="space-y-2">
-          {0 === friends.length && <p className="text-black/60">Vous n&apos;avez pas encore d&apos;amis.</p>}
+          {0 === friends.length && <p className="text-muted-foreground">Vous n&apos;avez pas encore d&apos;amis.</p>}
           {friends.map((friendship) => {
             const friend =
               friendship.requester.username === currentUser?.username
@@ -141,10 +141,10 @@ export default function FriendsPageClient() {
                 : friendship.requester;
 
             return (
-              <div key={friendship.id} className="flex items-center justify-between rounded-lg border border-black/20 bg-slate-100 p-3">
+              <div key={friendship.id} className="flex items-center justify-between rounded-xl border-2 border-ink-outline bg-white p-3">
                 <div className="flex items-center gap-3">
                   <PlayerAvatar profilePicturePath={friend.profilePicturePath} />
-                  <span className="text-black">{friend.username}</span>
+                  <span>{friend.username}</span>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => handleTrade(friend.id)} disabled={isBusy === String(friend.id)}>
@@ -167,12 +167,12 @@ export default function FriendsPageClient() {
 
       {"requests" === tab && (
         <div className="space-y-2">
-          {0 === pendingRequests.length && <p className="text-black/60">Aucune demande en attente.</p>}
+          {0 === pendingRequests.length && <p className="text-muted-foreground">Aucune demande en attente.</p>}
           {pendingRequests.map((request) => (
-            <div key={request.id} className="flex items-center justify-between rounded-lg border border-black/20 bg-slate-100 p-3">
+            <div key={request.id} className="flex items-center justify-between rounded-xl border-2 border-ink-outline bg-white p-3">
               <div className="flex items-center gap-3">
                 <PlayerAvatar profilePicturePath={request.requester.profilePicturePath} />
-                <span className="text-black">{request.requester.username}</span>
+                <span>{request.requester.username}</span>
               </div>
               <div className="flex gap-2">
                 <Button size="sm" onClick={() => handleAccept(request.id)} disabled={isBusy === request.id}>
@@ -190,13 +190,13 @@ export default function FriendsPageClient() {
       {"add" === tab && (
         <div className="space-y-3">
           <Input placeholder="Rechercher un pseudo..." value={search} onChange={(event) => handleSearch(event.target.value)} />
-          {isSearching && <p className="text-black/60">Recherche...</p>}
+          {isSearching && <p className="text-muted-foreground">Recherche...</p>}
           <div className="space-y-2">
             {results.map((user) => (
-              <div key={user.id} className="flex items-center justify-between rounded-lg border border-black/20 bg-slate-100 p-3">
+              <div key={user.id} className="flex items-center justify-between rounded-xl border-2 border-ink-outline bg-white p-3">
                 <div className="flex items-center gap-3">
                   <PlayerAvatar profilePicturePath={user.profilePicturePath} />
-                  <span className="text-black">{user.username}</span>
+                  <span>{user.username}</span>
                 </div>
                 <Button size="sm" onClick={() => handleSend(user.username)} disabled={isBusy === user.username}>
                   Ajouter

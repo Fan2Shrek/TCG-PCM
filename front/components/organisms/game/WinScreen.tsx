@@ -59,7 +59,7 @@ export default function WinScreen({
         }}
       />
 
-      <div className="relative flex flex-col z-10 max-w-3xl items-center gap-3 rounded-2xl border-2 border-orange-200 bg-orange-400 p-4 text-white md:gap-6 md:p-8">
+      <div className="relative flex flex-col z-10 max-w-3xl items-center gap-3 rounded-3xl border-4 border-white bg-gold p-4 shadow-[var(--sticker-shadow-lg)] text-ink-outline md:gap-6 md:p-8">
         <div className="flex flex-row items-center justify-center gap-6 text-center">
           <Image
             src="/isaac-tboi.gif"
@@ -68,7 +68,7 @@ export default function WinScreen({
             height={100}
             className="md:block"
           />
-          <h2 className="text-3xl font-bold text-white md:text-5xl">
+          <h2 className="font-display text-3xl font-extrabold text-ink-outline md:text-5xl">
             {winnerName === userName
               ? "Vous avez gagné !"
               : `${winnerName} a gagné !`}

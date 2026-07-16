@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <>
       <div className="hidden md:flex items-center justify-between gap-4 fixed w-full pt-3 px-5 z-80">
-        <div className="min-w-0">{user && <PendingBoosters />}</div>
+        <div className="shrink-0">{user && <PendingBoosters />}</div>
         <DesktopMenu username={user?.username} profilePicturePath={profilePicturePath} />
       </div>
       {user && (

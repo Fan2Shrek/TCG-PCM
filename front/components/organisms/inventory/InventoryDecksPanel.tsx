@@ -217,7 +217,7 @@ export default function InventoryDecksPanel({
       ) : null}
 
       {sortedDecks.length === 0 ? (
-        <div className="rounded-xl border border-slate-300/60 bg-white/50 p-8 text-center text-slate-600">
+        <div className="rounded-2xl border-2 border-dashed border-ink-outline p-8 text-center text-muted-foreground">
           Aucun deck pour le moment.
         </div>
       ) : null}

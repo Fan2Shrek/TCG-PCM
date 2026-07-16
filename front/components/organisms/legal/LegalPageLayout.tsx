@@ -14,7 +14,7 @@ export default function LegalPageLayout({ title, subtitle, children }: LegalPage
         {subtitle && <p className="mt-2 text-white/80">{subtitle}</p>}
       </header>
 
-      <div className="w-full rounded-2xl border-2 border-slate-400/40 bg-slate-200/75 p-6 shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] backdrop-blur-sm md:p-8">
+      <div className="w-full rounded-3xl border-2 border-ink-outline bg-card p-6 shadow-[var(--sticker-shadow-lg)] md:p-8">
         <div className="space-y-6">{children}</div>
       </div>
     </main>

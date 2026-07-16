@@ -1,4 +1,5 @@
 import ResetPasswordForm from "@/components/molecules/form/ResetPasswordForm";
+import { Card } from "@/components/ui/card";
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{
@@ -12,10 +13,10 @@ export default async function ResetPasswordPage({
   const { token } = await searchParams;
 
   return (
-    <main className="flex  justify-center sm:mt-32 ">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl border border-black/10">
+    <main className="flex justify-center sm:mt-32">
+      <Card className="w-full max-w-md">
         <ResetPasswordForm token={token ?? ""} />
-      </div>
+      </Card>
     </main>
   );
 }

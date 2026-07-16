@@ -39,13 +39,13 @@ export default function TurnTimeline() {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {STEPS.map((step, index) => (
-        <div key={step.title} className="relative flex flex-col items-center rounded-xl bg-black/5 border border-black/10 p-4 text-center">
-          <span className="absolute -top-3 -left-3 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+        <div key={step.title} className="relative flex flex-col items-center rounded-xl border-2 border-ink-outline bg-muted p-4 text-center">
+          <span className="absolute -top-3 -left-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-ink-outline bg-primary text-sm font-bold text-white">
             {index + 1}
           </span>
           <span className="mb-2 text-3xl text-primary">{step.icon}</span>
-          <p className="font-bold text-black/80">{step.title}</p>
-          <p className="mt-1 text-sm text-black/60">{step.description}</p>
+          <p className="font-bold">{step.title}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
         </div>
       ))}
     </div>

@@ -8,8 +8,8 @@ type LegalSectionProps = {
 export default function LegalSection({ title, children }: LegalSectionProps) {
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-bold text-black md:text-xl">{title}</h2>
-      <div className="space-y-3 text-black/70">{children}</div>
+      <h2 className="font-display text-lg font-extrabold md:text-xl">{title}</h2>
+      <div className="space-y-3 text-muted-foreground">{children}</div>
     </section>
   );
 }

@@ -19,7 +19,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" className="rounded-full" disabled={pending}>
+    <Button type="submit" disabled={pending}>
       {pending ? "Envoi..." : "Envoyer le lien"}
     </Button>
   );
@@ -48,7 +48,7 @@ export default function ForgotPasswordForm() {
         </Field>
 
         <p className="text-sm text-center">
-          <a href="/login" className="text-primary hover:underline">
+          <a href="/login" className="font-semibold text-primary hover:underline">
             Retour à la connexion
           </a>
         </p>

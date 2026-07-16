@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import ProfilePictureForm from "@/components/molecules/form/ProfilePictureForm";
+import { Card } from "@/components/ui/card";
 import { authApiGet } from "@/lib/api/authServer";
 import { getCurrentUser } from "@/lib/auth/session";
 
@@ -19,12 +20,12 @@ export default async function Profile() {
 
   return (
     <main className="flex justify-center sm:mt-32">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl border border-black/10 space-y-6">
+      <Card className="w-full max-w-md">
         <ProfilePictureForm username={user.username} profilePicturePath={user.profilePicturePath} />
-        <a href="/change-password" className="block text-sm text-center text-primary hover:underline">
+        <a href="/change-password" className="block text-sm text-center font-semibold text-primary hover:underline">
           Changer mon mot de passe
         </a>
-      </div>
+      </Card>
     </main>
   );
 }

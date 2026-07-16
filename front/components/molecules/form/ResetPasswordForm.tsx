@@ -19,7 +19,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" className="rounded-full" disabled={pending}>
+    <Button type="submit" disabled={pending}>
       {pending ? "Réinitialisation..." : "Réinitialiser le mot de passe"}
     </Button>
   );
@@ -61,7 +61,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       <p className="text-sm text-center">
         Ce lien de réinitialisation est invalide. Redemande un lien depuis la
         page{" "}
-        <a href="/forgot-password" className="text-primary hover:underline">
+        <a href="/forgot-password" className="font-semibold text-primary hover:underline">
           mot de passe oublié
         </a>
         .

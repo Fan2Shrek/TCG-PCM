@@ -28,7 +28,7 @@ export default function CollectionPageClient({
         <InventoryTabs value={activeTab} onChange={setActiveTab} />
       </div>
 
-      <div className="flex flex-col gap-6 rounded-tr-2xl rounded-b-2xl border-2 border-slate-400/40 bg-slate-200/75 p-6 shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] backdrop-blur-sm">
+      <div className="flex flex-col gap-6 rounded-tr-3xl rounded-b-3xl border-2 border-ink-outline bg-card p-6 shadow-[var(--sticker-shadow-lg)]">
         {activeTab === "cards" ? (
           <InventoryCardsPanel entries={entries} />
         ) : null}

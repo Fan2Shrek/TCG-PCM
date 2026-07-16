@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import ChangePasswordForm from "@/components/molecules/form/ChangePasswordForm";
+import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/session";
 import { PASSWORD_EXPIRED_COOKIE } from "@/lib/auth/constants";
 
@@ -15,10 +16,10 @@ export default async function ChangePasswordPage() {
   const forced = store.has(PASSWORD_EXPIRED_COOKIE);
 
   return (
-    <main className="flex  justify-center sm:mt-32 ">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl border border-black/10">
+    <main className="flex justify-center sm:mt-32">
+      <Card className="w-full max-w-md">
         <ChangePasswordForm forced={forced} />
-      </div>
+      </Card>
     </main>
   );
 }

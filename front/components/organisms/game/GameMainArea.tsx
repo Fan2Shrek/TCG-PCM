@@ -40,7 +40,7 @@ export default function GameMainArea({
   );
   return (
     <div
-      className={`relative flex-1 flex md:flex-col md:items-center md:justify-center transform-gpu w-1250 h-1250 overflow-auto md:overflow-hidden" ${className || ""}`}
+      className={`relative flex-1 flex md:flex-col md:items-center md:justify-center transform-gpu w-1250 h-1250 overflow-auto md:overflow-hidden ${className || ""}`}
     >
       {/* parent div to apply transform 3d to the game area */}
       <div
@@ -63,7 +63,7 @@ export default function GameMainArea({
           />
 
           {/* finally, this div contains the actual play area where everything happens. */}
-          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-red-600 p-3">
+          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-bubblegum rounded-t-3xl border-3 border-white p-3">
             <div className="flex flex-col gap-4 justify-end col-span-1 items-center h-full p-2">
               <Cemetery cardIds={opponentDiscardCardIds} />
               <DrawPile
@@ -89,7 +89,14 @@ export default function GameMainArea({
             </div>
           </div>
 
-          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-blue-600 p-3">
+          {/* separator between the two players' halves — kept in normal flow
+              (not absolutely positioned at top-1/2), sandwiched directly
+              between the two zone rows, so it always sits exactly at the
+              boundary between them even if their rendered heights end up
+              slightly uneven due to content overflow. */}
+          <div className="game-arena-split relative h-3 w-full shrink-0 rounded-full border-2 border-white z-2" />
+
+          <div className="w-full h-1/2 relative grid grid-cols-5 items-center gap-5 bg-sky-400 rounded-b-3xl border-3 border-white p-3">
             <div className="flex flex-col col-span-1 items-center gap-2">
               <PlayerCharacterDisplay player={currentState} />
               <PlayerStatsDisplay

@@ -190,7 +190,7 @@ export default function InventoryDeckBuilder({
   };
 
   return (
-    <section className="space-y-5 rounded-xl border border-slate-300/80 bg-white/90 p-4 shadow-sm">
+    <section className="space-y-5 rounded-2xl border-2 border-ink-outline bg-card p-4 shadow-[var(--sticker-shadow)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Input
           value={name}
@@ -219,8 +219,8 @@ export default function InventoryDeckBuilder({
         </div>
       </div>
 
-      <div className="grid gap-2 rounded-lg bg-slate-100/70 p-3 text-sm text-slate-700 sm:grid-cols-3 lg:grid-cols-6">
-        <p className="font-semibold text-slate-900">
+      <div className="grid gap-2 rounded-xl border-2 border-ink-outline bg-muted p-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
+        <p className="font-display font-extrabold">
           Cartes: {totalCards} / {limits.deckSize}
         </p>
         {Object.values(CardRaririty).map((rarity) => (
@@ -232,7 +232,7 @@ export default function InventoryDeckBuilder({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+        <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
           Personnage (1 selection)
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -242,10 +242,10 @@ export default function InventoryDeckBuilder({
             return (
               <div
                 key={card.instanceId}
-                className={`rounded-lg border p-2 text-left transition ${
+                className={`rounded-xl border-2 p-2 text-left transition ${
                   isSelected
-                    ? "border-emerald-500 bg-emerald-50"
-                    : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-mint bg-mint/15"
+                    : "border-ink-outline bg-card"
                 }`}
               >
                 <div className="mx-auto w-fit">
@@ -255,7 +255,7 @@ export default function InventoryDeckBuilder({
                     zoomOnSingleClick
                   />
                 </div>
-                <p className="mt-2 truncate text-xs font-medium text-slate-700">
+                <p className="mt-2 truncate text-xs font-medium">
                   {card.name}
                 </p>
 
@@ -276,7 +276,7 @@ export default function InventoryDeckBuilder({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+        <h3 className="font-display text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
           Cartes jouables
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -295,7 +295,7 @@ export default function InventoryDeckBuilder({
             return (
               <div
                 key={card.instanceId}
-                className="rounded-lg border border-slate-200 bg-white p-2"
+                className="rounded-xl border-2 border-ink-outline bg-card p-2"
               >
                 <div className="mx-auto w-fit">
                   <CardWithZoom
@@ -305,10 +305,10 @@ export default function InventoryDeckBuilder({
                   />
                 </div>
 
-                <p className="mt-2 truncate text-xs font-medium text-slate-800">
+                <p className="mt-2 truncate text-xs font-medium">
                   {card.name}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Deck: {selected} / {maxCopies} | Collection: {quantity}
                 </p>
 

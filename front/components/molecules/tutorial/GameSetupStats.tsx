@@ -36,12 +36,12 @@ export default function GameSetupStats() {
       {STATS.map((stat) => (
         <div
           key={stat.label}
-          className="flex items-center gap-3 rounded-xl bg-black/5 border border-black/10 p-3"
+          className="flex items-center gap-3 rounded-xl border-2 border-ink-outline bg-muted p-3"
         >
           <span className="text-2xl text-primary">{stat.icon}</span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-black/50">{stat.label}</p>
-            <p className="font-bold text-black/80">{stat.value}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{stat.label}</p>
+            <p className="font-bold">{stat.value}</p>
           </div>
         </div>
       ))}

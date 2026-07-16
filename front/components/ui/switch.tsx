@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import * as React from "react";
+import { Switch as SwitchPrimitive } from "radix-ui";
 
 interface SwitchProps {
   checked: boolean;
@@ -7,31 +10,20 @@ interface SwitchProps {
   id?: string;
 }
 
-export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
+export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
   ({ checked, onChange, disabled = false, id }, ref) => {
     return (
-      <label className="inline-flex items-center cursor-pointer">
-        <input
-          ref={ref}
-          id={id}
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
-          disabled={disabled}
-          className="sr-only peer"
-        />
-        <div
-          className={`relative w-11 h-6 rounded-full transition-colors ${
-            checked ? "bg-green-600" : "bg-gray-300"
-          } ${disabled ? "opacity-50 cursor-not-allowed" : ""} peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500`}
-        >
-          <div
-            className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-              checked ? "translate-x-5" : ""
-            }`}
-          />
-        </div>
-      </label>
+      <SwitchPrimitive.Root
+        ref={ref}
+        id={id}
+        checked={checked}
+        onCheckedChange={onChange}
+        disabled={disabled}
+        data-slot="switch"
+        className="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-ink-outline bg-white transition-colors outline-none data-[state=checked]:border-white data-[state=checked]:bg-mint focus-visible:ring-3 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <SwitchPrimitive.Thumb className="pointer-events-none block size-4 translate-x-0.5 rounded-full border-2 border-ink-outline bg-white shadow-[1px_1px_0_0_var(--color-ink-outline)] transition-transform data-[state=checked]:translate-x-[22px]" />
+      </SwitchPrimitive.Root>
     );
   },
 );

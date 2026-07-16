@@ -16,10 +16,10 @@ export default function RoomCard({
   isLoading = false,
 }: RoomCardProps) {
   return (
-    <div className="rounded-lg border border-black/20 bg-black/5 p-4">
+    <div className="rounded-2xl border-2 border-ink-outline bg-white p-4 shadow-[var(--sticker-shadow-sm)]">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm text-black">{room.owner.username}</p>
+          <p className="text-sm font-semibold">{room.owner.username}</p>
         </div>
         <Button
           onClick={() => onJoin(room.id)}

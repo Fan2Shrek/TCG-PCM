@@ -287,7 +287,7 @@ export default function GameBoard() {
 
   return (
     <div
-      className="relative flex flex-col h-screen bg-orange-800 text-white overflow-hidden"
+      className="game-arena-bg relative flex flex-col h-screen text-ink-outline overflow-hidden"
       onClick={handleBackgroundClick}
     >
       {isGameFinished && (
@@ -300,10 +300,10 @@ export default function GameBoard() {
 
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
         <div
-          className={`rounded-full border px-5 py-1.5 text-sm font-semibold shadow-lg backdrop-blur-sm ${
+          className={`rounded-full border-3 px-5 py-1.5 font-display text-sm font-extrabold shadow-[var(--sticker-shadow)] ${
             isLoggedPlayerTurn
-              ? "border-emerald-300/60 bg-emerald-500/20 text-emerald-100"
-              : "border-white/20 bg-black/30 text-white"
+              ? "border-white bg-mint text-ink-outline"
+              : "border-ink-outline bg-white text-ink-outline"
           }`}
         >
           {isLoggedPlayerTurn

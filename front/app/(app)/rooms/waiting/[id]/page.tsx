@@ -10,6 +10,7 @@ import BadgeIcon from "@/components/atoms/badges/BadgeIcon";
 import api, { getImage } from "@/lib/api/api";
 import type { Deck } from "@/app/types/deck";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import DeckSelect from "@/components/molecules/rooms/DeckSelect";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
@@ -20,7 +21,7 @@ const PlayerAvatar = ({
   profilePicturePath?: string | null;
 }) => (
   <div
-    className="h-9 w-9 shrink-0 rounded-full bg-cover bg-center border border-black/20"
+    className="h-9 w-9 shrink-0 rounded-full bg-cover bg-center border-2 border-ink-outline"
     style={{
       backgroundImage: `url(${profilePicturePath ? getImage(profilePicturePath) : "/menu/default_profile_picture.webp"})`,
     }}
@@ -242,21 +243,18 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
     <div className="flex flex-col items-center justify-center flex-1">
       {isContextLoading ? (
         <div className="text-center">
-          <p className="text-black/60">Chargement de la salle...</p>
+          <p className="text-muted-foreground">Chargement de la salle...</p>
         </div>
       ) : !room ? (
         <div className="text-center">
-          <p className="text-black/60">Salle non trouvée</p>
+          <p className="text-muted-foreground">Salle non trouvée</p>
         </div>
       ) : (
-        <div className="w-full max-w-3xl rounded-lg bg-slate-100 border border-black/40 overflow-hidden p-6">
+        <Card className="w-full max-w-3xl">
           <div className="flex items-center justify-end">
             {isOwner && (
-              <div className="flex items-center gap-3 pb-4">
-                <label
-                  htmlFor="private-toggle"
-                  className="text-sm text-black/60"
-                >
+              <div className="flex items-center gap-3">
+                <label htmlFor="private-toggle" className="text-sm">
                   Salle privée
                 </label>
                 <Switch
@@ -268,12 +266,11 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
             )}
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-lg border border-black/20 bg-black/5 p-6">
+          <div className="space-y-4">
+            <div className="rounded-2xl border-2 border-ink-outline p-6">
               <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-                <p className="text-sm text-black/60">
-                  ID de la salle:{" "}
-                  <span className="text-black text-xl">{id}</span>
+                <p className="text-sm text-muted-foreground">
+                  ID de la salle: <span className="text-xl font-bold">{id}</span>
                 </p>
                 <Button onClick={handleCopy} variant="default" size="lg">
                   <MdContentCopy className="h-5 w-5" />
@@ -282,9 +279,9 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
 
-            <div className="rounded-lg border border-black/20 bg-black/5 p-6">
+            <div className="rounded-2xl border-2 border-ink-outline p-6">
               <div className="flex flex-wrap items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-black">
+                <h3 className="font-display text-sm font-extrabold">
                   Joueurs ({playerCount}/2)
                 </h3>
                 <div className="flex gap-3">
@@ -301,7 +298,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
+                <div className="flex items-center justify-between p-3 rounded-xl border-2 border-ink-outline bg-white">
                   <div className="flex items-center gap-3">
                     <PlayerAvatar
                       profilePicturePath={room?.owner.profilePicturePath}
@@ -328,7 +325,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   ) : null}
                 </div>
                 {room?.opponent && (
-                  <div className="flex items-center justify-between p-3 rounded bg-white/50 text-black">
+                  <div className="flex items-center justify-between p-3 rounded-xl border-2 border-ink-outline bg-white">
                     <div className="flex items-center gap-3">
                       <PlayerAvatar
                         profilePicturePath={room.opponent.profilePicturePath}
@@ -367,7 +364,7 @@ const WaitingPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );
