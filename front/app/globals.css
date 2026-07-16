@@ -7,9 +7,16 @@
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink-outline: #a40353;
+  --color-gold: #ffd400;
+  --color-bubblegum: #ff5d8f;
+  --color-mint: #1fbf7a;
+  --color-cherry: #ff4d4d;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-pixel: var(--font-geist-pixel);
+  --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Rounded", "Baloo 2",
+    var(--font-geist-sans), system-ui, sans-serif;
   --aspect-card: var(--base-aspect-card);
   --spacing-card-xs: var(--base-spacing-card-xs);
   --spacing-card-sm: var(--base-spacing-card-sm);
@@ -45,7 +52,6 @@
     background: url("/website_bg.png") repeat center;
     background-color: #1a1a2e;
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
     @apply bg-background text-foreground;
   }
   * {
@@ -94,18 +100,140 @@
     background-blend-mode: soft-light, difference;
   }
 
+  /*
+   * The 4 pulse animations below drive real gameplay signaling (drop-zone
+   * highlight, hand-card selection/playability, attack-target highlight).
+   * Their class names (ring-pulse / blue-pulse / target-pulse / playable-pulse)
+   * are hardcoded in PlayZone.tsx / HandCard.tsx / GameCard.tsx and must not
+   * change. The elements they're applied to already carry an inline
+   * `transform` (tilt/3D board positioning or, for the drop zone, live
+   * getBoundingClientRect hit-testing), so only box-shadow/border-radius are
+   * animated here — never transform — to avoid fighting those inline styles.
+   */
+  .sticker-border {
+    border: 3px solid var(--color-ink-outline);
+  }
+
+  .sticker-shadow {
+    box-shadow: var(--sticker-shadow);
+  }
+
+  .game-arena-bg {
+    background:
+      repeating-conic-gradient(#ffcb3d 0% 25%, #ffb703 0% 50%) 50% / 90px 90px,
+      #ffb703;
+  }
+
+  .game-arena-split {
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-ink-outline) 0 18px,
+      #ffe14d 18px 36px
+    );
+  }
+
+  @keyframes diceWobble {
+    0% {
+      transform: rotate(-8deg) scale(1);
+    }
+    30% {
+      transform: rotate(10deg) scale(1.08);
+    }
+    55% {
+      transform: rotate(-6deg) scale(1.02);
+    }
+    100% {
+      transform: rotate(-8deg) scale(1);
+    }
+  }
+
+  .dice-face {
+    position: relative;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin: 0 auto;
+    border-radius: 1rem;
+    background: linear-gradient(160deg, #fff, #e6d9a8);
+    border: 4px solid var(--color-ink-outline);
+    box-shadow: var(--sticker-shadow-lg);
+    animation: diceWobble 1.8s ease-in-out infinite;
+  }
+
+  .dice-face::after {
+    content: "⚄";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.75rem;
+    color: var(--color-ink-outline);
+  }
+
+  .dice-burst {
+    position: absolute;
+    inset: -2.5rem;
+    z-index: -1;
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: wobble 3s linear infinite;
+    background: conic-gradient(
+      var(--color-gold) 0 10deg,
+      transparent 10deg 30deg,
+      var(--color-gold) 30deg 40deg,
+      transparent 40deg 60deg,
+      var(--color-gold) 60deg 70deg,
+      transparent 70deg 90deg,
+      var(--color-gold) 90deg 100deg,
+      transparent 100deg 120deg,
+      var(--color-gold) 120deg 130deg,
+      transparent 130deg 150deg,
+      var(--color-gold) 150deg 160deg,
+      transparent 160deg 180deg,
+      var(--color-gold) 180deg 190deg,
+      transparent 190deg 210deg,
+      var(--color-gold) 210deg 220deg,
+      transparent 220deg 240deg,
+      var(--color-gold) 240deg 250deg,
+      transparent 250deg 270deg,
+      var(--color-gold) 270deg 280deg,
+      transparent 280deg 300deg,
+      var(--color-gold) 300deg 310deg,
+      transparent 310deg 330deg,
+      var(--color-gold) 330deg 340deg,
+      transparent 340deg 360deg
+    );
+  }
+
+  @keyframes wobble {
+    0%,
+    100% {
+      transform: rotate(-2deg);
+    }
+    50% {
+      transform: rotate(2deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dice-face,
+    .dice-burst {
+      animation: none;
+    }
+  }
+
   @keyframes ringPulse {
     0%,
     100% {
-      box-shadow: inset 0 0 0 4px rgba(253, 224, 71, 1);
+      box-shadow: inset 0 0 0 4px rgba(255, 212, 0, 1);
     }
     50% {
-      box-shadow: inset 0 0 0 4px rgba(253, 224, 71, 0.5);
+      box-shadow: inset 0 0 0 7px rgba(255, 212, 0, 0.55);
     }
   }
 
   .ring-pulse {
-    animation: ringPulse 2s ease-in-out infinite;
+    animation: ringPulse 1.6s ease-in-out infinite;
   }
 
   .card-selected {
@@ -115,33 +243,33 @@
   @keyframes bluePulse {
     0%,
     100% {
-      box-shadow: inset 0 0 0 4px rgba(96, 165, 250, 1);
+      box-shadow: inset 0 0 0 4px rgba(89, 196, 255, 1);
     }
     50% {
-      box-shadow: inset 0 0 0 4px rgba(96, 165, 250, 0.5);
+      box-shadow: inset 0 0 0 7px rgba(89, 196, 255, 0.55);
     }
   }
 
   .blue-pulse {
-    animation: bluePulse 2s ease-in-out infinite;
+    animation: bluePulse 1.4s ease-in-out infinite;
   }
 
   @keyframes targetPulse {
     0%,
     100% {
       box-shadow:
-        0 0 0 4px rgba(248, 113, 113, 0.9),
-        0 0 18px 4px rgba(248, 113, 113, 0.55);
+        0 0 0 4px rgba(255, 77, 77, 0.95),
+        0 0 20px 6px rgba(255, 77, 77, 0.6);
     }
     50% {
       box-shadow:
-        0 0 0 4px rgba(248, 113, 113, 0.4),
-        0 0 8px 2px rgba(248, 113, 113, 0.25);
+        0 0 0 7px rgba(255, 77, 77, 0.45),
+        0 0 10px 3px rgba(255, 77, 77, 0.3);
     }
   }
 
   .target-pulse {
-    animation: targetPulse 1.1s ease-in-out infinite;
+    animation: targetPulse 0.9s ease-in-out infinite;
     border-radius: 0.75rem;
   }
 
@@ -149,18 +277,18 @@
     0%,
     100% {
       box-shadow:
-        0 0 0 3px rgba(253, 224, 71, 0.85),
-        0 0 14px 2px rgba(253, 224, 71, 0.45);
+        0 0 0 3px rgba(255, 212, 0, 0.9),
+        0 0 16px 3px rgba(255, 212, 0, 0.5);
     }
     50% {
       box-shadow:
-        0 0 0 3px rgba(253, 224, 71, 0.35),
-        0 0 6px 1px rgba(253, 224, 71, 0.2);
+        0 0 0 5px rgba(255, 212, 0, 0.4),
+        0 0 8px 1px rgba(255, 212, 0, 0.25);
     }
   }
 
   .playable-pulse {
-    animation: playablePulse 1.8s ease-in-out infinite;
+    animation: playablePulse 1.5s ease-in-out infinite;
     border-radius: 0.125rem;
   }
 
@@ -408,6 +536,9 @@
 :root {
   --background: #e0c9c9;
   --foreground: #171717;
+  --sticker-shadow-sm: 0 3px 10px -3px rgba(164, 3, 83, 0.4);
+  --sticker-shadow: 0 6px 18px -4px rgba(164, 3, 83, 0.4);
+  --sticker-shadow-lg: 0 14px 32px -6px rgba(164, 3, 83, 0.45);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);

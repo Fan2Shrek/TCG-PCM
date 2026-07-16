@@ -1,6 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type ConfirmActionModalProps = {
   open: boolean;
@@ -25,17 +33,25 @@ export default function ConfirmActionModal({
   onCancel,
   isLoading = false,
 }: ConfirmActionModalProps) {
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="max-w-sm rounded-lg bg-white p-6">
-        <h3 className="mb-2 text-lg font-semibold text-black">{title}</h3>
-        <div className="mb-4 space-y-2 text-sm text-black/70">
-          <p>{description}</p>
-          {warning && <p className="font-medium text-red-600">{warning}</p>}
-        </div>
-        <div className="flex justify-end gap-2">
+    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
+      <DialogContent
+        showCloseButton={false}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription asChild>
+            <div className="space-y-2">
+              <p>{description}</p>
+              {warning && (
+                <p className="font-semibold text-cherry">{warning}</p>
+              )}
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
           <Button
             onClick={onCancel}
             variant="outline"
@@ -52,8 +68,8 @@ export default function ConfirmActionModal({
           >
             {confirmLabel}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

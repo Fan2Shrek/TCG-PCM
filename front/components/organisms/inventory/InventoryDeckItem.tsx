@@ -8,6 +8,7 @@ import type { Deck } from "@/app/types/deck";
 import { CardSize } from "@/constants/card";
 import type { BasicCard } from "@/lib/cards/types/card";
 import CardWithZoom from "@/components/organisms/card/CardWithZoom";
+import { Button } from "@/components/ui/button";
 
 type InventoryDeckItemProps = {
   deck: Deck;
@@ -61,10 +62,10 @@ export default function InventoryDeckItem({
   };
 
   return (
-    <section className="overflow-hidden rounded-xl border border-slate-300/70 bg-white/80">
-      <div className="flex flex-wrap w-full items-center justify-between px-4 py-3 hover:bg-slate-50">
+    <section className="overflow-hidden rounded-2xl border-2 border-ink-outline bg-card shadow-[var(--sticker-shadow-sm)]">
+      <div className="flex flex-wrap w-full items-center justify-between px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
-          <h3 className="text-base font-semibold text-slate-900">
+          <h3 className="font-display text-base font-extrabold">
             {deck.name}
           </h3>
           <button
@@ -74,7 +75,7 @@ export default function InventoryDeckItem({
             }
             title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
             onClick={() => onToggleFavorite(deck.id, !isFavorite)}
-            className="cursor-pointer rounded-md p-1 text-amber-500 transition hover:bg-amber-50 hover:text-amber-600"
+            className="cursor-pointer rounded-full p-1 text-amber-500 transition hover:bg-amber-50 hover:text-amber-600"
           >
             {isFavorite ? (
               <FaStar className="h-5 w-5" />
@@ -83,43 +84,37 @@ export default function InventoryDeckItem({
             )}
           </button>
           {isFavorite ? (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+            <span className="rounded-full border-2 border-white bg-gold px-2 py-0.5 text-xs font-bold">
               Favori
             </span>
           ) : null}
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => onEdit(deck.id)}
-            className="cursor-pointer rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
           >
             Modifier
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="destructive"
+            size="sm"
             onClick={handleDeleteClick}
             disabled={isDeleting}
-            className={`cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold transition ${
-              isDeleteConfirming
-                ? "border-red-700 bg-red-600 text-white hover:bg-red-700"
-                : "border-red-300 bg-red-100 text-red-700 hover:bg-red-200"
-            } disabled:cursor-not-allowed disabled:opacity-60`}
           >
             {isDeleting
               ? "Suppression..."
               : isDeleteConfirming
                 ? "Confirmer"
                 : "Supprimer"}
-          </button>
-          <button
-            type="button"
-            onClick={onToggle}
-            className="cursor-pointer rounded-md px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-          >
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={onToggle}>
             {isExpanded ? "Masquer" : "Voir"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -133,9 +128,9 @@ export default function InventoryDeckItem({
       >
         <div className="overflow-hidden">
           {isExpanded ? (
-            <div className="space-y-5 border-t border-slate-200 px-4 py-4">
+            <div className="space-y-5 border-t-2 border-ink-outline px-4 py-4">
               <div className="text-center">
-                <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="mb-2 text-center text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   Carte personnage
                 </p>
                 {characterCard ? (
@@ -149,19 +144,17 @@ export default function InventoryDeckItem({
                       size={CardSize.MD}
                       zoomOnSingleClick
                     />
-                    <span className="text-xs text-slate-700">
-                      {characterCard.name}
-                    </span>
+                    <span className="text-xs">{characterCard.name}</span>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Carte inconnue: {deck.characterCard}
                   </p>
                 )}
               </div>
 
               <div>
-                <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="mb-2 text-center text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   CARTES DU DECK
                 </p>
                 <div className="grid grid-cols-2 justify-items-center gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -179,14 +172,12 @@ export default function InventoryDeckItem({
                           size={CardSize.SM}
                           zoomOnSingleClick
                         />
-                        <span className="text-xs text-slate-700">
-                          {card.name}
-                        </span>
+                        <span className="text-xs">{card.name}</span>
                       </div>
                     ) : (
                       <div
                         key={key}
-                        className="rounded-md border border-slate-300 bg-slate-100 p-2 text-center text-xs text-slate-600"
+                        className="rounded-lg border-2 border-ink-outline bg-muted p-2 text-center text-xs text-muted-foreground"
                       >
                         {cardId}
                       </div>

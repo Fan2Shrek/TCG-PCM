@@ -64,7 +64,18 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}
     >
       <body className={`antialiased bg-background bg-fixed`}>
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            classNames: {
+              toast:
+                "rounded-2xl! border-2! border-ink-outline! bg-card! shadow-[var(--sticker-shadow)]!",
+              title: "font-display! font-extrabold!",
+              actionButton:
+                "rounded-full! bg-primary! text-primary-foreground!",
+              cancelButton: "rounded-full!",
+            },
+          }}
+        />
         <RoomProvider initialRoom={initialRoom} enabled={isAuthenticated}>
           <BoosterTokensProvider enabled={isAuthenticated}>
             <BadgesProvider enabled={isAuthenticated}>

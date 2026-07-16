@@ -44,12 +44,12 @@ export default function BadgesPageClient({
           return (
             <div
               key={badge.badgeName}
-              className="flex items-center gap-4 rounded-2xl border-2 border-slate-400/40 bg-slate-200/75 p-4 shadow-[0_14px_40px_-22px_rgba(15,23,42,0.55)] backdrop-blur-sm"
+              className="flex items-center gap-4 rounded-2xl border-2 border-ink-outline bg-card p-4 shadow-[var(--sticker-shadow-sm)]"
             >
               <BadgeIcon badgeName={badge.badgeName} level={badge.level} />
 
               <div className="flex-1">
-                <p className="font-semibold">
+                <p className="font-display font-extrabold">
                   {BADGE_LABELS[badge.badgeName]}
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -60,7 +60,7 @@ export default function BadgesPageClient({
 
                 {badge.nextThreshold !== null && (
                   <div className="mt-2">
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-300">
+                    <div className="h-2.5 w-full overflow-hidden rounded-full border-2 border-ink-outline bg-muted">
                       <div
                         className="h-full rounded-full bg-primary transition-[width]"
                         style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}

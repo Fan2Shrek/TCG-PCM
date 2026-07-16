@@ -38,7 +38,7 @@ export default function EffectsShowcase() {
             <span className="text-xl">{effect.icon}</span>
             {effect.name}
           </div>
-          <p className="text-sm text-black/70">{effect.description}</p>
+          <p className="text-sm text-current/70">{effect.description}</p>
         </div>
       ))}
     </div>

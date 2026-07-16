@@ -54,7 +54,7 @@ export default function CardTypesShowcase() {
             <Icon className="text-2xl" />
             <p className="font-bold">{label}</p>
           </div>
-          <p className="text-sm text-black/70">{description}</p>
+          <p className="text-sm text-current/70">{description}</p>
           <ul className="mt-2 flex flex-wrap gap-2">
             {stats.map((stat) => (
               <li key={stat} className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold">

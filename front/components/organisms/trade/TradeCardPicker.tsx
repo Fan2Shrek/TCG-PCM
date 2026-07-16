@@ -5,6 +5,12 @@ import { toast } from "sonner";
 import client from "@/lib/api/api";
 import Card from "@/components/molecules/Card";
 import CardQuantityBadge from "@/components/atoms/collection/CardQuantityBadge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CardSize } from "@/constants/card";
 import type { CardCollectionEntry } from "@/app/types/collection";
 
@@ -40,26 +46,23 @@ export default function TradeCardPicker({ onSelect, onClose }: TradeCardPickerPr
   const ownedEntries = useMemo(() => entries.filter(({ quantity }) => quantity > 0), [entries]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-black">Choisir une carte à proposer</h3>
-          <button onClick={onClose} className="text-sm text-black/60 hover:underline">
-            Fermer
-          </button>
-        </div>
+    <Dialog open onOpenChange={(next) => !next && onClose()}>
+      <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Choisir une carte à proposer</DialogTitle>
+        </DialogHeader>
 
         {isLoading ? (
-          <p className="text-black/60">Chargement...</p>
+          <p className="text-muted-foreground">Chargement...</p>
         ) : 0 === ownedEntries.length ? (
-          <p className="text-black/60">Vous ne possédez aucune carte à échanger.</p>
+          <p className="text-muted-foreground">Vous ne possédez aucune carte à échanger.</p>
         ) : (
           <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
             {ownedEntries.map(({ card, quantity }) => (
               <button
                 key={card.instanceId}
                 onClick={() => onSelect(card.instanceId)}
-                className="relative flex flex-col items-center gap-1 rounded-lg p-1 hover:bg-black/5"
+                className="relative flex flex-col items-center gap-1 rounded-xl p-1 transition hover:bg-muted"
               >
                 <Card card={card} size={CardSize.SM} />
                 <CardQuantityBadge quantity={quantity} className="absolute top-1 right-1" />
@@ -67,7 +70,7 @@ export default function TradeCardPicker({ onSelect, onClose }: TradeCardPickerPr
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -70,13 +70,13 @@ export default function GameChat() {
   return (
     <div className="absolute z-20 bottom-4 left-4 flex flex-col items-start gap-2">
       {isOpen && (
-        <div className="w-72 rounded-xl border border-white/20 bg-black/60 backdrop-blur-sm shadow-lg flex flex-col overflow-hidden">
+        <div className="w-72 rounded-2xl border-3 border-ink-outline bg-white shadow-[var(--sticker-shadow)] flex flex-col overflow-hidden">
           <div
             ref={listRef}
             className="max-h-64 min-h-32 overflow-y-auto flex flex-col gap-1.5 p-3"
           >
             {chatMessages.length === 0 && (
-              <p className="text-white/40 text-xs text-center my-auto">
+              <p className="text-muted-foreground text-xs text-center my-auto">
                 Aucun message pour le moment.
               </p>
             )}
@@ -88,14 +88,14 @@ export default function GameChat() {
                   key={message.id}
                   className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}
                 >
-                  <span className="text-[10px] text-white/40 px-1">
+                  <span className="text-[10px] text-muted-foreground px-1">
                     {message.authorUsername}
                   </span>
                   <div
-                    className={`rounded-2xl px-3 py-1.5 text-sm max-w-full break-words ${
+                    className={`rounded-2xl border-2 border-ink-outline px-3 py-1.5 text-sm max-w-full break-words ${
                       isMine
-                        ? "bg-emerald-500/30 text-emerald-50"
-                        : "bg-white/10 text-white"
+                        ? "bg-mint text-ink-outline"
+                        : "bg-sky-300 text-ink-outline"
                     }`}
                   >
                     {message.message}
@@ -106,14 +106,13 @@ export default function GameChat() {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 border-t border-white/10 p-2"
+            className="flex items-center gap-2 border-t-2 border-ink-outline p-2"
           >
             <Input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               maxLength={MAX_MESSAGE_LENGTH}
               placeholder="Écris un message..."
-              className="text-white placeholder:text-white/40"
             />
             <Button type="submit" size="sm" disabled={!draft.trim()}>
               Envoyer
@@ -127,7 +126,7 @@ export default function GameChat() {
         variant="secondary"
         size="icon"
         onClick={handleToggle}
-        className="relative shadow-lg"
+        className="relative"
       >
         {isOpen ? (
           <MdClose className="h-5 w-5" />
@@ -135,7 +134,7 @@ export default function GameChat() {
           <MdChatBubbleOutline className="h-5 w-5" />
         )}
         {!isOpen && unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-cherry px-1 text-[10px] font-bold text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

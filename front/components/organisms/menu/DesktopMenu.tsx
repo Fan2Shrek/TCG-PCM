@@ -16,6 +16,7 @@ import ActiveRoomStatus from "@/components/molecules/menu/ActiveRoomStatus";
 import ActiveTradeStatus from "@/components/molecules/menu/ActiveTradeStatus";
 import { logoutAction } from "@/lib/actions/auth";
 import { useFriendship } from "@/contexts/FriendshipContext";
+import { useNavOverflow } from "@/hooks/useNavOverflow";
 
 type DesktopMenuProps = {
   className?: string;
@@ -111,15 +112,27 @@ export default function DesktopMenu({ className, username, profilePicturePath }:
   };
 
   const menuItems = isAuthenticated ? getAuthenticatedMenuItems(pendingRequests.length) : unauthenticatedMenuItems;
-  const dropdownItems = isAuthenticated ? getAuthenticatedDropdownItems(handleLogout) : [];
+  const secondaryItems = isAuthenticated ? getAuthenticatedDropdownItems(handleLogout) : [];
+
+  // Items that don't fit the nav's available width collapse into the "..."
+  // dropdown alongside the secondary items, and expand back as space allows.
+  const { rootRef, navRef, itemsRef, measureRef, visibleCount } =
+    useNavOverflow(
+      menuItems.length,
+      menuItems.map((item) => item.label).join("|"),
+    );
+  const visibleItems = menuItems.slice(0, visibleCount);
+  const overflowedItems = menuItems.slice(visibleCount);
+  const dropdownItems = [...overflowedItems, ...secondaryItems];
 
   return (
-    <div>
+    <div ref={rootRef}>
       <nav
-        className={`flex flex-row flex-nowrap rounded-full bg-primary border-2 border-white drop-shadow-lg min-h-15 ${className || ""}`}
+        ref={navRef}
+        className={`flex flex-row flex-nowrap items-center rounded-full bg-primary border-2 border-white shadow-[var(--sticker-shadow-lg)] min-h-15 ${className || ""}`}
       >
-        <ul className="flex items-center gap-2 px-4">
-          {menuItems.map((menuItem) => (
+        <ul ref={itemsRef} className="flex items-center gap-2 px-4">
+          {visibleItems.map((menuItem) => (
             <DesktopMenuItems
               key={menuItem.label}
               label={menuItem.label}
@@ -129,13 +142,36 @@ export default function DesktopMenu({ className, username, profilePicturePath }:
               active={isActiveMenuItem(pathname, menuItem.linkTo)}
             />
           ))}
-          {dropdownItems.length > 0 && (
+        </ul>
+
+        {/* Off-screen clone of every primary item at natural width, used purely
+            to measure how many actually fit — never shown to the user. */}
+        <ul
+          ref={measureRef}
+          aria-hidden
+          className="pointer-events-none fixed top-0 -left-[9999px] flex items-center gap-2 px-4 opacity-0"
+        >
+          {menuItems.map((menuItem) => (
+            <DesktopMenuItems
+              key={menuItem.label}
+              label={menuItem.label}
+              icon={menuItem.icon}
+              linkTo={menuItem.linkTo}
+              onClick={menuItem.onClick}
+              active={isActiveMenuItem(pathname, menuItem.linkTo)}
+              className="shrink-0"
+            />
+          ))}
+        </ul>
+
+        {dropdownItems.length > 0 && (
+          <ul className="flex items-center pr-2">
             <DesktopMenuDropdown
               items={dropdownItems}
               isItemActive={(linkTo) => isActiveMenuItem(pathname, linkTo)}
             />
-          )}
-        </ul>
+          </ul>
+        )}
         {isAuthenticated && <ProfileIcon username={username} profilePicturePath={profilePicturePath} />}
       </nav>
 

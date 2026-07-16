@@ -58,9 +58,9 @@ export default function RarityTable({ limits }: RarityTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-105 border-collapse overflow-hidden rounded-xl text-sm">
+      <table className="w-full min-w-105 border-collapse overflow-hidden rounded-xl border-2 border-ink-outline text-sm">
         <thead>
-          <tr className="bg-black/10 text-left text-black/70">
+          <tr className="bg-muted text-left text-muted-foreground">
             <th className="p-3">Rareté</th>
             <th className="p-3">Coût de base</th>
             <th className="p-3">Limite par deck (50 cartes)</th>
@@ -70,7 +70,7 @@ export default function RarityTable({ limits }: RarityTableProps) {
           {RARITY_ROWS.map((row) => (
             <tr
               key={row.rarity}
-              className="border-t border-black/10 odd:bg-black/5"
+              className="border-t border-ink-outline odd:bg-muted"
             >
               <td className="flex items-center gap-2 p-3 font-semibold">
                 <span className={`h-3 w-3 rounded-full ${row.dotClass}`} />
@@ -87,7 +87,7 @@ export default function RarityTable({ limits }: RarityTableProps) {
           ))}
         </tbody>
       </table>
-      <p className="mt-2 text-xs text-black/50">
+      <p className="mt-2 text-xs text-muted-foreground">
         Le personnage de votre deck est toujours de rareté Rare et ne compte pas
         dans les {deckSize} cartes. Vous ne pouvez pas avoir plus de{" "}
         {limits.maxCardCopies} exemplaires de la même carte dans un deck.

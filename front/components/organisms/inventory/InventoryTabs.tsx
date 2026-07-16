@@ -29,10 +29,10 @@ export default function InventoryTabs({ value, onChange }: InventoryTabsProps) {
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab)}
-            className={`cursor-pointer rounded-t-lg border border-transparent font-semibold will-change-transform transition-[transform,background-color,color,box-shadow] duration-200 ease-out ${
+            className={`cursor-pointer rounded-t-2xl border-2 border-ink-outline border-b-0 font-display font-extrabold will-change-transform transition-[transform,background-color,color] duration-200 ease-out ${
               isActive
-                ? "px-5 py-2 text-sm scale-105 bg-slate-100 text-slate-900 shadow-[0_-8px_16px_-12px_rgba(15,23,42,0.75)]"
-                : "px-4 py-2 text-xs bg-slate-300/70 text-slate-700 hover:bg-slate-300 hover:text-slate-900"
+                ? "px-5 py-2 text-sm scale-105 bg-card"
+                : "px-4 py-2 text-xs bg-muted text-muted-foreground hover:bg-card"
             }`}
           >
             {TAB_LABELS[tab]}

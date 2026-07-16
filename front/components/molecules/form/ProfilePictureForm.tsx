@@ -19,7 +19,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" className="rounded-full" disabled={pending}>
+    <Button type="submit" disabled={pending}>
       {pending ? "Envoi..." : "Mettre à jour"}
     </Button>
   );
@@ -46,7 +46,7 @@ export default function ProfilePictureForm({ username, profilePicturePath }: Pro
       <FieldGroup>
         <div className="flex flex-col items-center gap-2">
           <div
-            className="w-32 h-32 rounded-full bg-cover bg-center border-2 border-white/20"
+            className="w-32 h-32 rounded-full bg-cover bg-center border-2 border-ink-outline shadow-[var(--sticker-shadow-sm)]"
             style={{ backgroundImage: `url(${displayedImage})` }}
           />
           <span className="font-bold">{username}</span>

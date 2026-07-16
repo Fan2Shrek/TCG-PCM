@@ -111,7 +111,7 @@ export default function MobileMenu({ username, className }: MobileMenuProps) {
         {isAuthenticated && <ActiveRoomStatus />}
         {isAuthenticated && <ActiveTradeStatus />}
 
-        <nav className="w-full rounded-full bg-primary border-2 border-white drop-shadow-lg min-h-15 flex flex-row items-center mt-3">
+        <nav className="w-full rounded-full bg-primary border-2 border-white shadow-[var(--sticker-shadow-lg)] min-h-15 flex flex-row items-center mt-3">
           <ul className="flex w-full items-center justify-center gap-3 px-4">
             {items.map((item) => {
               const isActive = isActiveMenuItem(pathname, item.linkTo);

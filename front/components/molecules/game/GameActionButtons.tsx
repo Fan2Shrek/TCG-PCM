@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type GameActionButtonsProps = {
   isLoggedPlayerTurn: boolean;
@@ -19,8 +20,6 @@ export default function GameActionButtons({
   onEndTurn,
   onForfeit,
 }: GameActionButtonsProps) {
-  const baseButtonClassName =
-    "rounded-lg px-6 py-2 text-base font-semibold text-white shadow-md transition-all duration-150 hover:-translate-y-px active:translate-y-0 cursor-pointer";
   const [forfeitConfirm, setForfeitConfirm] = useState(false);
 
   const handleForfeitClick = () => {
@@ -38,30 +37,23 @@ export default function GameActionButtons({
   return (
     <div className="flex flex-col-reverse lg:flex-col gap-3 min-w-3xs">
       {showCancel && onCancel && (
-        <button
-          type="button"
-          onClick={onCancel}
-          className={`${baseButtonClassName} bg-slate-600 hover:bg-slate-500`}
-        >
+        <Button type="button" size="lg" variant="outline" onClick={onCancel}>
           Annuler
-        </button>
+        </Button>
       )}
       {isLoggedPlayerTurn && (
-        <button
-          type="button"
-          onClick={onEndTurn}
-          className={`${baseButtonClassName} bg-emerald-600 hover:bg-emerald-500`}
-        >
+        <Button type="button" size="lg" onClick={onEndTurn}>
           Fin de tour
-        </button>
+        </Button>
       )}
-      <button
+      <Button
         type="button"
+        size="lg"
+        variant="destructive"
         onClick={handleForfeitClick}
-        className={`${baseButtonClassName} bg-red-600 hover:bg-red-500`}
       >
         {forfeitConfirm ? "Êtes-vous sûr ?" : "Abandonner"}
-      </button>
+      </Button>
     </div>
   );
 }

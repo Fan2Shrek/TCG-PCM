@@ -4,7 +4,12 @@ import { cookies } from "next/headers";
 
 import { SESSION_COOKIE } from "@/lib/auth/constants";
 
-const API_INTERNAL_URL = process.env.API_INTERNAL_URL || "http://php/api";
+if (!process.env.API_INTERNAL_URL) {
+  throw new Error(
+    "API_INTERNAL_URL n'est pas configurée (variable d'environnement manquante côté serveur front).",
+  );
+}
+const API_INTERNAL_URL = process.env.API_INTERNAL_URL;
 
 export class ApiError extends Error {
   constructor(

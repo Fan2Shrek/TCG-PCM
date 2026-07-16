@@ -6,6 +6,8 @@ import { MdRefresh, MdAdd } from "react-icons/md";
 import { toast } from "sonner";
 import client from "@/lib/api/api";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import RoomCard from "@/components/molecules/arena/RoomCard";
 import Pagination from "@/components/molecules/Pagination";
 import ConfirmActionModal from "@/components/molecules/ConfirmActionModal";
@@ -147,93 +149,83 @@ export default function RoomsPageClient({
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-2">
-      <div className="w-full max-w-4xl rounded-lg bg-slate-100 border border-black/40 overflow-hidden mx-2">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-8 flex-wrap">
-            <h2 className="text-2xl font-semibold text-black">
-              Joueurs en attente d&apos;adversaires
-            </h2>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                asChild
-                variant="default"
-                size="lg"
-                className="px-8 bg-blue-800 text-white hover:bg-blue-600"
-              >
-                <Link href="/inventory?tab=decks">Gérer mes decks</Link>
-              </Button>
-              <Button
-                onClick={createRoom}
-                variant="default"
-                size="lg"
-                className="px-8"
-              >
-                <MdAdd className="h-5 w-5" />
-                Créer une salle
-              </Button>
-              <Button
-                onClick={() => fetchRooms(currentPage)}
-                disabled={isLoading}
-                variant="default"
-                size="lg"
-              >
-                <MdRefresh
-                  className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`}
-                />
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3 mb-8">
-            {rooms.length === 0 ? (
-              <div className="rounded-lg border border-black/20 bg-black/5 p-8 text-center">
-                <p className="text-black/60">Aucune salle disponible</p>
-              </div>
-            ) : (
-              rooms
-                .filter((room) => !userRoom || room.id !== userRoom.id)
-                .map((room) => (
-                  <RoomCard
-                    key={room.id}
-                    room={room}
-                    onJoin={joinRoom}
-                    isLoading={isLoading}
-                  />
-                ))
-            )}
-          </div>
-
-          <div className="mb-6">
-            <Pagination
-              currentPage={currentPage}
-              totalItems={totalItems}
-              itemsPerPage={ITEMS_PER_PAGE}
-              onPageChange={fetchRooms}
-              isLoading={isLoading}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <input
-              type="text"
-              value={joinById}
-              onChange={(e) => setJoinById(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleJoinById()}
-              placeholder="Rejoindre à partir d'un id..."
-              className="flex-1 px-3 py-2 rounded bg-white text-black placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isJoiningById}
-            />
+      <Card className="w-full max-w-4xl mx-2">
+        <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
+          <h2 className="font-display text-2xl font-extrabold">
+            Joueurs en attente d&apos;adversaires
+          </h2>
+          <div className="flex gap-2 flex-wrap">
+            <Button asChild variant="outline" size="lg" className="px-8">
+              <Link href="/inventory?tab=decks">Gérer mes decks</Link>
+            </Button>
             <Button
-              onClick={handleJoinById}
-              disabled={isJoiningById || !joinById.trim()}
+              onClick={createRoom}
+              variant="default"
+              size="lg"
+              className="px-8"
+            >
+              <MdAdd className="h-5 w-5" />
+              Créer une salle
+            </Button>
+            <Button
+              onClick={() => fetchRooms(currentPage)}
+              disabled={isLoading}
               variant="default"
               size="lg"
             >
-              Rejoindre
+              <MdRefresh
+                className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
         </div>
-      </div>
+
+        <div className="space-y-3">
+          {rooms.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-ink-outline p-8 text-center">
+              <p className="text-muted-foreground">Aucune salle disponible</p>
+            </div>
+          ) : (
+            rooms
+              .filter((room) => !userRoom || room.id !== userRoom.id)
+              .map((room) => (
+                <RoomCard
+                  key={room.id}
+                  room={room}
+                  onJoin={joinRoom}
+                  isLoading={isLoading}
+                />
+              ))
+          )}
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={fetchRooms}
+          isLoading={isLoading}
+        />
+
+        <div className="flex flex-wrap gap-2">
+          <Input
+            type="text"
+            value={joinById}
+            onChange={(e) => setJoinById(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleJoinById()}
+            placeholder="Rejoindre à partir d'un id..."
+            disabled={isJoiningById}
+          />
+          <Button
+            onClick={handleJoinById}
+            disabled={isJoiningById || !joinById.trim()}
+            variant="default"
+            size="lg"
+          >
+            Rejoindre
+          </Button>
+        </div>
+      </Card>
 
       <ConfirmActionModal
         open={showConfirmation && !!userRoom}

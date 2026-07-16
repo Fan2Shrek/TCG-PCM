@@ -68,13 +68,13 @@ export default function ActiveRoomStatus({ className }: ActiveRoomStatusProps) {
   return (
     <>
       <div
-        className={`mt-2 rounded-lg border border-black/20 bg-slate-100 p-3 flex items-center justify-between max-w-md ml-auto ${
+        className={`mt-2 rounded-2xl border-2 border-ink-outline bg-card p-3 flex items-center justify-between max-w-md ml-auto shadow-[var(--sticker-shadow-sm)] ${
           className ?? ""
         }`}
       >
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-black">
+            <span className="text-sm font-semibold">
               {userRoom.status === RoomStatus.WAITING
                 ? `Partie en attente, ${userRoom.opponent ? 2 : 1}/2 joueur(s)`
                 : "Partie en cours"}

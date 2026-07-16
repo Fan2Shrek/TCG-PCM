@@ -22,11 +22,11 @@ export default function ActiveTradeStatus({ className }: { className?: string })
 
   return (
     <div
-      className={`mt-2 rounded-lg border border-black/20 bg-slate-100 p-3 flex items-center justify-between max-w-md ml-auto ${
+      className={`mt-2 rounded-2xl border-2 border-ink-outline bg-card p-3 flex items-center justify-between max-w-md ml-auto shadow-[var(--sticker-shadow-sm)] ${
         className ?? ""
       }`}
     >
-      <span className="text-sm font-medium text-black">Échange en cours avec {otherUsername}</span>
+      <span className="text-sm font-semibold">Échange en cours avec {otherUsername}</span>
       <Button onClick={() => router.push(`/trades/${activeTrade.id}`)} variant="default" size="sm">
         Reprendre
       </Button>

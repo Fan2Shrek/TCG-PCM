@@ -14,7 +14,7 @@ function SubmitButton() {
 	const { pending } = useFormStatus();
 
 	return (
-		<Button type="submit" className="rounded-full" disabled={pending}>
+		<Button type="submit" disabled={pending}>
 			{pending ? "Connexion..." : "Login"}
 		</Button>
 	);
@@ -43,7 +43,7 @@ export default function LoginForm() {
 				</Field>
 
 				<Field>
-					<Button asChild variant="outline" className="rounded-full">
+					<Button asChild variant="outline">
 						<a href={`${process.env.NEXT_PUBLIC_API_URL}/oauth/google/redirect`}>
 							Se connecter avec Google
 						</a>
@@ -51,11 +51,11 @@ export default function LoginForm() {
 				</Field>
 
 				<p className="text-sm text-center">
-					<a href="/forgot-password" className="text-primary hover:underline">Mot de passe oublié ?</a>
+					<a href="/forgot-password" className="font-semibold text-primary hover:underline">Mot de passe oublié ?</a>
 				</p>
 
 				<p className="text-sm text-center">
-					Pas de compte ? <a href="/register" className="text-primary hover:underline">Inscris-toi</a>
+					Pas de compte ? <a href="/register" className="font-semibold text-primary hover:underline">Inscris-toi</a>
 				</p>
 			</FieldGroup>
 		</form>

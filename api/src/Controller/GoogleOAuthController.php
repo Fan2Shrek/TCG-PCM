@@ -36,6 +36,17 @@ final class GoogleOAuthController
         private RefreshTokenManagerInterface $refreshTokenManager,
         private int $refreshTokenTtl,
     ) {
+        foreach ([
+            'GOOGLE_OAUTH_CLIENT_ID' => $clientId,
+            'GOOGLE_OAUTH_CLIENT_SECRET' => $clientSecret,
+            'GOOGLE_OAUTH_REDIRECT_URI' => $redirectUri,
+            'GOOGLE_OAUTH_FRONT_URL' => $frontUrl,
+        ] as $envName => $envValue) {
+            if ('' === $envValue) {
+                throw new \RuntimeException(\sprintf('La variable d\'environnement "%s" n\'est pas configurée.', $envName));
+            }
+        }
+
         $this->provider = new Google([
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
