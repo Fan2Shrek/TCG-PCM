@@ -22,7 +22,7 @@ export default function DeckSelect({
       value={value}
       onChange={(event) => onChange(event.target.value)}
       disabled={disabled || isLoading || decks.length === 0}
-      className="h-8 min-w-48 rounded-md border border-slate-300 bg-white px-2 text-xs text-slate-900 outline-none focus:ring-2 focus:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+      className="h-8 w-full max-w-48 rounded-md border border-slate-300 bg-white px-2 text-xs text-slate-900 outline-none focus:ring-2 focus:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
       aria-label="Choisir un deck"
     >
       {decks.length === 0 ? (
