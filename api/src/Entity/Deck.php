@@ -31,7 +31,7 @@ class Deck
     private int $id;
 
     #[ORM\ManyToOne(inversedBy: 'decks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Column(length: 255)]
