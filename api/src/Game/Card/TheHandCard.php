@@ -7,8 +7,6 @@ use App\Game\GameContext;
 
 final class TheHandCard extends AbstractPlayableCard
 {
-    public static CardSetEnum $serie = CardSetEnum::TBOI;
-
     public function getId(): string
     {
         return 'TheHand';
