@@ -66,6 +66,7 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
  && echo "opcache.blacklist_filename=/usr/local/etc/php/conf.d/opcache-blacklist.txt" >> /usr/local/etc/php/conf.d/opcache.ini
 
 RUN echo "/app/config/features.php" >> /usr/local/etc/php/conf.d/opcache-blacklist.txt
+RUN echo "/app/public/index.php" >> /usr/local/etc/php/conf.d/opcache-blacklist.txt
 
 COPY composer.json composer.lock /app/
 
