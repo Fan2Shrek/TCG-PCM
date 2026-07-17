@@ -46,6 +46,10 @@ final class RacismCard extends AbstractPassiveCard implements CardAwareInterface
             return;
         }
 
-        $gameContext->damageCard($card->getInstanceId(), $this->getValue(self::BASE_ATTACK, true));
+        if (!$cardId = $card->getInstanceId()) {
+            throw new \RuntimeException('Card instance ID is not set.');
+        }
+
+        $gameContext->damageCard($cardId, $this->getValue(self::BASE_ATTACK, true));
     }
 }
