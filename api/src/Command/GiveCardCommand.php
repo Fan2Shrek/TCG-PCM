@@ -30,11 +30,12 @@ final class GiveCardCommand
             throw new \RuntimeException(\sprintf('Inventory for user "%s" not found.', $userId));
         }
 
-        $cards = $inv->getCards();
+        $cards = $cardId ? [$cardId] : $inv->getCards();
 
         foreach ($this->cardRegistry->getAllBy([]) as $card) {
-            $cardInv = $cards->filter(fn(CardInventory $c) => $c->getCard() === $card);
-            $cardInv = $cardInv->isEmpty() ? null : $cardInv->first();
+            $result = $cards->filter(fn(CardInventory $c) => $c->getCard() === $card);
+            /** @var CardInventory|null $cardInv */
+            $cardInv = $result->isEmpty() ? null : $result->first();
 
             if (!$cardInv) {
                 $cardInv = new CardInventory($inv, $card);
