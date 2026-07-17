@@ -6,7 +6,7 @@
 - [X] Régler mago et tt ca
 - [X] Voir si on découple les classes abstraites des cartes, (AbstractCharacterCard, AbstractActiveCards)
 - [X] Enlever les cartes de la main une fois jouées
-- [ ] Création de deck
+- [X] Création de deck
 - [ ] Plus de carte
 - [X] Inventaire
 
