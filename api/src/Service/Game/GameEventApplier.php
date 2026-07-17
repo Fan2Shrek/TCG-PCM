@@ -149,7 +149,7 @@ class GameEventApplier implements GameEventApplierInterface
                 $queuedEvents = array_merge($queuedEvents, $ctx->flushEvents());
             }
 
-            $newState = $state->withCurrentHealthPoints($state->currentHealthPoints - $damage);
+            $newState = $state->withCurrentHealthPoints(max(0, $state->currentHealthPoints - $damage));
             $newGameState = $gameState->withUpdatedCardState($newState);
         } else {
             throw new \LogicException('DAMAGE target must be a player or a monster card');
