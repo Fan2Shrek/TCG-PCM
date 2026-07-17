@@ -200,7 +200,7 @@ return [
         ],
         'StackyStackito' => [
             'name' => 'Stacky Stackito',
-            'description' => 'Chaque {{value}} tours, fait le nombre de pièces comme dégats.',
+            'description' => 'Chaque {{value}} tour, fait le nombre de pièces comme dégats.',
         ],
         'RiskyBet' => [
             'name' => 'Pari risqué',

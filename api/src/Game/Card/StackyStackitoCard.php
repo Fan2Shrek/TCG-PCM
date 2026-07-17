@@ -14,7 +14,7 @@ final class StackyStackitoCard extends AbstractPassiveCard implements TurnAwareI
 
     public static CardRarityEnum $rarity = CardRarityEnum::UNCOMMON;
 
-    private const DELAY = 5;
+    private const DELAY = 1;
 
     private int $delay = self::DELAY;
 
