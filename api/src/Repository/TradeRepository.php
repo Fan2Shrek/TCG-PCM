@@ -31,7 +31,7 @@ class TradeRepository extends ServiceEntityRepository implements DeployAwareInte
     public function findActiveForUser(User $user): ?Trade
     {
         /** @var Trade|null $result */
-        $result = $this
+        return $this
             ->createQueryBuilder('t')
             ->where('(t.initiator = :user OR t.recipient = :user)')
             ->andWhere('t.status = :status')
@@ -40,8 +40,6 @@ class TradeRepository extends ServiceEntityRepository implements DeployAwareInte
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-
-        return $result;
     }
 
     public function onDeploy(): void

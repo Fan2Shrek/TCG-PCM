@@ -46,7 +46,7 @@ final class RacismCard extends AbstractPassiveCard implements CardAwareInterface
             return;
         }
 
-        if (!$cardId = $card->getInstanceId()) {
+        if (!($cardId = $card->getInstanceId())) {
             throw new \RuntimeException('Card instance ID is not set.');
         }
 

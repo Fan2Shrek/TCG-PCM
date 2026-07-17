@@ -2,7 +2,6 @@
 
 namespace App\Game\Card;
 
-use App\Enum\CardSetEnum;
 use App\Game\GameContext;
 
 final class TheHandCard extends AbstractPlayableCard

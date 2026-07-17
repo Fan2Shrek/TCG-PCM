@@ -7,7 +7,6 @@ namespace App\Api\Provider;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Game\State\GameState;
-use App\Repository\RoomRepository;
 use App\Service\Auth\CurrentUserProviderInterface;
 use App\Service\Game\GameStateConverter;
 use App\Service\Game\State\GameStateProvider;

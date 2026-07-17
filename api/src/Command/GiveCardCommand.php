@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Inventory\CardInventory;
-use App\Repository\Inventory\CardInventoryRepository;
 use App\Repository\Inventory\InventoryRepository;
 use App\Service\Game\CardRegistryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +32,7 @@ final class GiveCardCommand
         $cards = $cardId ? [$cardId] : $inv->getCards();
 
         foreach ($this->cardRegistry->getAllBy([]) as $card) {
-            $result = $cards->filter(fn(CardInventory $c) => $c->getCard() === $card);
+            $result = $cards->filter(static fn(CardInventory $c) => $c->getCard() === $card);
             /** @var CardInventory|null $cardInv */
             $cardInv = $result->isEmpty() ? null : $result->first();
 

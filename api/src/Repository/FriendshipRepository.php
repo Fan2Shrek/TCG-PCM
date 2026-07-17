@@ -31,7 +31,7 @@ class FriendshipRepository extends ServiceEntityRepository implements DeployAwar
     public function findBetween(User $a, User $b): ?Friendship
     {
         /** @var Friendship|null $result */
-        $result = $this
+        return $this
             ->createQueryBuilder('f')
             ->where('(f.requester = :a AND f.addressee = :b) OR (f.requester = :b AND f.addressee = :a)')
             ->setParameter('a', $a)
@@ -39,8 +39,6 @@ class FriendshipRepository extends ServiceEntityRepository implements DeployAwar
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-
-        return $result;
     }
 
     /**

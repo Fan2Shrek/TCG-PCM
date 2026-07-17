@@ -313,6 +313,12 @@ message = 'Could not infer a precise return type for function `app\repository\de
 count = 1
 
 [[issues]]
+file = "src/Repository/FriendshipRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\friendshiprepository::findbetween`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Repository/Game/ChatMessageRepository.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\repository\game\chatmessagerepository::findbyroom`. Saw type `mixed`.'
@@ -322,6 +328,12 @@ count = 1
 file = "src/Repository/Game/GameEventRepository.php"
 code = "mixed-return-statement"
 message = 'Could not infer a precise return type for function `app\repository\game\gameeventrepository::geteventsince`. Saw type `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Repository/TradeRepository.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\repository\traderepository::findactiveforuser`. Saw type `mixed`.'
 count = 1
 
 [[issues]]
