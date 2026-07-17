@@ -62,7 +62,10 @@ ENTRYPOINT ["bin/entrypoint.sh"]
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
  && echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini \
  && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
- && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+ && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini \
+ && echo "opcache.blacklist_filename=/usr/local/etc/php/conf.d/opcache-blacklist.txt" >> /usr/local/etc/php/conf.d/opcache.ini
+
+RUN echo "/app/config/features.php" >> /usr/local/etc/php/conf.d/opcache-blacklist.txt
 
 COPY composer.json composer.lock /app/
 
