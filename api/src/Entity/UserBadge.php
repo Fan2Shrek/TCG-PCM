@@ -27,7 +27,7 @@ class UserBadge
     private int $score = 0;
 
     #[ORM\ManyToOne(inversedBy: 'userBadges')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Column(enumType: BadgeEnum::class)]
