@@ -16,7 +16,11 @@ jobs:
         shell: bash
         run: |
           ssh-keyscan  -p ${{ secrets.SSH_PORT }} -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy to server
         shell: bash
         run: |
-          ssh  -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.HOST }} 'cd ${{ secrets.PROD_PATH }} && make deploy'
+          ssh \
+            -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USER }}@${{ secrets.HOST }}" \
+            "cd '${{ secrets.PROD_PATH }}' && make deploy"
