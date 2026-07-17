@@ -19,7 +19,7 @@ class UserWallet
     private int $boosterTokens = 0;
 
     #[ORM\OneToOne(inversedBy: 'userWallet', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     public function __construct(User $user, int $boosterTokens = 0)

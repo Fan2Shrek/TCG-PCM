@@ -16,7 +16,7 @@ final class CardInventory
     private int $id;
 
     #[ORM\ManyToOne(inversedBy: 'cards')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Inventory $inventory;
 
     #[ORM\Column(length: 255)]
