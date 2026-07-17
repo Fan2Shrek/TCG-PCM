@@ -39,7 +39,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
         processor: SetProfilePictureProcessor::class,
         status: 200,
     ),
-    new Post(uriTemplate: '/register', messenger: 'input', input: RegisterCommand::class, status: 201),
+    new Post(uriTemplate: '/register', condition: "is_enable('register')",  messenger: 'input', input: RegisterCommand::class, status: 201),
     new Post(uriTemplate: '/forgot-password', messenger: 'input', input: RequestPasswordResetCommand::class, status: 200),
     new Post(uriTemplate: '/reset-password', messenger: 'input', input: ResetPasswordCommand::class, status: 200),
     new Post(uriTemplate: '/change-password', messenger: 'input', input: ChangePasswordCommand::class, status: 200),
