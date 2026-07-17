@@ -77,6 +77,21 @@ final class GameEventApplierTest extends TestCase
         self::assertSame(9, $state->currentHealthPoints);
     }
 
+    public function testApplyDamageToMonsterCardDoesNotGoBelowZero(): void
+    {
+        $eventApplier = $this->getSut(['Redbloons' => RedBloonsMonsterCard::class]);
+        $state = $this->getInitialGameState();
+        $event = new GameEvent(1, GameEventTypeEnum::DAMAGE, GameEvent::PLAYER_EVENT, [
+            'targetId' => 'monster',
+            'damage' => 999,
+        ]);
+
+        $newState = $eventApplier->apply($event, $state);
+        $state = $newState->getCardState('monster');
+
+        self::assertSame(0, $state->currentHealthPoints);
+    }
+
     public function testApplyTurnEnded()
     {
         $eventApplier = $this->getSut();
