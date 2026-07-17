@@ -19,7 +19,7 @@ final class NecromancianCardTest extends CardTestCase
     {
         $card = $this->getCard();
         $state = $this->createGameContext()->state;
-        $state = $state->withUpdatedPlayer($state->player1->withDiscardedCard('id', 'template'));
+        $state = $state->withUpdatedPlayer($state->player1->withDiscardedCard('id', 'template'))->withCurrentPlayer('2');
         $ctx = new GameContext($state, '1');
 
         $card->onTurnEnd($ctx);

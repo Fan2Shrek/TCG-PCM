@@ -28,7 +28,7 @@ final class NecromancianCard extends AbstractCharacterCard implements TurnAwareI
 
     public function onTurnEnd(GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if ($this->isOwnerTurn($gameContext)) {
             return;
         }
 

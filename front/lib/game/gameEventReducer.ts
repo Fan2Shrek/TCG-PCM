@@ -66,6 +66,19 @@ export function animateGameEvent(
       }
       return null;
     }
+    case GameEventType.CARD_REDRAWN: {
+      const card = getCard(state, view.cardId);
+      const player = getPlayer(state, view.playerId);
+
+      if (card && player) {
+        return {
+          text: `${player.player.name} a repris ${card.name} depuis le cimetière`,
+          tone: "neutral",
+        };
+      }
+
+      return null;
+    }
     case GameEventType.COINS_GAINED:
     case GameEventType.COINS_LOST: {
       const playerKey = getPlayerKey(state, view.playerId);
@@ -191,6 +204,22 @@ export function applyGameView(
       });
 
       return next;
+    }
+    case GameEventType.CARD_REDRAWN: {
+      const playerKey = getPlayerKey(state, view.playerId);
+      const player = state[playerKey];
+      const nextHand = [...player.hand, view.cardId];
+      const nextDiscardPile = { ...player.discardPile };
+      delete nextDiscardPile[view.cardId];
+
+      return {
+        ...state,
+        [playerKey]: {
+          ...player,
+          hand: nextHand,
+          discardPile: nextDiscardPile,
+        },
+      };
     }
 
     case GameEventType.TURN_STARTED: {
