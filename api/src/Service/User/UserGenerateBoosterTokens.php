@@ -21,6 +21,10 @@ class UserGenerateBoosterTokens
         $userWallet = $user->getUserWallet();
         $userInfo = $user->getUserInfo();
 
+        if ($userWallet->getBoosterTokens() >= self::MAX_BOOSTER_TOKENS) {
+            return $userWallet->getBoosterTokens();
+        }
+
         $elapsedSeconds = max(0, $now->getTimestamp() - $userInfo->getLastBoosterTokensAt()->getTimestamp());
         $tokensEarned = intdiv($elapsedSeconds, self::BOOSTER_TOKEN_INTERVAL_SECONDS);
         $totalTokens = min($userWallet->getBoosterTokens() + $tokensEarned, self::MAX_BOOSTER_TOKENS);
