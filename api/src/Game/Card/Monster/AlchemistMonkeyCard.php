@@ -11,6 +11,7 @@ use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class AlchemistMonkeyCard extends AbstractMonsterCard implements TurnAwareInterface
 {
@@ -45,7 +46,7 @@ final class AlchemistMonkeyCard extends AbstractMonsterCard implements TurnAware
         return self::HEALTH_POINTS;
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         $instanceId = $this->getInstanceId();
         $ownerId = $this->getOwnerId();

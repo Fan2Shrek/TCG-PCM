@@ -47,7 +47,7 @@ final class SirenCardTest extends CardTestCase
 
         $ctx = new GameContext($state, '1');
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);
@@ -67,7 +67,7 @@ final class SirenCardTest extends CardTestCase
         $card = $this->createCardReadyToAct();
         $ctx = $this->createGameContext();
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -83,7 +83,7 @@ final class SirenCardTest extends CardTestCase
         $gameState = $gameState->withCurrentPlayer($gameState->player2->player->id);
         $ctx = new GameContext($gameState, $gameState->player1->player->id);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
 
         self::assertCount(0, $ctx->flushEvents());
     }

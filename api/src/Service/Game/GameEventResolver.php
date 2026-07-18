@@ -342,7 +342,7 @@ class GameEventResolver
                 $cards = $this->getTurnAwareCards($state);
 
                 foreach ($cards as $card) {
-                    $card->onTurnEnd($ctx);
+                    $card->onTurnEnd($event, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
 
@@ -351,7 +351,7 @@ class GameEventResolver
                 $cards = $this->getTurnAwareCards($state);
 
                 foreach ($cards as $card) {
-                    $card->onTurnStart($ctx);
+                    $card->onTurnStart($event, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
 

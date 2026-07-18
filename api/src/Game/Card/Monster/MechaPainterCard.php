@@ -11,6 +11,7 @@ use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInterface
 {
@@ -52,7 +53,7 @@ final class MechaPainterCard extends AbstractMonsterCard implements TurnAwareInt
         return max(0, $damage - self::DAMAGE_REDUCTION);
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         $ownerId = $this->getOwnerId();
 

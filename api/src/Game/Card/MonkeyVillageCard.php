@@ -11,6 +11,7 @@ use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class MonkeyVillageCard extends AbstractPassiveCard implements TurnAwareInterface
 {
@@ -43,9 +44,9 @@ final class MonkeyVillageCard extends AbstractPassiveCard implements TurnAwareIn
         ]);
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 

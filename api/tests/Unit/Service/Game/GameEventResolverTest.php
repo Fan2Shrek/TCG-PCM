@@ -384,7 +384,7 @@ class SpyCard extends AbstractPlayableCard implements TurnAwareInterface
         }
     }
 
-    public function onTurnStart(GameContext $ctx): void
+    public function onTurnStart(GameEvent $event, GameContext $ctx): void
     {
         self::$turnStartCalled = true;
     }

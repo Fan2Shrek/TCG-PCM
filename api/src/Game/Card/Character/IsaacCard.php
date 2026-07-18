@@ -9,6 +9,7 @@ use App\Enum\CardSetEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterface
 {
@@ -29,9 +30,9 @@ final class IsaacCard extends AbstractCharacterCard implements TurnAwareInterfac
         return 180;
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 

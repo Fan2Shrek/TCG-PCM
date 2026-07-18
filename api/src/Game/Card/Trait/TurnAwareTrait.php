@@ -6,20 +6,21 @@ namespace App\Game\Card\Trait;
 
 use App\Game\AbstractCard;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 trait TurnAwareTrait
 {
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
         // Default implementation does nothing
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         // Default implementation does nothing
     }
 
-    protected function isOwnerTurn(GameContext $gameContext): bool
+    protected function isOwnerTurn(GameEvent $event): bool
     {
         assert($this instanceof AbstractCard, 'Must be AbstractCard');
         $ownerId = $this->getOwnerId();
@@ -32,6 +33,12 @@ trait TurnAwareTrait
             throw new \LogicException('Card ownerId must be a string.');
         }
 
-        return $gameContext->isCurrentPlayer($ownerId);
+        $playerId = $event->data['playerId'] ?? null;
+
+        if (null === $playerId || '' === $playerId) {
+            throw new \LogicException('Event playerId is not set.');
+        }
+
+        return $ownerId === $playerId;
     }
 }

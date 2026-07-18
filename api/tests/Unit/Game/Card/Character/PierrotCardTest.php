@@ -49,7 +49,7 @@ final class PierrotCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);
@@ -62,7 +62,7 @@ final class PierrotCardTest extends CardTestCase
         $state = $this->buildState();
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -78,7 +78,7 @@ final class PierrotCardTest extends CardTestCase
         $state = $this->buildState(opponentCharacterId: 'char2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(3, $events);

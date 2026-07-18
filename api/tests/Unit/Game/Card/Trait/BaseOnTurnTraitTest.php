@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Card\Trait;
 
+use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 use PHPUnit\Framework\TestCase;
 
 final class BaseOnTurnTraitTest extends TestCase
@@ -19,7 +21,7 @@ final class BaseOnTurnTraitTest extends TestCase
         $gameContext->method('isCurrentPlayer')->willReturn(true);
         $card->setState(new CardState('', TestCard::class, '', [], []));
 
-        $card->onTurnStart($gameContext);
+        $card->onTurnStart(new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => '2']), $gameContext);
 
         self::assertFalse($card::$actionExecuted);
     }
@@ -41,7 +43,7 @@ final class BaseOnTurnTraitTest extends TestCase
             ),
         );
 
-        $card->onTurnStart($gameContext);
+        $card->onTurnStart(new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => '1']), $gameContext);
 
         self::assertTrue($card::$actionExecuted);
     }

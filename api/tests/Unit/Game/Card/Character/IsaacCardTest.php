@@ -39,7 +39,7 @@ final class IsaacCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('2');
         $ctx = $this->createGameContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);
@@ -55,7 +55,7 @@ final class IsaacCardTest extends CardTestCase
         $state = new GameState($player1State, $player2State, 1, 0, '1');
         $ctx = $this->createGameContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);

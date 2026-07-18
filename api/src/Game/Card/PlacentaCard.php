@@ -10,6 +10,7 @@ use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterface
 {
@@ -38,9 +39,9 @@ final class PlacentaCard extends AbstractPassiveCard implements TurnAwareInterfa
         ]);
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 

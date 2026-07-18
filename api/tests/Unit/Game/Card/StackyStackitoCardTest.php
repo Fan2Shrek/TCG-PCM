@@ -2,8 +2,10 @@
 
 namespace App\Tests\Unit\Game\Card;
 
+use App\Enum\GameEventTypeEnum;
 use App\Game\Card\StackyStackitoCard;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class StackyStackitoCardTest extends CardTestCase
@@ -17,11 +19,12 @@ final class StackyStackitoCardTest extends CardTestCase
     {
         $card = $this->getCard();
         $ctx = $this->createGameContext();
+        $event = new GameEvent(0, GameEventTypeEnum::TURN_STARTED, 'game', ['playerId' => '1']);
 
         for ($i = 0; $i < 9; $i++) {
-            $card->onTurnStart($ctx);
+            $card->onTurnStart($event, $ctx);
         }
-        $card->onTurnStart($ctx = $this->createGameContext());
+        $card->onTurnStart($event, $ctx = $this->createGameContext());
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);
@@ -36,9 +39,9 @@ final class StackyStackitoCardTest extends CardTestCase
         $ctx = new GameContext($state, '1');
 
         for ($i = 0; $i < 9; $i++) {
-            $card->onTurnStart($ctx);
+            $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         }
-        $card->onTurnStart($ctx = new GameContext($state, '1'));
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx = new GameContext($state, '1'));
         $events = $ctx->flushEvents();
 
         self::assertSame($coins, $events[0]->data['damage']);

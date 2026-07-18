@@ -20,7 +20,7 @@ final class GrilledClottyCardTest extends CardTestCase
         $card = $this->getCard();
         $ctx = $this->createGameContext();
 
-        $card->onTurnEnd($ctx);
+        $card->onTurnEnd($this->createTurnEndedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -34,7 +34,7 @@ final class GrilledClottyCardTest extends CardTestCase
         $card = $this->getCard();
         $ctx = $this->createGameContext();
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);

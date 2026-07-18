@@ -7,6 +7,7 @@ use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class BloodSuckerCard extends AbstractPassiveCard implements TurnAwareInterface
 {
@@ -33,14 +34,14 @@ final class BloodSuckerCard extends AbstractPassiveCard implements TurnAwareInte
         $this->suck($gameContext);
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
         $this->suck($gameContext);
     }
 
     private function suck(GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$gameContext->isCurrentPlayer($this->getOwnerId())) {
             return;
         }
 

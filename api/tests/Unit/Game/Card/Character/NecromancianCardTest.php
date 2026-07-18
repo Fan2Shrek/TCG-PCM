@@ -22,7 +22,7 @@ final class NecromancianCardTest extends CardTestCase
         $state = $state->withUpdatedPlayer($state->player1->withDiscardedCard('id', 'template'))->withCurrentPlayer('2');
         $ctx = new GameContext($state, '1');
 
-        $card->onTurnEnd($ctx);
+        $card->onTurnEnd($this->createTurnEndedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);

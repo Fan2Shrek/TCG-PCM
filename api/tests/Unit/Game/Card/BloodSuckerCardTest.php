@@ -29,7 +29,7 @@ final class BloodSuckerCardTest extends CardTestCase
         $card = $this->getCard();
         $ctx = $this->createGameContext();
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(2, $events);

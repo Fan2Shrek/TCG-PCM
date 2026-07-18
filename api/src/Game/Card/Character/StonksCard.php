@@ -7,6 +7,7 @@ namespace App\Game\Card\Character;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\GameContext;
 use App\Game\GameUtils;
+use App\Game\State\GameEvent;
 
 final class StonksCard extends AbstractCharacterCard implements TurnAwareInterface
 {
@@ -38,7 +39,7 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
         ]);
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
         if (!$gameContext->isCurrentPlayer($this->getOwnerId())) {
             return;
@@ -47,10 +48,9 @@ final class StonksCard extends AbstractCharacterCard implements TurnAwareInterfa
         $gameContext->addCoins($this->getValue(self::COINS_BONUS, true));
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
-        // Inverted bc turn ended
-        if ($gameContext->isCurrentPlayer($this->getOwnerId())) {
+        if ($this->getOwnerId() !== ($event->data['playerId'] ?? null)) {
             return;
         }
 

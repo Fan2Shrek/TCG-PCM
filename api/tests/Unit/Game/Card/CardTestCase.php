@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Card;
 
+use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\GameContext;
 use App\Game\Player;
+use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
@@ -64,6 +66,16 @@ abstract class CardTestCase extends TestCase
     protected function createStubCard(): AbstractCard&Stub
     {
         return $this->createStub(AbstractCard::class);
+    }
+
+    protected function createTurnStartedEvent(string $playerId): GameEvent
+    {
+        return new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => $playerId]);
+    }
+
+    protected function createTurnEndedEvent(string $playerId): GameEvent
+    {
+        return new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $playerId]);
     }
 }
 
