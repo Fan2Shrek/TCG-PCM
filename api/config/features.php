@@ -2,5 +2,5 @@
 
 return [
     'create_room' => true,
-    'register' => false,
+    'register' => true,
 ];
