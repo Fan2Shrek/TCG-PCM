@@ -12,7 +12,7 @@ final readonly class GameState
 {
     public string $currentPlayer;
 
-    public ?string $lastAddedCardId;
+    private ?string $lastAddedCardId;
 
     /**
      * @var array<string, CardState> $cards
