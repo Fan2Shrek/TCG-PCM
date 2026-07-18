@@ -21,6 +21,13 @@ use App\Service\Game\Factory\GameContextFactoryInterface;
 
 class GameEventResolver
 {
+    /**
+     * @var GameEvent[]
+     */
+    private array $eventQueue = [];
+
+    private array $resolvedEvents = [];
+
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
@@ -38,11 +45,26 @@ class GameEventResolver
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
     {
+        $this->pushEventToQueue($mainEvent);
+
+        while ($event = array_pop($this->eventQueue)) {
+            $state = $this->doResolveEvent($event, $state);
+        }
+
+        return new ResolutionResult($this->resolvedEvents, $state);
+    }
+
+    private function doResolveEvent(GameEvent $event, GameState $state): GameState
+    {
+        // First we apply the event
+        $state = $this->gameEventApplier->apply($event, $state);
+
+        $events = $this->collectEventsFromAwareCards($event, $state);
+
         $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
 
         // @ŧodo modify this if we want to do depth events resolution instead of breadth
         foreach ($firstLevelEvents as $event) {
-            // First we apply the first level event
             $state = $this->gameEventApplier->apply($event, $state);
 
             // Then we calculate systems events just in case
@@ -55,7 +77,9 @@ class GameEventResolver
             $state = $this->gameEventApplier->applyMultiple($events, $state);
         }
 
-        return new ResolutionResult($allEvents, $state);
+        $this->resolvedEvents[] = $event;
+
+        return $state;
     }
 
     /**
@@ -213,6 +237,7 @@ class GameEventResolver
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractPassiveCard) {
+            // @todo this should be the consequence of the card being placed in play area, not the play method
             $card->onCardPlace($ctx);
 
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
@@ -220,6 +245,7 @@ class GameEventResolver
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractMonsterCard) {
+            // @todo this should be the consequence of the card being placed in play area, not the play method
             $card->onMonsterPlayed($ctx);
 
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
@@ -501,5 +527,10 @@ class GameEventResolver
         // maybe round based
 
         return 3;
+    }
+
+    private function pushEventToQueue(GameEvent $event): void
+    {
+        $this->eventQueue[] = $event;
     }
 }
