@@ -294,7 +294,6 @@ final class GameEventApplierTest extends TestCase
 
         $newState = $eventApplier->apply($event, $state);
 
-        self::assertCount(1, $newState->getPlayer('player1')->hand);
         self::assertCount(2, $newState->cards);
     }
 

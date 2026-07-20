@@ -70,21 +70,28 @@ class GameEventApplier implements GameEventApplierInterface
 
         $player = $state->getPlayer($playerId);
 
-        $deck = $player->drawPile;
+        if (null === ($event->data['cardId'] ?? null)) {
+            $deck = $player->drawPile;
 
-        $instanceId = array_key_first($deck);
-        $drawn = array_shift($deck);
+            $instanceId = array_key_first($deck);
+            $drawn = array_shift($deck);
 
-        if (!$instanceId || !$drawn) {
+            $newPlayer = $player->withNewHandAndDeck([...$player->hand, $instanceId], $deck);
+            $cardState = new CardState($instanceId, $drawn, $playerId);
+        } else {
+            $instanceId = $event->data['cardId'];
+            $newPlayer = $player->withNewHandAndDeck([...$player->hand, $instanceId], $player->drawPile);
+
+            $cardState = $state->getCardState($instanceId);
+        }
+
+        if (!$instanceId) {
             // @ŧodo voir comportement quand plus de cartes
             throw new \LogicException(\sprintf('Player %s has no more cards to draw', $playerId));
         }
-
-        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $instanceId], $deck);
-
         $state = $state->withUpdatedPlayer($newPlayer);
 
-        return $state->addCard(new CardState($instanceId, $drawn, $playerId));
+        return $state->addCard($cardState);
     }
 
     private function applyCardPlayed(GameEvent $event, GameState $gameState): GameState
@@ -388,9 +395,6 @@ class GameEventApplier implements GameEventApplierInterface
         }
 
         $cardState = new CardState((string) $id, $cardTemplateId, $playerId);
-        $player = $state->getPlayer($playerId);
-        $newPlayer = $player->withNewHandAndDeck([...$player->hand, $cardState->instanceId], $player->drawPile);
-        $state = $state->withUpdatedPlayer($newPlayer);
 
         return $state->addCard($cardState);
     }

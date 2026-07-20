@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Game\Card;
 
 use App\Enum\CardRarityEnum;
-use App\Enum\GameEventTypeEnum;
 use App\Game\Card\Monster\AbstractMonsterCard;
 use App\Game\GameContext;
 use App\Game\GameUtils;
@@ -46,41 +45,10 @@ final class ChaosCard extends AbstractPlayableCard
             $ownerState = $context->state->getPlayer($cardState->ownerId);
             $isMonster = \in_array($cardId, $ownerState->playArea->monsterCards, true);
             $replacementTemplateId = $this->pickRandomTemplateId($context, $isMonster);
-            $newInstanceId = (string) $context->state->randomizer->roll(0xFFFF_FFFF);
 
             $context->discardCard($cardId);
 
-            $context->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
-                'playerId' => $cardState->ownerId,
-                'cardTemplateId' => $replacementTemplateId,
-                'cardInstanceId' => $newInstanceId,
-            ]);
-
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
-                'playerId' => $cardState->ownerId,
-                'cardId' => $newInstanceId,
-            ]);
-
-            if ($isMonster) {
-                $replacementMonster = GameUtils::getService('cards')->createCardInstance($replacementTemplateId);
-
-                if (!$replacementMonster instanceof AbstractMonsterCard) {
-                    throw new \LogicException('Chaos picked a non-monster template for a monster slot');
-                }
-
-                $context->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
-                    'playerId' => $cardState->ownerId,
-                    'cardId' => $newInstanceId,
-                    'cardHealthPoints' => $replacementMonster->getHealPoints(),
-                ]);
-
-                continue;
-            }
-
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
-                'playerId' => $cardState->ownerId,
-                'cardId' => $newInstanceId,
-            ]);
+            CardHelper::generatedAndPlay($context, $cardState->ownerId, $replacementTemplateId, $isMonster);
         }
     }
 

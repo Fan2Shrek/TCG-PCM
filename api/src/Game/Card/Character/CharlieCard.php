@@ -2,8 +2,8 @@
 
 namespace App\Game\Card\Character;
 
-use App\Enum\GameEventTypeEnum;
 use App\Game\Card\AbstractPassiveCard;
+use App\Game\Card\CardHelper;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\BaseOnTurnTrait;
 use App\Game\GameContext;
@@ -47,23 +47,8 @@ final class CharlieCard extends AbstractCharacterCard implements TurnAwareInterf
     {
         if ($context->isCurrentPlayer($this->getOwnerId())) {
             $randomPassiveCardId = $this->pickRandomPassiveCardId($context);
-            $newInstanceId = (string) $context->state->randomizer->roll(0xFFFF_FFFF);
 
-            $context->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
-                'playerId' => $this->getOwnerId(),
-                'cardTemplateId' => $randomPassiveCardId,
-                'cardInstanceId' => $newInstanceId,
-            ]);
-
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLAYED, [
-                'playerId' => $this->getOwnerId(),
-                'cardId' => $newInstanceId,
-            ]);
-
-            $context->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
-                'playerId' => $this->getOwnerId(),
-                'cardId' => $newInstanceId,
-            ]);
+            CardHelper::generatedAndPlay($context, $this->getOwnerId(), $randomPassiveCardId, false);
         }
     }
 
