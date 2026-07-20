@@ -67,7 +67,7 @@ final class MegaClottyCard extends AbstractMonsterCard
         foreach ($this->getAllActivePlayAreaCards($context) as $cardId) {
             $templateId = $context->state->getCardState($cardId)?->templateId;
 
-            if (\is_string($templateId) && \in_array($templateId, self::CLOTTY_IDS, true)) {
+            if (\is_string($templateId) && \in_array($templateId, self::CLOTTY_IDS, true) && $cardId !== $instanceId) {
                 $clottiesOnBoard++;
                 $context->discardCard($cardId);
             }

@@ -90,6 +90,7 @@ class GameEventResolver
                 GameEventTypeEnum::MONSTER_DIED,
                 GameEventTypeEnum::PLAYER_DIED,
             ],
+            true,
         )) {
             $idToRemove = GameEventTypeEnum::MONSTER_DIED === $event->type ? $event->data['cardId'] : $event->data['characterCardId'];
 

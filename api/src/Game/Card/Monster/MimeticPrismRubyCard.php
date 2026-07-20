@@ -84,6 +84,6 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
         }
 
         $this->damage = (int) round($card->getBaseAttack() * static::ATTACK_MULTIPLIER);
-        $this->heal = (int) round($card->getHealPoints() * static::HEALTH_POINTS_MULTIPLIER);
+        $this->heal = $this->currentHealthPoints = (int) round($card->getHealPoints() * static::HEALTH_POINTS_MULTIPLIER);
     }
 }

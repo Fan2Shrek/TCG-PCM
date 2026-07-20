@@ -64,7 +64,7 @@ final class HackedZoneCard extends AbstractPassiveCard implements CardAwareInter
         }
 
         $gameContext->addEffect(CardEffectEnum::HACKED, $cardId, [
-            'value' => $gameContext->randomBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
+            'value' => $gameContext->randomIntBetween(HackedCardEffect::MIN_MODIFIER, HackedCardEffect::MAX_MODIFIER),
         ]);
     }
 }

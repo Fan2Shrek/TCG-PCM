@@ -16,15 +16,17 @@ use App\Tests\Resources\MockCardRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('replay')]
-final class GameReplayTest extends TestCase
+final class GameReplayTest extends KernelTestCase
 {
     private const REPLAY_DIR = __DIR__.'/resources';
 
     #[DataProvider('replayProvider')]
     public function testReplay(string $fileName)
     {
+        self::bootKernel();
         if (!file_exists($fileName = \sprintf('%s/%s.php', self::REPLAY_DIR, $fileName))) {
             $this->markTestSkipped(sprintf('Replay file "%s.php" not found.', $fileName));
         }
@@ -49,6 +51,8 @@ final class GameReplayTest extends TestCase
             'replay1' => ['replay1'],
             'replay2' => ['replay2'],
             'replay3' => ['replay3'],
+            'replay4' => ['replay4'],
+            'replay5' => ['replay5'],
         ];
     }
 

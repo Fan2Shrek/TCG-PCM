@@ -14,6 +14,7 @@ use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
+use Override;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
@@ -97,5 +98,10 @@ class TestableGameContext extends GameContext
     public function randomBetween(float $min, float $max): float
     {
         return $this->nextRoll;
+    }
+
+    public function randomIntBetween(int $min, int $max): int
+    {
+        return (int) $this->nextRoll;
     }
 }
