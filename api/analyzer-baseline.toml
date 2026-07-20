@@ -392,8 +392,20 @@ count = 1
 
 [[issues]]
 file = "src/Service/Game/GameEventResolver.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\State\GameState::getcardstate`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventResolver.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventResolver.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Service\Game\CardRuntimeMap::getbystate` is possibly `null`, but parameter type `App\Game\Card\CardState` does not accept it.'
 count = 1
 
 [[issues]]

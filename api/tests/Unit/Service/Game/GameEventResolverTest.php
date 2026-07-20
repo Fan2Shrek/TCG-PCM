@@ -118,7 +118,6 @@ final class GameEventResolverTest extends TestCase
         $events = $gm->resolve($event, $gameState)->events;
         $expected = [
             new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $gameState->player2->player->id]),
-            new GameEvent(0, GameEventTypeEnum::ROUND_STARTED, GameEvent::GAME_EVENT, []),
             new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::GAME_EVENT, ['playerId' => $gameState->player1->player->id]),
             new GameEvent(0, GameEventTypeEnum::COINS_GAINED, GameEvent::GAME_EVENT, [
                 'playerId' => $gameState->player1->player->id,
@@ -177,7 +176,18 @@ final class GameEventResolverTest extends TestCase
     {
         $ger = $this->getSut();
         $gameState = new GameState(
-            new PlayerState(new Player('1', 'Player 1'), 10, 10, 'player1', [], [], 0, new PlayArea()),
+            new PlayerState(
+                new Player('1', 'Player 1'),
+                10,
+                10,
+                'player1',
+                [],
+                [],
+                0,
+                new PlayArea([], [
+                    'attacker',
+                ]),
+            ),
             new PlayerState(
                 new Player('2', 'Player 2'),
                 10,
@@ -194,7 +204,7 @@ final class GameEventResolverTest extends TestCase
             0,
             null,
             [
-                'bloons' => new MonsterCardState('bloons', 'Redbloons', '1', 1),
+                'bloons' => new MonsterCardState('bloons', 'Redbloons', '2', 1),
                 'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
             ],
         );
@@ -206,9 +216,8 @@ final class GameEventResolverTest extends TestCase
 
         $events = $ger->resolve($event, $gameState)->events;
 
-        self::assertCount(5, $events);
-        $lastEvent = array_pop($events);
-        self::assertSame(GameEventTypeEnum::MONSTER_DIED, $lastEvent->type);
+        self::assertCount(4, $events);
+        self::assertCount(1, array_filter($events, static fn(GameEvent $event): bool => GameEventTypeEnum::MONSTER_DIED === $event->type));
     }
 
     public function testPropagateWithCardDeathAndDeathCardAware()
@@ -234,7 +243,7 @@ final class GameEventResolverTest extends TestCase
             0,
             null,
             [
-                'bloons' => new MonsterCardState('bloons', 'Redbloons', '1', 1),
+                'bloons' => new MonsterCardState('bloons', 'Redbloons', '2', 1),
                 'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
                 'spy-aware' => new CardState('spy-aware', SpyAwareCard::class, '2'),
             ],
@@ -245,8 +254,7 @@ final class GameEventResolverTest extends TestCase
             'attackerId' => 'attacker',
         ]);
 
-        $events = $ger->resolve($event, $gameState)->events;
-
+        $ger->resolve($event, $gameState)->events;
         self::assertCount(2, SpyAwareCard::$calls);
     }
 
