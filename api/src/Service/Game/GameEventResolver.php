@@ -151,12 +151,7 @@ class GameEventResolver
             }
         }
 
-        $subEvents = [];
-        foreach ($events as $deathEvent) {
-            $subEvents = array_merge($subEvents, $this->collectEventsFromAwareCards($deathEvent, $state));
-        }
-
-        return array_merge($events, $subEvents);
+        return $events;
     }
 
     /**

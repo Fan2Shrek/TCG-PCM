@@ -361,12 +361,6 @@ message = "Redundant null coalesce: left-hand side can never be `null` or undefi
 count = 1
 
 [[issues]]
-file = "src/Service/Game/Factory/ReplayableGameContextFactory.php"
-code = "mixed-return-statement"
-message = 'Could not infer a precise return type for function `app\service\game\factory\replayablegamecontext::getonerandomcard`. Saw type `mixed`.'
-count = 1
-
-[[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\Card\MonsterCardState::withcanattack`: expected `bool`, but found `nonnull`.'

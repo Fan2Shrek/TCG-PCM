@@ -7,10 +7,11 @@ namespace App\Debug\Card;
 use App\Game\Card\AbstractPassiveCard;
 use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\ComputedCardInterface;
+use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class TraceablePassiveCard extends AbstractPassiveCard implements TurnAwareInterface, CardAwareInterface, ComputedCardInterface
+final class TraceablePassiveCard extends AbstractPassiveCard implements TurnAwareInterface, CardAwareInterface, ComputedCardInterface, DeathAwareInterface
 {
     /** @use TraceableCardTrait<AbstractPassiveCard> */
     use TraceableCardTrait;

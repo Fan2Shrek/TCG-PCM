@@ -162,9 +162,7 @@ class GameContext
      */
     public function selectRandomCardIn(array $pool): string
     {
-        $randomCardId = $pool[$this->state->randomizer->randomBetweenInt(0, count($pool) - 1)];
-
-        return $randomCardId;
+        return $pool[$this->state->randomizer->randomBetweenInt(0, count($pool) - 1)];
     }
 
     public function getOtherPlayerId(string $playerId): string
