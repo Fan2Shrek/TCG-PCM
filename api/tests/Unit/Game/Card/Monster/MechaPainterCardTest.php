@@ -55,13 +55,10 @@ final class MechaPainterCardTest extends CardTestCase
         $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
-        // selectRandomCardIn() also emits a CARD_RUNTIME_VALUE event before the damage event.
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame('other_card', $events[0]->data['value']);
-        self::assertSame(GameEventTypeEnum::DAMAGE, $events[1]->type);
-        self::assertSame('other_card', $events[1]->data['targetId']);
-        self::assertSame(10, $events[1]->data['damage']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::DAMAGE, $events[0]->type);
+        self::assertSame('other_card', $events[0]->data['targetId']);
+        self::assertSame(10, $events[0]->data['damage']);
     }
 
     public function testOnTurnEndDoesNothingWhenNoOtherCardInPlayArea()

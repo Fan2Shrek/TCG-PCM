@@ -58,11 +58,9 @@ final class IsaacCardTest extends CardTestCase
         $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame('char2', $events[0]->data['value']);
-        self::assertSame(GameEventTypeEnum::DAMAGE, $events[1]->type);
-        self::assertSame('char2', $events[1]->data['targetId']);
-        self::assertSame(5, $events[1]->data['damage']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::DAMAGE, $events[0]->type);
+        self::assertSame('char2', $events[0]->data['targetId']);
+        self::assertSame(5, $events[0]->data['damage']);
     }
 }

@@ -255,7 +255,7 @@ final class GameEventResolverTest extends TestCase
         ]);
 
         $ger->resolve($event, $gameState)->events;
-        self::assertCount(2, SpyAwareCard::$calls);
+        self::assertCount(1, SpyAwareCard::$calls);
     }
 
     public function testPropagateWithPlayerDeath()
@@ -295,7 +295,7 @@ final class GameEventResolverTest extends TestCase
         $ger->resolve($event, $gameState)->events;
 
         // add UPDATE_CARD_STATE
-        self::assertCount(2, SpyAwareCard::$calls);
+        self::assertCount(1, SpyAwareCard::$calls);
     }
 
     private function createGameState(): GameState

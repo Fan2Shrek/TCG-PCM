@@ -162,7 +162,23 @@ class GameContext
      */
     public function selectRandomCardIn(array $pool): string
     {
-        return $pool[$this->state->randomizer->randomBetweenInt(0, count($pool) - 1)];
+        if ([] === $pool) {
+            throw new \LogicException('No cards available to select');
+        }
+
+        return $this->getRandomFromArray($pool);
+    }
+
+    public function getRandomFromArray(array $array): mixed
+    {
+        if ([] === $array) {
+            throw new \LogicException('No values available to select');
+        }
+
+        $values = array_values($array);
+        $index = $this->state->randomizer->randomBetweenInt(0, count($values) - 1);
+
+        return $values[$index];
     }
 
     public function getOtherPlayerId(string $playerId): string

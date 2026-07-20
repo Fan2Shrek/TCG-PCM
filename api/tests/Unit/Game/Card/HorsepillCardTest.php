@@ -9,13 +9,8 @@ use App\Game\Card\CardState;
 use App\Game\Card\HorsepillCard;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * HorsepillCard picks one of several effects via array_rand(), which is not
- * routed through the (mockable) GameContext randomizer. These tests therefore
- * assert the structural invariants that must hold regardless of which branch
- * is picked, exercised over many runs so every branch gets a chance to fire.
- */
 final class HorsepillCardTest extends CardTestCase
 {
     protected function getCardFQCN(): string
@@ -38,49 +33,49 @@ final class HorsepillCardTest extends CardTestCase
         ]);
     }
 
-    public function testPlayProducesAValidOutcomeForEveryPossibleEffect(): void
+    #[DataProvider('effectsProvider')]
+    public function testPlayUsesExpectedEffect(int $roll, GameEventTypeEnum $expectedType, array $expectedData): void
     {
         $card = $this->getCard();
+        $this->ensureNextDiceRolls($roll);
         $state = $this->buildState();
+        $ctx = $this->createDeterministicContext($state);
 
-        for ($i = 0; $i < 60; $i++) {
-            $ctx = $this->createGameContext($state);
-            $card->play($ctx);
-            $events = array_values($ctx->flushEvents());
+        $card->play($ctx);
+        $events = $ctx->flushEvents();
 
-            self::assertNotSame([], $events, 'Horsepill must always push at least one event');
+        self::assertCount(1, $events);
+        self::assertSame($expectedType, $events[0]->type);
+        self::assertSame($expectedData, $events[0]->data);
+    }
 
-            $last = $events[\count($events) - 1];
+    public static function effectsProvider(): \Generator
+    {
+        yield 'self damage' => [1, GameEventTypeEnum::DAMAGE, ['targetId' => '1', 'damage' => 50]];
+        yield 'self heal' => [2, GameEventTypeEnum::HEAL, ['targetId' => '1', 'amount' => 50]];
+        yield 'discard random board card' => [3, GameEventTypeEnum::CARD_DISCARDED, ['cardId' => 'monster1', 'playerId' => null]];
+        yield 'set monster attack 99' => [4, GameEventTypeEnum::UPDATE_CARD_STATE, ['cardId' => 'monster1', 'stateToUpdate' => ['forcedAttack' => 99]]];
+        yield 'set monster attack 0' => [5, GameEventTypeEnum::UPDATE_CARD_STATE, ['cardId' => 'monster1', 'stateToUpdate' => ['forcedAttack' => 0]]];
+        yield 'discard owner hand' => [6, GameEventTypeEnum::CARD_DISCARDED, ['cardId' => 'ownerHandCard', 'playerId' => '1']];
+        yield 'discard opponent hand' => [7, GameEventTypeEnum::CARD_DISCARDED, ['cardId' => 'oppHandCard', 'playerId' => '2']];
+    }
 
-            switch (true) {
-                case 1 === \count($events) && GameEventTypeEnum::DAMAGE === $last->type:
-                    self::assertSame('1', $last->data['targetId']);
-                    self::assertSame(50, $last->data['damage']);
-                    break;
+    private function createDeterministicContext(?GameState $state = null): TestableGameContext
+    {
+        $context = $this->createGameContext($state);
 
-                case 1 === \count($events) && GameEventTypeEnum::HEAL === $last->type:
-                    self::assertSame('1', $last->data['targetId']);
-                    self::assertSame(50, $last->data['amount']);
-                    break;
+        return new class($context->state, $context->playerId, $context->nextRoll) extends TestableGameContext {
+            public function getRandomFromArray(array $array): mixed
+            {
+                if ([] === $array) {
+                    throw new \LogicException('No values available to select');
+                }
 
-                case 1 === \count($events) && GameEventTypeEnum::CARD_DISCARDED === $last->type:
-                    self::assertContains($last->data['cardId'], ['ownerHandCard', 'oppHandCard']);
-                    break;
+                $values = array_values($array);
+                $index = max(0, min(\count($values) - 1, (int) $this->nextRoll - 1));
 
-                case 2 === \count($events) && GameEventTypeEnum::CARD_DISCARDED === $last->type:
-                    self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-                    self::assertContains($last->data['cardId'], ['passive1', 'monster1']);
-                    break;
-
-                case 2 === \count($events) && GameEventTypeEnum::UPDATE_CARD_STATE === $last->type:
-                    self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-                    self::assertSame('monster1', $last->data['cardId']);
-                    self::assertContains($last->data['stateToUpdate']['forcedAttack'], [0, 99]);
-                    break;
-
-                default:
-                    self::fail(\sprintf('Unexpected event sequence: %s', implode(', ', array_map(static fn($e) => $e->type->value, $events))));
+                return $values[$index];
             }
-        }
+        };
     }
 }

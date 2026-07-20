@@ -23,8 +23,8 @@ final class TheHandCardTest extends CardTestCase
         $card->play($ctx);
         $events = $ctx->flushEvents();
 
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::CARD_DISCARDED, $events[1]->type);
-        self::assertSame('card', $events[1]->data['cardId']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::CARD_DISCARDED, $events[0]->type);
+        self::assertSame('card', $events[0]->data['cardId']);
     }
 }

@@ -39,11 +39,10 @@ final class AlchemistMonkeyCardTest extends CardTestCase
         $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
-        // selectRandomCardIn() also emits a CARD_RUNTIME_VALUE event for the picked card.
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[1]->type);
-        self::assertSame('target_card', $events[1]->data['cardId']);
-        self::assertSame(9, $events[1]->data['stateToUpdate']['bonusAttack']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[0]->type);
+        self::assertSame('target_card', $events[0]->data['cardId']);
+        self::assertSame(9, $events[0]->data['stateToUpdate']['bonusAttack']);
     }
 
     public function testTurnEndDoesNothingWhenOwnerIsCurrentPlayer()

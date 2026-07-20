@@ -59,7 +59,7 @@ final class HorsepillCard extends AbstractPlayableCard
             $effects[] = 'discard_opponent_hand';
         }
 
-        $selectedEffect = $effects[array_rand($effects)];
+        $selectedEffect = $context->getRandomFromArray($effects);
 
         switch ($selectedEffect) {
             case 'self_damage':
