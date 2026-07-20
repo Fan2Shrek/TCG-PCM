@@ -196,6 +196,8 @@ class GameEventResolver
                 $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
 
                 $card instanceof AbstractMonsterCard ? $card->onMonsterPlayed($ctx) : $card->onCardPlace($ctx);
+
+                $events = $ctx->flushEvents();
                 break;
             default:
                 break;
