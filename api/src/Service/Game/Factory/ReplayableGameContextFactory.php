@@ -45,11 +45,6 @@ class ReplayableGameContext extends GameContext
         $this->runtimeValuesProvider = $runtimeValueProvider;
     }
 
-    public function getOneRandomCard(?string $playerId): string
-    {
-        return ($this->runtimeValuesProvider)();
-    }
-
     public function runtimeValueEffect(mixed $value): mixed
     {
         $value = ($this->runtimeValuesProvider)();

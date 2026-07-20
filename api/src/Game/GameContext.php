@@ -162,10 +162,7 @@ class GameContext
      */
     public function selectRandomCardIn(array $pool): string
     {
-        // @todo handle by GameRandomizer
-        $randomCardId = $pool[array_rand($pool)];
-
-        $this->runtimeValueEffect($randomCardId);
+        $randomCardId = $pool[$this->state->randomizer->randomBetweenInt(0, count($pool) - 1)];
 
         return $randomCardId;
     }
