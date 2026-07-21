@@ -399,6 +399,12 @@ count = 1
 [[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\Card\MonsterCardState::withcurrenthealthpoints`: expected `int`, but found `nonnull`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\State\GameState::getcardstate`: expected `string`, but found `nonnull`.'
 count = 1
 

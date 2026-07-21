@@ -28,6 +28,10 @@ export type BasicCard = {
   hp?: number;
   attack?: number;
   isNewToCollection?: boolean;
+  values?: {
+    turnRemainingBeforeAction?: number;
+    [key: string]: unknown;
+  };
 };
 
 export type CardLayer = {

@@ -64,6 +64,7 @@ final class GameStateConverter
             cost: $cost,
             hp: $hp,
             attack: $attack,
+            values: $state->values,
         );
     }
 

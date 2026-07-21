@@ -167,6 +167,77 @@ export function applyGameView(
   event: GameEvent,
   currentUsername?: string,
 ): GameState {
+  if (event.type === GameEventType.UPDATE_CARD_STATE) {
+    const updateCardId = event.view?.cardId ?? event.data?.cardId;
+    const cardToUpdate = updateCardId ? state.cards[updateCardId] : undefined;
+
+    if (!updateCardId || !cardToUpdate) {
+      return state;
+    }
+
+    const stateToUpdate =
+      event.data &&
+      typeof event.data === "object" &&
+      !Array.isArray(event.data) &&
+      event.data.stateToUpdate &&
+      typeof event.data.stateToUpdate === "object" &&
+      !Array.isArray(event.data.stateToUpdate)
+        ? (event.data.stateToUpdate as Record<string, unknown>)
+        : null;
+
+    if (!stateToUpdate) {
+      if (!event.view?.card) {
+        return state;
+      }
+
+      const nextCard = {
+        ...cardToUpdate,
+        ...event.view.card,
+      };
+
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [updateCardId]: nextCard,
+        },
+      };
+    }
+
+    const currentValues =
+      cardToUpdate.values &&
+      typeof cardToUpdate.values === "object" &&
+      !Array.isArray(cardToUpdate.values)
+        ? (cardToUpdate.values as Record<string, unknown>)
+        : {};
+    const viewCardValues =
+      event.view?.card &&
+      typeof event.view.card === "object" &&
+      !Array.isArray(event.view.card) &&
+      event.view.card.values &&
+      typeof event.view.card.values === "object" &&
+      !Array.isArray(event.view.card.values)
+        ? (event.view.card.values as Record<string, unknown>)
+        : {};
+    const nextCard = {
+      ...cardToUpdate,
+      ...(event.view?.card ?? {}),
+      values: {
+        ...currentValues,
+        ...viewCardValues,
+        ...stateToUpdate,
+      },
+    };
+
+    return {
+      ...state,
+      cards: {
+        ...state.cards,
+        [updateCardId]: nextCard,
+      },
+    };
+  }
+
   if (!event.view) return state;
 
   const next = { ...state };

@@ -53,6 +53,27 @@ const Card = ({
   const cardSizeInfo = CardSizeMap[size];
   const appliedTilt = tilt ?? DEFAULT_TILT;
   const appliedGlare = glare ?? DEFAULT_GLARE;
+  const turnRemainingBeforeAction = useMemo(() => {
+    if (!card.values || typeof card.values !== "object" || Array.isArray(card.values)) {
+      return null;
+    }
+
+    const rawValue = card.values.turnRemainingBeforeAction;
+
+    if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
+      return rawValue;
+    }
+
+    if (typeof rawValue === "string") {
+      const numericValue = Number(rawValue);
+
+      if (Number.isFinite(numericValue)) {
+        return numericValue;
+      }
+    }
+
+    return null;
+  }, [card.values]);
 
   const cardLayers: CardLayer[] = useMemo(() => {
     const foilEffect =
@@ -206,6 +227,7 @@ const Card = ({
         cardType={card.type ?? CardType.CONSUMABLE}
         cardRarity={card.rarity}
         cardStats={{ hp: card.hp, attack: card.attack, cost: card.cost }}
+        turnRemainingBeforeAction={turnRemainingBeforeAction}
         onReadyStateChange={
           showLoadingUntilReady
             ? (isReady) => setIsCardReady(isReady)

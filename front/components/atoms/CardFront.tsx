@@ -27,6 +27,7 @@ export type CardFrontProps = {
   cardType: CardType;
   cardRarity: CardRaririty;
   cardStats: { hp?: number; attack?: number; cost?: number };
+  turnRemainingBeforeAction?: number | null;
   onReadyStateChange?: (isReady: boolean) => void;
 };
 
@@ -41,6 +42,7 @@ const CardFront = ({
   cardType,
   cardRarity,
   cardStats,
+  turnRemainingBeforeAction,
   onReadyStateChange,
 }: CardFrontProps) => {
   const [isTextReady, setIsTextReady] = useState(false);
@@ -174,6 +176,12 @@ const CardFront = ({
           </Fragment>
         );
       })}
+      {turnRemainingBeforeAction !== null &&
+        turnRemainingBeforeAction !== undefined && (
+          <div className="absolute top-[6%] right-[6%] z-20 rounded-full border border-amber-300/80 bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold leading-none text-amber-900 shadow-sm">
+            {turnRemainingBeforeAction}
+          </div>
+        )}
       <CardGlare glare={glare} isHovering={isHovering} />
       <CardTextOverlay
         key={readinessKey}

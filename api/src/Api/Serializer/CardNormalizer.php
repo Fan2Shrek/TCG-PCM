@@ -26,22 +26,18 @@ final class CardNormalizer implements NormalizerInterface
 
     public function normalize(mixed $data, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
     {
-        /** @var AbstractCard|CardDTO|CollectionCardDTO $card */
+        /** @var CardDTO|CollectionCardDTO $card */
         $card = $data;
 
-        $path = $card instanceof AbstractCard ? $card->getImage() : $card->image;
-        $type = $card instanceof AbstractCard ? $card->getType() : $card->type;
-        $rarity = $card instanceof AbstractCard ? $card::$rarity : $card->rarity;
-        $serie = $card instanceof AbstractCard ? $card::$serie : $card->set;
-        $targetType = match (true) {
-            $card instanceof AbstractCard => $card->getTargetType(),
-            $card instanceof CardDTO => $card->targetType,
-            default => null,
-        };
+        $path = $card->image;
+        $type =  $card->type;
+        $rarity = $card->rarity;
+        $serie = $card->set;
+        $targetType = $card instanceof CardDTO ? $card->targetType : null;
 
         return [
-            'name' => $card instanceof AbstractCard ? $card->getName() : $card->name,
-            'description' => $card instanceof AbstractCard ? $card->getDescription() : $card->description,
+            'name' => $card->name,
+            'description' => $card->description,
             'type' => $type?->name,
             'typeLabel' => $type?->label()->trans($this->translator),
             'rarity' => $rarity->name,
@@ -49,15 +45,16 @@ final class CardNormalizer implements NormalizerInterface
             'serie' => $serie->name,
             'serielabel' => $serie,
             'image' => filter_var($path, FILTER_VALIDATE_URL) ? $path : self::CARD_IMAGE_BASE_URL.strtolower($path),
-            'requiresTarget' => $card instanceof AbstractCard ? $card->requiresTarget() : ($card instanceof CardDTO ? $card->requiresTarget : null), // @mago-ignore lint:no-nested-ternary
+            'requiresTarget' => $card instanceof CardDTO ? $card->requiresTarget : null,
             'targetType' => $targetType?->value,
-            'cost' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->cost : null,
-            'hp' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->hp : null,
-            'attack' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->attack : null,
-            'instanceId' => $card instanceof CardDTO || $card instanceof CollectionCardDTO ? $card->instanceId : null,
+            'cost' => $card->cost,
+            'hp' => $card->hp,
+            'attack' => $card->attack,
+            'instanceId' => $card->instanceId,
             'effects' => $card instanceof CardDTO ? $card->effects : null,
             'isActive' => $card instanceof CardDTO ? $card->isActive : null,
             'isNewToCollection' => $card instanceof CollectionCardDTO ? $card->isNewToCollection : null,
+            'values' => $card->values,
         ];
     }
 

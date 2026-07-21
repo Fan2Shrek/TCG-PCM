@@ -14,6 +14,7 @@ final readonly class CardDTO
 {
     /**
      * @param EffectState[] $effects
+     * @param array<string, mixed> $values
      */
     // @mago-ignore lint:excessive-parameter-list
     public function __construct(
@@ -31,5 +32,6 @@ final readonly class CardDTO
         public ?int $cost = null,
         public ?int $hp = null,
         public ?int $attack = null,
+        public array $values = [],
     ) {}
 }
