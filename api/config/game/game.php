@@ -63,9 +63,6 @@ return static function (ContainerConfigurator $container): void {
         ->alias(GameContextFactoryInterface::class, 'game.game_context_factory')
 
         ->set('game.event_applier', GameEventApplier::class)
-            ->args([
-                service('game.card_runtime_map'),
-            ])
         ->alias(GameEventApplierInterface::class, 'game.event_applier')
 
         ->set('game.card_factory', CardFactory::class)

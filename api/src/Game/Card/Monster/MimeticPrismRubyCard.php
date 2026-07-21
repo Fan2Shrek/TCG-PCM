@@ -53,7 +53,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
             return;
         }
 
-        $copyId = $context->selectRandomCardIn(array_filter($pool, fn ($card) => $card !== $this->getInstanceId()));
+        $copyId = $context->selectRandomCardIn(array_filter($pool, fn($card) => $card !== $this->getInstanceId()));
         $state = $context->state->getCardState($copyId);
 
         if (!$state) {

@@ -317,39 +317,50 @@ class GameEventResolver
             throw new CardCannotAttackExpcetion('Card cannot attack');
         }
 
-        $targetId = match (true) {
-            \in_array($event->data['targetId'], [$state->getOtherPlayerState()->characterCardId, $state->getOtherPlayerState()->player->id], true)
-                => $state->getOtherPlayerState()->player->id,
-            \in_array($event->data['targetId'], $state->getOtherPlayerState()->playArea->monsterCards, true) => $event->data['targetId'],
-            default => throw new \LogicException('Invalid targetId '.$event->data['targetId']),
-        };
+        $events = [];
+        $targetId = $event->data['targetId'];
+        // if player
+        if (\in_array($targetId, [$state->getOtherPlayerState()->characterCardId, $state->getOtherPlayerState()->player->id], true)) {
+            $events[] = GameEvent::game(GameEventTypeEnum::DAMAGE, [
+                'targetId' => $targetId,
+                'damage' => $card->getAttack(),
+                'sourceId' => $attackerId,
+            ]);
+        } elseif (\in_array($targetId, $state->getOtherPlayerState()->playArea->monsterCards, true)) {
+            $target = $this->cardRuntimeMap->getByState($state->getCardState($event->data['targetId']));
 
-        $target = $this->cardRuntimeMap->getByState($state->getCardState($targetId));
+            if (!$target instanceof AbstractMonsterCard) {
+                throw new \LogicException('Target must be a monster card');
+            }
 
-        if (!$target instanceof AbstractMonsterCard) {
-            throw new \LogicException('Target must be a monster card');
+            $baseDamage = $card->getAttack();
+            $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
+            $reducedDamage = $target->reduceDamage($ctx, $baseDamage);
+
+            $events[] = GameEvent::game(GameEventTypeEnum::DAMAGE, [
+                'targetId' => $targetId,
+                'damage' => $reducedDamage,
+                'sourceId' => $attackerId,
+            ]);
+
+            $events = array_merge($events, $ctx->flushEvents());
+        } else {
+            throw new \LogicException('Invalid targetId '.$event->data['targetId']);
         }
-
-        $baseDamage = $card->getAttack();
-        $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
-        $reducedDamage = $target->reduceDamage($ctx, $baseDamage);
-
-        $event = GameEvent::game(GameEventTypeEnum::DAMAGE, [
-            'targetId' => $targetId,
-            'damage' => $reducedDamage,
-            'sourceId' => $attackerId,
-        ]);
 
         $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
         $card->onAttack($ctx);
 
-        return array_merge([
-            $event,
-            GameEvent::game(GameEventTypeEnum::UPDATE_CARD_STATE, [
-                'cardId' => $attackerId,
-                'canAttack' => false,
-            ]),
-        ], $ctx->flushEvents());
+        return array_merge(
+            [
+                GameEvent::game(GameEventTypeEnum::UPDATE_CARD_STATE, [
+                    'cardId' => $attackerId,
+                    'canAttack' => false,
+                ]),
+            ],
+            $events,
+            $ctx->flushEvents(),
+        );
     }
 
     /**

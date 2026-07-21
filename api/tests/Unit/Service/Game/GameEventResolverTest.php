@@ -298,6 +298,48 @@ final class GameEventResolverTest extends TestCase
         self::assertCount(1, SpyAwareCard::$calls);
     }
 
+    public function testAttackPlayerCreatesDamageEvent(): void
+    {
+        $ger = $this->getSut();
+        $gameState = new GameState(
+            new PlayerState(
+                new Player('1', 'Player 1'),
+                10,
+                10,
+                'player1',
+                [],
+                [],
+                0,
+                new PlayArea([], [
+                    'attacker',
+                ]),
+            ),
+            new PlayerState(new Player('2', 'Player 2'), 20, 20, 'player2', [], [], 0, new PlayArea()),
+            0,
+            0,
+            null,
+            [
+                'attacker' => new MonsterCardState('attacker', 'Redbloons', '1', 1),
+            ],
+        );
+
+        $event = new GameEvent(0, GameEventTypeEnum::ATTACK, GameEvent::PLAYER_EVENT, [
+            'targetId' => '2',
+            'attackerId' => 'attacker',
+        ]);
+
+        $events = $ger->resolve($event, $gameState)->events;
+
+        $damageEvents = array_filter($events, static fn(GameEvent $e): bool => GameEventTypeEnum::DAMAGE === $e->type);
+        self::assertNotEmpty($damageEvents);
+        $de = array_values($damageEvents)[0];
+        self::assertEquals('2', $de->data['targetId']);
+        self::assertEquals(5, $de->data['damage']);
+
+        $updateEvents = array_filter($events, static fn(GameEvent $e): bool => GameEventTypeEnum::UPDATE_CARD_STATE === $e->type);
+        self::assertNotEmpty($updateEvents);
+    }
+
     private function createGameState(): GameState
     {
         $player1State = new PlayerState(

@@ -6,7 +6,6 @@ namespace App\Api\Serializer;
 
 use App\Api\DTO\CardDTO;
 use App\Api\DTO\CollectionCardDTO;
-use App\Game\AbstractCard;
 use ArrayObject;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -30,7 +29,7 @@ final class CardNormalizer implements NormalizerInterface
         $card = $data;
 
         $path = $card->image;
-        $type =  $card->type;
+        $type = $card->type;
         $rarity = $card->rarity;
         $serie = $card->set;
         $targetType = $card instanceof CardDTO ? $card->targetType : null;
