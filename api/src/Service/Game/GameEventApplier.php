@@ -17,10 +17,6 @@ use App\Game\State\PlayerState;
 
 class GameEventApplier implements GameEventApplierInterface
 {
-    public function __construct(
-        private CardRuntimeMap $cardRuntimeMap,
-    ) {}
-
     public function apply(GameEvent $event, GameState $gameState): GameState
     {
         $gameState = match ($event->type) {
@@ -122,7 +118,6 @@ class GameEventApplier implements GameEventApplierInterface
     {
         $target = $event->data['targetId'] ?? null;
         $damage = $event->data['damage'] ?? null;
-        $queuedEvents = [];
 
         if (!\is_string($target)) {
             throw new \LogicException('DAMAGE requires a targetId');
@@ -146,23 +141,10 @@ class GameEventApplier implements GameEventApplierInterface
             $newState = $state->withUpdatedHealth($state->healthPoints - $damage);
             $newGameState = $gameState->withUpdatedPlayer($newState);
         } elseif ($state instanceof MonsterCardState) {
-            $card = $this->cardRuntimeMap->getByState($state);
-
-            if ($card instanceof AbstractMonsterCard) {
-                $ctx = new GameContext($gameState, $state->ownerId);
-
-                $damage = max(0, $card->reduceDamage($ctx, $damage));
-                $queuedEvents = array_merge($queuedEvents, $ctx->flushEvents());
-            }
-
             $newState = $state->withCurrentHealthPoints(max(0, $state->currentHealthPoints - $damage));
             $newGameState = $gameState->withUpdatedCardState($newState);
         } else {
             throw new \LogicException('DAMAGE target must be a player or a monster card');
-        }
-
-        if ([] !== $queuedEvents) {
-            $newGameState = $this->applyMultiple($queuedEvents, $newGameState);
         }
 
         return $newGameState;

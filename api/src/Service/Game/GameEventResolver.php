@@ -324,9 +324,19 @@ class GameEventResolver
             default => throw new \LogicException('Invalid targetId '.$event->data['targetId']),
         };
 
+        $target = $this->cardRuntimeMap->getByState($state->getCardState($targetId));
+
+        if (!$target instanceof AbstractMonsterCard) {
+            throw new \LogicException('Target must be a monster card');
+        }
+
+        $baseDamage = $card->getAttack();
+        $ctx = $this->gameContextFactory->createGameContext($state, $attackerCardState->ownerId);
+        $reducedDamage = $target->reduceDamage($ctx, $baseDamage);
+
         $event = GameEvent::game(GameEventTypeEnum::DAMAGE, [
             'targetId' => $targetId,
-            'damage' => $card->getAttack(),
+            'damage' => $reducedDamage,
             'sourceId' => $attackerId,
         ]);
 
