@@ -8,28 +8,23 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
 import GameMainArea from "./GameMainArea";
 import GameAnnouncements from "./GameAnnouncements";
 import CardsHand from "../CardsHand";
 import type { BasicCard } from "@/lib/cards/types/card";
-import { useRoom } from "@/contexts/RoomContext";
-import { RoomStatus } from "@/types/roomStatus";
 import api from "@/lib/api/api";
 import WinScreen from "./WinScreen";
 import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 import GameChat from "./GameChat";
-import { useBoosterTokensContext } from "@/contexts/BoosterTokensContext";
-import { useBadgesContext } from "@/contexts/BadgesContext";
 
 export default function GameBoard() {
   const router = useRouter();
   const { id } = useParams();
+  const routeId = Array.isArray(id) ? id[0] : id;
   const {
     game,
     getCardById,
@@ -40,15 +35,9 @@ export default function GameBoard() {
     targeting,
     targetingActions,
   } = useContext(GameContext);
-  const { userRoom, clearRoom, lastEvent } = useRoom();
 
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
-  const [winnerId, setWinnerId] = useState<string | null>(null);
-  const rewardedWinnerIdRef = useRef<string | null>(null);
-  const badgesRefreshedForWinnerIdRef = useRef<string | null>(null);
-  const { refresh: refreshBoosterTokens } = useBoosterTokensContext();
-  const { refresh: refreshBadges } = useBadgesContext();
 
   const connectedPlayer =
     game?.player1.player.name === currentUsername
@@ -63,13 +52,6 @@ export default function GameBoard() {
       ? (game?.player2 ?? null)
       : (game?.player1 ?? null);
   const currentCoins = currentState?.coins ?? 0;
-
-  useEffect(() => {
-    if (userRoom && currentUsername && userRoom.id !== id) {
-      router.push("/rooms");
-      toast.error("Vous n'avez pas accès à cette partie");
-    }
-  }, [userRoom, id, currentUsername, router]);
 
   const giantAnnouncements = announcements.filter(
     (announcement: GameAnnouncement) => announcement.presentation === "giant",
@@ -180,106 +162,56 @@ export default function GameBoard() {
     }
 
     return currentState.hand
-      .map((cardId: string) => getCardById(cardId))
-      .filter((card): card is BasicCard => Boolean(card));
+     .map((cardId: string) => getCardById(cardId))
+     .filter((card): card is BasicCard => Boolean(card));
   }, [currentState, getCardById]);
 
+  const winnerPlayerId = useMemo(() => {
+   if (!currentState || !opponentState) {
+     return null;
+   }
+
+   if (currentState.healthPoints <= 0 && opponentState.healthPoints > 0) {
+     return opponentState.player.id;
+   }
+
+   if (opponentState.healthPoints <= 0 && currentState.healthPoints > 0) {
+     return currentState.player.id;
+   }
+
+   return null;
+  }, [currentState, opponentState]);
+
   const winner = useMemo(() => {
-    if (!winnerId || !currentState || !opponentState) {
-      return null;
-    }
+   if (!winnerPlayerId || !currentState || !opponentState) {
+     return null;
+   }
 
-    if (winnerId === currentState.player.id) {
-      return currentState.player.name;
-    }
+   if (winnerPlayerId === currentState.player.id) {
+     return currentState.player.name;
+   }
 
-    if (winnerId === opponentState.player.id) {
-      return opponentState.player.name;
-    }
+   if (winnerPlayerId === opponentState.player.id) {
+     return opponentState.player.name;
+   }
 
-    return "Joueur";
-  }, [winnerId, currentState, opponentState]);
+   return null;
+  }, [winnerPlayerId, currentState, opponentState]);
 
   const isGameFinished = winner !== null;
 
-  useEffect(() => {
-    if (
-      !winnerId ||
-      rewardedWinnerIdRef.current === winnerId ||
-      !connectedPlayer
-    ) {
-      return;
-    }
-
-    if (winnerId !== connectedPlayer.id) {
-      return;
-    }
-
-    rewardedWinnerIdRef.current = winnerId;
-    refreshBoosterTokens().catch(() => {});
-  }, [winnerId, connectedPlayer, refreshBoosterTokens]);
-
-  useEffect(() => {
-    if (
-      !winnerId ||
-      badgesRefreshedForWinnerIdRef.current === winnerId ||
-      !connectedPlayer
-    ) {
-      return;
-    }
-
-    badgesRefreshedForWinnerIdRef.current = winnerId;
-    refreshBadges().catch(() => {});
-  }, [winnerId, connectedPlayer, refreshBadges]);
-
-  const fetchWinnerFromRoom = useCallback(() => {
-    if (!id || !currentState || !opponentState) {
-      return;
-    }
-
-    api.room
-      .getById(id as string)
-      .then((room) => {
-        if (room.status === RoomStatus.FINISHED) {
-          setWinnerId(room.winnerId ?? null);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch room by id:", error);
-      });
-  }, [id, currentState, opponentState]);
-
-  // Fetch once on first render to handle page refresh after game end.
-  useEffect(() => {
-    if (!id || !currentState || !opponentState) {
-      return;
-    }
-
-    fetchWinnerFromRoom();
-  }, [fetchWinnerFromRoom]);
-
-  useEffect(() => {
-    if (lastEvent !== "game_finished") {
-      return;
-    }
-
-    clearRoom();
-    fetchWinnerFromRoom();
-  }, [lastEvent, fetchWinnerFromRoom]);
-
   const handleForfeit = useCallback(async () => {
-    if (!userRoom?.id) {
-      router.push("/");
-      return;
-    }
+   if (!routeId) {
+     router.push("/");
+     return;
+   }
 
-    await api.room.leave(userRoom.id);
-  }, [userRoom, router]);
+   await api.room.leave(routeId);
+  }, [routeId, router]);
 
   const handleBackHome = useCallback(async () => {
-    clearRoom();
-    router.push("/");
-  }, [clearRoom, router]);
+   router.push("/");
+  }, [router]);
 
   if (!game || !connectedPlayer || !currentState || !opponentState) {
     return <div>Loading...</div>;
