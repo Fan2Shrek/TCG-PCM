@@ -48,7 +48,7 @@ final class PillsCard extends AbstractPlayableCard
             ];
         }
 
-        $selectedEffect = $effects[array_rand($effects)];
+        $selectedEffect = $context->getRandomFromArray($effects);
 
         switch ($selectedEffect) {
             case 'self_damage':

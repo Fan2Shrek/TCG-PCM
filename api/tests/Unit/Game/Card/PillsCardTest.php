@@ -9,13 +9,8 @@ use App\Game\Card\CardState;
 use App\Game\Card\PillsCard;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * PillsCard picks one of several effects via array_rand(), which is not
- * routed through the (mockable) GameContext randomizer. These tests assert
- * the structural invariants that must hold regardless of which branch is
- * picked, exercised over many runs so every branch gets a chance to fire.
- */
 final class PillsCardTest extends CardTestCase
 {
     protected function getCardFQCN(): string
@@ -23,24 +18,26 @@ final class PillsCardTest extends CardTestCase
         return PillsCard::class;
     }
 
-    public function testPlayWithoutMonstersOnlyAffectsOwner(): void
+    #[DataProvider('withoutMonsterEffectsProvider')]
+    public function testPlayWithoutMonsterUsesExpectedEffect(int $roll, GameEventTypeEnum $expectedType, array $expectedData): void
     {
         $card = $this->getCard();
-        $ctx = $this->createGameContext();
+        $this->ensureNextDiceRolls($roll);
+        $ctx = $this->createDeterministicContext();
 
-        for ($i = 0; $i < 20; $i++) {
-            $card->play($ctx);
-            $events = $ctx->flushEvents();
+        $card->play($ctx);
+        $events = $ctx->flushEvents();
 
-            self::assertCount(1, $events);
-            self::assertContains($events[0]->type, [GameEventTypeEnum::DAMAGE, GameEventTypeEnum::HEAL]);
-            self::assertSame('1', $events[0]->data['targetId']);
-        }
+        self::assertCount(1, $events);
+        self::assertSame($expectedType, $events[0]->type);
+        self::assertSame($expectedData, $events[0]->data);
     }
 
-    public function testPlayWithMonsterProducesAValidOutcomeForEveryPossibleEffect(): void
+    #[DataProvider('withMonsterEffectsProvider')]
+    public function testPlayWithMonsterUsesExpectedEffect(int $roll, GameEventTypeEnum $expectedType, array $expectedData): void
     {
         $card = $this->getCard();
+        $this->ensureNextDiceRolls($roll);
 
         $player1 = $this->createPlayerState('1')->withPlayArea(new PlayArea([], ['monster1']));
         $player2 = $this->createPlayerState('2');
@@ -50,57 +47,47 @@ final class PillsCardTest extends CardTestCase
             'monster1' => new CardState('monster1', 'SomeMonster', '1', []),
         ]);
 
-        for ($i = 0; $i < 60; $i++) {
-            $ctx = $this->createGameContext($state);
-            $card->play($ctx);
-            $events = array_values($ctx->flushEvents());
+        $ctx = $this->createDeterministicContext($state);
+        $card->play($ctx);
+        $events = $ctx->flushEvents();
 
-            self::assertNotSame([], $events, 'Pills must always push at least one event');
+        self::assertCount(1, $events);
+        self::assertSame($expectedType, $events[0]->type);
+        self::assertSame($expectedData, $events[0]->data);
+    }
 
-            switch (\count($events)) {
-                case 1:
-                    // Only self_damage / self_heal skip selectRandomCardIn().
-                    self::assertContains($events[0]->type, [GameEventTypeEnum::DAMAGE, GameEventTypeEnum::HEAL]);
-                    self::assertSame('1', $events[0]->data['targetId']);
-                    if (GameEventTypeEnum::DAMAGE === $events[0]->type) {
-                        self::assertSame(5, $events[0]->data['damage']);
-                    } else {
-                        self::assertSame(10, $events[0]->data['amount']);
-                    }
-                    break;
+    public static function withoutMonsterEffectsProvider(): \Generator
+    {
+        yield 'self damage' => [1, GameEventTypeEnum::DAMAGE, ['targetId' => '1', 'damage' => 5]];
+        yield 'self heal' => [2, GameEventTypeEnum::HEAL, ['targetId' => '1', 'amount' => 10]];
+    }
 
-                case 2:
-                    // All monster-targeting effects go through selectRandomCardIn() first.
-                    self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-                    $second = $events[1];
-                    self::assertContains(
-                        $second->type,
-                        [
-                            GameEventTypeEnum::HEAL,
-                            GameEventTypeEnum::DAMAGE,
-                            GameEventTypeEnum::UPDATE_CARD_STATE,
-                        ],
-                    );
+    public static function withMonsterEffectsProvider(): \Generator
+    {
+        yield 'self damage' => [1, GameEventTypeEnum::DAMAGE, ['targetId' => '1', 'damage' => 5]];
+        yield 'self heal' => [2, GameEventTypeEnum::HEAL, ['targetId' => '1', 'amount' => 10]];
+        yield 'monster damage buff' => [3, GameEventTypeEnum::UPDATE_CARD_STATE, ['cardId' => 'monster1', 'stateToUpdate' => ['bonusAttack' => 5]]];
+        yield 'monster heal' => [4, GameEventTypeEnum::HEAL, ['targetId' => 'monster1', 'amount' => 5]];
+        yield 'monster damage debuff' => [5, GameEventTypeEnum::UPDATE_CARD_STATE, ['cardId' => 'monster1', 'stateToUpdate' => ['bonusAttack' => -3]]];
+        yield 'monster damage' => [6, GameEventTypeEnum::DAMAGE, ['targetId' => 'monster1', 'damage' => 3]];
+    }
 
-                    switch ($second->type) {
-                        case GameEventTypeEnum::HEAL:
-                            self::assertSame(['targetId' => 'monster1', 'amount' => 5], $second->data);
-                            break;
-                        case GameEventTypeEnum::DAMAGE:
-                            self::assertSame(['targetId' => 'monster1', 'damage' => 3], $second->data);
-                            break;
-                        case GameEventTypeEnum::UPDATE_CARD_STATE:
-                            self::assertSame('monster1', $second->data['cardId']);
-                            self::assertContains($second->data['stateToUpdate']['bonusAttack'], [5, -3]);
-                            break;
-                        default:
-                            self::fail('Unexpected event type');
-                    }
-                    break;
+    private function createDeterministicContext(?GameState $state = null): TestableGameContext
+    {
+        $context = $this->createGameContext($state);
 
-                default:
-                    self::fail(\sprintf('Unexpected event sequence: %s', implode(', ', array_map(static fn($e) => $e->type->value, $events))));
+        return new class($context->state, $context->playerId, $context->nextRoll) extends TestableGameContext {
+            public function getRandomFromArray(array $array): mixed
+            {
+                if ([] === $array) {
+                    throw new \LogicException('No values available to select');
+                }
+
+                $values = array_values($array);
+                $index = max(0, min(\count($values) - 1, (int) $this->nextRoll - 1));
+
+                return $values[$index];
             }
-        }
+        };
     }
 }

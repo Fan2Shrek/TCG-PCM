@@ -22,7 +22,7 @@ final class StonksCardTest extends CardTestCase
         $card = $this->getCard();
         $gameContext = $this->createGameContext();
 
-        $card->onTurnStart($gameContext);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $gameContext);
         $events = $gameContext->flushEvents();
 
         self::assertCount(1, $events);
@@ -38,7 +38,7 @@ final class StonksCardTest extends CardTestCase
         $gameState = $gameState->withCurrentPlayer($gameState->player2->player->id);
         $gameContext = new GameContext($gameState, $gameState->player1->player->id);
 
-        $card->onTurnEnd($gameContext);
+        $card->onTurnEnd($this->createTurnEndedEvent('1'), $gameContext);
         $events = $gameContext->flushEvents();
 
         self::assertCount(1, $events);

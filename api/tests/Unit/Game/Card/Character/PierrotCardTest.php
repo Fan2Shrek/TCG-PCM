@@ -49,7 +49,7 @@ final class PierrotCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);
@@ -62,7 +62,7 @@ final class PierrotCardTest extends CardTestCase
         $state = $this->buildState();
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -78,16 +78,15 @@ final class PierrotCardTest extends CardTestCase
         $state = $this->buildState(opponentCharacterId: 'char2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
-        self::assertCount(3, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame(GameEventTypeEnum::EFFECT_ADDED, $events[1]->type);
-        self::assertSame(CardEffectEnum::TORNED->value, $events[1]->data['effect']);
-        self::assertSame('char2', $events[1]->data['cardId']);
-        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[2]->type);
-        self::assertSame(2, $events[2]->data['stateToUpdate']['turnRemainingBeforeAction']);
+        self::assertCount(2, $events);
+        self::assertSame(GameEventTypeEnum::EFFECT_ADDED, $events[0]->type);
+        self::assertSame(CardEffectEnum::TORNED->value, $events[0]->data['effect']);
+        self::assertSame('char2', $events[0]->data['cardId']);
+        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[1]->type);
+        self::assertSame(2, $events[1]->data['stateToUpdate']['turnRemainingBeforeAction']);
     }
 
     private function buildCard(int $turnRemainingBeforeAction): PierrotCard

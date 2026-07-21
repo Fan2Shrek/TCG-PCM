@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Game\Card;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\PlacentaCard;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class PlacentaCardTest extends CardTestCase
 {
@@ -23,7 +24,7 @@ final class PlacentaCardTest extends CardTestCase
         $player = $player->withUpdatedHealth(10);
         $gameContext = new GameContext($gameContext->state->withUpdatedPlayer($player), $gameContext->playerId);
 
-        $card->onTurnStart($gameContext);
+        $card->onTurnStart(new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
         self::assertCount(1, $events);

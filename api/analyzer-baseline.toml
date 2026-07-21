@@ -145,10 +145,16 @@ message = 'Invalid return type for function `app\entity\user::getuseridentifier`
 count = 1
 
 [[issues]]
+file = "src/Game/Card/CardHelper.php"
+code = "mixed-method-access"
+message = "Attempting to access a method on a non-object type (`mixed`)."
+count = 1
+
+[[issues]]
 file = "src/Game/Card/ChaosCard.php"
 code = "mixed-method-access"
 message = "Attempting to access a method on a non-object type (`mixed`)."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Game/Card/ChaosCard.php"
@@ -193,6 +199,12 @@ message = 'Could not infer a precise return type for function `app\game\card\cha
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Character/CharlieCard.php"
+code = "possibly-null-argument"
+message = 'Argument #2 of method `app\game\card\cardhelper::generatedandplay` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
 file = "src/Game/Card/Character/NecromancianCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
@@ -220,6 +232,12 @@ count = 1
 file = "src/Game/Card/Monster/MegaClottyCard.php"
 code = "incompatible-parameter-name"
 message = 'Parameter #1 of `App\Game\Card\Monster\MegaClottyCard::onmonsterdeath()` is named `$gameContext` but parent `App\Game\Card\Monster\AbstractMonsterCard::onmonsterdeath()` names it `$context`'
+count = 1
+
+[[issues]]
+file = "src/Game/Card/Monster/MegaClottyCard.php"
+code = "possibly-null-argument"
+message = 'Argument #2 of method `app\game\card\cardhelper::generatedandplay` is possibly `null`, but parameter type `string` does not accept it.'
 count = 1
 
 [[issues]]
@@ -256,6 +274,12 @@ count = 1
 file = "src/Game/Card/Trait/BaseOnTurnTrait.php"
 code = "non-existent-method"
 message = 'Method `getinstanceid` does not exist on type `App\Game\Card\Trait\BaseOnTurnTrait`.'
+count = 1
+
+[[issues]]
+file = "src/Game/GameContext.php"
+code = "mixed-return-statement"
+message = 'Could not infer a precise return type for function `app\game\gamecontext::selectrandomcardin`. Saw type `mixed`.'
 count = 1
 
 [[issues]]
@@ -361,15 +385,21 @@ message = "Redundant null coalesce: left-hand side can never be `null` or undefi
 count = 1
 
 [[issues]]
-file = "src/Service/Game/Factory/ReplayableGameContextFactory.php"
-code = "mixed-return-statement"
-message = 'Could not infer a precise return type for function `app\service\game\factory\replayablegamecontext::getonerandomcard`. Saw type `mixed`.'
+file = "src/Service/Game/GameEventApplier.php"
+code = "less-specific-nested-argument-type"
+message = 'Argument type mismatch for argument #1 of `App\Game\State\PlayerState::withnewhandanddeck`: expected `array<array-key, string>`, but provided type `list{nonnull, ...<string>}` is less specific.'
 count = 1
 
 [[issues]]
 file = "src/Service/Game/GameEventApplier.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Game\Card\MonsterCardState::withcanattack`: expected `bool`, but found `nonnull`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\State\GameState::getcardstate`: expected `string`, but found `nonnull`.'
 count = 1
 
 [[issues]]
@@ -391,9 +421,45 @@ message = "Attempting to call a method on `null`."
 count = 1
 
 [[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "possibly-invalid-argument"
+message = 'Possible argument type mismatch for argument #1 of `App\Game\State\PlayerState::withnewhandanddeck`: expected `array<array-key, string>`, but possibly received `list{null|string, ...<string>}`.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Game\State\GameState::addcard` is possibly `null`, but parameter type `App\Game\Card\CardState` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `app\game\card\cardstate::__construct` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventApplier.php"
+code = "possibly-null-argument"
+message = 'Argument #2 of method `app\game\card\cardstate::__construct` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventResolver.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Game\State\GameState::getcardstate`: expected `string`, but found `mixed`.'
+count = 1
+
+[[issues]]
 file = "src/Service/Game/GameEventResolver.php"
 code = "mixed-operand"
 message = "Invalid right operand: type `mixed` cannot be reliably used in string concatenation."
+count = 1
+
+[[issues]]
+file = "src/Service/Game/GameEventResolver.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `App\Service\Game\CardRuntimeMap::getbystate` is possibly `null`, but parameter type `App\Game\Card\CardState` does not accept it.'
 count = 1
 
 [[issues]]

@@ -8,6 +8,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class NecromancianCard extends AbstractCharacterCard implements TurnAwareInterface
 {
@@ -26,9 +27,9 @@ final class NecromancianCard extends AbstractCharacterCard implements TurnAwareI
         return 150;
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
-        if ($this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 

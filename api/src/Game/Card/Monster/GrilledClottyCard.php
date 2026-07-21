@@ -9,6 +9,7 @@ use App\Enum\CardSetEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class GrilledClottyCard extends AbstractMonsterCard implements TurnAwareInterface
 {
@@ -36,7 +37,7 @@ final class GrilledClottyCard extends AbstractMonsterCard implements TurnAwareIn
         return self::HEALTH_POINTS;
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         $instanceId = $this->getInstanceId();
         if (null === $instanceId) {

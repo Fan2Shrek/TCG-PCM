@@ -54,7 +54,6 @@ final class MaximeCard extends AbstractCharacterCard implements TurnAwareInterfa
     private function eatRandomCard(GameContext $gameContext): void
     {
         $targetId = $gameContext->getOneRandomCard($gameContext->getOtherPlayerId($this->ownerId));
-
         $opponentCharacterId = $gameContext->getOpponentState()->characterCardId;
 
         if ($targetId === $opponentCharacterId) {

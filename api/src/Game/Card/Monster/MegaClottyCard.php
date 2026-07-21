@@ -7,6 +7,7 @@ namespace App\Game\Card\Monster;
 use App\Enum\CardRarityEnum;
 use App\Enum\CardSetEnum;
 use App\Enum\GameEventTypeEnum;
+use App\Game\Card\CardHelper;
 use App\Game\GameContext;
 use App\Game\GameUtils;
 
@@ -66,7 +67,7 @@ final class MegaClottyCard extends AbstractMonsterCard
         foreach ($this->getAllActivePlayAreaCards($context) as $cardId) {
             $templateId = $context->state->getCardState($cardId)?->templateId;
 
-            if (\is_string($templateId) && \in_array($templateId, self::CLOTTY_IDS, true)) {
+            if (\is_string($templateId) && \in_array($templateId, self::CLOTTY_IDS, true) && $cardId !== $instanceId) {
                 $clottiesOnBoard++;
                 $context->discardCard($cardId);
             }
@@ -94,19 +95,9 @@ final class MegaClottyCard extends AbstractMonsterCard
     public function onMonsterDeath(GameContext $gameContext): void
     {
         for ($i = 0; $i < self::NUMBER_OF_CLOTTIES_SPAWNED; $i++) {
-            $newInstanceId = (string) $gameContext->state->randomizer->roll(0xFFFF_FFFF);
             $cardTemplateId = 'Clotty';
 
-            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_GENERATED, [
-                'playerId' => $this->getOwnerId(),
-                'cardTemplateId' => $cardTemplateId,
-                'cardInstanceId' => $newInstanceId,
-            ]);
-
-            $gameContext->pushGameEvent(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
-                'playerId' => $this->getOwnerId(),
-                'cardId' => $newInstanceId,
-            ]);
+            CardHelper::generatedAndPlay($gameContext, $this->getOwnerId(), $cardTemplateId, true);
         }
     }
 }

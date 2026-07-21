@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Game\Card;
 
+use App\Enum\GameEventTypeEnum;
 use App\Game\AbstractCard;
 use App\Game\Card\CardState;
 use App\Game\GameContext;
 use App\Game\Player;
+use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
 use App\Tests\Unit\Fixtures\DummyCard;
+use Override;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
@@ -65,6 +68,16 @@ abstract class CardTestCase extends TestCase
     {
         return $this->createStub(AbstractCard::class);
     }
+
+    protected function createTurnStartedEvent(string $playerId): GameEvent
+    {
+        return new GameEvent(0, GameEventTypeEnum::TURN_STARTED, GameEvent::PLAYER_EVENT, ['playerId' => $playerId]);
+    }
+
+    protected function createTurnEndedEvent(string $playerId): GameEvent
+    {
+        return new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $playerId]);
+    }
 }
 
 class TestableGameContext extends GameContext
@@ -85,5 +98,10 @@ class TestableGameContext extends GameContext
     public function randomBetween(float $min, float $max): float
     {
         return $this->nextRoll;
+    }
+
+    public function randomIntBetween(int $min, int $max): int
+    {
+        return (int) $this->nextRoll;
     }
 }

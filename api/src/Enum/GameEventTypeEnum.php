@@ -12,7 +12,6 @@ enum GameEventTypeEnum: string
     case HEAL = 'HEAL';
     case TURN_ENDED = 'TURN_ENDED';
     case TURN_STARTED = 'TURN_STARTED';
-    case ROUND_STARTED = 'ROUND_STARTED';
     case DICE_ROLLED = 'DICE_ROLLED';
     case CARD_RUNTIME_VALUE = 'CARD_RUNTIME_VALUE';
     case CARD_DISCARDED = 'CARD_DISCARDED';

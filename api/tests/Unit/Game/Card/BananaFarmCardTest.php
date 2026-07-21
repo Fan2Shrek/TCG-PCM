@@ -21,7 +21,7 @@ final class BananaFarmCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('1');
         $ctx = $this->createGameContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -36,7 +36,7 @@ final class BananaFarmCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('2');
         $ctx = $this->createGameContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);

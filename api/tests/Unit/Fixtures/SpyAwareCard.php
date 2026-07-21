@@ -10,6 +10,7 @@ use App\Game\Card\Interface\CardAwareInterface;
 use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class SpyAwareCard extends AbstractPassiveCard implements CardAwareInterface, TurnAwareInterface, DeathAwareInterface
 {
@@ -50,12 +51,12 @@ final class SpyAwareCard extends AbstractPassiveCard implements CardAwareInterfa
         self::$calls[] = __METHOD__;
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
         self::$calls[] = __METHOD__;
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         self::$calls[] = __METHOD__;
     }

@@ -41,7 +41,7 @@ final class ImStillStandingCard extends AbstractPassiveCard implements DeathAwar
 
         $player = $gameContext->state->getPlayer($this->getOwnerId());
 
-        $gameContext->heal((int) round(($player->maxHealthPoints * $this->getValue(self::REVIVE_HP_PERCENTAGE)) / 100));
+        $gameContext->heal((int) round(($player->maxHealthPoints * $this->getValue(self::REVIVE_HP_PERCENTAGE)) / 100), $this->getOwnerId());
         $gameContext->discardCard($this->getInstanceId());
     }
 }

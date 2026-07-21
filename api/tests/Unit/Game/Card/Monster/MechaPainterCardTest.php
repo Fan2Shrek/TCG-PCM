@@ -9,6 +9,7 @@ use App\Game\Card\CardState;
 use App\Game\Card\Monster\MechaPainterCard;
 use App\Game\GameContext;
 use App\Game\Player;
+use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
@@ -51,16 +52,13 @@ final class MechaPainterCardTest extends CardTestCase
 
         $gameContext = new GameContext($gameState, '1');
 
-        $card->onTurnEnd($gameContext);
+        $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
-        // selectRandomCardIn() also emits a CARD_RUNTIME_VALUE event before the damage event.
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame('other_card', $events[0]->data['value']);
-        self::assertSame(GameEventTypeEnum::DAMAGE, $events[1]->type);
-        self::assertSame('other_card', $events[1]->data['targetId']);
-        self::assertSame(10, $events[1]->data['damage']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::DAMAGE, $events[0]->type);
+        self::assertSame('other_card', $events[0]->data['targetId']);
+        self::assertSame(10, $events[0]->data['damage']);
     }
 
     public function testOnTurnEndDoesNothingWhenNoOtherCardInPlayArea()
@@ -68,7 +66,7 @@ final class MechaPainterCardTest extends CardTestCase
         $card = $this->getCard();
         $ctx = $this->createGameContext();
 
-        $card->onTurnEnd($ctx);
+        $card->onTurnEnd($this->createTurnEndedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);

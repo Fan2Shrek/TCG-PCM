@@ -8,6 +8,7 @@ use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\Card\Monster\AlchemistMonkeyCard;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 use App\Game\State\GameState;
 use App\Game\State\PlayArea;
 use App\Game\State\PlayerState;
@@ -35,14 +36,13 @@ final class AlchemistMonkeyCardTest extends CardTestCase
 
         $gameContext = new GameContext($state, '1');
 
-        $card->onTurnEnd($gameContext);
+        $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
-        // selectRandomCardIn() also emits a CARD_RUNTIME_VALUE event for the picked card.
-        self::assertCount(2, $events);
-        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[1]->type);
-        self::assertSame('target_card', $events[1]->data['cardId']);
-        self::assertSame(9, $events[1]->data['stateToUpdate']['bonusAttack']);
+        self::assertCount(1, $events);
+        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[0]->type);
+        self::assertSame('target_card', $events[0]->data['cardId']);
+        self::assertSame(9, $events[0]->data['stateToUpdate']['bonusAttack']);
     }
 
     public function testTurnEndDoesNothingWhenOwnerIsCurrentPlayer()
@@ -60,7 +60,7 @@ final class AlchemistMonkeyCardTest extends CardTestCase
 
         $gameContext = new GameContext($state, '1');
 
-        $card->onTurnEnd($gameContext);
+        $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
         self::assertCount(0, $events);
@@ -80,7 +80,7 @@ final class AlchemistMonkeyCardTest extends CardTestCase
 
         $gameContext = new GameContext($state, '1');
 
-        $card->onTurnEnd($gameContext);
+        $card->onTurnEnd(new GameEvent(0, GameEventTypeEnum::TURN_ENDED, GameEvent::PLAYER_EVENT, ['playerId' => $card->getOwnerId()]), $gameContext);
         $events = $gameContext->flushEvents();
 
         self::assertCount(0, $events);

@@ -53,7 +53,7 @@ final class MaximeCardTest extends CardTestCase
         $state = $state->withCurrentPlayer('2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('2'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);
@@ -66,7 +66,7 @@ final class MaximeCardTest extends CardTestCase
         $state = $this->buildState();
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
         self::assertCount(1, $events);
@@ -82,16 +82,15 @@ final class MaximeCardTest extends CardTestCase
         $state = $this->buildState(opponentCharacterId: 'char2');
         $ctx = $this->buildContext($state);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
-        self::assertCount(3, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame(GameEventTypeEnum::DAMAGE, $events[1]->type);
-        self::assertSame('2', $events[1]->data['targetId']);
-        self::assertSame(25, $events[1]->data['damage']);
-        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[2]->type);
-        self::assertSame(3, $events[2]->data['stateToUpdate']['turnRemainingBeforeAction']);
+        self::assertCount(2, $events);
+        self::assertSame(GameEventTypeEnum::DAMAGE, $events[0]->type);
+        self::assertSame('2', $events[0]->data['targetId']);
+        self::assertSame(25, $events[0]->data['damage']);
+        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[1]->type);
+        self::assertSame(3, $events[1]->data['stateToUpdate']['turnRemainingBeforeAction']);
     }
 
     public function testOnTurnStartDiscardsCardWhenTargetIsNotCharacter()
@@ -100,14 +99,13 @@ final class MaximeCardTest extends CardTestCase
         $state = $this->buildState(opponentCharacterId: 'char2', opponentPassiveCards: ['opponent_card']);
         $ctx = $this->buildContext($state, forceFirstPoolEntry: true);
 
-        $card->onTurnStart($ctx);
+        $card->onTurnStart($this->createTurnStartedEvent('1'), $ctx);
         $events = $ctx->flushEvents();
 
-        self::assertCount(3, $events);
-        self::assertSame(GameEventTypeEnum::CARD_RUNTIME_VALUE, $events[0]->type);
-        self::assertSame(GameEventTypeEnum::CARD_DISCARDED, $events[1]->type);
-        self::assertSame('opponent_card', $events[1]->data['cardId']);
-        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[2]->type);
+        self::assertCount(2, $events);
+        self::assertSame(GameEventTypeEnum::CARD_DISCARDED, $events[0]->type);
+        self::assertSame('opponent_card', $events[0]->data['cardId']);
+        self::assertSame(GameEventTypeEnum::UPDATE_CARD_STATE, $events[1]->type);
     }
 
     private function buildCard(int $turnRemainingBeforeAction): MaximeCard
@@ -145,10 +143,7 @@ final class MaximeCardTest extends CardTestCase
         return new class($state, '1', 0) extends TestableGameContext {
             public function selectRandomCardIn(array $pool): string
             {
-                $cardId = $pool[0];
-                $this->runtimeValueEffect($cardId);
-
-                return $cardId;
+                return $pool[0];
             }
         };
     }

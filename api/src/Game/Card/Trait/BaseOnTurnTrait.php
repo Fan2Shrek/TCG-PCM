@@ -7,6 +7,7 @@ namespace App\Game\Card\Trait;
 use App\Enum\GameEventTypeEnum;
 use App\Game\Card\CardState;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 trait BaseOnTurnTrait
 {
@@ -14,9 +15,9 @@ trait BaseOnTurnTrait
 
     use TurnAwareTrait;
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 

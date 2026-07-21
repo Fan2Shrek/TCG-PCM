@@ -80,13 +80,13 @@ final class MegaClottyCardTest extends CardTestCase
         self::assertSame(GameEventTypeEnum::CARD_GENERATED, $events[0]->type);
         self::assertSame('Clotty', $events[0]->data['cardTemplateId']);
         self::assertSame($card->getOwnerId(), $events[0]->data['playerId']);
-        self::assertSame(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, $events[1]->type);
+        self::assertSame(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, $events[1]->type);
         self::assertSame($card->getOwnerId(), $events[1]->data['playerId']);
         self::assertSame($events[0]->data['cardInstanceId'], $events[1]->data['cardId']);
 
         self::assertSame(GameEventTypeEnum::CARD_GENERATED, $events[2]->type);
         self::assertSame('Clotty', $events[2]->data['cardTemplateId']);
-        self::assertSame(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, $events[3]->type);
+        self::assertSame(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, $events[3]->type);
         self::assertSame($events[2]->data['cardInstanceId'], $events[3]->data['cardId']);
     }
 

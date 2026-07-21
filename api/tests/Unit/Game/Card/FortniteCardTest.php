@@ -35,8 +35,7 @@ final class FortniteCardTest extends CardTestCase
         $card->play($ctx);
         $events = $ctx->flushEvents();
 
-        // selectRandomCardIn() also pushes a CARD_RUNTIME_VALUE event.
-        self::assertCount(5, $events);
+        self::assertCount(4, $events);
 
         $discardEvents = array_values(array_filter($events, static fn($e) => GameEventTypeEnum::CARD_DISCARDED === $e->type));
         self::assertCount(2, $discardEvents);

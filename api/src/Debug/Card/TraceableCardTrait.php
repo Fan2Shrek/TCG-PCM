@@ -13,6 +13,7 @@ use App\Game\Card\Interface\ComputedCardInterface;
 use App\Game\Card\Interface\DeathAwareInterface;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -104,7 +105,7 @@ trait TraceableCardTrait
         $this->stopwatch->stop($id);
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
         if (!$this->card instanceof TurnAwareInterface) {
             return;
@@ -113,12 +114,12 @@ trait TraceableCardTrait
         $this->methodCalled[] = __FUNCTION__;
         $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
-        $this->card->onTurnStart($gameContext);
+        $this->card->onTurnStart($event, $gameContext);
 
         $this->stopwatch->stop($id);
     }
 
-    public function onTurnEnd(GameContext $gameContext): void
+    public function onTurnEnd(GameEvent $event, GameContext $gameContext): void
     {
         if (!$this->card instanceof TurnAwareInterface) {
             return;
@@ -127,7 +128,7 @@ trait TraceableCardTrait
         $this->methodCalled[] = __FUNCTION__;
         $this->stopwatch->start($id = $this->getEventName(__FUNCTION__), self::STOPWATCH_CATEGORY);
 
-        $this->card->onTurnEnd($gameContext);
+        $this->card->onTurnEnd($event, $gameContext);
 
         $this->stopwatch->stop($id);
     }

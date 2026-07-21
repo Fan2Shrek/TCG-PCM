@@ -21,6 +21,18 @@ use App\Service\Game\Factory\GameContextFactoryInterface;
 
 class GameEventResolver
 {
+    /**
+     * @var GameEvent[]
+     */
+    private array $eventQueue = [];
+
+    /**
+     * @var GameEvent[]
+     */
+    private array $resolvedEvents = [];
+
+    private array $pendingDeath = [];
+
     public function __construct(
         private CardRuntimeMap $cardRuntimeMap,
         private GameContextFactoryInterface $gameContextFactory,
@@ -38,24 +50,54 @@ class GameEventResolver
 
     public function resolve(GameEvent $mainEvent, GameState $state): ResolutionResult
     {
-        $firstLevelEvents = $allEvents = array_merge([$mainEvent], $this->generateReactions($mainEvent, $state));
+        $this->pushEventsToQueue([$mainEvent]);
 
-        // @ŧodo modify this if we want to do depth events resolution instead of breadth
-        foreach ($firstLevelEvents as $event) {
-            // First we apply the first level event
-            $state = $this->gameEventApplier->apply($event, $state);
+        try {
+            while ($event = array_shift($this->eventQueue)) {
+                $state = $this->doResolveEvent($event, $state);
+            }
 
-            // Then we calculate systems events just in case
-            $systemEvents = $this->generateSystemsEvent($state);
-            $state = $this->gameEventApplier->applyMultiple($systemEvents, $state);
-            $allEvents = array_merge($allEvents, $systemEvents);
+            return new ResolutionResult($this->resolvedEvents, $state);
+        } finally {
+            $this->eventQueue = [];
+            $this->resolvedEvents = [];
+        }
+    }
 
-            // Then we process aware cards
-            $allEvents = array_merge($allEvents, $events = $this->collectEventsFromAwareCards($event, $state));
-            $state = $this->gameEventApplier->applyMultiple($events, $state);
+    private function doResolveEvent(GameEvent $event, GameState $state): GameState
+    {
+        // First we apply the event
+        $state = $this->gameEventApplier->apply($event, $state);
+
+        // Then we can generate logic reactions
+        $events = $this->generateReactions($event, $state);
+        $this->pushEventsToQueue($events);
+
+        // Then we process aware cards
+        $events = $this->collectEventsFromAwareCards($event, $state);
+        $this->pushEventsToQueue($events);
+
+        // Finally we generate system events that should be checked after each event resolution, such as player death, monster death, etc.
+        $events = $this->generateSystemsEvent($state, $event);
+        $this->pushEventsToQueue($events);
+
+        $this->resolvedEvents[] = $event;
+
+        // clean pendingDeath
+        if (\in_array(
+            $event->type,
+            [
+                GameEventTypeEnum::MONSTER_DIED,
+                GameEventTypeEnum::PLAYER_DIED,
+            ],
+            true,
+        )) {
+            $idToRemove = GameEventTypeEnum::MONSTER_DIED === $event->type ? $event->data['cardId'] : $event->data['characterCardId'];
+
+            $this->pendingDeath = array_filter($this->pendingDeath, static fn($a) => $idToRemove === $a);
         }
 
-        return new ResolutionResult($allEvents, $state);
+        return $state;
     }
 
     /**
@@ -63,7 +105,7 @@ class GameEventResolver
      *
      * @return GameEvent[]
      */
-    private function generateSystemsEvent(GameState $state): array
+    private function generateSystemsEvent(GameState $state, ?GameEvent $currentEvent = null): array
     {
         $events = [];
 
@@ -72,12 +114,23 @@ class GameEventResolver
                 continue;
             }
 
+            if (\in_array($playerState->characterCardId, $this->pendingDeath, true)) {
+                continue;
+            }
+
             $events[] = GameEvent::game(GameEventTypeEnum::PLAYER_DIED, [
                 'playerId' => $playerState->player->id,
+                'characterCardId' => $playerState->characterCardId,
             ]);
+
+            $this->pendingDeath[] = $playerState->characterCardId;
         }
 
         foreach ($state->getAllMonsters() as $monsterCardId) {
+            if (\in_array($monsterCardId, $this->pendingDeath, true)) {
+                continue;
+            }
+
             $cardState = $state->getCardState($monsterCardId);
             if (!$cardState) {
                 continue;
@@ -94,15 +147,12 @@ class GameEventResolver
                     'playerId' => $cardState->ownerId,
                     'cardId' => $monsterCardId,
                 ]);
+
+                $this->pendingDeath[] = $monsterCardId;
             }
         }
 
-        $subEvents = [];
-        foreach ($events as $deathEvent) {
-            $subEvents = array_merge($subEvents, $this->generateReactions($deathEvent, $state));
-        }
-
-        return array_merge($events, $subEvents);
+        return $events;
     }
 
     /**
@@ -115,14 +165,10 @@ class GameEventResolver
 
         switch ($event->type) {
             case GameEventTypeEnum::TURN_ENDED:
-                $playerId = $state->getNextPlayer()->id;
-                if ($this->isNewRound($state, $state->getNextPlayer()->id)) {
-                    $events[] = GameEvent::game(GameEventTypeEnum::ROUND_STARTED, []);
-                }
                 $events[] = GameEvent::game(GameEventTypeEnum::TURN_STARTED, [
                     'playerId' => $playerId,
                 ]);
-            // no-break
+                break;
             case GameEventTypeEnum::TURN_STARTED:
                 $events[] = GameEvent::game(GameEventTypeEnum::COINS_GAINED, [
                     'playerId' => $playerId,
@@ -142,6 +188,18 @@ class GameEventResolver
             case GameEventTypeEnum::PLAYER_DIED:
             case GameEventTypeEnum::MONSTER_DIED:
                 $events = $this->doGenerareReactionsForDeath($event, $state);
+                break;
+            case GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA:
+            case GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA:
+                $cardId = $event->data['cardId'];
+                /** @var AbstractMonsterCard|AbstractPassiveCard $card */
+                $card = $this->cardRuntimeMap->getByState($state->getCardState($cardId));
+                $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
+
+                $card instanceof AbstractMonsterCard ? $card->onMonsterPlayed($ctx) : $card->onCardPlace($ctx);
+
+                $events = $ctx->flushEvents();
+                break;
             default:
                 break;
         }
@@ -213,15 +271,11 @@ class GameEventResolver
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractPassiveCard) {
-            $card->onCardPlace($ctx);
-
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_PLAY_AREA, [
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
             ]);
         } elseif ($card instanceof AbstractMonsterCard) {
-            $card->onMonsterPlayed($ctx);
-
             $events[] = GameEvent::game(GameEventTypeEnum::CARD_PLACE_IN_MONSTER_AREA, [
                 'playerId' => $event->data['playerId'],
                 'cardId' => $event->data['cardId'],
@@ -296,7 +350,7 @@ class GameEventResolver
         $events = [];
 
         if (GameEventTypeEnum::PLAYER_DIED === $event->type) {
-            return $this->collectEventsFromAwareCards($event, $state);
+            return [];
         }
 
         if (GameEventTypeEnum::MONSTER_DIED === $event->type) {
@@ -323,7 +377,7 @@ class GameEventResolver
             $ctx = $this->gameContextFactory->createGameContext($state, $playerId);
             $card->onMonsterDeath($ctx);
 
-            $events = array_merge($ctx->flushEvents(), $this->collectEventsFromAwareCards($event, $state));
+            $events = $ctx->flushEvents();
         }
 
         return $events;
@@ -342,7 +396,7 @@ class GameEventResolver
                 $cards = $this->getTurnAwareCards($state);
 
                 foreach ($cards as $card) {
-                    $card->onTurnEnd($ctx);
+                    $card->onTurnEnd($event, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
 
@@ -351,7 +405,7 @@ class GameEventResolver
                 $cards = $this->getTurnAwareCards($state);
 
                 foreach ($cards as $card) {
-                    $card->onTurnStart($ctx);
+                    $card->onTurnStart($event, $ctx);
                     $events = array_merge($events, $ctx->flushEvents());
                 }
 
@@ -420,11 +474,6 @@ class GameEventResolver
         }
 
         return $events;
-    }
-
-    private function isNewRound(GameState $state, string $nextPlayerId): bool
-    {
-        return $nextPlayerId === $state->player1->player->id;
     }
 
     /**
@@ -501,5 +550,13 @@ class GameEventResolver
         // maybe round based
 
         return 3;
+    }
+
+    /**
+     * @param GameEvent[] $events
+     */
+    private function pushEventsToQueue(array $events): void
+    {
+        $this->eventQueue = array_merge($this->eventQueue, $events);
     }
 }

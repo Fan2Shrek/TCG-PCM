@@ -9,6 +9,7 @@ use App\Enum\CardSetEnum;
 use App\Game\Card\Interface\TurnAwareInterface;
 use App\Game\Card\Trait\TurnAwareTrait;
 use App\Game\GameContext;
+use App\Game\State\GameEvent;
 
 final class HenryCard extends AbstractMonsterCard implements TurnAwareInterface
 {
@@ -35,9 +36,9 @@ final class HenryCard extends AbstractMonsterCard implements TurnAwareInterface
         return self::HEALTH_POINTS;
     }
 
-    public function onTurnStart(GameContext $gameContext): void
+    public function onTurnStart(GameEvent $event, GameContext $gameContext): void
     {
-        if (!$this->isOwnerTurn($gameContext)) {
+        if (!$this->isOwnerTurn($event)) {
             return;
         }
 
