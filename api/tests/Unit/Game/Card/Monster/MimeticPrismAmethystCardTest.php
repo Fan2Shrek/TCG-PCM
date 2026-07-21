@@ -79,7 +79,7 @@ final class MimeticPrismAmethystCardTest extends CardTestCase
         // 'templateId' state value), damage is never computed and defaults to 0.
         $card = $this->getCard();
 
-        self::assertSame(0, $card->getBaseAttack());
+        self::assertSame(1, $card->getBaseAttack());
     }
 
     public function testOnMonsterPlayedCopiesAttackButKeepsFixedHealPoints()

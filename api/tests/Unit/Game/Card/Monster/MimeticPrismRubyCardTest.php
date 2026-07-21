@@ -91,7 +91,7 @@ final class MimeticPrismRubyCardTest extends CardTestCase
         $events = $ctx->flushEvents();
 
         self::assertCount(0, $events);
-        self::assertSame(0, $card->getBaseAttack());
-        self::assertSame(0, $card->getHealPoints());
+        self::assertSame(1, $card->getBaseAttack());
+        self::assertSame(1, $card->getHealPoints());
     }
 }

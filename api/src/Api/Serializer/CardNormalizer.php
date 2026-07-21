@@ -21,7 +21,7 @@ final class CardNormalizer implements NormalizerInterface
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        return $data instanceof AbstractCard || $data instanceof CardDTO || $data instanceof CollectionCardDTO;
+        return $data instanceof CardDTO || $data instanceof CollectionCardDTO;
     }
 
     public function normalize(mixed $data, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
@@ -54,14 +54,13 @@ final class CardNormalizer implements NormalizerInterface
             'effects' => $card instanceof CardDTO ? $card->effects : null,
             'isActive' => $card instanceof CardDTO ? $card->isActive : null,
             'isNewToCollection' => $card instanceof CollectionCardDTO ? $card->isNewToCollection : null,
-            'values' => $card->values,
+            'values' => $card instanceof CardDTO ? $card->values : null,
         ];
     }
 
     public function getSupportedTypes(?string $format): array
     {
         return [
-            AbstractCard::class => true,
             CardDTO::class => true,
             CollectionCardDTO::class => true,
         ];

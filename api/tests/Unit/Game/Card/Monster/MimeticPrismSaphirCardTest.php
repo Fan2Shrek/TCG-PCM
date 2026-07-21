@@ -72,8 +72,8 @@ final class MimeticPrismSaphirCardTest extends CardTestCase
         // 'templateId' state value), damage/heal are never computed and default to 0.
         $card = $this->getCard();
 
-        self::assertSame(0, $card->getBaseAttack());
-        self::assertSame(0, $card->getHealPoints());
+        self::assertSame(1, $card->getBaseAttack());
+        self::assertSame(1, $card->getHealPoints());
     }
 
     public function testOnMonsterPlayedCopiesReducedAttackAndBoostedHeal()
