@@ -329,6 +329,10 @@ class GameEventApplier implements GameEventApplierInterface
             $newState = $state->updateValues($newStats);
         }
 
+        if (null !== ($currentHealthPoints = $event->data['currentHealthPoints'] ?? null) && $newState instanceof MonsterCardState) {
+            $newState = $newState->withCurrentHealthPoints($currentHealthPoints);
+        }
+
         return $gameState->withUpdatedCardState($newState);
     }
 

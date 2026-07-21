@@ -37,12 +37,12 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
 
     public function getBaseAttack(): int
     {
-        return $this->damage ?? 0;
+        return $this->damage ?? 1;
     }
 
     public function getHealPoints(): int
     {
-        return $this->heal ?? 0;
+        return $this->heal ?? 1;
     }
 
     public function onMonsterPlayed(GameContext $context): void
@@ -53,7 +53,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
             return;
         }
 
-        $copyId = $context->selectRandomCardIn($pool);
+        $copyId = $context->selectRandomCardIn(array_filter($pool, fn ($card) => $card !== $this->getInstanceId()));
         $state = $context->state->getCardState($copyId);
 
         if (!$state) {
@@ -68,6 +68,7 @@ class MimeticPrismRubyCard extends AbstractMonsterCard
             'stateToUpdate' => [
                 'templateId' => $this->copyTemplateId,
             ],
+            'currentHealthPoints' => $this->heal,
         ]);
     }
 
