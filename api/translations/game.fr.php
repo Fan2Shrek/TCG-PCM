@@ -270,6 +270,10 @@ return [
             'name' => 'Racisme',
             'description' => 'Inflige {{value}} dégâts à tous les monstres qui ne sont pas de <set>original</set>.',
         ],
+        'Goofy' => [
+            'name' => 'Goofy',
+            'description' => 'Les stats attaques/pv varient de {{value}} à {{value2}} aléatoirement à chaque tour.',
+        ]
     ],
     // Effects
     'effects' => [

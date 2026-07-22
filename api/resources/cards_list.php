@@ -37,6 +37,7 @@ return [
 	'Crypto4Noob' => Card\Monster\Crypto4NoobCard::class,
 	'DDT' => Card\Monster\DDTCard::class,
 	'DartMonkey' => Card\Monster\DartMonkeyCard::class,
+	'Goofy' => Card\Monster\GoofyCard::class,
 	'GrilledClotty' => Card\Monster\GrilledClottyCard::class,
 	'Henry' => Card\Monster\HenryCard::class,
 	'HoneyBee' => Card\Monster\HoneyBeeCard::class,
