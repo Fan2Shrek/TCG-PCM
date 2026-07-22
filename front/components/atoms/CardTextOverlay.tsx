@@ -1,6 +1,14 @@
 "use client";
 
-import { CSSProperties, useCallback, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { layout, prepare } from "@chenglou/pretext";
 import useFitText from "use-fit-text";
 import { CardRaririty, CardType } from "@/constants/card";
 import { convertDescriptions } from "@/lib/game/cardUtils";
@@ -40,6 +48,120 @@ const CARD_RARITY_COLORS: Record<CardRaririty, string> = {
   [CardRaririty.RARE]: "text-sky-700",
   [CardRaririty.EPIC]: "text-rose-700",
   [CardRaririty.LEGENDARY]: "text-amber-700",
+};
+
+type PretextFitOptions = {
+  maxFontSize: number;
+  minFontSize?: number;
+  onFinish?: () => void;
+};
+
+const usePretextFitText = (text: string, options: PretextFitOptions) => {
+  const { maxFontSize, minFontSize = 1, onFinish } = options;
+  const ref = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState(maxFontSize);
+  const [boxSize, setBoxSize] = useState({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+
+    if (!element) {
+      return;
+    }
+
+    const updateBoxSize = () => {
+      const { width, height } = element.getBoundingClientRect();
+
+      setBoxSize((current) =>
+        current.width === width && current.height === height
+          ? current
+          : { width, height },
+      );
+    };
+
+    updateBoxSize();
+
+    const observer = new ResizeObserver(updateBoxSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+
+    if (!element || boxSize.width <= 0 || boxSize.height <= 0) {
+      return;
+    }
+
+    if (text.trim().length === 0) {
+      setFontSize(maxFontSize);
+      onFinish?.();
+      return;
+    }
+
+    let cancelled = false;
+
+    const fit = async () => {
+      if ("fonts" in document) {
+        await document.fonts.ready;
+      }
+
+      if (cancelled) {
+        return;
+      }
+
+      const computedStyle = window.getComputedStyle(element);
+      const fontFamily = computedStyle.fontFamily;
+      const fontWeight = computedStyle.fontWeight || "400";
+      const lineHeightValue = Number.parseFloat(computedStyle.lineHeight);
+      const currentFontSize = Number.parseFloat(computedStyle.fontSize);
+      const lineHeightRatio =
+        Number.isFinite(lineHeightValue) &&
+        Number.isFinite(currentFontSize) &&
+        currentFontSize > 0
+          ? lineHeightValue / currentFontSize
+          : 1.1;
+
+      let low = minFontSize;
+      let high = maxFontSize;
+      let best = minFontSize;
+
+      while (high - low > 0.5) {
+        const candidate = (low + high) / 2;
+        const prepared = prepare(
+          text,
+          `${fontWeight} ${candidate}px ${fontFamily}`,
+          { whiteSpace: "pre-wrap" },
+        );
+        const measured = layout(
+          prepared,
+          boxSize.width,
+          candidate * lineHeightRatio,
+        );
+
+        if (measured.height <= boxSize.height) {
+          best = candidate;
+          low = candidate;
+        } else {
+          high = candidate;
+        }
+      }
+
+      if (!cancelled) {
+        setFontSize(best);
+        onFinish?.();
+      }
+    };
+
+    void fit();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [boxSize.height, boxSize.width, maxFontSize, minFontSize, onFinish, text]);
+
+  return { fontSize, ref };
 };
 
 const CardTextOverlay = ({
@@ -139,28 +261,38 @@ const CardTextOverlay = ({
     setIsRarityReady(true);
   }, []);
 
-  const { fontSize: titleFontSize, ref: titleFitRef } = useFitText({
-    onFinish: handleTitleFitFinished,
-    maxFontSize: 200,
-  });
+  const { fontSize: titleFontSize, ref: titleFitRef } = usePretextFitText(
+    cardTitle,
+    {
+      maxFontSize: 200,
+      onFinish: handleTitleFitFinished,
+    },
+  );
+
+  const { fontSize: descriptionFontSize, ref: descriptionFitRef } =
+    usePretextFitText(cardDescription, {
+      maxFontSize: 200,
+      onFinish: handleDescriptionFitFinished,
+    });
+
+  const { fontSize: typeFontSize, ref: typeFitRef } = usePretextFitText(
+    CARD_TYPE_LABELS[cardType],
+    {
+      maxFontSize: 200,
+      onFinish: handleTypeFitFinished,
+    },
+  );
+
+  const { fontSize: rarityFontSize, ref: rarityFitRef } = usePretextFitText(
+    cardRarity,
+    {
+      maxFontSize: 200,
+      onFinish: handleRarityFitFinished,
+    },
+  );
 
   const { fontSize: statsFontSize, ref: statsFitRef } = useFitText({
     onFinish: handleStatsFitFinished,
-    maxFontSize: 200,
-  });
-
-  const { fontSize: descriptionFontSize, ref: descriptionFitRef } = useFitText({
-    onFinish: handleDescriptionFitFinished,
-    maxFontSize: 200,
-  });
-
-  const { fontSize: typeFontSize, ref: typeFitRef } = useFitText({
-    onFinish: handleTypeFitFinished,
-    maxFontSize: 200,
-  });
-
-  const { fontSize: rarityFontSize, ref: rarityFitRef } = useFitText({
-    onFinish: handleRarityFitFinished,
     maxFontSize: 200,
   });
 
