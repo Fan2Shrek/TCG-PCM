@@ -1,6 +1,12 @@
 variant = "loose"
 
 [[issues]]
+file = "src/Api/Provider/CardCollectionProvider.php"
+code = "possibly-invalid-argument"
+message = '''Possible argument type mismatch for argument #1 of `App\Api\Provider\CardCollectionProvider::sortcards`: expected `array<array-key, array{'card': App\Api\DTO\CollectionCardDTO}>`, but possibly received `list<array{'card': App\Api\DTO\CollectionCardDTO, 'quantity': int|int(0)}>`.'''
+count = 1
+
+[[issues]]
 file = "src/Api/Provider/GameProvider.php"
 code = "possibly-null-operand"
 message = "Left operand in `==` comparison might be `null` (type `int|null`)."
