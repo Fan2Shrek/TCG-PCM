@@ -253,6 +253,36 @@ message = 'Parameter #1 of `App\Game\Card\Monster\SirenCard::onturnaction()` is 
 count = 1
 
 [[issues]]
+file = "src/Game/Card/ScratchGameAddictCard.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `array_reverse`: expected `array<('K.array_reverse() extends array-key), ('V.array_reverse() extends mixed)>`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Game/Card/ScratchGameAddictCard.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `nonnull`."
+count = 1
+
+[[issues]]
+file = "src/Game/Card/ScratchGameAddictCard.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 6
+
+[[issues]]
+file = "src/Game/Card/ScratchGameAddictCard.php"
+code = "mixed-operand"
+message = "Right operand in binary operation has type `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Game/Card/ScratchGameAddictCard.php"
+code = "redundant-null-coalesce"
+message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
+count = 1
+
+[[issues]]
 file = "src/Game/Card/StackyStackitoCard.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `App\Game\State\GameState::getplayer` is possibly `null`, but parameter type `string` does not accept it.'
