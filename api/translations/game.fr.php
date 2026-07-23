@@ -278,6 +278,10 @@ return [
             'name' => 'Accro au jeu de grattage',
             'description' => 'Inflige {{value}} dégâts en fonction du cours des actions <const>FDJU</const>.',
         ],
+        'DeadGameXD' => [
+            'name' => 'DeadGameXD',
+            'description' => 'Les pvs équivaut aux nombre de joueurs / 10, et les dégats le score Metacritic / 10 jeux: <const>paladins</const>.',
+        ],
     ],
     // Effects
     'effects' => [
