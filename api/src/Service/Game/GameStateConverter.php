@@ -16,7 +16,7 @@ use App\Game\State\GameState;
 final class GameStateConverter
 {
     public function __construct(
-        private CardRegistryInterface $cardRegistry,
+        private CardFactoryInterface $cardFactory,
     ) {}
 
     public function convertGameState(GameState $gameState, string $playerId): GameStateDTO
@@ -33,8 +33,7 @@ final class GameStateConverter
 
     public function createCardDTO(CardState $state): CardDTO
     {
-        $template = $this->cardRegistry->getCardTemplateById($state->templateId);
-        $template->setState($state);
+        $template = $this->cardFactory->createWithState($state->templateId, $state);
 
         $cost = null;
         $hp = null;

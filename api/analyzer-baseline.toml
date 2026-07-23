@@ -235,6 +235,24 @@ message = "Unsafe array access on type `mixed`."
 count = 1
 
 [[issues]]
+file = "src/Game/Card/Monster/DeadGameXDCard.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #1 of `round`: expected `float|int`, but found `mixed`."
+count = 2
+
+[[issues]]
+file = "src/Game/Card/Monster/DeadGameXDCard.php"
+code = "mixed-array-access"
+message = "Unsafe array access on type `mixed`."
+count = 4
+
+[[issues]]
+file = "src/Game/Card/Monster/DeadGameXDCard.php"
+code = "mixed-operand"
+message = "Left operand in binary operation has type `mixed`."
+count = 2
+
+[[issues]]
 file = "src/Game/Card/Monster/MegaClottyCard.php"
 code = "incompatible-parameter-name"
 message = 'Parameter #1 of `App\Game\Card\Monster\MegaClottyCard::onmonsterdeath()` is named `$gameContext` but parent `App\Game\Card\Monster\AbstractMonsterCard::onmonsterdeath()` names it `$context`'

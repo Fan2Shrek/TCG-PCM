@@ -19,14 +19,7 @@ final class CardFactory implements CardFactoryInterface
 
     public function create(string $cardId): AbstractCard
     {
-        return clone $this->cardRegistry->getCardTemplateById($cardId);
-    }
-
-    public function createWithState(string $cardId, CardState $state): AbstractCard
-    {
-        $card = $this->create($cardId);
-
-        $card->setState($state);
+        $card = $this->cardRegistry->getCardTemplateById($cardId);
 
         if ($card instanceof ComputedCardInterface && $this->cache) {
             $value = $this->cache->get(sha1($card::class), static function (CacheItemInterface $item) use ($card) {
@@ -37,6 +30,15 @@ final class CardFactory implements CardFactoryInterface
 
             $card->setComputedValue($value);
         }
+
+        return $card;
+    }
+
+    public function createWithState(string $cardId, CardState $state): AbstractCard
+    {
+        $card = $this->create($cardId);
+
+        $card->setState($state);
 
         return $card;
     }

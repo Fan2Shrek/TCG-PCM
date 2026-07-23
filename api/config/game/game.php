@@ -74,7 +74,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set('game.game_state_converter', GameStateConverter::class)
             ->args([
-                service('game.card_registry'),
+                service('game.card_factory'),
             ])
         ->alias(GameStateConverter::class, 'game.game_state_converter')
 
