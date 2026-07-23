@@ -67,6 +67,7 @@ export type TargetingActions = {
 
 type GameContextType = {
   game: GameState | null;
+  gameData: GameData | null;
   getCardById: (cardId: string) => BasicCard | undefined;
   announcements: GameAnnouncement[];
   chatMessages: ChatMessage[];
@@ -88,6 +89,7 @@ type Props = {
 
 export const GameContext = createContext<GameContextType>({
   game: null,
+  gameData: null,
   getCardById: () => undefined,
   announcements: [],
   chatMessages: [],
@@ -117,6 +119,34 @@ export const GameContext = createContext<GameContextType>({
     selectHandCard: () => undefined,
   },
 });
+
+export type GameData = {
+  cardEffects: Record<string, CardEffectData>;
+  cards: Record<string, BasicCard>;
+};
+
+type CardEffectData = {
+  name: string;
+  description: string;
+};
+
+const isGameData = (value: unknown): value is GameData => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as {
+    cards?: unknown;
+    cardEffects?: unknown;
+  };
+
+  return (
+    !!candidate.cards &&
+    typeof candidate.cards === "object" &&
+    !!candidate.cardEffects &&
+    typeof candidate.cardEffects === "object"
+  );
+};
 
 export const GameProvider = ({
   children,
@@ -169,6 +199,8 @@ export const GameProvider = ({
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [queuedEvents, setQueuedEvents] = useState<GameEvent[]>([]);
+
+  const [gameData, setGameData] = useState<GameData | null>(null);
 
   const pushAnnouncement = useCallback((announcement: AnnouncementPayload) => {
     const id = ++announcementIdRef.current;
@@ -524,6 +556,25 @@ export const GameProvider = ({
   });
 
   useEffect(() => {
+    const fetchGameData = async () => {
+      try {
+        const data = await api.game.getGameData();
+
+        if (!isGameData(data)) {
+          console.error("Format de game data invalide", data);
+          return;
+        }
+
+        setGameData(data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données du jeu :", error);
+      }
+    };
+
+    fetchGameData();
+  }, []);
+
+  useEffect(() => {
     gameRef.current = normalizeGameState(game);
   }, [game, normalizeGameState]);
 
@@ -531,6 +582,7 @@ export const GameProvider = ({
     <GameContext.Provider
       value={{
         game,
+        gameData,
         getCardById,
         announcements,
         chatMessages,

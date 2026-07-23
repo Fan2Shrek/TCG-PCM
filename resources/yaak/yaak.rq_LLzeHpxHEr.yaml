@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_LLzeHpxHEr
 createdAt: 2026-07-15T13:08:05.422928243
-updatedAt: 2026-07-15T13:08:16.011630715
+updatedAt: 2026-07-23T05:59:49.347088189
 workspaceId: wk_YWNRaoZjBb
 folderId: fl_zN648RoxxG
 authentication: {}
@@ -14,5 +14,5 @@ headers: []
 method: GET
 name: ''
 sortPriority: 9.0
-url: ${[host]}/api/card-effects
+url: ${[host]}/api/game-data
 urlParameters: []

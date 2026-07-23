@@ -24,4 +24,8 @@ export class GameResource {
 	async sendChatMessage(id: string, message: string) {
 		return this.client.post(`/game/${id}/chat`, { message })
 	}
+
+	async getGameData() {
+		return this.client.get(`/game-data`)
+	}
 }

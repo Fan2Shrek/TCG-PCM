@@ -1,9 +1,16 @@
 "use client";
 
-import { CSSProperties, useCallback, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import useFitText from "use-fit-text";
 import { CardRaririty, CardType } from "@/constants/card";
 import { convertDescriptions } from "@/lib/game/cardUtils";
+import { GameContext } from "@/contexts/GameContext";
 
 type ZoneConfig = {
   x?: number;
@@ -51,6 +58,8 @@ const CardTextOverlay = ({
   cardStats,
   onLayoutReady,
 }: CardTextOverlayProps) => {
+  const { gameData } = useContext(GameContext);
+
   // Positioning & size for each text block
   const headerConfig: ZoneConfig = {
     y: 4,
@@ -216,7 +225,7 @@ const CardTextOverlay = ({
           fontSize: `calc(${descriptionFontSize} * 0.93)`,
         }}
       >
-        {cardDescription && convertDescriptions(cardDescription)}
+        {cardDescription && convertDescriptions(cardDescription, gameData)}
       </div>
 
       <div
