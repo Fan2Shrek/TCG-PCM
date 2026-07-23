@@ -20,6 +20,8 @@ import WinScreen from "./WinScreen";
 import Tooltip from "@/components/molecules/game/tooltip";
 import GameActionButtons from "@/components/molecules/game/GameActionButtons";
 import GameChat from "./GameChat";
+import { toast } from "sonner";
+import { RoomStatus } from "@/types/roomStatus";
 
 export default function GameBoard() {
   const router = useRouter();
@@ -38,6 +40,9 @@ export default function GameBoard() {
 
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [draggedCard, setDraggedCard] = useState<BasicCard | null>(null);
+  const [winnerPlayerIdFromRoom, setWinnerPlayerIdFromRoom] = useState<
+    string | null
+  >(null);
 
   const connectedPlayer =
     game?.player1.player.name === currentUsername
@@ -182,21 +187,44 @@ export default function GameBoard() {
    return null;
   }, [currentState, opponentState]);
 
+  useEffect(() => {
+   if (!routeId || winnerPlayerId || winnerPlayerIdFromRoom) {
+     return;
+   }
+
+   const syncWinnerFromRoom = async () => {
+     try {
+       const room = await api.room.getById(routeId);
+       if (room.status === RoomStatus.FINISHED && room.winnerId) {
+         setWinnerPlayerIdFromRoom(room.winnerId);
+       }
+     } catch (error) {
+       console.error("Failed to sync winner from room:", error);
+     }
+   };
+
+   void syncWinnerFromRoom();
+   const intervalId = window.setInterval(syncWinnerFromRoom, 2000);
+   return () => window.clearInterval(intervalId);
+  }, [routeId, winnerPlayerId, winnerPlayerIdFromRoom]);
+
+  const resolvedWinnerPlayerId = winnerPlayerId ?? winnerPlayerIdFromRoom;
+
   const winner = useMemo(() => {
-   if (!winnerPlayerId || !currentState || !opponentState) {
-     return null;
+   if (!resolvedWinnerPlayerId || !currentState || !opponentState) {
+    return null;
    }
 
-   if (winnerPlayerId === currentState.player.id) {
-     return currentState.player.name;
+   if (resolvedWinnerPlayerId === currentState.player.id) {
+    return currentState.player.name;
    }
 
-   if (winnerPlayerId === opponentState.player.id) {
-     return opponentState.player.name;
+   if (resolvedWinnerPlayerId === opponentState.player.id) {
+    return opponentState.player.name;
    }
 
    return null;
-  }, [winnerPlayerId, currentState, opponentState]);
+  }, [resolvedWinnerPlayerId, currentState, opponentState]);
 
   const isGameFinished = winner !== null;
 
@@ -206,7 +234,14 @@ export default function GameBoard() {
      return;
    }
 
-   await api.room.leave(routeId);
+   try {
+     await api.room.leave(routeId);
+     router.push("/rooms");
+   } catch (error) {
+     const message =
+       error instanceof Error ? error.message : "Une erreur est survenue";
+     toast.error("Erreur", { description: message });
+   }
   }, [routeId, router]);
 
   const handleBackHome = useCallback(async () => {
