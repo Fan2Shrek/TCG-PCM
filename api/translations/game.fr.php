@@ -273,7 +273,11 @@ return [
         'Goofy' => [
             'name' => 'Goofy',
             'description' => 'Les stats attaques/pv varient de {{value}} à {{value2}} aléatoirement à chaque tour.',
-        ]
+        ],
+        'ScratchGameAddict' => [
+            'name' => 'Accro au jeu de grattage',
+            'description' => 'Inflige {{value}} dégâts en fonction du cours des actions <const>FDJU</const>.',
+        ],
     ],
     // Effects
     'effects' => [

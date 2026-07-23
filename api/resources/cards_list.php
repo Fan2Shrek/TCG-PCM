@@ -64,6 +64,7 @@ return [
 	'Play2Hurt' => Card\Play2HurtCard::class,
 	'Racism' => Card\RacismCard::class,
 	'RiskyBet' => Card\RiskyBetCard::class,
+	'ScratchGameAddict' => Card\ScratchGameAddictCard::class,
 	'Spicy-D6' => Card\SpicyD6Card::class,
 	'StackyStackito' => Card\StackyStackitoCard::class,
 	'TheHand' => Card\TheHandCard::class,
