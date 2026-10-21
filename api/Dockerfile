@@ -1,7 +1,7 @@
 # =========================
 # BASE
 # =========================
-FROM php:8.5.2-fpm-alpine AS base
+FROM php:8.5-fpm-alpine AS base
 
 RUN apk add --no-cache \
     nginx \
